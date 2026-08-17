@@ -130,10 +130,17 @@
       "elapsed" : "1시간 29분",
       "timestamp" : "2026-08-17T18:16:30Z",
       "videoLength" : "15"
+    },
+    {
+      "category" : "베경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "1시간 23분",
+      "timestamp" : "2026-08-17T19:40:14Z",
+      "videoLength" : "31"
     }
   ],
-  "entryCount" : 10,
-  "lastUpdate" : "2026-08-17T19:07:03Z",
+  "entryCount" : 11,
+  "lastUpdate" : "2026-08-17T19:40:23Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
