@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "대략 컷 편",
+      "name" : "대략 컷편",
       "symbolName" : "scissors"
     },
     {
@@ -128,7 +128,7 @@
     }
   ],
   "entryCount" : 10,
-  "lastUpdate" : "2026-08-17T19:06:02Z",
+  "lastUpdate" : "2026-08-17T19:06:09Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
