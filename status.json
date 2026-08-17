@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "가편집",
+      "name" : "대략 컷 편",
       "symbolName" : "scissors"
     },
     {
@@ -32,22 +32,22 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "하이라이트 추출",
+      "name" : "하이라이트 배치",
       "symbolName" : "star.bubble"
     },
     {
       "group" : "후반 작업",
-      "name" : "지도 위치 추가",
+      "name" : "지도 & 위치 추가",
       "symbolName" : "map"
     },
     {
       "group" : "후반 작업",
-      "name" : "BGM 삽입",
+      "name" : "베경음 & 마무리 점검",
       "symbolName" : "music.note"
     },
     {
       "group" : "후반 작업",
-      "name" : "최종 검수",
+      "name" : "최종 점검",
       "symbolName" : "checkmark.seal"
     },
     {
@@ -98,42 +98,37 @@
     },
     {
       "category" : "BGM 삽입",
-      "categorySymbol" : "music.note",
       "elapsed" : "20시간 14분",
       "timestamp" : "2026-08-17T13:03:33Z",
       "videoLength" : "0"
     },
     {
       "category" : "BGM 삽입",
-      "categorySymbol" : "music.note",
       "elapsed" : "2시간 25분",
       "timestamp" : "2026-08-17T15:28:34Z",
       "videoLength" : "6"
     },
     {
       "category" : "BGM 삽입",
-      "categorySymbol" : "music.note",
       "elapsed" : "44분",
       "timestamp" : "2026-08-17T16:13:32Z",
       "videoLength" : "8"
     },
     {
       "category" : "BGM 삽입",
-      "categorySymbol" : "music.note",
       "elapsed" : "33분",
       "timestamp" : "2026-08-17T16:47:21Z",
       "videoLength" : "8"
     },
     {
       "category" : "BGM 삽입",
-      "categorySymbol" : "music.note",
       "elapsed" : "1시간 29분",
       "timestamp" : "2026-08-17T18:16:30Z",
       "videoLength" : "15"
     }
   ],
   "entryCount" : 10,
-  "lastUpdate" : "2026-08-17T18:16:38Z",
+  "lastUpdate" : "2026-08-17T19:05:53Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
