@@ -176,14 +176,7 @@
     font-weight: 700;
     color: var(--text-secondary);
     letter-spacing: 0.02em;
-  }
-  .log-header-col span {
-    display: block;
-    font-size: 10.5px;
-    font-weight: 500;
-    color: var(--text-tertiary);
-    letter-spacing: 0;
-    margin-top: 2px;
+    white-space: nowrap;
   }
   .log-header-mid {
     display: flex;
@@ -225,7 +218,7 @@
   .log-length,
   .log-header-length {
     font-variant-numeric: tabular-nums;
-    width: 56px;
+    width: 82px;
     text-align: right;
     flex-shrink: 0;
   }
@@ -278,8 +271,8 @@
       <div class="log-header">
         <div class="log-header-col">카테고리</div>
         <div class="log-header-mid">
-          <div class="log-header-col log-header-length">영상 길이<span>편집 시작 지점</span></div>
-          <div class="log-header-col log-header-time">시각<span>작업 시작 시간</span></div>
+          <div class="log-header-col log-header-length">편집 시작 지점</div>
+          <div class="log-header-col log-header-time">작업 시작 시간</div>
         </div>
       </div>
       <div id="logBody"></div>
