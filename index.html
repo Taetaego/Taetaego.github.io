@@ -58,6 +58,15 @@
     letter-spacing: 0.02em;
     margin-bottom: 14px;
   }
+  .card-title:has(+ .card-subtitle) {
+    margin-bottom: 4px;
+  }
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
   .topRow {
     display: flex;
     align-items: flex-start;
@@ -212,6 +221,7 @@
     </div>
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
+      <div class="card-subtitle">왼쪽부터 <b>작업한 카테고리</b> · <b>그 시점 타임라인 길이</b>(작업을 멈췄을 때 편집 프로그램 기준 영상 길이) · <b>실제 작업 시각</b> 순서예요</div>
       <div id="logBody"></div>
     </div>
   </div>
