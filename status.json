@@ -7,7 +7,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "정편집",
+      "name" : "세부 컷 편",
       "symbolName" : "scissors"
     },
     {
@@ -128,7 +128,7 @@
     }
   ],
   "entryCount" : 10,
-  "lastUpdate" : "2026-08-17T19:05:53Z",
+  "lastUpdate" : "2026-08-17T19:05:58Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
