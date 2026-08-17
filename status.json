@@ -57,6 +57,7 @@
     }
   ],
   "createdAt" : "2026-08-16T13:19:50Z",
+  "currentStage" : "BGM 삽입",
   "detailCutLength" : "1:05",
   "detailCutRatio" : 8.333333333333332,
   "entries" : [
@@ -117,13 +118,15 @@
       "videoLength" : "8"
     },
     {
+      "category" : "BGM 삽입",
+      "categorySymbol" : "music.note",
       "elapsed" : "33분",
       "timestamp" : "2026-08-17T16:47:21Z",
       "videoLength" : "8"
     }
   ],
   "entryCount" : 9,
-  "lastUpdate" : "2026-08-17T16:47:27Z",
+  "lastUpdate" : "2026-08-17T16:47:32Z",
   "originalLength" : "13:00",
   "projectTopic" : "쿠스코 마지막",
   "status" : "in_progress"
