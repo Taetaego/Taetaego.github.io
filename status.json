@@ -2,47 +2,58 @@
   "allCategories": [
     {
       "group": "컷 편집",
-      "name": "가편집"
+      "name": "가편집",
+      "symbolName": "scissors"
     },
     {
       "group": "컷 편집",
-      "name": "정편집"
+      "name": "정편집",
+      "symbolName": "scissors"
     },
     {
       "group": "후반 작업",
-      "name": "자막 입력"
+      "name": "자막 입력",
+      "symbolName": "captions.bubble"
     },
     {
       "group": "후반 작업",
-      "name": "B롤 삽입"
+      "name": "추가 영상 삽입",
+      "symbolName": "photo.on.rectangle"
     },
     {
       "group": "후반 작업",
-      "name": "맞춤법 검사"
+      "name": "맞춤법 검사",
+      "symbolName": "text.badge.checkmark"
     },
     {
       "group": "후반 작업",
-      "name": "자막 색상 변경"
+      "name": "자막 색상 변경",
+      "symbolName": "paintpalette"
     },
     {
       "group": "후반 작업",
-      "name": "하이라이트 추출"
+      "name": "하이라이트 추출",
+      "symbolName": "star.bubble"
     },
     {
       "group": "후반 작업",
-      "name": "지도 위치 추가"
+      "name": "지도 위치 추가",
+      "symbolName": "map"
     },
     {
       "group": "후반 작업",
-      "name": "BGM 삽입"
+      "name": "BGM 삽입",
+      "symbolName": "music.note"
     },
     {
       "group": "후반 작업",
-      "name": "최종 검수"
+      "name": "최종 검수",
+      "symbolName": "checkmark.seal"
     },
     {
       "group": "후반 작업",
-      "name": "썸네일/제목 기획"
+      "name": "썸네일/제목 기획",
+      "symbolName": "text.below.photo"
     }
   ],
   "createdAt": "2026-08-16T13:19:50Z",
@@ -52,31 +63,37 @@
   "entries": [
     {
       "category": "자막 입력",
-      "timestamp": "2026-08-16T15:32:51Z",
+      "categorySymbol": "captions.bubble",
+      "timestamp": "2026-08-16T13:32:51Z",
       "videoLength": "23"
     },
     {
       "category": "자막 입력",
-      "timestamp": "2026-08-16T17:29:53Z",
+      "categorySymbol": "captions.bubble",
+      "timestamp": "2026-08-16T15:29:53Z",
       "videoLength": "32"
     },
     {
       "category": "자막 입력",
-      "timestamp": "2026-08-16T17:37:06Z",
+      "categorySymbol": "captions.bubble",
+      "timestamp": "2026-08-16T15:37:06Z",
       "videoLength": "32"
     },
     {
       "category": "자막 입력",
-      "timestamp": "2026-08-16T17:46:31Z",
+      "categorySymbol": "captions.bubble",
+      "timestamp": "2026-08-16T15:46:31Z",
       "videoLength": "33"
     },
     {
-      "category": "B롤 삽입",
-      "timestamp": "2026-08-16T18:49:04Z",
+      "category": "추가 영상 삽입",
+      "categorySymbol": "photo.on.rectangle",
+      "timestamp": "2026-08-16T16:49:04Z",
       "videoLength": "39"
     },
     {
       "category": "BGM 삽입",
+      "categorySymbol": "music.note",
       "timestamp": "2026-08-17T13:03:33Z",
       "videoLength": "0"
     }
@@ -84,7 +101,7 @@
   "entryCount": 6,
   "finalLength": null,
   "finalRatioVsOriginal": null,
-  "lastUpdate": "2026-08-17T22:40:00Z",
+  "lastUpdate": "2026-08-18T00:00:00Z",
   "originalLength": "13:00",
   "projectTopic": "쿠스코 마지막",
   "status": "in_progress"

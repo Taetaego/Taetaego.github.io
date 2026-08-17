@@ -193,19 +193,30 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     padding: 10px 0;
     font-size: 13px;
   }
   .log-row + .log-row { border-top: 1px solid var(--border); }
   .log-category {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
     font-weight: 600;
     color: var(--text);
+  }
+  .log-category .icon { font-size: 12px; flex-shrink: 0; }
+  .log-category .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .log-category.none { color: var(--text-tertiary); font-weight: 500; }
   .log-mid {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: baseline;
     color: var(--text-secondary);
     flex-shrink: 0;
@@ -213,8 +224,9 @@
   .log-length,
   .log-header-length {
     font-variant-numeric: tabular-nums;
-    width: 52px;
+    width: 56px;
     text-align: right;
+    flex-shrink: 0;
   }
   .log-time,
   .log-header-time {
@@ -222,17 +234,8 @@
     font-size: 12px;
     white-space: nowrap;
     flex-shrink: 0;
-    width: 76px;
+    width: 148px;
     text-align: right;
-  }
-  .log-day + .log-day { margin-top: 16px; }
-  .log-day-header {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
   }
 </style>
 </head>
@@ -249,10 +252,10 @@
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
       <div class="log-header">
-        <div class="log-header-col">카테고리<span>무슨 작업을 했는지</span></div>
+        <div class="log-header-col">카테고리</div>
         <div class="log-header-mid">
-          <div class="log-header-col log-header-length">영상 길이<span>그때 영상 길이</span></div>
-          <div class="log-header-col log-header-time">시각<span>실제 작업 시각</span></div>
+          <div class="log-header-col log-header-length">영상 길이<span>편집 시작 지점</span></div>
+          <div class="log-header-col log-header-time">시각<span>작업 시작 시간</span></div>
         </div>
       </div>
       <div id="logBody"></div>
@@ -295,16 +298,31 @@ function relativeTime(iso) {
 
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
-function formatDayHeader(iso) {
-  const d = new Date(iso);
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
-}
-
-function formatTimeOnly(iso) {
+function formatDateTime(iso) {
   const d = new Date(iso);
   const hh = String(d.getHours()).padStart(2, '0');
   const mi = String(d.getMinutes()).padStart(2, '0');
-  return `${hh}:${mi}`;
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]}) ${hh}:${mi}`;
+}
+
+// 앱의 SF Symbol 이름 → 웹에서 바로 그릴 수 있는 이모지. 앱에 새 카테고리가
+// 추가돼서 목록에 없는 심볼이 오면 generic 아이콘으로 대체한다.
+const SYMBOL_EMOJI = {
+  'scissors': '✂️',
+  'captions.bubble': '💬',
+  'photo.on.rectangle': '🎞️',
+  'text.badge.checkmark': '✅',
+  'paintpalette': '🎨',
+  'star.bubble': '⭐',
+  'map': '🗺️',
+  'music.note': '🎵',
+  'checkmark.seal': '🔎',
+  'text.below.photo': '🖼️',
+  'flag': '🚩',
+};
+
+function categoryIcon(symbolName) {
+  return SYMBOL_EMOJI[symbolName] || '🔧';
 }
 
 function statRow(label, value, sub) {
@@ -392,19 +410,18 @@ function renderLog(data) {
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
 
-  // 날짜(일 단위)로 묶는다.
+  // 날짜(일 단위)로 묶어서 정렬한다 — 날짜는 오래된 날부터(작업 진행 순서대로
+  // 읽히도록), 같은 날 안에서는 실제 시간이 아니라 파이프라인 단계 순서로.
+  // 화면에는 그룹 헤더 없이 각 행에 날짜+시각을 그대로 붙여서 한 줄로 보여준다.
   const byDay = new Map();
   for (const e of entries) {
     const key = new Date(e.timestamp).toDateString();
     if (!byDay.has(key)) byDay.set(key, []);
     byDay.get(key).push(e);
   }
-
-  // 날짜는 오래된 날부터(작업 진행 순서대로 읽히도록), 같은 날 안에서는
-  // 실제 시간이 아니라 파이프라인 단계 순서로 정렬한다.
   const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
 
-  let html = '';
+  const orderedEntries = [];
   for (const dayKey of sortedDayKeys) {
     const dayEntries = byDay.get(dayKey).slice();
     dayEntries.sort((a, b) => {
@@ -412,30 +429,25 @@ function renderLog(data) {
       const bi = b.category != null ? (catOrder[b.category] ?? noCategoryOrder) : noCategoryOrder;
       return ai - bi;
     });
-
-    const rows = dayEntries.map(e => {
-      const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
-      const catClass = e.category ? '' : 'none';
-      return `
-        <div class="log-row">
-          <div class="log-category ${catClass}">${catLabel}</div>
-          <div class="log-mid">
-            <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
-            <div class="log-time">${formatTimeOnly(e.timestamp)}</div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    html += `
-      <div class="log-day">
-        <div class="log-day-header">${formatDayHeader(dayEntries[0].timestamp)}</div>
-        ${rows}
-      </div>
-    `;
+    orderedEntries.push(...dayEntries);
   }
 
-  document.getElementById('logBody').innerHTML = html;
+  const rows = orderedEntries.map(e => {
+    const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
+    const catClass = e.category ? '' : 'none';
+    const icon = categoryIcon(e.categorySymbol);
+    return `
+      <div class="log-row">
+        <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
+        <div class="log-mid">
+          <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
+          <div class="log-time">${formatDateTime(e.timestamp)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('logBody').innerHTML = rows;
   document.getElementById('logCard').style.display = '';
 }
 
