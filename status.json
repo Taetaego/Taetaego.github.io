@@ -37,7 +37,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "지도 & 위치 추가",
+      "name" : "지도\/위치 추가",
       "symbolName" : "map"
     },
     {
@@ -164,7 +164,7 @@
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-08-17T22:16:39Z",
+  "lastUpdate" : "2026-08-17T22:25:31Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
