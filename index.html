@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Taetaego 편집실</title>
+<title>태태고 편집실</title>
 <style>
   :root {
     --bg-app: #eaf4ec;
@@ -235,7 +235,7 @@
 <body>
   <div class="page">
     <div class="brandRow">
-      <div class="brand"><span class="mark">🎬</span>Taetaego 편집실</div>
+      <div class="brand"><span class="mark">🎬</span>태태고 편집실</div>
       <div class="headerRight">
         <div class="liveDot" id="liveDot" style="display:none"><span class="pulse"></span>실시간 업데이트</div>
         <div class="themeToggle" id="themeToggle">
@@ -361,7 +361,7 @@ function renderSummary(cardEl, data) {
   const finalRatioParts = [];
   if (data.finalRatioVsOriginal != null) finalRatioParts.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
   if (data.finalRatioVsDetailCut != null) finalRatioParts.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalRatioParts.length ? finalRatioParts.join(' / ') : null);
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalRatioParts.length ? finalRatioParts.join('<br>') : null);
   stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
 
   cardEl.innerHTML = `
