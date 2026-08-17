@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="light dark">
 <title>Taetaego 편집실</title>
 <style>
   :root {
@@ -20,6 +20,23 @@
     --accent-soft: rgba(47,138,82,0.12);
     --progress: #3f6ea8;
     --progress-soft: rgba(63,110,168,0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-app: #17181b;
+      --bg-surface: #1f2023;
+      --bg-surface-raised: #2a2b2f;
+      --border: rgba(255,255,255,0.09);
+      --border-strong: rgba(255,255,255,0.16);
+      --text: #ffffff;
+      --text-secondary: #b7b9c1;
+      --text-tertiary: #8b8d95;
+      --accent: #4cb377;
+      --accent-strong: #6fcf97;
+      --accent-soft: rgba(76,179,119,0.18);
+      --progress: #6ea3e0;
+      --progress-soft: rgba(110,163,224,0.18);
+    }
   }
   * { box-sizing: border-box; }
   html {
