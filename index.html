@@ -7,21 +7,21 @@
 <title>Taetaego 편집실</title>
 <style>
   :root {
-    --bg-app: #f2f6f2;
+    --bg-app: #eaf4ec;
     --bg-surface: #ffffff;
-    --bg-surface-raised: #edf3ee;
-    --border: rgba(18,40,26,0.09);
-    --border-strong: rgba(18,40,26,0.16);
-    --text: #102016;
-    --text-secondary: #49594e;
-    --text-tertiary: #6f8277;
-    --accent: #1f7a4d;
-    --accent-strong: #145c39;
-    --accent-soft: rgba(31,122,77,0.12);
-    --accent-line: rgba(31,122,77,0.30);
-    --progress: #a3760f;
-    --progress-soft: rgba(163,118,15,0.14);
-    --shadow-card: 0 1px 2px rgba(16,32,22,0.04), 0 8px 24px -12px rgba(16,32,22,0.10);
+    --bg-surface-raised: #e2f1e5;
+    --border: rgba(14,54,32,0.11);
+    --border-strong: rgba(14,54,32,0.18);
+    --text: #0e2116;
+    --text-secondary: #40584a;
+    --text-tertiary: #66806f;
+    --accent: #15864f;
+    --accent-strong: #0d5c37;
+    --accent-soft: rgba(21,134,79,0.14);
+    --accent-line: rgba(21,134,79,0.32);
+    --progress: #a3690c;
+    --progress-soft: rgba(163,105,12,0.15);
+    --shadow-card: 0 1px 2px rgba(14,54,32,0.05), 0 12px 28px -14px rgba(14,54,32,0.16);
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -43,46 +43,47 @@
     }
   }
   html[data-theme="light"] {
-    --bg-app: #f2f6f2;
+    --bg-app: #eaf4ec;
     --bg-surface: #ffffff;
-    --bg-surface-raised: #edf3ee;
-    --border: rgba(18,40,26,0.09);
-    --border-strong: rgba(18,40,26,0.16);
-    --text: #102016;
-    --text-secondary: #49594e;
-    --text-tertiary: #6f8277;
-    --accent: #1f7a4d;
-    --accent-strong: #145c39;
-    --accent-soft: rgba(31,122,77,0.12);
-    --accent-line: rgba(31,122,77,0.30);
-    --progress: #a3760f;
-    --progress-soft: rgba(163,118,15,0.14);
-    --shadow-card: 0 1px 2px rgba(16,32,22,0.04), 0 8px 24px -12px rgba(16,32,22,0.10);
+    --bg-surface-raised: #e2f1e5;
+    --border: rgba(14,54,32,0.11);
+    --border-strong: rgba(14,54,32,0.18);
+    --text: #0e2116;
+    --text-secondary: #40584a;
+    --text-tertiary: #66806f;
+    --accent: #15864f;
+    --accent-strong: #0d5c37;
+    --accent-soft: rgba(21,134,79,0.14);
+    --accent-line: rgba(21,134,79,0.32);
+    --progress: #a3690c;
+    --progress-soft: rgba(163,105,12,0.15);
+    --shadow-card: 0 1px 2px rgba(14,54,32,0.05), 0 12px 28px -14px rgba(14,54,32,0.16);
   }
   html[data-theme="dark"] {
-      --bg-app: #0d1611;
-      --bg-surface: #131e17;
-      --bg-surface-raised: #1b2820;
-      --border: rgba(255,255,255,0.08);
-      --border-strong: rgba(255,255,255,0.15);
-      --text: #edf4ef;
-      --text-secondary: #a9bcae;
-      --text-tertiary: #7c9084;
-      --accent: #4fbf82;
-      --accent-strong: #85e0ac;
-      --accent-soft: rgba(79,191,130,0.16);
-      --accent-line: rgba(79,191,130,0.35);
-      --progress: #e0ac47;
-      --progress-soft: rgba(224,172,71,0.16);
-      --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
-    }
+    --bg-app: #0d1611;
+    --bg-surface: #131e17;
+    --bg-surface-raised: #1b2820;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.15);
+    --text: #edf4ef;
+    --text-secondary: #a9bcae;
+    --text-tertiary: #7c9084;
+    --accent: #4fbf82;
+    --accent-strong: #85e0ac;
+    --accent-soft: rgba(79,191,130,0.16);
+    --accent-line: rgba(79,191,130,0.35);
+    --progress: #e0ac47;
+    --progress-soft: rgba(224,172,71,0.16);
+    --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
+  }
   * { box-sizing: border-box; }
   html { background: var(--bg-app); }
   body {
     margin: 0;
     min-height: 100vh;
     background: var(--bg-app);
-    background-image: radial-gradient(circle at 12% 0%, var(--accent-soft), transparent 42%);
+    background-image: radial-gradient(circle at 10% -6%, var(--accent-soft), transparent 45%),
+      radial-gradient(circle at 100% 0%, var(--progress-soft), transparent 38%);
     background-repeat: no-repeat;
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
@@ -96,15 +97,16 @@
   .brandRow { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 2px; }
   .brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.02em; }
   .brand .mark {
-    width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
-    background: var(--accent); color: #fff; font-size: 12px;
+    width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #fff; font-size: 12px;
+    box-shadow: 0 3px 8px -2px var(--accent-line);
   }
   .headerRight { display: flex; align-items: center; gap: 10px; }
   .infoWrap { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
   .infoBtn {
-    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    border: 1px solid var(--border); background: var(--bg-surface-raised); color: var(--text-tertiary);
-    font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
+    width: 12px; height: 12px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    border: none; background: none; color: var(--text-tertiary);
+    font-size: 8px; font-weight: 700; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
   }
   .infoBtn:hover { color: var(--accent-strong); }
   .infoPopover {
@@ -114,8 +116,6 @@
     white-space: normal; text-transform: none; font-weight: 400;
   }
   .infoPopover.open { display: block; }
-  .infoPopover .row + .row { margin-top: 10px; }
-  .infoPopover strong { color: var(--text); display: block; margin-bottom: 2px; }
   .themeToggle {
     display: flex; align-items: center; gap: 4px; background: var(--bg-surface-raised); border: 1px solid var(--border);
     border-radius: 99px; padding: 3px; cursor: pointer;
@@ -143,7 +143,7 @@
   .topRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
   .topic { font-size: 23px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
   .badge { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 99px; white-space: nowrap; }
-  .badge.in_progress { background: var(--progress-soft); color: var(--progress); }
+  .badge.in_progress { background: var(--progress-soft); color: var(--progress); animation: labelFade 1.8s ease-in-out infinite; }
   .badge.completed { background: var(--accent-soft); color: var(--accent-strong); }
   .stage { font-size: 13.5px; color: var(--accent-strong); font-weight: 600; margin-top: 3px; }
 
@@ -174,14 +174,27 @@
   .pipeline-item:first-child::before { top: 50%; }
   .pipeline-item:last-child::before { bottom: 50%; }
   .pipeline-dot {
-    z-index: 1; flex-shrink: 0; width: 21px; height: 21px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 1; flex-shrink: 0; width: 21px; height: 21px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     background: var(--bg-surface-raised); border: 2px solid var(--border-strong); font-size: 10px; color: transparent;
   }
   .pipeline-item.done .pipeline-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
   .pipeline-item.current { color: var(--text); }
   .pipeline-item.current .pipeline-dot { background: var(--bg-surface); border-color: var(--progress); box-shadow: 0 0 0 4px var(--progress-soft); }
+  .pipeline-item.current .pipeline-dot::after {
+    content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--progress);
+    animation: ringPing 1.8s cubic-bezier(0,0,0.2,1) infinite;
+  }
+  @keyframes ringPing {
+    0% { transform: scale(0.75); opacity: 0.9; }
+    75%, 100% { transform: scale(1.9); opacity: 0; }
+  }
   .pipeline-item.current .name::after {
     content: "진행 중"; margin-left: 8px; font-size: 10.5px; font-weight: 700; color: var(--progress); background: var(--progress-soft); padding: 2px 8px; border-radius: 99px;
+    animation: labelFade 1.8s ease-in-out infinite;
+  }
+  @keyframes labelFade {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
   }
 
   /* work log */
@@ -217,8 +230,6 @@
     .topic { font-size: 20px; }
     .stats { grid-template-columns: 1fr 1fr; }
   }
-
-  .infoBtn { width: 12px; height: 12px; font-size: 8px; border: none; background: none; }
 </style>
 </head>
 <body>
