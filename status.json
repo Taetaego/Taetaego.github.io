@@ -1,13 +1,91 @@
 {
+  "allCategories": [
+    {
+      "group": "컷 편집",
+      "name": "가편집"
+    },
+    {
+      "group": "컷 편집",
+      "name": "정편집"
+    },
+    {
+      "group": "후반 작업",
+      "name": "자막 입력"
+    },
+    {
+      "group": "후반 작업",
+      "name": "B롤 삽입"
+    },
+    {
+      "group": "후반 작업",
+      "name": "맞춤법 검사"
+    },
+    {
+      "group": "후반 작업",
+      "name": "자막 색상 변경"
+    },
+    {
+      "group": "후반 작업",
+      "name": "하이라이트 추출"
+    },
+    {
+      "group": "후반 작업",
+      "name": "지도 위치 추가"
+    },
+    {
+      "group": "후반 작업",
+      "name": "BGM 삽입"
+    },
+    {
+      "group": "후반 작업",
+      "name": "최종 검수"
+    },
+    {
+      "group": "후반 작업",
+      "name": "썸네일/제목 기획"
+    }
+  ],
   "createdAt": "2026-08-16T13:19:50Z",
-  "currentStage": "BGM \uc0bd\uc785",
+  "currentStage": "BGM 삽입",
   "detailCutLength": "1:05",
   "detailCutRatio": 8.33,
+  "entries": [
+    {
+      "category": "자막 입력",
+      "timestamp": "2026-08-16T15:32:51Z",
+      "videoLength": "23"
+    },
+    {
+      "category": "자막 입력",
+      "timestamp": "2026-08-16T17:29:53Z",
+      "videoLength": "32"
+    },
+    {
+      "category": "자막 입력",
+      "timestamp": "2026-08-16T17:37:06Z",
+      "videoLength": "32"
+    },
+    {
+      "category": "자막 입력",
+      "timestamp": "2026-08-16T17:46:31Z",
+      "videoLength": "33"
+    },
+    {
+      "category": "B롤 삽입",
+      "timestamp": "2026-08-16T18:49:04Z",
+      "videoLength": "39"
+    },
+    {
+      "category": "BGM 삽입",
+      "timestamp": "2026-08-17T13:03:33Z",
+      "videoLength": "0"
+    }
+  ],
   "entryCount": 6,
   "finalLength": null,
   "finalRatioVsOriginal": null,
-  "lastUpdate": "2026-08-17T13:30:00Z",
+  "lastUpdate": "2026-08-17T22:40:00Z",
   "originalLength": "13:00",
-  "projectTopic": "\ucfe0\uc2a4\ucf54 \ub9c8\uc9c0\ub9c9",
+  "projectTopic": "쿠스코 마지막",
   "status": "in_progress"
 }

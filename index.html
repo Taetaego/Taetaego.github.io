@@ -28,26 +28,35 @@
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 40px 20px;
   }
   .page {
     width: 100%;
-    max-width: 480px;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
   .eyebrow {
     font-size: 13px;
     font-weight: 600;
     color: var(--text-secondary);
     letter-spacing: 0.02em;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
   }
   .card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: 18px;
-    padding: 24px;
+    padding: 22px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    margin-bottom: 14px;
   }
   .topRow {
     display: flex;
@@ -103,38 +112,112 @@
     color: var(--text-secondary);
     margin-top: 1px;
   }
-  .footer {
-    margin-top: 18px;
-    font-size: 12px;
-    color: var(--text-tertiary);
-    text-align: center;
-  }
   .empty {
     text-align: center;
     color: var(--text-secondary);
     font-size: 14px;
     padding: 20px 0;
   }
+
+  /* pipeline checklist */
+  .pipeline-group + .pipeline-group { margin-top: 16px; }
+  .pipeline-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .pipeline-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pipeline-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 6px 11px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--bg-surface-raised);
+    color: var(--text-tertiary);
+  }
+  .pipeline-item.done {
+    background: var(--accent-soft);
+    border-color: rgba(111,174,124,0.35);
+    color: var(--accent-strong);
+  }
+  .pipeline-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+  .pipeline-item.done .dot { opacity: 1; }
+
+  /* work log timeline */
+  .log-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 13px;
+  }
+  .log-row + .log-row { border-top: 1px solid var(--border); }
+  .log-category {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .log-category.none { color: var(--text-tertiary); font-weight: 500; }
+  .log-mid {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .log-length { font-variant-numeric: tabular-nums; }
+  .log-time {
+    color: var(--text-tertiary);
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
   <div class="page">
     <div class="eyebrow">🎬 지금 편집 중인 영상</div>
-    <div class="card" id="card">
+    <div class="card" id="summaryCard">
       <div class="empty">불러오는 중…</div>
     </div>
-    <div class="footer">Editing Record 앱으로 자동 기록됨</div>
+    <div class="card" id="pipelineCard" style="display:none">
+      <div class="card-title">전체 진행 단계</div>
+      <div id="pipelineBody"></div>
+    </div>
+    <div class="card" id="logCard" style="display:none">
+      <div class="card-title">작업 기록</div>
+      <div id="logBody"></div>
+    </div>
   </div>
 
 <script>
 async function main() {
-  const cardEl = document.getElementById('card');
+  const summaryCard = document.getElementById('summaryCard');
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
     const data = await res.json();
-    render(cardEl, data);
+    renderSummary(summaryCard, data);
+    renderPipeline(data);
+    renderLog(data);
   } catch (e) {
-    cardEl.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
+    summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   }
 }
 
@@ -155,12 +238,23 @@ function relativeTime(iso) {
   return diffDay + '일 전';
 }
 
+function formatDateTime(iso) {
+  const d = new Date(iso);
+  const weekdays = ['일','월','화','수','목','금','토'];
+  const mm = d.getMonth() + 1;
+  const dd = d.getDate();
+  const wd = weekdays[d.getDay()];
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `${mm}월 ${dd}일 (${wd}) ${hh}:${mi}`;
+}
+
 function statRow(label, value, sub) {
   if (value === null || value === undefined) return '';
   return `<div><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ''}</div>`;
 }
 
-function render(cardEl, data) {
+function renderSummary(cardEl, data) {
   const statusLabel = data.status === 'completed' ? '완료' : '진행중';
   const statusClass = data.status === 'completed' ? 'completed' : 'in_progress';
 
@@ -191,6 +285,56 @@ function render(cardEl, data) {
     <div class="divider"></div>
     <div class="stat-sub">마지막 업데이트 · ${data.lastUpdate ? relativeTime(data.lastUpdate) : '알 수 없음'}</div>
   `;
+}
+
+function renderPipeline(data) {
+  const cats = data.allCategories || [];
+  if (cats.length === 0) return;
+
+  const done = new Set((data.entries || []).map(e => e.category).filter(Boolean));
+  const groups = {};
+  for (const c of cats) {
+    (groups[c.group] = groups[c.group] || []).push(c);
+  }
+
+  let html = '';
+  for (const groupName of Object.keys(groups)) {
+    const items = groups[groupName].map(c => {
+      const isDone = done.has(c.name);
+      return `<div class="pipeline-item ${isDone ? 'done' : ''}"><span class="dot"></span>${escapeHtml(c.name)}</div>`;
+    }).join('');
+    html += `
+      <div class="pipeline-group">
+        <div class="pipeline-group-title">${escapeHtml(groupName)}</div>
+        <div class="pipeline-list">${items}</div>
+      </div>
+    `;
+  }
+
+  document.getElementById('pipelineBody').innerHTML = html;
+  document.getElementById('pipelineCard').style.display = '';
+}
+
+function renderLog(data) {
+  const entries = data.entries || [];
+  if (entries.length === 0) return;
+
+  const rows = entries.slice().reverse().map(e => {
+    const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
+    const catClass = e.category ? '' : 'none';
+    return `
+      <div class="log-row">
+        <div class="log-category ${catClass}">${catLabel}</div>
+        <div class="log-mid">
+          <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
+          <div class="log-time">${formatDateTime(e.timestamp)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('logBody').innerHTML = rows;
+  document.getElementById('logCard').style.display = '';
 }
 
 function escapeHtml(str) {
