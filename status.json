@@ -57,7 +57,7 @@
     }
   ],
   "createdAt" : "2026-08-16T13:19:50Z",
-  "currentStage" : "베경음 & 마무리 점검",
+  "currentStage" : "최종 점검",
   "detailCutLength" : "1:06",
   "detailCutRatio" : 7.8106508875739635,
   "entries" : [
@@ -137,10 +137,17 @@
       "elapsed" : "1시간 23분",
       "timestamp" : "2026-08-17T19:40:14Z",
       "videoLength" : "31"
+    },
+    {
+      "category" : "최종 점검",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "23분",
+      "timestamp" : "2026-08-17T20:03:36Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 11,
-  "lastUpdate" : "2026-08-17T19:40:23Z",
+  "entryCount" : 12,
+  "lastUpdate" : "2026-08-17T20:03:40Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
