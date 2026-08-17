@@ -6,19 +6,19 @@
 <title>Taetaego 편집실</title>
 <style>
   :root {
-    --bg-app: #131316;
-    --bg-surface: #1e1f24;
-    --bg-surface-raised: #25262c;
-    --border: rgba(255,255,255,0.07);
-    --border-strong: rgba(255,255,255,0.12);
-    --text: #f4f4f5;
-    --text-secondary: #9b9ca4;
-    --text-tertiary: #68696f;
-    --accent: #6fae7c;
-    --accent-strong: #8fc79e;
-    --accent-soft: rgba(111,174,124,0.14);
-    --progress: #89a0c4;
-    --progress-soft: rgba(137,160,196,0.16);
+    --bg-app: #f4f5f6;
+    --bg-surface: #ffffff;
+    --bg-surface-raised: #f0f1f3;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1a1b1e;
+    --text-secondary: #62646c;
+    --text-tertiary: #8b8d95;
+    --accent: #2f8a52;
+    --accent-strong: #256b40;
+    --accent-soft: rgba(47,138,82,0.12);
+    --progress: #3f6ea8;
+    --progress-soft: rgba(63,110,168,0.12);
   }
   * { box-sizing: border-box; }
   body {
@@ -29,14 +29,15 @@
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 32px 16px;
+    -webkit-font-smoothing: antialiased;
   }
   .page {
     width: 100%;
-    max-width: 560px;
+    max-width: 480px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
   .eyebrow {
     font-size: 13px;
@@ -236,6 +237,29 @@
     flex-shrink: 0;
     width: 148px;
     text-align: right;
+  }
+
+  /* 대부분 모바일에서 볼 걸 기준으로, 좁은 화면에서는 카테고리를 한 줄로 두고
+     영상 길이/시각은 그 아래 한 줄로 내려서 잘리지 않게 한다. */
+  @media (max-width: 420px) {
+    body { padding: 20px 12px; }
+    .card { padding: 16px; }
+    .topic { font-size: 20px; }
+    .log-header,
+    .log-row {
+      flex-wrap: wrap;
+    }
+    .log-category { flex-basis: 100%; }
+    .log-header-mid,
+    .log-mid {
+      width: 100%;
+      justify-content: space-between;
+      padding-left: 20px;
+    }
+    .log-length, .log-header-length,
+    .log-time, .log-header-time {
+      width: auto;
+    }
   }
 </style>
 </head>
