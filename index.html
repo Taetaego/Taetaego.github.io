@@ -7,293 +7,214 @@
 <title>Taetaego 편집실</title>
 <style>
   :root {
-    --bg-app: #f4f5f6;
+    --bg-app: #f2f6f2;
     --bg-surface: #ffffff;
-    --bg-surface-raised: #f0f1f3;
-    --border: rgba(0,0,0,0.08);
-    --border-strong: rgba(0,0,0,0.14);
-    --text: #000000;
-    --text-secondary: #45474e;
-    --text-tertiary: #63656d;
-    --accent: #2f8a52;
-    --accent-strong: #256b40;
-    --accent-soft: rgba(47,138,82,0.12);
-    --progress: #3f6ea8;
-    --progress-soft: rgba(63,110,168,0.12);
+    --bg-surface-raised: #edf3ee;
+    --border: rgba(18,40,26,0.09);
+    --border-strong: rgba(18,40,26,0.16);
+    --text: #102016;
+    --text-secondary: #49594e;
+    --text-tertiary: #6f8277;
+    --accent: #1f7a4d;
+    --accent-strong: #145c39;
+    --accent-soft: rgba(31,122,77,0.12);
+    --accent-line: rgba(31,122,77,0.30);
+    --progress: #a3760f;
+    --progress-soft: rgba(163,118,15,0.14);
+    --shadow-card: 0 1px 2px rgba(16,32,22,0.04), 0 8px 24px -12px rgba(16,32,22,0.10);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg-app: #17181b;
-      --bg-surface: #1f2023;
-      --bg-surface-raised: #2a2b2f;
-      --border: rgba(255,255,255,0.09);
-      --border-strong: rgba(255,255,255,0.16);
-      --text: #ffffff;
-      --text-secondary: #b7b9c1;
-      --text-tertiary: #8b8d95;
-      --accent: #4cb377;
-      --accent-strong: #6fcf97;
-      --accent-soft: rgba(76,179,119,0.18);
-      --progress: #6ea3e0;
-      --progress-soft: rgba(110,163,224,0.18);
+      --bg-app: #0d1611;
+      --bg-surface: #131e17;
+      --bg-surface-raised: #1b2820;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #edf4ef;
+      --text-secondary: #a9bcae;
+      --text-tertiary: #7c9084;
+      --accent: #4fbf82;
+      --accent-strong: #85e0ac;
+      --accent-soft: rgba(79,191,130,0.16);
+      --accent-line: rgba(79,191,130,0.35);
+      --progress: #e0ac47;
+      --progress-soft: rgba(224,172,71,0.16);
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
     }
   }
-  * { box-sizing: border-box; }
-  html {
-    background: var(--bg-app);
+  html[data-theme="light"] {
+    --bg-app: #f2f6f2;
+    --bg-surface: #ffffff;
+    --bg-surface-raised: #edf3ee;
+    --border: rgba(18,40,26,0.09);
+    --border-strong: rgba(18,40,26,0.16);
+    --text: #102016;
+    --text-secondary: #49594e;
+    --text-tertiary: #6f8277;
+    --accent: #1f7a4d;
+    --accent-strong: #145c39;
+    --accent-soft: rgba(31,122,77,0.12);
+    --accent-line: rgba(31,122,77,0.30);
+    --progress: #a3760f;
+    --progress-soft: rgba(163,118,15,0.14);
+    --shadow-card: 0 1px 2px rgba(16,32,22,0.04), 0 8px 24px -12px rgba(16,32,22,0.10);
   }
+  html[data-theme="dark"] {
+      --bg-app: #0d1611;
+      --bg-surface: #131e17;
+      --bg-surface-raised: #1b2820;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #edf4ef;
+      --text-secondary: #a9bcae;
+      --text-tertiary: #7c9084;
+      --accent: #4fbf82;
+      --accent-strong: #85e0ac;
+      --accent-soft: rgba(79,191,130,0.16);
+      --accent-line: rgba(79,191,130,0.35);
+      --progress: #e0ac47;
+      --progress-soft: rgba(224,172,71,0.16);
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
+    }
+  * { box-sizing: border-box; }
+  html { background: var(--bg-app); }
   body {
     margin: 0;
     min-height: 100vh;
     background: var(--bg-app);
+    background-image: radial-gradient(circle at 12% 0%, var(--accent-soft), transparent 42%);
+    background-repeat: no-repeat;
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
     display: flex;
     justify-content: center;
-    padding: 32px 16px;
+    padding: 36px 16px 60px;
     -webkit-font-smoothing: antialiased;
   }
-  .page {
-    width: 100%;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+  .page { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 16px; }
+
+  .brandRow { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 2px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.02em; }
+  .brand .mark {
+    width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff; font-size: 12px;
   }
-  .eyebrow {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    letter-spacing: 0.02em;
-    margin-bottom: 2px;
+  .headerRight { display: flex; align-items: center; gap: 10px; }
+  .themeToggle {
+    display: flex; align-items: center; gap: 4px; background: var(--bg-surface-raised); border: 1px solid var(--border);
+    border-radius: 99px; padding: 3px; cursor: pointer;
   }
-  .card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 22px;
+  .themeToggle button {
+    border: none; background: none; cursor: pointer; font-size: 13px; padding: 5px 9px; border-radius: 99px;
+    color: var(--text-tertiary); line-height: 1;
   }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    letter-spacing: 0.02em;
-    margin-bottom: 14px;
+  .themeToggle button.active { background: var(--bg-surface); color: var(--accent-strong); box-shadow: var(--shadow-card); }
+  .liveDot { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--accent-strong); }
+  .liveDot .pulse {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent-soft);
+    animation: pulse 2s infinite;
   }
-  .topRow {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 4px;
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(79,191,130,0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(79,191,130,0); }
+    100% { box-shadow: 0 0 0 0 rgba(79,191,130,0); }
   }
-  .topic {
-    font-size: 22px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-  }
-  .badge {
-    flex-shrink: 0;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 99px;
-    white-space: nowrap;
-  }
+
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-card); }
+  .card-title { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 16px; }
+
+  .topRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+  .topic { font-size: 23px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
+  .badge { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 99px; white-space: nowrap; }
   .badge.in_progress { background: var(--progress-soft); color: var(--progress); }
   .badge.completed { background: var(--accent-soft); color: var(--accent-strong); }
-  .stage {
-    font-size: 13.5px;
-    color: var(--accent-strong);
-    margin-top: 2px;
-  }
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 18px 0;
-  }
-  .stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 16px;
-  }
-  .stat-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .stat-value {
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .stat-sub {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 1px;
-  }
-  .empty {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 14px;
-    padding: 20px 0;
-  }
+  .stage { font-size: 13.5px; color: var(--accent-strong); font-weight: 600; margin-top: 3px; }
 
-  /* pipeline checklist */
-  .pipeline-group + .pipeline-group { margin-top: 16px; }
-  .pipeline-group-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .pipeline-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
+  .progressWrap { margin-top: 16px; }
+  .progressMeta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-tertiary); font-weight: 600; margin-bottom: 6px; }
+  .progressTrack { height: 6px; border-radius: 99px; background: var(--bg-surface-raised); overflow: hidden; }
+  .progressFill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-strong)); transition: width 0.4s ease; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 10px; }
+  .stat-tile { background: var(--bg-surface-raised); border-radius: 14px; padding: 12px 14px; }
+  .stat-label { font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 5px; }
+  .stat-value { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  .stat-sub { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+  .lastUpdate { text-align: center; color: var(--text-tertiary); font-size: 12px; margin-top: 18px; }
+  .empty { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 20px 0; }
+
+  /* pipeline timeline */
+  .pipeline-group + .pipeline-group { margin-top: 20px; }
+  .pipeline-group-title { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 12px; }
+  .pipeline-list { display: flex; flex-direction: column; }
   .pipeline-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12.5px;
-    font-weight: 600;
-    padding: 6px 11px;
-    border-radius: 99px;
-    border: 1px solid var(--border);
-    background: var(--bg-surface-raised);
-    color: var(--text-tertiary);
+    position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 0 8px 4px; font-size: 13.5px; font-weight: 600; color: var(--text-tertiary);
   }
-  .pipeline-item.done {
-    background: var(--accent-soft);
-    border-color: rgba(111,174,124,0.35);
-    color: var(--accent-strong);
+  .pipeline-item::before {
+    content: ""; position: absolute; left: 10px; top: -2px; bottom: -2px; width: 2px; background: var(--border);
   }
-  .pipeline-item .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.5;
+  .pipeline-item:first-child::before { top: 50%; }
+  .pipeline-item:last-child::before { bottom: 50%; }
+  .pipeline-dot {
+    z-index: 1; flex-shrink: 0; width: 21px; height: 21px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-surface-raised); border: 2px solid var(--border-strong); font-size: 10px; color: transparent;
   }
-  .pipeline-item.done .dot { opacity: 1; }
+  .pipeline-item.done .pipeline-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pipeline-item.current { color: var(--text); }
+  .pipeline-item.current .pipeline-dot { background: var(--bg-surface); border-color: var(--progress); box-shadow: 0 0 0 4px var(--progress-soft); }
+  .pipeline-item.current .name::after {
+    content: "진행 중"; margin-left: 8px; font-size: 10.5px; font-weight: 700; color: var(--progress); background: var(--progress-soft); padding: 2px 8px; border-radius: 99px;
+  }
 
-  /* work log — 앱의 작업 기록 표와 같은 4열 구조:
-     카테고리 · 편집 시작 지점 · 작업 시작 시간 · 이전 기록으로부터 */
-  .log-table {
-    display: grid;
-    grid-template-columns: minmax(90px, 1.4fr) auto auto auto;
-    column-gap: 12px;
+  /* work log */
+  .log-head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-strong); }
+  .log-head-row .cat-h { font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
+  .log-head-row .meta-h { display: flex; gap: 8px; font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
+  .log-head-row .meta-h span { width: 76px; text-align: center; white-space: nowrap; }
+  .log-head-row .meta-h span:last-child { width: 96px; }
+  .log-day-head { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.02em; padding: 16px 0 8px; }
+  .log-day-head:first-child { padding-top: 16px; }
+  .log-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border);
   }
-  .log-cell {
-    padding: 10px 0;
-    font-size: 12.5px;
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    border-top: 1px solid var(--border);
+  .log-row:first-of-type { border-top: none; }
+  .log-cat { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .log-cat .icon {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-strong);
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
   }
-  .log-cell.head {
-    border-top: none;
-    border-bottom: 1px solid var(--border-strong);
-    padding: 0 0 9px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    white-space: nowrap;
-  }
-  .log-cell.num {
-    justify-content: center;
-    font-variant-numeric: tabular-nums;
-    color: var(--text);
-    white-space: nowrap;
-  }
-  .log-cell.time {
-    justify-content: center;
-    color: var(--text-secondary);
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  .log-cell.elapsed {
-    justify-content: center;
-    color: var(--text-secondary);
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  .log-cell.head.num,
-  .log-cell.head.time,
-  .log-cell.head.elapsed { justify-content: center; color: var(--text-secondary); }
-  .log-day-head {
-    grid-column: 1 / -1;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    letter-spacing: 0.02em;
-    padding: 16px 0 6px;
-  }
-  .log-category {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-    color: var(--text);
-    flex: 1;
-    min-width: 0;
-  }
-  .log-category .icon { font-size: 12px; flex-shrink: 0; }
-  .log-category .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .log-category.none { color: var(--text-tertiary); font-weight: 500; }
+  .log-cat.none .icon { background: var(--bg-surface-raised); color: var(--text-tertiary); }
+  .log-cat .name { font-size: 13px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .log-cat.none .name { color: var(--text-tertiary); font-weight: 500; }
+  .log-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 11.5px; color: var(--text-secondary); }
+  .log-meta .num { width: 76px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
+  .log-meta .time { width: 76px; text-align: center; color: var(--text-tertiary); }
+  .log-meta .elapsed { width: 96px; box-sizing: border-box; text-align: center; background: var(--bg-surface-raised); color: var(--text-tertiary); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
 
-  /* 모바일: 4열을 그대로 욱여넣으면 좁아서, 한 기록을 2줄 카드로 편다.
-     1줄: 카테고리 + 편집 시작 지점 / 2줄: 작업 시작 시간 + 이전 기록으로부터 */
   @media (max-width: 430px) {
-    body { padding: 20px 12px; }
-    .card { padding: 16px; }
+    body { padding: 24px 12px 48px; }
+    .card { padding: 18px; border-radius: 18px; }
     .topic { font-size: 20px; }
-    .log-table { display: block; }
-    .log-cell.head { display: none; }
-    .log-entry {
-      border-top: 1px solid var(--border);
-      padding: 10px 0;
-    }
-    .log-entry:first-of-type { border-top: none; }
-    .log-entry .row1 {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-    .log-entry .row2 {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-top: 3px;
-      padding-left: 20px;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-    .log-entry .num { font-variant-numeric: tabular-nums; font-weight: 600; flex-shrink: 0; }
-    .m-label { color: var(--text-tertiary); font-size: 11px; margin-right: 4px; }
-  }
-  .log-entry { display: none; }
-  @media (max-width: 430px) {
-    .log-entry { display: block; }
-    .log-cell { display: none; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .log-row { flex-wrap: wrap; }
+    .log-meta { width: 100%; justify-content: space-between; padding-left: 34px; }
   }
 </style>
 </head>
 <body>
   <div class="page">
-    <div class="eyebrow">🎬 지금 편집 중인 영상</div>
+    <div class="brandRow">
+      <div class="brand"><span class="mark">🎬</span>Taetaego 편집실</div>
+      <div class="headerRight">
+        <div class="liveDot" id="liveDot" style="display:none"><span class="pulse"></span>실시간 업데이트</div>
+        <div class="themeToggle" id="themeToggle">
+          <button type="button" data-mode="light">☀️</button>
+          <button type="button" data-mode="dark">🌙</button>
+        </div>
+      </div>
+    </div>
     <div class="card" id="summaryCard">
       <div class="empty">불러오는 중…</div>
     </div>
@@ -303,7 +224,7 @@
     </div>
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
-      <div class="log-table" id="logBody"></div>
+      <div id="logBody"></div>
     </div>
   </div>
 
@@ -316,6 +237,7 @@ async function main() {
     renderSummary(summaryCard, data);
     renderPipeline(data);
     renderLog(data);
+    if (data.status !== 'completed') document.getElementById('liveDot').style.display = '';
   } catch (e) {
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   }
@@ -324,7 +246,6 @@ async function main() {
 function normalizeLength(s) {
   if (s === null || s === undefined || s === '') return null;
   const str = String(s);
-  // 앱의 TimeUtils.displayLength와 동일한 포맷: "13시간", "1시간 5분", "34분".
   let totalMinutes;
   if (str.includes(':')) {
     const [h, m] = str.split(':').map(Number);
@@ -367,8 +288,6 @@ function formatDayLabel(iso) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
 }
 
-// 앱의 SF Symbol 이름 → 웹에서 바로 그릴 수 있는 이모지. 앱에 새 카테고리가
-// 추가돼서 목록에 없는 심볼이 오면 generic 아이콘으로 대체한다.
 const SYMBOL_EMOJI = {
   'scissors': '✂️',
   'captions.bubble': '💬',
@@ -387,28 +306,31 @@ function categoryIcon(symbolName) {
   return SYMBOL_EMOJI[symbolName] || '🔧';
 }
 
-function statRow(label, value, sub) {
+function statTile(label, value, sub) {
   if (value === null || value === undefined) return '';
-  return `<div><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ''}</div>`;
+  return `<div class="stat-tile"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ''}</div>`;
+}
+
+function pipelineProgress(data) {
+  const cats = data.allCategories || [];
+  if (cats.length === 0) return null;
+  const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
+  let lastTouchedIndex = -1;
+  cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
+  const done = Math.max(lastTouchedIndex + 1, 0);
+  return { done, total: cats.length, pct: Math.round((done / cats.length) * 100) };
 }
 
 function renderSummary(cardEl, data) {
   const statusLabel = data.status === 'completed' ? '완료' : '진행중';
   const statusClass = data.status === 'completed' ? 'completed' : 'in_progress';
+  const progress = pipelineProgress(data);
 
   let stats = '';
-  stats += statRow('원본 영상 길이', normalizeLength(data.originalLength));
-  stats += statRow(
-    '정편집 후 영상 길이',
-    normalizeLength(data.detailCutLength) ?? '—',
-    data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null
-  );
-  stats += statRow(
-    '완성 영상 길이',
-    normalizeLength(data.finalLength) ?? '—',
-    data.finalRatioVsOriginal != null ? `원본 대비 ${Math.round(data.finalRatioVsOriginal)}%` : null
-  );
-  stats += statRow('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
+  stats += statTile('원본 영상 길이', normalizeLength(data.originalLength));
+  stats += statTile('정편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null);
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', data.finalRatioVsOriginal != null ? `원본 대비 ${Math.round(data.finalRatioVsOriginal)}%` : null);
+  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
 
   cardEl.innerHTML = `
     <div class="topRow">
@@ -418,10 +340,14 @@ function renderSummary(cardEl, data) {
       </div>
       <div class="badge ${statusClass}">${statusLabel}</div>
     </div>
+    ${progress ? `
+      <div class="progressWrap">
+        <div class="progressMeta"><span>편집 파이프라인</span><span>${progress.done}/${progress.total} 단계</span></div>
+        <div class="progressTrack"><div class="progressFill" style="width:${progress.pct}%"></div></div>
+      </div>` : ''}
     <div class="divider"></div>
     <div class="stats">${stats}</div>
-    <div class="divider"></div>
-    <div class="stat-sub">마지막 업데이트 · ${data.lastUpdate ? relativeTime(data.lastUpdate) : '알 수 없음'}</div>
+    <div class="lastUpdate">마지막 업데이트 · ${data.lastUpdate ? relativeTime(data.lastUpdate) : '알 수 없음'}</div>
   `;
 }
 
@@ -429,26 +355,20 @@ function renderPipeline(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return;
 
-  // allCategories is already in pipeline order (컷 편집 그룹 다음 후반 작업 그룹).
-  // 가장 나중 단계까지 작업했으면 그 앞 단계들은 실제로 개별 기록이 없어도
-  // 당연히 다 지나온 걸로 보고 체크 표시한다 — "BGM 삽입"까지 왔으면
-  // "맞춤법 검사"도 이미 끝난 게 당연하니까.
   const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
   let lastTouchedIndex = -1;
-  cats.forEach((c, i) => {
-    if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i);
-  });
+  cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
 
   const groups = {};
-  cats.forEach((c, i) => {
-    (groups[c.group] = groups[c.group] || []).push({ name: c.name, index: i });
-  });
+  cats.forEach((c, i) => { (groups[c.group] = groups[c.group] || []).push({ name: c.name, index: i }); });
 
   let html = '';
   for (const groupName of Object.keys(groups)) {
     const items = groups[groupName].map(c => {
-      const isDone = c.index <= lastTouchedIndex;
-      return `<div class="pipeline-item ${isDone ? 'done' : ''}"><span class="dot"></span>${escapeHtml(c.name)}</div>`;
+      const isDone = c.index < lastTouchedIndex || (c.index === lastTouchedIndex && data.status === 'completed');
+      const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
+      const cls = isDone ? 'done' : (isCurrent ? 'current' : '');
+      return `<div class="pipeline-item ${cls}"><span class="pipeline-dot">${isDone ? '✓' : ''}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeline-group">
@@ -466,15 +386,10 @@ function renderLog(data) {
   const entries = data.entries || [];
   if (entries.length === 0) return;
 
-  // 카테고리 정렬 기준 = 파이프라인 순서(allCategories). 카테고리가 없는
-  // "체크포인트" 기록은 맨 뒤로 보낸다.
   const catOrder = {};
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
 
-  // 날짜(일 단위)로 묶는다 — 날짜는 오래된 날부터(작업 진행 순서대로 읽히도록),
-  // 같은 날 안에서는 실제 시간이 아니라 파이프라인 단계 순서로 정렬한다.
-  // 날짜는 그룹 헤더로 한 번만 보여주고, 각 행에는 시각만 표시한다.
   const byDay = new Map();
   for (const e of entries) {
     const key = new Date(e.timestamp).toDateString();
@@ -483,14 +398,12 @@ function renderLog(data) {
   }
   const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
 
-  // 데스크톱: 앱과 동일한 4열 그리드. 모바일: 같은 데이터를 2줄 카드로.
   let html = `
-    <div class="log-cell head">카테고리</div>
-    <div class="log-cell head num">편집 시작 지점</div>
-    <div class="log-cell head time">작업 시작 시간</div>
-    <div class="log-cell head elapsed">이전 기록으로부터</div>
+    <div class="log-head-row">
+      <span class="cat-h">카테고리</span>
+      <span class="meta-h"><span>편집 시작 시점</span><span>편집 시작 시간</span><span>이전 기록으로부터</span></span>
+    </div>
   `;
-
   for (const dayKey of sortedDayKeys) {
     const dayEntries = byDay.get(dayKey).slice();
     dayEntries.sort((a, b) => {
@@ -510,18 +423,12 @@ function renderLog(data) {
       const elapsed = escapeHtml(e.elapsed ?? '');
 
       html += `
-        <div class="log-cell"><div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div></div>
-        <div class="log-cell num">${length}</div>
-        <div class="log-cell time">${time}</div>
-        <div class="log-cell elapsed">${elapsed}</div>
-        <div class="log-entry">
-          <div class="row1">
-            <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
-            <div class="num"><span class="m-label">편집 시작 지점</span>${length}</div>
-          </div>
-          <div class="row2">
-            <div>${time}</div>
-            <div>${elapsed ? `<span class="m-label">이전 기록으로부터</span>${elapsed}` : ''}</div>
+        <div class="log-row">
+          <div class="log-cat ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
+          <div class="log-meta">
+            <span class="num">${length || '—'}</span>
+            <span class="time">${time}</span>
+            <span class="elapsed">${elapsed || '—'}</span>
           </div>
         </div>
       `;
@@ -537,6 +444,21 @@ function escapeHtml(str) {
   div.textContent = str;
   return div.innerHTML;
 }
+
+function applyTheme(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  document.querySelectorAll('#themeToggle button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  localStorage.setItem('theme', mode);
+}
+(function initTheme() {
+  const saved = localStorage.getItem('theme');
+  const mode = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(mode);
+  document.getElementById('themeToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (btn) applyTheme(btn.dataset.mode);
+  });
+})();
 
 main();
 </script>
