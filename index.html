@@ -161,45 +161,58 @@
   }
   .pipeline-item.done .dot { opacity: 1; }
 
-  /* work log timeline */
-  .log-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 12px;
-    padding-bottom: 10px;
-    margin-bottom: 2px;
-    border-bottom: 1px solid var(--border-strong);
+  /* work log — 앱의 작업 기록 표와 같은 4열 구조:
+     카테고리 · 편집 시작 지점 · 작업 시작 시간 · 이전 기록으로부터 */
+  .log-table {
+    display: grid;
+    grid-template-columns: minmax(90px, 1.4fr) auto auto auto;
+    column-gap: 12px;
   }
-  .log-header-col {
+  .log-cell {
+    padding: 10px 0;
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    border-top: 1px solid var(--border);
+  }
+  .log-cell.head {
+    border-top: none;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 0 0 9px;
     font-size: 11px;
     font-weight: 700;
     color: var(--text-secondary);
-    letter-spacing: 0.02em;
     white-space: nowrap;
   }
-  .log-header-mid {
-    display: flex;
-    gap: 12px;
-    flex-shrink: 0;
+  .log-cell.num {
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    white-space: nowrap;
   }
-  .log-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 0;
-    font-size: 13px;
+  .log-cell.time {
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
   }
-  .log-row + .log-row { border-top: 1px solid var(--border); }
+  .log-cell.elapsed {
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .log-cell.head.num,
+  .log-cell.head.time,
+  .log-cell.head.elapsed { justify-content: center; color: var(--text-secondary); }
   .log-category {
-    flex: 1;
-    min-width: 0;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 6px;
     font-weight: 600;
     color: var(--text);
+    min-width: 0;
   }
   .log-category .icon { font-size: 12px; flex-shrink: 0; }
   .log-category .name {
@@ -208,51 +221,43 @@
     white-space: nowrap;
   }
   .log-category.none { color: var(--text-tertiary); font-weight: 500; }
-  .log-mid {
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-    color: var(--text-secondary);
-    flex-shrink: 0;
-  }
-  .log-length,
-  .log-header-length {
-    font-variant-numeric: tabular-nums;
-    width: 82px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .log-time,
-  .log-header-time {
-    color: var(--text-tertiary);
-    font-size: 12px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    width: 148px;
-    text-align: right;
-  }
 
-  /* 대부분 모바일에서 볼 걸 기준으로, 좁은 화면에서는 카테고리를 한 줄로 두고
-     영상 길이/시각은 그 아래 한 줄로 내려서 잘리지 않게 한다. */
-  @media (max-width: 420px) {
+  /* 모바일: 4열을 그대로 욱여넣으면 좁아서, 한 기록을 2줄 카드로 편다.
+     1줄: 카테고리 + 편집 시작 지점 / 2줄: 작업 시작 시간 + 이전 기록으로부터 */
+  @media (max-width: 430px) {
     body { padding: 20px 12px; }
     .card { padding: 16px; }
     .topic { font-size: 20px; }
-    .log-header,
-    .log-row {
-      flex-wrap: wrap;
+    .log-table { display: block; }
+    .log-cell.head { display: none; }
+    .log-entry {
+      border-top: 1px solid var(--border);
+      padding: 10px 0;
     }
-    .log-category { flex-basis: 100%; }
-    .log-header-mid,
-    .log-mid {
-      width: 100%;
+    .log-entry:first-of-type { border-top: none; }
+    .log-entry .row1 {
+      display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .log-entry .row2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 3px;
       padding-left: 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
     }
-    .log-length, .log-header-length,
-    .log-time, .log-header-time {
-      width: auto;
-    }
+    .log-entry .num { font-variant-numeric: tabular-nums; font-weight: 600; flex-shrink: 0; }
+    .m-label { color: var(--text-tertiary); font-size: 11px; margin-right: 4px; }
+  }
+  .log-entry { display: none; }
+  @media (max-width: 430px) {
+    .log-entry { display: block; }
+    .log-cell { display: none; }
   }
 </style>
 </head>
@@ -268,14 +273,7 @@
     </div>
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
-      <div class="log-header">
-        <div class="log-header-col">카테고리</div>
-        <div class="log-header-mid">
-          <div class="log-header-col log-header-length">편집 시작 지점</div>
-          <div class="log-header-col log-header-time">작업 시작 시간</div>
-        </div>
-      </div>
-      <div id="logBody"></div>
+      <div class="log-table" id="logBody"></div>
     </div>
   </div>
 
@@ -449,22 +447,41 @@ function renderLog(data) {
     orderedEntries.push(...dayEntries);
   }
 
-  const rows = orderedEntries.map(e => {
+  // 데스크톱: 앱과 동일한 4열 그리드. 모바일: 같은 데이터를 2줄 카드로.
+  let html = `
+    <div class="log-cell head">카테고리</div>
+    <div class="log-cell head num">편집 시작 지점</div>
+    <div class="log-cell head time">작업 시작 시간</div>
+    <div class="log-cell head elapsed">이전 기록으로부터</div>
+  `;
+
+  for (const e of orderedEntries) {
     const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
     const catClass = e.category ? '' : 'none';
     const icon = categoryIcon(e.categorySymbol);
-    return `
-      <div class="log-row">
-        <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
-        <div class="log-mid">
-          <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
-          <div class="log-time">${formatDateTime(e.timestamp)}</div>
+    const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
+    const time = formatDateTime(e.timestamp);
+    const elapsed = escapeHtml(e.elapsed ?? '');
+
+    html += `
+      <div class="log-cell"><div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div></div>
+      <div class="log-cell num">${length}</div>
+      <div class="log-cell time">${time}</div>
+      <div class="log-cell elapsed">${elapsed}</div>
+      <div class="log-entry">
+        <div class="row1">
+          <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
+          <div class="num">${length}</div>
+        </div>
+        <div class="row2">
+          <div>${time}</div>
+          <div>${elapsed ? `<span class="m-label">이전 기록으로부터</span>${elapsed}` : ''}</div>
         </div>
       </div>
     `;
-  }).join('');
+  }
 
-  document.getElementById('logBody').innerHTML = rows;
+  document.getElementById('logBody').innerHTML = html;
   document.getElementById('logCard').style.display = '';
 }
 

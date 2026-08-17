@@ -64,36 +64,42 @@
     {
       "category": "자막 입력",
       "categorySymbol": "captions.bubble",
+      "elapsed": "13분",
       "timestamp": "2026-08-16T13:32:51Z",
       "videoLength": "23"
     },
     {
       "category": "자막 입력",
       "categorySymbol": "captions.bubble",
+      "elapsed": "1시간 57분",
       "timestamp": "2026-08-16T15:29:53Z",
       "videoLength": "32"
     },
     {
       "category": "자막 입력",
       "categorySymbol": "captions.bubble",
+      "elapsed": "7분",
       "timestamp": "2026-08-16T15:37:06Z",
       "videoLength": "32"
     },
     {
       "category": "자막 입력",
       "categorySymbol": "captions.bubble",
+      "elapsed": "9분",
       "timestamp": "2026-08-16T15:46:31Z",
       "videoLength": "33"
     },
     {
       "category": "추가 영상 삽입",
       "categorySymbol": "photo.on.rectangle",
+      "elapsed": "1시간 2분",
       "timestamp": "2026-08-16T16:49:04Z",
       "videoLength": "39"
     },
     {
       "category": "BGM 삽입",
       "categorySymbol": "music.note",
+      "elapsed": "20시간 14분",
       "timestamp": "2026-08-17T13:03:33Z",
       "videoLength": "0"
     }
