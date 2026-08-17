@@ -58,15 +58,6 @@
     letter-spacing: 0.02em;
     margin-bottom: 14px;
   }
-  .card-title:has(+ .card-subtitle) {
-    margin-bottom: 4px;
-  }
-  .card-subtitle {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    line-height: 1.5;
-    margin-bottom: 14px;
-  }
   .topRow {
     display: flex;
     align-items: flex-start;
@@ -170,6 +161,34 @@
   .pipeline-item.done .dot { opacity: 1; }
 
   /* work log timeline */
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    padding-bottom: 10px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .log-header-col {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+  }
+  .log-header-col span {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0;
+    margin-top: 2px;
+  }
+  .log-header-mid {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
   .log-row {
     display: flex;
     align-items: baseline;
@@ -191,12 +210,20 @@
     color: var(--text-secondary);
     flex-shrink: 0;
   }
-  .log-length { font-variant-numeric: tabular-nums; }
-  .log-time {
+  .log-length,
+  .log-header-length {
+    font-variant-numeric: tabular-nums;
+    width: 52px;
+    text-align: right;
+  }
+  .log-time,
+  .log-header-time {
     color: var(--text-tertiary);
     font-size: 12px;
     white-space: nowrap;
     flex-shrink: 0;
+    width: 76px;
+    text-align: right;
   }
   .log-day + .log-day { margin-top: 16px; }
   .log-day-header {
@@ -221,7 +248,13 @@
     </div>
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
-      <div class="card-subtitle">왼쪽부터 <b>작업한 카테고리</b> · <b>그 시점 타임라인 길이</b>(작업을 멈췄을 때 편집 프로그램 기준 영상 길이) · <b>실제 작업 시각</b> 순서예요</div>
+      <div class="log-header">
+        <div class="log-header-col">카테고리<span>무슨 작업을 했는지</span></div>
+        <div class="log-header-mid">
+          <div class="log-header-col log-header-length">영상 길이<span>그때 영상 길이</span></div>
+          <div class="log-header-col log-header-time">시각<span>실제 작업 시각</span></div>
+        </div>
+      </div>
       <div id="logBody"></div>
     </div>
   </div>
