@@ -1,121 +1,130 @@
 {
-  "allCategories": [
+  "allCategories" : [
     {
-      "group": "컷 편집",
-      "name": "가편집",
-      "symbolName": "scissors"
+      "group" : "컷 편집",
+      "name" : "가편집",
+      "symbolName" : "scissors"
     },
     {
-      "group": "컷 편집",
-      "name": "정편집",
-      "symbolName": "scissors"
+      "group" : "컷 편집",
+      "name" : "정편집",
+      "symbolName" : "scissors"
     },
     {
-      "group": "후반 작업",
-      "name": "자막 입력",
-      "symbolName": "captions.bubble"
+      "group" : "후반 작업",
+      "name" : "자막 입력",
+      "symbolName" : "captions.bubble"
     },
     {
-      "group": "후반 작업",
-      "name": "추가 영상 삽입",
-      "symbolName": "photo.on.rectangle"
+      "group" : "후반 작업",
+      "name" : "추가 영상 삽입",
+      "symbolName" : "photo.on.rectangle"
     },
     {
-      "group": "후반 작업",
-      "name": "맞춤법 검사",
-      "symbolName": "text.badge.checkmark"
+      "group" : "후반 작업",
+      "name" : "맞춤법 검사",
+      "symbolName" : "text.badge.checkmark"
     },
     {
-      "group": "후반 작업",
-      "name": "자막 색상 변경",
-      "symbolName": "paintpalette"
+      "group" : "후반 작업",
+      "name" : "자막 색상 변경",
+      "symbolName" : "paintpalette"
     },
     {
-      "group": "후반 작업",
-      "name": "하이라이트 추출",
-      "symbolName": "star.bubble"
+      "group" : "후반 작업",
+      "name" : "하이라이트 추출",
+      "symbolName" : "star.bubble"
     },
     {
-      "group": "후반 작업",
-      "name": "지도 위치 추가",
-      "symbolName": "map"
+      "group" : "후반 작업",
+      "name" : "지도 위치 추가",
+      "symbolName" : "map"
     },
     {
-      "group": "후반 작업",
-      "name": "BGM 삽입",
-      "symbolName": "music.note"
+      "group" : "후반 작업",
+      "name" : "BGM 삽입",
+      "symbolName" : "music.note"
     },
     {
-      "group": "후반 작업",
-      "name": "최종 검수",
-      "symbolName": "checkmark.seal"
+      "group" : "후반 작업",
+      "name" : "최종 검수",
+      "symbolName" : "checkmark.seal"
     },
     {
-      "group": "후반 작업",
-      "name": "썸네일/제목 기획",
-      "symbolName": "text.below.photo"
+      "group" : "후반 작업",
+      "name" : "썸네일\/제목 기획",
+      "symbolName" : "text.below.photo"
     }
   ],
-  "createdAt": "2026-08-16T13:19:50Z",
-  "currentStage": "BGM 삽입",
-  "detailCutLength": "1:05",
-  "detailCutRatio": 8.33,
-  "entries": [
+  "createdAt" : "2026-08-16T13:19:50Z",
+  "detailCutLength" : "1:05",
+  "detailCutRatio" : 8.333333333333332,
+  "entries" : [
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "13분",
-      "timestamp": "2026-08-16T13:32:51Z",
-      "videoLength": "23"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "13분",
+      "timestamp" : "2026-08-16T13:32:51Z",
+      "videoLength" : "23"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "1시간 57분",
-      "timestamp": "2026-08-16T15:29:53Z",
-      "videoLength": "32"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 57분",
+      "timestamp" : "2026-08-16T15:29:53Z",
+      "videoLength" : "32"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "7분",
-      "timestamp": "2026-08-16T15:37:06Z",
-      "videoLength": "32"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "7분",
+      "timestamp" : "2026-08-16T15:37:06Z",
+      "videoLength" : "32"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "9분",
-      "timestamp": "2026-08-16T15:46:31Z",
-      "videoLength": "33"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "9분",
+      "timestamp" : "2026-08-16T15:46:31Z",
+      "videoLength" : "33"
     },
     {
-      "category": "추가 영상 삽입",
-      "categorySymbol": "photo.on.rectangle",
-      "elapsed": "1시간 2분",
-      "timestamp": "2026-08-16T16:49:04Z",
-      "videoLength": "39"
+      "category" : "추가 영상 삽입",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "1시간 2분",
+      "timestamp" : "2026-08-16T16:49:04Z",
+      "videoLength" : "39"
     },
     {
-      "category": "BGM 삽입",
-      "categorySymbol": "music.note",
-      "elapsed": "20시간 14분",
-      "timestamp": "2026-08-17T13:03:33Z",
-      "videoLength": "0"
+      "category" : "BGM 삽입",
+      "categorySymbol" : "music.note",
+      "elapsed" : "20시간 14분",
+      "timestamp" : "2026-08-17T13:03:33Z",
+      "videoLength" : "0"
     },
     {
-      "category": "BGM 삽입",
-      "categorySymbol": "music.note",
-      "elapsed": "2시간 25분",
-      "timestamp": "2026-08-17T15:28:34Z",
-      "videoLength": "6"
+      "category" : "BGM 삽입",
+      "categorySymbol" : "music.note",
+      "elapsed" : "2시간 25분",
+      "timestamp" : "2026-08-17T15:28:34Z",
+      "videoLength" : "6"
+    },
+    {
+      "category" : "BGM 삽입",
+      "categorySymbol" : "music.note",
+      "elapsed" : "44분",
+      "timestamp" : "2026-08-17T16:13:32Z",
+      "videoLength" : "8"
+    },
+    {
+      "elapsed" : "33분",
+      "timestamp" : "2026-08-17T16:47:21Z",
+      "videoLength" : "8"
     }
   ],
-  "entryCount": 6,
-  "finalLength": null,
-  "finalRatioVsOriginal": null,
-  "lastUpdate": "2026-08-18T01:15:00Z",
-  "originalLength": "13:00",
-  "projectTopic": "쿠스코 마지막",
-  "status": "in_progress"
+  "entryCount" : 9,
+  "lastUpdate" : "2026-08-17T16:47:27Z",
+  "originalLength" : "13:00",
+  "projectTopic" : "쿠스코 마지막",
+  "status" : "in_progress"
 }
