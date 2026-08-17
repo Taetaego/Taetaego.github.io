@@ -59,7 +59,7 @@
   "createdAt" : "2026-08-16T13:19:50Z",
   "currentStage" : "BGM 삽입",
   "detailCutLength" : "1:05",
-  "detailCutRatio" : 8.333333333333332,
+  "detailCutRatio" : 464.28571428571433,
   "entries" : [
     {
       "category" : "자막 입력",
@@ -126,8 +126,8 @@
     }
   ],
   "entryCount" : 9,
-  "lastUpdate" : "2026-08-17T16:53:42Z",
-  "originalLength" : "13:00",
+  "lastUpdate" : "2026-08-17T16:54:02Z",
+  "originalLength" : "14",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
 }
