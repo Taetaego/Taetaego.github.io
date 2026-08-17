@@ -303,9 +303,21 @@ async function main() {
 function normalizeLength(s) {
   if (s === null || s === undefined || s === '') return null;
   const str = String(s);
-  // "1:05" 같은 시:분 표기는 이미 명확하니 그대로, "23" 같은 순수 숫자는
-  // 분 단위라는 걸 바로 알 수 있게 "분"을 붙인다.
-  return str.includes(':') ? str : `${str}분`;
+  // 앱의 TimeUtils.displayLength와 동일한 포맷: "13시간", "1시간 5분", "34분".
+  let totalMinutes;
+  if (str.includes(':')) {
+    const [h, m] = str.split(':').map(Number);
+    totalMinutes = h * 60 + m;
+  } else {
+    totalMinutes = Number(str);
+  }
+  if (!Number.isFinite(totalMinutes)) return str;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}시간`);
+  if (minutes > 0 || parts.length === 0) parts.push(`${minutes}분`);
+  return parts.join(' ');
 }
 
 function relativeTime(iso) {
@@ -364,14 +376,14 @@ function renderSummary(cardEl, data) {
   const statusClass = data.status === 'completed' ? 'completed' : 'in_progress';
 
   let stats = '';
-  stats += statRow('원본 길이', normalizeLength(data.originalLength));
+  stats += statRow('원본 영상 길이', normalizeLength(data.originalLength));
   stats += statRow(
-    '정편집 후',
+    '정편집 후 영상 길이',
     normalizeLength(data.detailCutLength) ?? '—',
     data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null
   );
   stats += statRow(
-    '완성 길이',
+    '완성 영상 길이',
     normalizeLength(data.finalLength) ?? '—',
     data.finalRatioVsOriginal != null ? `원본 대비 ${Math.round(data.finalRatioVsOriginal)}%` : null
   );
