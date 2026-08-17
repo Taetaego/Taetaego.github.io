@@ -102,12 +102,19 @@
       "elapsed": "20시간 14분",
       "timestamp": "2026-08-17T13:03:33Z",
       "videoLength": "0"
+    },
+    {
+      "category": "BGM 삽입",
+      "categorySymbol": "music.note",
+      "elapsed": "2시간 25분",
+      "timestamp": "2026-08-17T15:28:34Z",
+      "videoLength": "6"
     }
   ],
   "entryCount": 6,
   "finalLength": null,
   "finalRatioVsOriginal": null,
-  "lastUpdate": "2026-08-18T00:00:00Z",
+  "lastUpdate": "2026-08-18T01:15:00Z",
   "originalLength": "13:00",
   "projectTopic": "쿠스코 마지막",
   "status": "in_progress"

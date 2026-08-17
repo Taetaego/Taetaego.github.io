@@ -206,12 +206,21 @@
   .log-cell.head.num,
   .log-cell.head.time,
   .log-cell.head.elapsed { justify-content: center; color: var(--text-secondary); }
+  .log-day-head {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 0.02em;
+    padding: 16px 0 6px;
+  }
   .log-category {
     display: flex;
     align-items: center;
     gap: 6px;
     font-weight: 600;
     color: var(--text);
+    flex: 1;
     min-width: 0;
   }
   .log-category .icon { font-size: 12px; flex-shrink: 0; }
@@ -313,11 +322,16 @@ function relativeTime(iso) {
 
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
-function formatDateTime(iso) {
+function formatTimeOnly(iso) {
   const d = new Date(iso);
   const hh = String(d.getHours()).padStart(2, '0');
   const mi = String(d.getMinutes()).padStart(2, '0');
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]}) ${hh}:${mi}`;
+  return `${hh}:${mi}`;
+}
+
+function formatDayLabel(iso) {
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
 }
 
 // 앱의 SF Symbol 이름 → 웹에서 바로 그릴 수 있는 이모지. 앱에 새 카테고리가
@@ -425,9 +439,9 @@ function renderLog(data) {
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
 
-  // 날짜(일 단위)로 묶어서 정렬한다 — 날짜는 오래된 날부터(작업 진행 순서대로
-  // 읽히도록), 같은 날 안에서는 실제 시간이 아니라 파이프라인 단계 순서로.
-  // 화면에는 그룹 헤더 없이 각 행에 날짜+시각을 그대로 붙여서 한 줄로 보여준다.
+  // 날짜(일 단위)로 묶는다 — 날짜는 오래된 날부터(작업 진행 순서대로 읽히도록),
+  // 같은 날 안에서는 실제 시간이 아니라 파이프라인 단계 순서로 정렬한다.
+  // 날짜는 그룹 헤더로 한 번만 보여주고, 각 행에는 시각만 표시한다.
   const byDay = new Map();
   for (const e of entries) {
     const key = new Date(e.timestamp).toDateString();
@@ -435,17 +449,6 @@ function renderLog(data) {
     byDay.get(key).push(e);
   }
   const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
-
-  const orderedEntries = [];
-  for (const dayKey of sortedDayKeys) {
-    const dayEntries = byDay.get(dayKey).slice();
-    dayEntries.sort((a, b) => {
-      const ai = a.category != null ? (catOrder[a.category] ?? noCategoryOrder) : noCategoryOrder;
-      const bi = b.category != null ? (catOrder[b.category] ?? noCategoryOrder) : noCategoryOrder;
-      return ai - bi;
-    });
-    orderedEntries.push(...dayEntries);
-  }
 
   // 데스크톱: 앱과 동일한 4열 그리드. 모바일: 같은 데이터를 2줄 카드로.
   let html = `
@@ -455,30 +458,41 @@ function renderLog(data) {
     <div class="log-cell head elapsed">이전 기록으로부터</div>
   `;
 
-  for (const e of orderedEntries) {
-    const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
-    const catClass = e.category ? '' : 'none';
-    const icon = categoryIcon(e.categorySymbol);
-    const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
-    const time = formatDateTime(e.timestamp);
-    const elapsed = escapeHtml(e.elapsed ?? '');
+  for (const dayKey of sortedDayKeys) {
+    const dayEntries = byDay.get(dayKey).slice();
+    dayEntries.sort((a, b) => {
+      const ai = a.category != null ? (catOrder[a.category] ?? noCategoryOrder) : noCategoryOrder;
+      const bi = b.category != null ? (catOrder[b.category] ?? noCategoryOrder) : noCategoryOrder;
+      return ai - bi;
+    });
 
-    html += `
-      <div class="log-cell"><div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div></div>
-      <div class="log-cell num">${length}</div>
-      <div class="log-cell time">${time}</div>
-      <div class="log-cell elapsed">${elapsed}</div>
-      <div class="log-entry">
-        <div class="row1">
-          <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
-          <div class="num">${length}</div>
+    html += `<div class="log-day-head">${formatDayLabel(dayEntries[0].timestamp)}</div>`;
+
+    for (const e of dayEntries) {
+      const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
+      const catClass = e.category ? '' : 'none';
+      const icon = categoryIcon(e.categorySymbol);
+      const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
+      const time = formatTimeOnly(e.timestamp);
+      const elapsed = escapeHtml(e.elapsed ?? '');
+
+      html += `
+        <div class="log-cell"><div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div></div>
+        <div class="log-cell num">${length}</div>
+        <div class="log-cell time">${time}</div>
+        <div class="log-cell elapsed">${elapsed}</div>
+        <div class="log-entry">
+          <div class="row1">
+            <div class="log-category ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
+            <div class="num"><span class="m-label">편집 시작 지점</span>${length}</div>
+          </div>
+          <div class="row2">
+            <div>${time}</div>
+            <div>${elapsed ? `<span class="m-label">이전 기록으로부터</span>${elapsed}` : ''}</div>
+          </div>
         </div>
-        <div class="row2">
-          <div>${time}</div>
-          <div>${elapsed ? `<span class="m-label">이전 기록으로부터</span>${elapsed}` : ''}</div>
-        </div>
-      </div>
-    `;
+      `;
+    }
   }
 
   document.getElementById('logBody').innerHTML = html;
