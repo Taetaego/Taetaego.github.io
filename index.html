@@ -100,18 +100,18 @@
     background: var(--accent); color: #fff; font-size: 12px;
   }
   .headerRight { display: flex; align-items: center; gap: 10px; }
-  .infoWrap { position: relative; }
+  .infoWrap { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
   .infoBtn {
     width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
     border: 1px solid var(--border); background: var(--bg-surface-raised); color: var(--text-tertiary);
-    font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; line-height: 1;
+    font-size: 12px; font-weight: 700; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
   }
   .infoBtn:hover { color: var(--accent-strong); }
   .infoPopover {
-    display: none; position: absolute; top: 24px; left: 0; width: 240px; z-index: 20;
-    background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px;
-    box-shadow: var(--shadow-card); font-size: 12.5px; line-height: 1.55; color: var(--text-secondary);
-    white-space: normal; text-transform: none;
+    display: none; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 190px; z-index: 20;
+    background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 14px; padding: 12px;
+    box-shadow: var(--shadow-card); font-size: 12px; line-height: 1.5; color: var(--text-secondary);
+    white-space: normal; text-transform: none; font-weight: 400;
   }
   .infoPopover.open { display: block; }
   .infoPopover .row + .row { margin-top: 10px; }
@@ -188,7 +188,9 @@
   .log-head-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border-strong); }
   .log-head-row .cat-h { display: flex; align-items: center; gap: 3px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
   .log-head-row .meta-h { display: flex; gap: 6px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
-  .log-head-row .meta-h span { width: 60px; text-align: center; white-space: nowrap; }
+  .log-head-row .meta-h span { position: relative; display: inline-flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; }
+  .log-head-row .meta-h span:nth-child(1) { width: 68px; }
+  .log-head-row .meta-h span:nth-child(2) { width: 60px; }
   .log-head-row .meta-h span:last-child { width: 80px; }
   .log-day-head { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.02em; padding: 16px 0 8px; }
   .log-day-head:first-child { padding-top: 16px; }
@@ -216,7 +218,7 @@
     .stats { grid-template-columns: 1fr 1fr; }
   }
 
-  .infoBtn { width: 18px; height: 18px; font-size: 10px; }
+  .infoBtn { width: 12px; height: 12px; font-size: 8px; border: none; background: none; }
 </style>
 </head>
 <body>
@@ -416,14 +418,18 @@ function renderLog(data) {
 
   let html = `
     <div class="log-head-row">
-      <span class="cat-h infoWrap">카테고리
-        <button type="button" class="infoBtn" id="infoBtn" aria-label="작업 기록 표 설명">ⓘ</button>
-        <div class="infoPopover" id="infoPopover">
-          <div class="row"><strong>시작 시점</strong>이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</div>
-          <div class="row"><strong>시작 시간</strong>이 작업을 실제로 시작한 시각</div>
-        </div>
+      <span class="cat-h">카테고리</span>
+      <span class="meta-h">
+        <span class="infoWrap">시작 시점
+          <button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button>
+          <div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</div>
+        </span>
+        <span class="infoWrap">시작 시간
+          <button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button>
+          <div class="infoPopover">이 작업을 실제로 시작한 시각</div>
+        </span>
+        <span>이전 기록으로부터</span>
       </span>
-      <span class="meta-h"><span>시작 시점</span><span>시작 시간</span><span>이전 기록으로부터</span></span>
     </div>
   `;
   for (const dayKey of sortedDayKeys) {
@@ -484,15 +490,20 @@ function applyTheme(mode) {
 })();
 
 function initInfoPopover() {
-  const btn = document.getElementById('infoBtn');
-  const popover = document.getElementById('infoPopover');
-  if (!btn || !popover) return;
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    popover.classList.toggle('open');
+  document.querySelectorAll('.infoBtn').forEach((btn) => {
+    const popover = btn.nextElementSibling;
+    if (!popover) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = popover.classList.contains('open');
+      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
+      if (!wasOpen) popover.classList.add('open');
+    });
   });
   document.addEventListener('click', (e) => {
-    if (!popover.contains(e.target) && e.target !== btn) popover.classList.remove('open');
+    if (!e.target.closest('.infoWrap')) {
+      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
+    }
   });
 }
 
