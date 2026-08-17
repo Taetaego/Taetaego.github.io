@@ -346,7 +346,7 @@ function renderSummary(cardEl, data) {
 
   let stats = '';
   stats += statTile('원본 영상 길이', normalizeLength(data.originalLength));
-  stats += statTile('정편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null);
+  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null);
   stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', data.finalRatioVsOriginal != null ? `원본 대비 ${Math.round(data.finalRatioVsOriginal)}%` : null);
   stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
 
