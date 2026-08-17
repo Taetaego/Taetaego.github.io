@@ -2,12 +2,12 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "대략 컷편집",
+      "name" : "1차 컷편집",
       "symbolName" : "scissors"
     },
     {
       "group" : "컷 편집",
-      "name" : "세부 컷편집",
+      "name" : "2차 컷편집",
       "symbolName" : "scissors"
     },
     {
