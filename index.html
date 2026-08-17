@@ -189,6 +189,15 @@
     white-space: nowrap;
     flex-shrink: 0;
   }
+  .log-day + .log-day { margin-top: 16px; }
+  .log-day-header {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
 </style>
 </head>
 <body>
@@ -223,7 +232,10 @@ async function main() {
 
 function normalizeLength(s) {
   if (s === null || s === undefined || s === '') return null;
-  return String(s);
+  const str = String(s);
+  // "1:05" 같은 시:분 표기는 이미 명확하니 그대로, "23" 같은 순수 숫자는
+  // 분 단위라는 걸 바로 알 수 있게 "분"을 붙인다.
+  return str.includes(':') ? str : `${str}분`;
 }
 
 function relativeTime(iso) {
@@ -238,15 +250,18 @@ function relativeTime(iso) {
   return diffDay + '일 전';
 }
 
-function formatDateTime(iso) {
+const WEEKDAYS = ['일','월','화','수','목','금','토'];
+
+function formatDayHeader(iso) {
   const d = new Date(iso);
-  const weekdays = ['일','월','화','수','목','금','토'];
-  const mm = d.getMonth() + 1;
-  const dd = d.getDate();
-  const wd = weekdays[d.getDay()];
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
+}
+
+function formatTimeOnly(iso) {
+  const d = new Date(iso);
   const hh = String(d.getHours()).padStart(2, '0');
   const mi = String(d.getMinutes()).padStart(2, '0');
-  return `${mm}월 ${dd}일 (${wd}) ${hh}:${mi}`;
+  return `${hh}:${mi}`;
 }
 
 function statRow(label, value, sub) {
@@ -291,16 +306,25 @@ function renderPipeline(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return;
 
-  const done = new Set((data.entries || []).map(e => e.category).filter(Boolean));
+  // allCategories is already in pipeline order (컷 편집 그룹 다음 후반 작업 그룹).
+  // 가장 나중 단계까지 작업했으면 그 앞 단계들은 실제로 개별 기록이 없어도
+  // 당연히 다 지나온 걸로 보고 체크 표시한다 — "BGM 삽입"까지 왔으면
+  // "맞춤법 검사"도 이미 끝난 게 당연하니까.
+  const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
+  let lastTouchedIndex = -1;
+  cats.forEach((c, i) => {
+    if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i);
+  });
+
   const groups = {};
-  for (const c of cats) {
-    (groups[c.group] = groups[c.group] || []).push(c);
-  }
+  cats.forEach((c, i) => {
+    (groups[c.group] = groups[c.group] || []).push({ name: c.name, index: i });
+  });
 
   let html = '';
   for (const groupName of Object.keys(groups)) {
     const items = groups[groupName].map(c => {
-      const isDone = done.has(c.name);
+      const isDone = c.index <= lastTouchedIndex;
       return `<div class="pipeline-item ${isDone ? 'done' : ''}"><span class="dot"></span>${escapeHtml(c.name)}</div>`;
     }).join('');
     html += `
@@ -319,21 +343,56 @@ function renderLog(data) {
   const entries = data.entries || [];
   if (entries.length === 0) return;
 
-  const rows = entries.slice().reverse().map(e => {
-    const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
-    const catClass = e.category ? '' : 'none';
-    return `
-      <div class="log-row">
-        <div class="log-category ${catClass}">${catLabel}</div>
-        <div class="log-mid">
-          <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
-          <div class="log-time">${formatDateTime(e.timestamp)}</div>
+  // 카테고리 정렬 기준 = 파이프라인 순서(allCategories). 카테고리가 없는
+  // "체크포인트" 기록은 맨 뒤로 보낸다.
+  const catOrder = {};
+  (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
+  const noCategoryOrder = (data.allCategories || []).length;
+
+  // 날짜(일 단위)로 묶는다.
+  const byDay = new Map();
+  for (const e of entries) {
+    const key = new Date(e.timestamp).toDateString();
+    if (!byDay.has(key)) byDay.set(key, []);
+    byDay.get(key).push(e);
+  }
+
+  // 날짜는 오래된 날부터(작업 진행 순서대로 읽히도록), 같은 날 안에서는
+  // 실제 시간이 아니라 파이프라인 단계 순서로 정렬한다.
+  const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
+
+  let html = '';
+  for (const dayKey of sortedDayKeys) {
+    const dayEntries = byDay.get(dayKey).slice();
+    dayEntries.sort((a, b) => {
+      const ai = a.category != null ? (catOrder[a.category] ?? noCategoryOrder) : noCategoryOrder;
+      const bi = b.category != null ? (catOrder[b.category] ?? noCategoryOrder) : noCategoryOrder;
+      return ai - bi;
+    });
+
+    const rows = dayEntries.map(e => {
+      const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
+      const catClass = e.category ? '' : 'none';
+      return `
+        <div class="log-row">
+          <div class="log-category ${catClass}">${catLabel}</div>
+          <div class="log-mid">
+            <div class="log-length">${escapeHtml(normalizeLength(e.videoLength) ?? '')}</div>
+            <div class="log-time">${formatTimeOnly(e.timestamp)}</div>
+          </div>
         </div>
+      `;
+    }).join('');
+
+    html += `
+      <div class="log-day">
+        <div class="log-day-header">${formatDayHeader(dayEntries[0].timestamp)}</div>
+        ${rows}
       </div>
     `;
-  }).join('');
+  }
 
-  document.getElementById('logBody').innerHTML = rows;
+  document.getElementById('logBody').innerHTML = html;
   document.getElementById('logCard').style.display = '';
 }
 
