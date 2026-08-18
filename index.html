@@ -96,8 +96,8 @@
     padding: 36px 16px 60px;
     -webkit-font-smoothing: antialiased;
     position: relative;
-    overflow: hidden;
   }
+  .blobLayer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .blob { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(42px); }
   .blob-a { top: -80px; left: -60px; width: 280px; height: 280px; background: var(--accent-soft); animation: blobFloatA 14s ease-in-out infinite; }
   .blob-b { top: -40px; right: -80px; width: 260px; height: 260px; background: var(--progress-soft); animation: blobFloatB 16s ease-in-out infinite; }
@@ -275,8 +275,10 @@
 </style>
 </head>
 <body>
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
+  <div class="blobLayer">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+  </div>
   <div class="page">
     <div class="brandRow">
       <div class="brand"><span class="mark">🎬</span>태태고 편집실</div>
