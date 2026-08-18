@@ -251,6 +251,9 @@
       <div class="card-title">전체 진행 단계</div>
       <div id="pipelineBody"></div>
     </div>
+    <div class="card" id="statsCard" style="display:none">
+      <div class="stats" id="statsBody"></div>
+    </div>
     <div class="card" id="logCard" style="display:none">
       <div class="card-title">작업 기록</div>
       <div id="logBody"></div>
@@ -265,6 +268,7 @@ async function main() {
     const data = await res.json();
     renderSummary(summaryCard, data);
     renderPipeline(data);
+    renderStats(data);
     renderLog(data);
     if (data.status !== 'completed') document.getElementById('liveDot').style.display = '';
   } catch (e) {
@@ -355,15 +359,6 @@ function renderSummary(cardEl, data) {
   const statusClass = data.status === 'completed' ? 'completed' : 'in_progress';
   const progress = pipelineProgress(data);
 
-  let stats = '';
-  stats += statTile('원본 영상 길이', normalizeLength(data.originalLength));
-  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null);
-  const finalRatioParts = [];
-  if (data.finalRatioVsOriginal != null) finalRatioParts.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
-  if (data.finalRatioVsDetailCut != null) finalRatioParts.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalRatioParts.length ? finalRatioParts.join('<br>') : null);
-  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
-
   cardEl.innerHTML = `
     <div class="topRow">
       <div>
@@ -374,13 +369,25 @@ function renderSummary(cardEl, data) {
     </div>
     ${progress ? `
       <div class="progressWrap">
-        <div class="progressMeta"><span>편집 파이프라인</span><span>${progress.done}/${progress.total} 단계</span></div>
+        <div class="progressMeta"><span>편집 진행 상황</span><span>${progress.done}/${progress.total} 단계</span></div>
         <div class="progressTrack"><div class="progressFill" style="width:${progress.pct}%"></div></div>
       </div>` : ''}
-    <div class="divider"></div>
-    <div class="stats">${stats}</div>
     <div class="lastUpdate">마지막 업데이트 · ${data.lastUpdate ? relativeTime(data.lastUpdate) : '알 수 없음'}</div>
   `;
+}
+
+function renderStats(data) {
+  let stats = '';
+  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength));
+  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null);
+  const finalRatioParts = [];
+  if (data.finalRatioVsOriginal != null) finalRatioParts.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
+  if (data.finalRatioVsDetailCut != null) finalRatioParts.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalRatioParts.length ? finalRatioParts.join('<br>') : null);
+  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
+
+  document.getElementById('statsBody').innerHTML = stats;
+  document.getElementById('statsCard').style.display = '';
 }
 
 function renderPipeline(data) {
