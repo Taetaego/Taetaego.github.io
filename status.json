@@ -158,13 +158,20 @@
       "elapsed" : "29분",
       "timestamp" : "2026-08-17T22:16:37Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일\/제목 기획",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "11시간 53분",
+      "timestamp" : "2026-08-18T10:09:51Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 14,
+  "entryCount" : 15,
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-08-17T22:25:31Z",
+  "lastUpdate" : "2026-08-18T10:09:55Z",
   "originalLength" : "14:05",
   "projectTopic" : "쿠스코 인티라이미 축제 마지막",
   "status" : "in_progress"
