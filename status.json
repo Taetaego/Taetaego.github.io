@@ -57,7 +57,7 @@
     }
   ],
   "createdAt" : "2026-08-16T13:19:50Z",
-  "currentStage" : "썸네일\/제목 기획",
+  "currentStage" : "완료",
   "detailCutLength" : "1:06",
   "detailCutRatio" : 7.8106508875739635,
   "entries" : [
@@ -165,9 +165,16 @@
       "elapsed" : "11시간 53분",
       "timestamp" : "2026-08-18T10:09:51Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "1시간 28분",
+      "timestamp" : "2026-08-18T11:37:40Z",
+      "videoLength" : "38"
     }
   ],
-  "entryCount" : 15,
+  "entryCount" : 16,
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
