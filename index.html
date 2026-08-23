@@ -271,7 +271,7 @@ function renderSummary(cardEl, data) {
   const progress = pipelineProgress(data);
   const pct = progress ? progress.pct : 0;
   const statusLabel = isCompleted ? '완료' : '진행중';
-  const stageText = isCompleted ? (data.allCategories && data.allCategories.length ? data.allCategories[data.allCategories.length - 1].name : data.currentStage) : data.currentStage;
+  const stageText = isCompleted ? null : data.currentStage;
 
   cardEl.innerHTML = `
     <div class="donut" style="background: conic-gradient(var(--accent) 0 ${pct}%, var(--surface2) ${pct}% 100%)">
