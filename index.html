@@ -504,64 +504,6 @@ function applyTheme(mode) {
   });
 })();
 
-/* ===== 폭죽 소리 (브라우저 정책상 사용자가 한 번 상호작용한 뒤에만 재생됨) ===== */
-let actx = null;
-function unlockAudio() {
-  if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
-  try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; }
-}
-document.addEventListener('click', unlockAudio);
-document.addEventListener('touchstart', unlockAudio, { passive: true });
-
-function playBoom(big) {
-  if (!actx || actx.state !== 'running') return;
-  const now = actx.currentTime;
-  const dur = big ? 0.55 : 0.32;
-
-  const bufferSize = Math.floor(actx.sampleRate * dur);
-  const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
-  const noise = actx.createBufferSource();
-  noise.buffer = buffer;
-  const noiseFilter = actx.createBiquadFilter();
-  noiseFilter.type = 'bandpass';
-  noiseFilter.frequency.value = big ? 900 : 1500;
-  noiseFilter.Q.value = 0.6;
-  const noiseGain = actx.createGain();
-  noiseGain.gain.setValueAtTime(big ? 0.45 : 0.22, now);
-  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
-  noise.connect(noiseFilter).connect(noiseGain).connect(actx.destination);
-  noise.start(now);
-
-  const osc = actx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(big ? 130 : 170, now);
-  osc.frequency.exponentialRampToValueAtTime(40, now + dur * 0.8);
-  const oscGain = actx.createGain();
-  oscGain.gain.setValueAtTime(big ? 0.3 : 0.14, now);
-  oscGain.gain.exponentialRampToValueAtTime(0.001, now + dur * 0.7);
-  osc.connect(oscGain).connect(actx.destination);
-  osc.start(now);
-  osc.stop(now + dur);
-}
-
-function playLaunch() {
-  if (!actx || actx.state !== 'running') return;
-  const now = actx.currentTime;
-  const osc = actx.createOscillator();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(360, now);
-  osc.frequency.exponentialRampToValueAtTime(900, now + 0.35);
-  const g = actx.createGain();
-  g.gain.setValueAtTime(0.001, now);
-  g.gain.linearRampToValueAtTime(0.05, now + 0.05);
-  g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-  osc.connect(g).connect(actx.destination);
-  osc.start(now);
-  osc.stop(now + 0.4);
-}
-
 /* ===== 폭죽 (완료된 프로젝트일 때만) ===== */
 const FX_HUES = [0, 25, 48, 140, 165, 195, 220, 275, 320];
 let fx = null;
@@ -586,7 +528,6 @@ function initFx() {
   window.addEventListener('resize', fx.sizeFn);
 
   fx.boom = (x, y, big) => {
-    playBoom(big);
     const n = big ? 130 : 80;
     const hue = FX_HUES[Math.floor(Math.random() * FX_HUES.length)];
     const hue2 = Math.random() < 0.35 ? FX_HUES[Math.floor(Math.random() * FX_HUES.length)] : hue;
@@ -609,7 +550,6 @@ function initFx() {
   };
 
   fx.rocket = () => {
-    playLaunch();
     const page = document.querySelector('.page');
     const r = page ? page.getBoundingClientRect() : null;
     const cx = r ? r.left + r.width / 2 : fx.w / 2;
