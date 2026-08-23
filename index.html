@@ -310,22 +310,20 @@ function renderCompletion(data) {
   if (data.status !== 'completed') return;
 
   const rows = [];
-  rows.push(`시작 시각: ${formatDateTime(data.createdAt)}`);
-  const finalLen = normalizeLength(data.finalLength);
-  if (finalLen != null) rows.push(`완성 영상 길이: ${finalLen}`);
-  if (data.completedAt) rows.push(`완료 시각: ${formatDateTime(data.completedAt)}`);
-
-  let strongIndex = -1;
+  rows.push({ text: `시작 시각: ${formatDateTime(data.createdAt)}` });
+  if (data.completedAt) rows.push({ text: `완료 시각: ${formatDateTime(data.completedAt)}` });
   if (data.completedAt) {
     const dur = new Date(data.completedAt).getTime() - new Date(data.createdAt).getTime();
-    strongIndex = rows.length;
-    rows.push(`총 소요시간: ${formatDuration(dur)}`);
+    rows.push({ text: `총 소요시간: ${formatDuration(dur)}`, strong: true });
   }
-  if (data.finalRatioVsOriginal != null) rows.push(`원본 대비 완성 영상: ${Math.round(data.finalRatioVsOriginal)}%`);
-  if (data.finalRatioVsDetailCut != null) rows.push(`컷편집 대비 완성 영상: ${Math.round(data.finalRatioVsDetailCut)}%`);
+  const origLen = normalizeLength(data.originalLength);
+  if (origLen != null) rows.push({ text: `촬영 원본 길이: ${origLen}`, gap: true });
+  const finalLen = normalizeLength(data.finalLength);
+  if (finalLen != null) rows.push({ text: `완성 영상 길이: ${finalLen}` });
+  if (data.finalRatioVsOriginal != null) rows.push({ text: `원본 대비 완성 영상: ${Math.round(data.finalRatioVsOriginal)}%` });
 
   document.getElementById('doneList').innerHTML = rows
-    .map((r, i) => `<div class="${i === strongIndex ? 'strong' : ''}">${escapeHtml(r)}</div>`)
+    .map(r => `<div class="${r.strong ? 'strong' : ''}"${r.gap ? ' style="margin-top:8px"' : ''}>${escapeHtml(r.text)}</div>`)
     .join('');
   document.getElementById('doneCard').style.display = '';
 }
