@@ -4,304 +4,193 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>태태고 편집실</title>
 <style>
-  :root {
-    --bg-app: #eaf4ec;
-    --bg-surface: #ffffff;
-    --bg-surface-raised: #e2f1e5;
-    --border: rgba(14,54,32,0.11);
-    --border-strong: rgba(14,54,32,0.18);
-    --text: #0e2116;
-    --text-secondary: #40584a;
-    --text-tertiary: #66806f;
-    --accent: #15864f;
-    --accent-strong: #0d5c37;
-    --accent-soft: rgba(21,134,79,0.14);
-    --accent-line: rgba(21,134,79,0.32);
-    --progress: #a3690c;
-    --progress-soft: rgba(163,105,12,0.15);
-    --shadow-card: 0 1px 2px rgba(14,54,32,0.05), 0 12px 28px -14px rgba(14,54,32,0.16);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-app: #0d1611;
-      --bg-surface: #131e17;
-      --bg-surface-raised: #1b2820;
-      --border: rgba(255,255,255,0.08);
-      --border-strong: rgba(255,255,255,0.15);
-      --text: #edf4ef;
-      --text-secondary: #a9bcae;
-      --text-tertiary: #7c9084;
-      --accent: #4fbf82;
-      --accent-strong: #85e0ac;
-      --accent-soft: rgba(79,191,130,0.16);
-      --accent-line: rgba(79,191,130,0.35);
-      --progress: #e0ac47;
-      --progress-soft: rgba(224,172,71,0.16);
-      --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
-    }
+  html[data-theme="dark"] {
+    --bg: #0a0f0c;
+    --surface: #111813;
+    --surface2: #18221c;
+    --ink: #e8f1ea;
+    --ink2: #9db3a5;
+    --ink3: #6b8074;
+    --line: rgba(255,255,255,0.10);
+    --line2: rgba(255,255,255,0.20);
+    --accent: #3fd98a;
+    --accent2: #8ceab7;
+    --soft: rgba(63,217,138,0.13);
+    --on-accent: #08120c;
+    --tg-on-bg: #24322a;
+    --tg-on-ink: #8ceab7;
   }
   html[data-theme="light"] {
-    --bg-app: #eaf4ec;
-    --bg-surface: #ffffff;
-    --bg-surface-raised: #e2f1e5;
-    --border: rgba(14,54,32,0.11);
-    --border-strong: rgba(14,54,32,0.18);
-    --text: #0e2116;
-    --text-secondary: #40584a;
-    --text-tertiary: #66806f;
-    --accent: #15864f;
-    --accent-strong: #0d5c37;
-    --accent-soft: rgba(21,134,79,0.14);
-    --accent-line: rgba(21,134,79,0.32);
-    --progress: #a3690c;
-    --progress-soft: rgba(163,105,12,0.15);
-    --shadow-card: 0 1px 2px rgba(14,54,32,0.05), 0 12px 28px -14px rgba(14,54,32,0.16);
+    --bg: #eef3ee;
+    --surface: #ffffff;
+    --surface2: #e6eee8;
+    --ink: #0b1a12;
+    --ink2: #476054;
+    --ink3: #6e8478;
+    --line: rgba(11,26,18,0.10);
+    --line2: rgba(11,26,18,0.22);
+    --accent: #12864f;
+    --accent2: #0b5c36;
+    --soft: rgba(18,134,79,0.12);
+    --on-accent: #ffffff;
+    --tg-on-bg: #ffffff;
+    --tg-on-ink: #0b5c36;
   }
-  html[data-theme="dark"] {
-    --bg-app: #0d1611;
-    --bg-surface: #131e17;
-    --bg-surface-raised: #1b2820;
-    --border: rgba(255,255,255,0.08);
-    --border-strong: rgba(255,255,255,0.15);
-    --text: #edf4ef;
-    --text-secondary: #a9bcae;
-    --text-tertiary: #7c9084;
-    --accent: #4fbf82;
-    --accent-strong: #85e0ac;
-    --accent-soft: rgba(79,191,130,0.16);
-    --accent-line: rgba(79,191,130,0.35);
-    --progress: #e0ac47;
-    --progress-soft: rgba(224,172,71,0.16);
-    --shadow-card: 0 1px 2px rgba(0,0,0,0.2), 0 10px 28px -14px rgba(0,0,0,0.5);
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --bg: #0a0f0c;
+      --surface: #111813;
+      --surface2: #18221c;
+      --ink: #e8f1ea;
+      --ink2: #9db3a5;
+      --ink3: #6b8074;
+      --line: rgba(255,255,255,0.10);
+      --line2: rgba(255,255,255,0.20);
+      --accent: #3fd98a;
+      --accent2: #8ceab7;
+      --soft: rgba(63,217,138,0.13);
+      --on-accent: #08120c;
+      --tg-on-bg: #24322a;
+      --tg-on-ink: #8ceab7;
+    }
   }
   * { box-sizing: border-box; }
-  html { background: var(--bg-app); }
+  html { background: var(--bg); }
   body {
-    margin: 0;
-    min-height: 100vh;
-    background: var(--bg-app);
-    background-image: radial-gradient(circle at 10% -6%, var(--accent-soft), transparent 45%),
-      radial-gradient(circle at 100% 0%, var(--progress-soft), transparent 38%);
-    background-repeat: no-repeat;
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 36px 16px 60px;
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex; justify-content: center; padding: 24px 12px 60px;
     -webkit-font-smoothing: antialiased;
-    position: relative;
   }
-  .blobLayer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-  .blob { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(42px); }
-  .blob-a { top: -80px; left: -60px; width: 280px; height: 280px; background: var(--accent-soft); animation: blobFloatA 14s ease-in-out infinite; }
-  .blob-b { top: -40px; right: -80px; width: 260px; height: 260px; background: var(--progress-soft); animation: blobFloatB 16s ease-in-out infinite; }
-  .page { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
-
-  .brandRow { display: flex; align-items: center; justify-content: space-between; padding: 0 2px 2px; }
-  .brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.02em; }
-  .brand .mark {
-    width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #fff; font-size: 12px;
-    box-shadow: 0 3px 8px -2px var(--accent-line);
-    animation: iconFloat 3.6s ease-in-out infinite;
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; }
+  #summaryCard.card, #pipelineCard.card, #statsWrap .card, #catCard.card, #logCard.card {
+    opacity: 0; animation: cardIn .5s ease both;
   }
-  .headerRight { display: flex; align-items: center; gap: 10px; }
-  .infoWrap { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
-  .infoBtn {
-    width: 12px; height: 12px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
-    border: none; background: none; color: var(--text-tertiary);
-    font-size: 8px; font-weight: 700; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0;
-  }
-  .infoBtn:hover { color: var(--accent-strong); }
-  .infoPopover {
-    display: none; position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 190px; z-index: 20;
-    background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 14px; padding: 12px;
-    box-shadow: var(--shadow-card); font-size: 12px; line-height: 1.5; color: var(--text-secondary);
-    white-space: normal; text-transform: none; font-weight: 400;
-  }
-  .infoPopover.open { display: block; }
-  .themeToggle {
-    display: flex; align-items: center; gap: 4px; background: var(--bg-surface-raised); border: 1px solid var(--border);
-    border-radius: 99px; padding: 3px; cursor: pointer;
-  }
-  .themeToggle button {
-    border: none; background: none; cursor: pointer; font-size: 13px; padding: 5px 9px; border-radius: 99px;
-    color: var(--text-tertiary); line-height: 1; transition: all .25s ease;
-  }
-  .themeToggle button.active { background: var(--bg-surface); color: var(--accent-strong); box-shadow: var(--shadow-card); }
-  .liveDot { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--accent-strong); }
-  .liveDot .pulse {
-    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-    box-shadow: 0 0 0 0 var(--accent-soft);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(79,191,130,0.5); }
-    70% { box-shadow: 0 0 0 8px rgba(79,191,130,0); }
-    100% { box-shadow: 0 0 0 0 rgba(79,191,130,0); }
-  }
-  @keyframes gradientFlow { from { background-position: 0% 0; } to { background-position: -200% 0; } }
-  @keyframes shimmerSweep { from { transform: translateX(-130%); } to { transform: translateX(280%); } }
+  #summaryCard.card { animation-delay: 0s; }
+  #pipelineCard.card { animation-delay: .06s; }
+  #catCard.card { animation-delay: .12s; }
+  #logCard.card { animation-delay: .18s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes rowIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
-  @keyframes dotPop { 0% { transform: scale(0.3); opacity: 0; } 60% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
-  @keyframes blobFloatA { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(26px,-20px) scale(1.08); } }
-  @keyframes blobFloatB { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-22px,18px) scale(1.06); } }
-  @keyframes iconFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-6deg); } }
-  @keyframes badgeBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045); } }
-
-  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: var(--shadow-card); }
-  #summaryCard { animation: cardIn .5s ease both; }
-  #pipelineCard { animation: cardIn .5s ease .08s both; }
-  #statsCard { animation: cardIn .5s ease .14s both; }
-  #logCard { animation: cardIn .5s ease .2s both; }
-  .card-title { font-size: 12.5px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 16px; }
-
-  .topRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
-  .topic { font-size: 23px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
-  .badge { flex-shrink: 0; font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 99px; white-space: nowrap; }
-  .badge.in_progress { background: var(--progress-soft); color: var(--progress); animation: labelFade 1.8s ease-in-out infinite, badgeBreathe 1.8s ease-in-out infinite; }
-  .badge.completed { background: var(--accent-soft); color: var(--accent-strong); }
-  .stage { font-size: 13.5px; color: var(--accent-strong); font-weight: 600; margin-top: 3px; }
-
-  .progressWrap { margin-top: 16px; }
-  .progressMeta { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-tertiary); font-weight: 600; margin-bottom: 6px; }
-  .progressTrack { height: 8px; border-radius: 99px; background: var(--bg-surface-raised); overflow: hidden; }
-  .progressFill {
-    height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent-strong), var(--accent));
-    background-size: 200% 100%; animation: gradientFlow 2.4s linear infinite;
-    transition: width 1.2s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden;
-  }
-  .progressFill .shimmer {
-    position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
-    animation: shimmerSweep 1.92s linear infinite;
-  }
-
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 10px; }
-  .stat-tile {
-    background: var(--bg-surface-raised); border-radius: 14px; padding: 12px 14px;
-    opacity: 0; animation: dotPop .45s ease both; transition: transform .2s ease, box-shadow .2s ease;
-  }
-  .stat-tile:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 24px -10px rgba(0,0,0,0.35); }
-  .stat-label { font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 5px; }
-  .stat-value { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
-  .stat-sub { font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
-  .lastUpdate { text-align: center; color: var(--text-tertiary); font-size: 12px; margin-top: 18px; }
-  .empty { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 20px 0; }
-
-  /* pipeline timeline */
-  .pipeline-group + .pipeline-group { margin-top: 20px; }
-  .pipeline-group-title { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; margin-bottom: 12px; }
-  .pipeline-list { display: flex; flex-direction: column; }
-  .pipeline-item {
-    position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 0 8px 4px; font-size: 13.5px; font-weight: 600; color: var(--text-tertiary);
-    opacity: 0; animation: rowIn .4s ease both;
-  }
-  .pipeline-item::before {
-    content: ""; position: absolute; left: 10px; top: -2px; bottom: -2px; width: 2px; background: var(--border);
-  }
-  .pipeline-item:first-child::before { top: 50%; }
-  .pipeline-item:last-child::before { bottom: 50%; }
-  .pipeline-dot {
-    position: relative; z-index: 1; flex-shrink: 0; width: 21px; height: 21px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: var(--bg-surface-raised); border: 2px solid var(--border-strong); font-size: 10px; color: transparent;
-  }
-  .pipeline-item.done .pipeline-dot { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .pipeline-item.current { color: var(--text); }
-  .pipeline-item.current .pipeline-dot { background: var(--bg-surface); border-color: var(--progress); box-shadow: 0 0 0 4px var(--progress-soft); }
-  .pipeline-item.current .pipeline-dot::after {
-    content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--progress);
-    animation: ringPing 1.8s cubic-bezier(0,0,0.2,1) infinite;
-  }
-  @keyframes ringPing {
-    0% { transform: scale(0.75); opacity: 0.9; }
-    75%, 100% { transform: scale(1.9); opacity: 0; }
-  }
-  .pipeline-item.current .name::after {
-    content: "진행 중"; margin-left: 8px; font-size: 10.5px; font-weight: 700; color: var(--progress); background: var(--progress-soft); padding: 2px 8px; border-radius: 99px;
-    animation: labelFade 1.8s ease-in-out infinite;
-  }
-  @keyframes labelFade {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
-  }
-
-  /* work log */
-  .log-head-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border-strong); }
-  .log-head-row .cat-h { display: flex; align-items: center; gap: 3px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
-  .log-head-row .meta-h { display: flex; gap: 6px; flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.03em; text-transform: uppercase; }
-  .log-head-row .meta-h span { position: relative; display: inline-flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; }
-  .log-head-row .meta-h span:nth-child(1) { width: 68px; }
-  .log-head-row .meta-h span:nth-child(2) { width: 60px; }
-  .log-head-row .meta-h span:last-child { width: 80px; }
-  .log-day-head { font-size: 11px; font-weight: 700; color: var(--text-tertiary); letter-spacing: 0.02em; padding: 16px 0 8px; }
-  .log-day-head:first-child { padding-top: 16px; }
-  .log-row {
-    display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 10px 0; border-top: 1px solid var(--border);
-    opacity: 0; animation: rowIn .4s ease both; transition: background-color .2s ease; border-radius: 8px;
-  }
-  .log-row:hover { background-color: rgba(120,140,130,0.14); }
-  .log-row:first-of-type { border-top: none; }
-  .log-cat { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
-  .log-cat .icon {
-    flex-shrink: 0; width: 24px; height: 24px; border-radius: 7px; background: var(--accent-soft); color: var(--accent-strong);
-    display: flex; align-items: center; justify-content: center; font-size: 11px;
-  }
-  .log-cat.none .icon { background: var(--bg-surface-raised); color: var(--text-tertiary); }
-  .log-cat .name { font-size: 12.5px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .log-cat.none .name { color: var(--text-tertiary); font-weight: 500; }
-  .log-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 11px; color: var(--text-secondary); }
-  .log-meta .num { width: 60px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
-  .log-meta .time { width: 50px; text-align: center; color: var(--text-tertiary); }
-  .log-meta .elapsed { width: 80px; box-sizing: border-box; text-align: center; background: var(--bg-surface-raised); color: var(--text-tertiary); padding: 2px 6px; border-radius: 99px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  @media (max-width: 430px) {
-    body { padding: 24px 12px 48px; }
-    .card { padding: 18px; border-radius: 18px; }
-    .topic { font-size: 20px; }
-    .stats { grid-template-columns: 1fr 1fr; }
-  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* 상단 바 */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+  .brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand .mark { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font: 700 10.5px/1 'JetBrains Mono', monospace; }
+  .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
+  .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
+  .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
+
+  /* 히어로: 원형 게이지 */
+  .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; }
+  .donut { flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .donut .in { width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
+  .donut .steps { font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
+  .heroRight { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+  .statusChip { align-self: flex-start; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: var(--soft); color: var(--accent2); }
+  .topic { font-size: 16.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; word-break: keep-all; }
+  .stageLabel { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+  .stageName { font-size: 12.5px; font-weight: 600; color: var(--accent2); }
+
+  /* 전체 진행 단계 */
+  .cardHead { display: flex; align-items: baseline; justify-content: space-between; }
+  .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
+  .cardMeta { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .pipeCard { display: flex; flex-direction: column; gap: 16px; }
+  .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
+  .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
+  .pipeList { position: relative; display: flex; flex-direction: column; }
+  .pipeList::before { content: ""; position: absolute; left: 8px; top: 16px; bottom: 16px; width: 1px; background: var(--line2); }
+  .pipeItem { position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+  .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+  .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
+  .pipeItem .n { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .pipeItem .name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .pipeItem.todo .name { color: var(--ink3); }
+
+  /* 통계 타일 */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .statTile { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--accent); }
+  .statTile .label { font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .statTile .value { font-size: 17px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+  .statTile .sub { font-size: 10px; line-height: 1.4; color: var(--ink2); }
+
+  /* 카테고리별 기록 */
+  .catCard { display: flex; flex-direction: column; gap: 12px; }
+  .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; }
+  .catChip .mk { width: 17px; height: 17px; border-radius: 5px; background: var(--soft); color: var(--accent2); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+  .catChip .cnt { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+
+  /* 작업 기록 */
+  .logCard { display: flex; flex-direction: column; gap: 10px; }
+  .logHead { display: grid; grid-template-columns: 1fr 42px 38px 58px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
+  .logHead .c { text-align: center; line-height: 1.25; }
+  .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
+  .logDay:first-of-type { padding-top: 0; }
+  .logRow { display: grid; grid-template-columns: 1fr 42px 38px 58px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
+  .logRow:hover { background: var(--soft); }
+  .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
+  .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
+  .logRow .gap { font-size: 9.5px; line-height: 1.2; text-align: center; color: var(--ink3); }
+  .footnotes { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 10px; line-height: 1.5; color: var(--ink3); }
+  .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
+
+  @media (max-width: 420px) {
+    body { padding: 18px 10px 48px; }
+    .card { padding: 16px 14px; border-radius: 20px; }
   }
 </style>
 </head>
 <body>
-  <div class="blobLayer">
-    <div class="blob blob-a"></div>
-    <div class="blob blob-b"></div>
-  </div>
   <div class="page">
-    <div class="brandRow">
-      <div class="brand"><span class="mark">🎬</span>태태고 편집실</div>
-      <div class="headerRight">
-        <div class="liveDot" id="liveDot" style="display:none"><span class="pulse"></span>실시간 업데이트</div>
-        <div class="themeToggle" id="themeToggle">
-          <button type="button" data-mode="light">☀️</button>
-          <button type="button" data-mode="dark">🌙</button>
-        </div>
+    <div class="topbar">
+      <div class="brand"><span class="mark">TT</span>태태고 편집실</div>
+      <div class="themeToggle" id="themeToggle">
+        <button type="button" data-mode="light">LIGHT</button>
+        <button type="button" data-mode="dark">DARK</button>
       </div>
     </div>
-    <div class="card" id="summaryCard">
+
+    <div class="card hero" id="summaryCard">
       <div class="empty">불러오는 중…</div>
     </div>
-    <div class="card" id="pipelineCard" style="display:none">
-      <div class="card-title">전체 진행 단계</div>
+
+    <div class="card pipeCard" id="pipelineCard" style="display:none">
+      <div class="cardHead">
+        <span class="cardTitle">전체 진행 단계</span>
+        <span class="cardMeta mono" id="pipelineMeta"></span>
+      </div>
       <div id="pipelineBody"></div>
     </div>
-    <div class="card" id="statsCard" style="display:none">
+
+    <div id="statsWrap">
       <div class="stats" id="statsBody"></div>
     </div>
-    <div class="card" id="logCard" style="display:none">
-      <div class="card-title">작업 기록</div>
+
+    <div class="card catCard" id="catCard" style="display:none">
+      <div class="cardHead">
+        <span class="cardTitle">카테고리별 기록</span>
+        <span class="cardMeta mono" id="catMeta"></span>
+      </div>
+      <div class="catChips" id="catBody"></div>
+    </div>
+
+    <div class="card logCard" id="logCard" style="display:none">
       <div id="logBody"></div>
     </div>
   </div>
@@ -315,12 +204,8 @@ async function main() {
     renderSummary(summaryCard, data);
     renderPipeline(data);
     renderStats(data);
+    renderCategoryChips(data);
     renderLog(data);
-    if (data.status !== 'completed') document.getElementById('liveDot').style.display = '';
-    setTimeout(() => {
-      const fill = document.querySelector('.progressFill');
-      if (fill && fill.dataset.pct) fill.style.width = fill.dataset.pct + '%';
-    }, 250);
   } catch (e) {
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   }
@@ -371,30 +256,6 @@ function formatDayLabel(iso) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
 }
 
-const SYMBOL_EMOJI = {
-  'scissors': '✂️',
-  'captions.bubble': '💬',
-  'photo.on.rectangle': '🎞️',
-  'text.badge.checkmark': '✅',
-  'paintpalette': '🎨',
-  'star.bubble': '⭐',
-  'map': '🗺️',
-  'music.note': '🎵',
-  'checkmark.seal': '🔎',
-  'text.below.photo': '🖼️',
-  'flag': '🚩',
-};
-
-function categoryIcon(symbolName) {
-  return SYMBOL_EMOJI[symbolName] || '🔧';
-}
-
-function statTile(label, value, sub, delayIndex) {
-  if (value === null || value === undefined) return '';
-  const delay = ((delayIndex || 0) * 0.08).toFixed(2);
-  return `<div class="stat-tile" style="animation-delay:${delay}s"><div class="stat-label">${label}</div><div class="stat-value">${value}</div>${sub ? `<div class="stat-sub">${sub}</div>` : ''}</div>`;
-}
-
 function pipelineProgress(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return null;
@@ -402,43 +263,33 @@ function pipelineProgress(data) {
   let lastTouchedIndex = -1;
   cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
   const done = Math.max(lastTouchedIndex + 1, 0);
-  return { done, total: cats.length, pct: Math.round((done / cats.length) * 100) };
+  return { done, total: cats.length, pct: Math.round((done / cats.length) * 100), lastTouchedIndex };
 }
 
 function renderSummary(cardEl, data) {
-  const statusLabel = data.status === 'completed' ? '완료' : '진행중';
-  const statusClass = data.status === 'completed' ? 'completed' : 'in_progress';
+  const isCompleted = data.status === 'completed';
   const progress = pipelineProgress(data);
+  const pct = progress ? progress.pct : 0;
+  const statusLabel = isCompleted ? '완료' : '진행중';
+  const stageText = isCompleted ? (data.allCategories && data.allCategories.length ? data.allCategories[data.allCategories.length - 1].name : data.currentStage) : data.currentStage;
 
   cardEl.innerHTML = `
-    <div class="topRow">
-      <div>
-        <div class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</div>
-        ${data.currentStage && data.status !== 'completed' ? `<div class="stage">현재 단계 · ${escapeHtml(data.currentStage)}</div>` : ''}
+    <div class="donut" style="background: conic-gradient(var(--accent) 0 ${pct}%, var(--surface2) ${pct}% 100%)">
+      <div class="in">
+        <span class="pct mono">${pct}%</span>
+        <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
       </div>
-      <div class="badge ${statusClass}">${statusLabel}</div>
     </div>
-    ${progress ? `
-      <div class="progressWrap">
-        <div class="progressMeta"><span>편집 진행 상황</span><span>${progress.done}/${progress.total} 단계</span></div>
-        <div class="progressTrack"><div class="progressFill" style="width:0%" data-pct="${progress.pct}"><div class="shimmer"></div></div></div>
-      </div>` : ''}
-    <div class="lastUpdate">${data.status === 'completed' ? '완료' : '마지막 작업 시작'} · ${data.lastUpdate ? relativeTime(data.lastUpdate) : '알 수 없음'}</div>
+    <div class="heroRight">
+      <span class="statusChip">${statusLabel}${data.lastUpdate ? ` · ${relativeTime(data.lastUpdate)}` : ''}</span>
+      <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
+      ${stageText ? `
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <span class="stageLabel">현재 단계</span>
+          <span class="stageName">${escapeHtml(stageText)}</span>
+        </div>` : ''}
+    </div>
   `;
-}
-
-function renderStats(data) {
-  let stats = '';
-  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength), null, 0);
-  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null, 1);
-  const finalRatioParts = [];
-  if (data.finalRatioVsOriginal != null) finalRatioParts.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
-  if (data.finalRatioVsDetailCut != null) finalRatioParts.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalRatioParts.length ? finalRatioParts.join('<br>') : null, 2);
-  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null, null, 3);
-
-  document.getElementById('statsBody').innerHTML = stats;
-  document.getElementById('statsCard').style.display = '';
 }
 
 function renderPipeline(data) {
@@ -456,21 +307,60 @@ function renderPipeline(data) {
   for (const groupName of Object.keys(groups)) {
     const items = groups[groupName].map(c => {
       const isDone = c.index < lastTouchedIndex || (c.index === lastTouchedIndex && data.status === 'completed');
-      const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
-      const cls = isDone ? 'done' : (isCurrent ? 'current' : '');
-      const delay = (c.index * 0.05).toFixed(2);
-      return `<div class="pipeline-item ${cls}" style="animation-delay:${delay}s"><span class="pipeline-dot">${isDone ? '✓' : ''}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      const n = String(c.index + 1).padStart(2, '0');
+      return `<div class="pipeItem ${isDone ? '' : 'todo'}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
-      <div class="pipeline-group">
-        <div class="pipeline-group-title">${escapeHtml(groupName)}</div>
-        <div class="pipeline-list">${items}</div>
+      <div class="pipeGroup">
+        <div class="pipeGroupTitle">${escapeHtml(groupName)}</div>
+        <div class="pipeList">${items}</div>
       </div>
     `;
   }
 
   document.getElementById('pipelineBody').innerHTML = html;
+  const done = Math.max(lastTouchedIndex + 1, 0);
+  document.getElementById('pipelineMeta').textContent = `${done} DONE`;
   document.getElementById('pipelineCard').style.display = '';
+}
+
+function statTile(label, value, subs) {
+  if (value === null || value === undefined) return '';
+  const subHtml = (subs || []).filter(Boolean).map(s => `<span class="sub">${s}</span>`).join('');
+  return `<div class="statTile"><span class="label">${label}</span><span class="value">${value}</span>${subHtml}</div>`;
+}
+
+function renderStats(data) {
+  let stats = '';
+  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength));
+  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null]);
+  const finalSubs = [];
+  if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
+  if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalSubs);
+  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
+
+  document.getElementById('statsBody').innerHTML = stats;
+}
+
+function renderCategoryChips(data) {
+  const entries = data.entries || [];
+  if (entries.length === 0) return;
+
+  const counts = new Map();
+  for (const e of entries) {
+    const name = e.category || '체크포인트';
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+
+  const html = Array.from(counts.entries()).map(([name, count]) => {
+    const mark = name.slice(0, 1);
+    return `<span class="catChip"><span class="mk">${escapeHtml(mark)}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
+  }).join('');
+
+  document.getElementById('catBody').innerHTML = html;
+  document.getElementById('catMeta').textContent = String(entries.length);
+  document.getElementById('catCard').style.display = '';
 }
 
 function renderLog(data) {
@@ -490,22 +380,13 @@ function renderLog(data) {
   const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
 
   let html = `
-    <div class="log-head-row">
-      <span class="cat-h">카테고리</span>
-      <span class="meta-h">
-        <span class="infoWrap">시작 시점
-          <button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button>
-          <div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</div>
-        </span>
-        <span class="infoWrap">시작 시간
-          <button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button>
-          <div class="infoPopover">이 작업을 실제로 시작한 시각</div>
-        </span>
-        <span>이전 기록으로부터</span>
-      </span>
+    <div class="logHead">
+      <span>카테고리</span>
+      <span class="c">시작 시점</span>
+      <span class="c">시작 시간</span>
+      <span class="c">이전 기록<br>으로부터</span>
     </div>
   `;
-  let flatIndex = 0;
   for (const dayKey of sortedDayKeys) {
     const dayEntries = byDay.get(dayKey).slice();
     dayEntries.sort((a, b) => {
@@ -514,34 +395,33 @@ function renderLog(data) {
       return ai - bi;
     });
 
-    html += `<div class="log-day-head">${formatDayLabel(dayEntries[0].timestamp)}</div>`;
+    html += `<div class="logDay">${formatDayLabel(dayEntries[0].timestamp)}</div>`;
 
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
-      const catClass = e.category ? '' : 'none';
-      const icon = categoryIcon(e.categorySymbol);
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
-      const delay = (flatIndex * 0.03).toFixed(2);
-      flatIndex++;
 
       html += `
-        <div class="log-row" style="animation-delay:${delay}s">
-          <div class="log-cat ${catClass}"><span class="icon">${icon}</span><span class="name">${catLabel}</span></div>
-          <div class="log-meta">
-            <span class="num">${length || '—'}</span>
-            <span class="time">${time}</span>
-            <span class="elapsed">${elapsed || '—'}</span>
-          </div>
+        <div class="logRow">
+          <span class="cat">${catLabel}</span>
+          <span class="at">${length || '—'}</span>
+          <span class="time mono">${time}</span>
+          <span class="gap">${elapsed || '—'}</span>
         </div>
       `;
     }
   }
+  html += `
+    <div class="footnotes">
+      <span>시작 시점 · 이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</span>
+      <span>시작 시간 · 이 작업을 실제로 시작한 시각</span>
+    </div>
+  `;
 
   document.getElementById('logBody').innerHTML = html;
   document.getElementById('logCard').style.display = '';
-  initInfoPopover();
 }
 
 function escapeHtml(str) {
@@ -553,35 +433,17 @@ function escapeHtml(str) {
 function applyTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   document.querySelectorAll('#themeToggle button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-  localStorage.setItem('theme', mode);
+  try { localStorage.setItem('theme', mode); } catch (e) {}
 }
 (function initTheme() {
-  const saved = localStorage.getItem('theme');
-  const mode = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  applyTheme(mode);
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) {}
+  applyTheme(saved || 'dark');
   document.getElementById('themeToggle').addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if (btn) applyTheme(btn.dataset.mode);
   });
 })();
-
-function initInfoPopover() {
-  document.querySelectorAll('.infoBtn').forEach((btn) => {
-    const popover = btn.nextElementSibling;
-    if (!popover) return;
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const wasOpen = popover.classList.contains('open');
-      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
-      if (!wasOpen) popover.classList.add('open');
-    });
-  });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.infoWrap')) {
-      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
-    }
-  });
-}
 
 main();
 </script>
