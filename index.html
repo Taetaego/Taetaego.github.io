@@ -73,11 +73,12 @@
   .mono { font-family: 'JetBrains Mono', monospace; }
   .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #pipelineCard.card, #statsWrap .card, #catCard.card, #logCard.card {
+  #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap .card, #catCard.card, #logCard.card {
     opacity: 0; animation: cardIn .5s ease both;
   }
   #summaryCard.card { animation-delay: 0s; }
-  #pipelineCard.card { animation-delay: .06s; }
+  #doneCard.card { animation-delay: .04s; }
+  #pipelineCard.card { animation-delay: .08s; }
   #catCard.card { animation-delay: .12s; }
   #logCard.card { animation-delay: .18s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -105,6 +106,14 @@
   .topic { font-size: 16.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; word-break: keep-all; }
   .stageLabel { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
   .stageName { font-size: 12.5px; font-weight: 600; color: var(--accent2); }
+
+  /* 프로젝트 완료 요약 */
+  .doneCard { display: flex; flex-direction: column; gap: 12px; }
+  .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--accent2); }
+  .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .doneList { display: flex; flex-direction: column; gap: 6px; }
+  .doneList div { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+  .doneList div.strong { font-weight: 700; }
 
   /* 전체 진행 단계 */
   .cardHead { display: flex; align-items: baseline; justify-content: space-between; }
@@ -139,17 +148,28 @@
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 42px 38px 58px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
-  .logHead .c { text-align: center; line-height: 1.25; }
+  .logHead { display: grid; grid-template-columns: 1fr 42px 62px 58px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
+  .logHead .c { position: relative; text-align: center; line-height: 1.25; }
+  .logHead .infoBtn {
+    position: absolute; top: -5px; right: -3px; width: 11px; height: 11px; border-radius: 50%;
+    border: none; background: none; color: var(--ink3); font-size: 7px; font-weight: 700;
+    cursor: pointer; padding: 0; line-height: 1;
+  }
+  .logHead .infoBtn:hover { color: var(--accent2); }
+  .infoPopover {
+    display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 180px; z-index: 20;
+    background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; padding: 11px;
+    font-size: 10.5px; line-height: 1.5; color: var(--ink2); text-align: left; font-weight: 400;
+  }
+  .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
-  .logRow { display: grid; grid-template-columns: 1fr 42px 38px 58px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
+  .logRow { display: grid; grid-template-columns: 1fr 42px 62px 58px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
   .logRow:hover { background: var(--soft); }
   .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
   .logRow .gap { font-size: 9.5px; line-height: 1.2; text-align: center; color: var(--ink3); }
-  .footnotes { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 10px; line-height: 1.5; color: var(--ink3); }
   .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
 
   @media (max-width: 420px) {
@@ -167,13 +187,14 @@
       grid-template-areas:
         "topbar topbar"
         "hero   stats"
-        "pipe   cat"
+        "done   cat"
         "pipe   log";
       align-items: start;
       gap: 16px;
     }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
     #summaryCard { grid-area: hero; }
+    #doneCard { grid-area: done; }
     #pipelineCard { grid-area: pipe; }
     #statsWrap { grid-area: stats; }
     #catCard { grid-area: cat; }
@@ -198,6 +219,11 @@
 
     <div class="card hero" id="summaryCard" title="클릭하면 폭죽 한 번 더">
       <div class="empty">불러오는 중…</div>
+    </div>
+
+    <div class="card doneCard" id="doneCard" style="display:none">
+      <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
+      <div class="doneList" id="doneList"></div>
     </div>
 
     <div class="card pipeCard" id="pipelineCard" style="display:none">
@@ -237,6 +263,7 @@ async function main() {
     const res = await fetch('status.json', { cache: 'no-store' });
     const data = await res.json();
     renderSummary(summaryCard, data);
+    renderCompletion(data);
     renderPipeline(data);
     renderStats(data);
     renderCategoryChips(data);
@@ -267,6 +294,42 @@ function normalizeLength(s) {
   return parts.join(' ');
 }
 
+function formatDuration(ms) {
+  const totalMinutes = Math.max(0, Math.round(ms / 60000));
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+  const parts = [];
+  if (days > 0) parts.push(`${days}일`);
+  if (hours > 0) parts.push(`${hours}시간`);
+  if (minutes > 0 || parts.length === 0) parts.push(`${minutes}분`);
+  return parts.join(' ');
+}
+
+function renderCompletion(data) {
+  if (data.status !== 'completed') return;
+
+  const rows = [];
+  rows.push(`시작 시각: ${formatDateTime(data.createdAt)}`);
+  const finalLen = normalizeLength(data.finalLength);
+  if (finalLen != null) rows.push(`완성 영상 길이: ${finalLen}`);
+  if (data.completedAt) rows.push(`완료 시각: ${formatDateTime(data.completedAt)}`);
+
+  let strongIndex = -1;
+  if (data.completedAt) {
+    const dur = new Date(data.completedAt).getTime() - new Date(data.createdAt).getTime();
+    strongIndex = rows.length;
+    rows.push(`총 소요시간: ${formatDuration(dur)}`);
+  }
+  if (data.finalRatioVsOriginal != null) rows.push(`원본 대비 완성 영상: ${Math.round(data.finalRatioVsOriginal)}%`);
+  if (data.finalRatioVsDetailCut != null) rows.push(`컷편집 대비 완성 영상: ${Math.round(data.finalRatioVsDetailCut)}%`);
+
+  document.getElementById('doneList').innerHTML = rows
+    .map((r, i) => `<div class="${i === strongIndex ? 'strong' : ''}">${escapeHtml(r)}</div>`)
+    .join('');
+  document.getElementById('doneCard').style.display = '';
+}
+
 function relativeTime(iso) {
   const then = new Date(iso).getTime();
   const now = Date.now();
@@ -283,9 +346,17 @@ const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
 function formatTimeOnly(iso) {
   const d = new Date(iso);
-  const hh = String(d.getHours()).padStart(2, '0');
+  const h24 = d.getHours();
+  const period = h24 < 12 ? '오전' : '오후';
+  let h12 = h24 % 12;
+  if (h12 === 0) h12 = 12;
   const mi = String(d.getMinutes()).padStart(2, '0');
-  return `${hh}:${mi}`;
+  return `${period} ${h12}:${mi}`;
+}
+
+function formatDateTime(iso) {
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]}) ${formatTimeOnly(iso)}`;
 }
 
 function formatDayLabel(iso) {
@@ -441,8 +512,14 @@ function renderLog(data) {
   let html = `
     <div class="logHead">
       <span>카테고리</span>
-      <span class="c">시작 시점</span>
-      <span class="c">시작 시간</span>
+      <span class="c">시작 시점
+        <button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button>
+        <div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</div>
+      </span>
+      <span class="c">시작 시간
+        <button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button>
+        <div class="infoPopover">이 작업을 실제로 시작한 시각</div>
+      </span>
       <span class="c">이전 기록<br>으로부터</span>
     </div>
   `;
@@ -472,15 +549,27 @@ function renderLog(data) {
       `;
     }
   }
-  html += `
-    <div class="footnotes">
-      <span>시작 시점 · 이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</span>
-      <span>시작 시간 · 이 작업을 실제로 시작한 시각</span>
-    </div>
-  `;
-
   document.getElementById('logBody').innerHTML = html;
   document.getElementById('logCard').style.display = '';
+  initInfoPopover();
+}
+
+function initInfoPopover() {
+  document.querySelectorAll('.infoBtn').forEach((btn) => {
+    const popover = btn.nextElementSibling;
+    if (!popover) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = popover.classList.contains('open');
+      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
+      if (!wasOpen) popover.classList.add('open');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.c')) {
+      document.querySelectorAll('.infoPopover.open').forEach((p) => p.classList.remove('open'));
+    }
+  });
 }
 
 function escapeHtml(str) {
