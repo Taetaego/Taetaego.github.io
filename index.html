@@ -72,7 +72,7 @@
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
   .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
   #summaryCard.card, #pipelineCard.card, #statsWrap .card, #catCard.card, #logCard.card {
     opacity: 0; animation: cardIn .5s ease both;
   }
@@ -94,7 +94,8 @@
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
 
   /* 히어로: 원형 게이지 */
-  .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; }
+  .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
+  .hero:active { transform: scale(0.995); }
   .donut { flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .donut .in { width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
@@ -110,6 +111,7 @@
   .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
   .cardMeta { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   .pipeCard { display: flex; flex-direction: column; gap: 16px; }
+  #pipelineBody { display: flex; flex-direction: column; gap: 22px; }
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
@@ -132,7 +134,7 @@
   .catCard { display: flex; flex-direction: column; gap: 12px; }
   .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
   .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; }
-  .catChip .mk { width: 17px; height: 17px; border-radius: 5px; background: var(--soft); color: var(--accent2); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+  .catChip .mk { width: 18px; height: 18px; border-radius: 5px; background: var(--soft); display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
   .catChip .cnt { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
 
   /* 작업 기록 */
@@ -154,9 +156,37 @@
     body { padding: 18px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
   }
+
+  /* 웹(데스크톱) 버전: 모바일 카드 구성을 2열로 재배치 */
+  @media (min-width: 900px) {
+    body { padding: 48px 32px 80px; align-items: flex-start; }
+    .page {
+      max-width: 980px;
+      display: grid;
+      grid-template-columns: minmax(320px, 400px) 1fr;
+      grid-template-areas:
+        "topbar topbar"
+        "hero   stats"
+        "pipe   cat"
+        "pipe   log";
+      align-items: start;
+      gap: 16px;
+    }
+    .topbar { grid-area: topbar; padding: 0 4px 4px; }
+    #summaryCard { grid-area: hero; }
+    #pipelineCard { grid-area: pipe; }
+    #statsWrap { grid-area: stats; }
+    #catCard { grid-area: cat; }
+    #logCard { grid-area: log; }
+    .hero { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .donut { width: 128px; height: 128px; }
+    .donut .in { width: 98px; height: 98px; }
+    .donut .pct { font-size: 28px; }
+  }
 </style>
 </head>
 <body>
+  <canvas id="fxCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
     <div class="topbar">
       <div class="brand"><span class="mark">TT</span>태태고 편집실</div>
@@ -166,7 +196,7 @@
       </div>
     </div>
 
-    <div class="card hero" id="summaryCard">
+    <div class="card hero" id="summaryCard" title="클릭하면 폭죽 한 번 더">
       <div class="empty">불러오는 중…</div>
     </div>
 
@@ -196,7 +226,12 @@
   </div>
 
 <script>
+let reducedMotion = false;
+let heroPct = 0;
+let heroCompleted = false;
+
 async function main() {
+  reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const summaryCard = document.getElementById('summaryCard');
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -206,6 +241,8 @@ async function main() {
     renderStats(data);
     renderCategoryChips(data);
     renderLog(data);
+    summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
+    setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   }
@@ -256,6 +293,24 @@ function formatDayLabel(iso) {
   return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`;
 }
 
+const SYMBOL_EMOJI = {
+  'scissors': '✂️',
+  'captions.bubble': '💬',
+  'photo.on.rectangle': '🎞️',
+  'text.badge.checkmark': '✅',
+  'paintpalette': '🎨',
+  'star.bubble': '⭐',
+  'map': '🗺️',
+  'music.note': '🎵',
+  'checkmark.seal': '🔎',
+  'text.below.photo': '🖼️',
+  'flag': '🚩',
+};
+
+function categoryIcon(symbolName) {
+  return SYMBOL_EMOJI[symbolName] || '🔧';
+}
+
 function pipelineProgress(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return null;
@@ -272,11 +327,13 @@ function renderSummary(cardEl, data) {
   const pct = progress ? progress.pct : 0;
   const statusLabel = isCompleted ? '완료' : '진행중';
   const stageText = isCompleted ? null : data.currentStage;
+  heroPct = pct;
+  heroCompleted = isCompleted;
 
   cardEl.innerHTML = `
-    <div class="donut" style="background: conic-gradient(var(--accent) 0 ${pct}%, var(--surface2) ${pct}% 100%)">
+    <div class="donut" id="donutGauge" style="background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
       <div class="in">
-        <span class="pct mono">${pct}%</span>
+        <span class="pct mono" id="donutPct">0%</span>
         <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
       </div>
     </div>
@@ -348,14 +405,16 @@ function renderCategoryChips(data) {
   if (entries.length === 0) return;
 
   const counts = new Map();
+  const symbolByName = new Map();
   for (const e of entries) {
     const name = e.category || '체크포인트';
     counts.set(name, (counts.get(name) || 0) + 1);
+    if (!symbolByName.has(name)) symbolByName.set(name, e.categorySymbol);
   }
 
   const html = Array.from(counts.entries()).map(([name, count]) => {
-    const mark = name.slice(0, 1);
-    return `<span class="catChip"><span class="mk">${escapeHtml(mark)}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
+    const icon = categoryIcon(symbolByName.get(name));
+    return `<span class="catChip"><span class="mk">${icon}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
   }).join('');
 
   document.getElementById('catBody').innerHTML = html;
@@ -444,6 +503,203 @@ function applyTheme(mode) {
     if (btn) applyTheme(btn.dataset.mode);
   });
 })();
+
+/* ===== 폭죽 소리 (브라우저 정책상 사용자가 한 번 상호작용한 뒤에만 재생됨) ===== */
+let actx = null;
+function unlockAudio() {
+  if (actx) { if (actx.state === 'suspended') actx.resume(); return; }
+  try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; }
+}
+document.addEventListener('click', unlockAudio);
+document.addEventListener('touchstart', unlockAudio, { passive: true });
+
+function playBoom(big) {
+  if (!actx || actx.state !== 'running') return;
+  const now = actx.currentTime;
+  const dur = big ? 0.55 : 0.32;
+
+  const bufferSize = Math.floor(actx.sampleRate * dur);
+  const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+  const noise = actx.createBufferSource();
+  noise.buffer = buffer;
+  const noiseFilter = actx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.value = big ? 900 : 1500;
+  noiseFilter.Q.value = 0.6;
+  const noiseGain = actx.createGain();
+  noiseGain.gain.setValueAtTime(big ? 0.45 : 0.22, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+  noise.connect(noiseFilter).connect(noiseGain).connect(actx.destination);
+  noise.start(now);
+
+  const osc = actx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(big ? 130 : 170, now);
+  osc.frequency.exponentialRampToValueAtTime(40, now + dur * 0.8);
+  const oscGain = actx.createGain();
+  oscGain.gain.setValueAtTime(big ? 0.3 : 0.14, now);
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + dur * 0.7);
+  osc.connect(oscGain).connect(actx.destination);
+  osc.start(now);
+  osc.stop(now + dur);
+}
+
+function playLaunch() {
+  if (!actx || actx.state !== 'running') return;
+  const now = actx.currentTime;
+  const osc = actx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(360, now);
+  osc.frequency.exponentialRampToValueAtTime(900, now + 0.35);
+  const g = actx.createGain();
+  g.gain.setValueAtTime(0.001, now);
+  g.gain.linearRampToValueAtTime(0.05, now + 0.05);
+  g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  osc.connect(g).connect(actx.destination);
+  osc.start(now);
+  osc.stop(now + 0.4);
+}
+
+/* ===== 폭죽 (완료된 프로젝트일 때만) ===== */
+const FX_HUES = [0, 25, 48, 140, 165, 195, 220, 275, 320];
+let fx = null;
+let fxTimer = null;
+
+function initFx() {
+  if (fx) return fx;
+  const cv = document.getElementById('fxCanvas');
+  if (!cv) return null;
+  const ctx = cv.getContext('2d');
+  fx = { cv, ctx, ps: [], rs: [], t: null, w: 0, h: 0 };
+
+  fx.sizeFn = () => {
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const w = window.innerWidth, h = window.innerHeight;
+    cv.width = Math.max(1, w * dpr);
+    cv.height = Math.max(1, h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    fx.w = w; fx.h = h;
+  };
+  fx.sizeFn();
+  window.addEventListener('resize', fx.sizeFn);
+
+  fx.boom = (x, y, big) => {
+    playBoom(big);
+    const n = big ? 130 : 80;
+    const hue = FX_HUES[Math.floor(Math.random() * FX_HUES.length)];
+    const hue2 = Math.random() < 0.35 ? FX_HUES[Math.floor(Math.random() * FX_HUES.length)] : hue;
+    for (let i = 0; i < n; i++) {
+      const a = (Math.PI * 2 * i) / n + Math.random() * 0.25;
+      const sp = (big ? 4.8 : 3.4) * (0.35 + Math.random() * 0.65);
+      const h = (i % 2 === 0 ? hue : hue2) + Math.random() * 18 - 9;
+      fx.ps.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, dec: 0.0042 + Math.random() * 0.0046, hue: h, r: big ? 2.6 : 2.0, tw: Math.random() < 0.45 ? 6 + Math.random() * 7 : 0, ph: Math.random() * 6.28, t: 0 });
+    }
+    for (let i = 0; i < (big ? 22 : 12); i++) {
+      const a = Math.random() * Math.PI * 2, sp = 0.8 + Math.random() * 0.9;
+      fx.ps.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, dec: 0.0036 + Math.random() * 0.004, hue: 48 + Math.random() * 12, r: 1.6, tw: 9, ph: Math.random() * 6.28, t: 0 });
+    }
+    if (big) {
+      [420, 780].forEach(t => setTimeout(() => {
+        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false);
+        fx.kick();
+      }, t));
+    }
+  };
+
+  fx.rocket = () => {
+    playLaunch();
+    const page = document.querySelector('.page');
+    const r = page ? page.getBoundingClientRect() : null;
+    const cx = r ? r.left + r.width / 2 : fx.w / 2;
+    const half = r ? Math.min(fx.w * 0.48, r.width * 0.75) : fx.w * 0.4;
+    const x = Math.max(12, Math.min(fx.w - 12, cx + (Math.random() * 2 - 1) * half));
+    fx.rs.push({ x, y: fx.h + 8, vx: (Math.random() - 0.5) * 1.0, vy: -(7.4 + Math.random() * 1.8), ty: fx.h * (0.1 + Math.random() * 0.24) });
+  };
+
+  const step = () => {
+    ctx.clearRect(0, 0, fx.w, fx.h);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+    for (let i = fx.rs.length - 1; i >= 0; i--) {
+      const r = fx.rs[i];
+      r.x += r.vx; r.y += r.vy; r.vy += 0.055;
+      ctx.strokeStyle = 'rgba(140,234,183,0.9)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.vx * 2.6, r.y - r.vy * 2.6); ctx.stroke();
+      if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55); }
+    }
+    for (let i = fx.ps.length - 1; i >= 0; i--) {
+      const p = fx.ps[i];
+      p.px = p.x; p.py = p.y;
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.966; p.vy = p.vy * 0.966 + 0.022;
+      p.life -= p.dec;
+      p.t += 1;
+      if (p.life <= 0) { fx.ps.splice(i, 1); continue; }
+      const flick = p.tw ? (0.62 + 0.38 * Math.sin(p.t / p.tw * 6.28 + p.ph)) : 1;
+      ctx.strokeStyle = 'hsla(' + p.hue + ',90%,' + (52 + p.life * 26) + '%,' + (p.life * flick) + ')';
+      ctx.lineWidth = p.r * p.life + 0.4;
+      ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
+    }
+    if (fx.ps.length || fx.rs.length) fx.t = requestAnimationFrame(step);
+    else { fx.t = null; ctx.clearRect(0, 0, fx.w, fx.h); }
+  };
+  fx.kick = () => { if (!fx.t) fx.t = requestAnimationFrame(step); };
+  return fx;
+}
+
+function startAmbientFireworks() {
+  if (fxTimer || reducedMotion) return;
+  fxTimer = setInterval(() => {
+    if (document.hidden) return;
+    const f = initFx();
+    if (!f) return;
+    f.rocket(); f.kick();
+    setTimeout(() => { f.rocket(); f.kick(); }, 500 + Math.random() * 500);
+    if (Math.random() < 0.6) setTimeout(() => { f.rocket(); f.kick(); }, 1300 + Math.random() * 500);
+  }, 2800);
+}
+
+function runGauge(target, fire) {
+  const el = document.getElementById('donutPct');
+  const dn = document.getElementById('donutGauge');
+  if (!el || !dn) return;
+  if (reducedMotion) {
+    el.textContent = target + '%';
+    dn.style.background = `conic-gradient(var(--accent) 0 ${target}%, var(--surface2) ${target}% 100%)`;
+    return;
+  }
+  const t0 = performance.now(), dur = 1500;
+  const tick = now => {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - k, 3);
+    const p = e * target;
+    el.textContent = Math.round(p) + '%';
+    dn.style.background = `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
+    if (k < 1) requestAnimationFrame(tick);
+    else if (fire) {
+      const f = initFx();
+      if (f) {
+        const r = dn.getBoundingClientRect();
+        f.boom(r.left + r.width / 2, r.top + r.height / 2, true);
+        f.kick();
+      }
+    }
+  };
+  requestAnimationFrame(tick);
+}
+
+function celebrate(targetPct, isCompleted) {
+  const fire = !reducedMotion && isCompleted;
+  if (fire) {
+    const f = initFx();
+    if (f) [0, 250, 550, 900, 1250, 1650, 2100, 2550, 3050, 3600, 4200, 4800].forEach(d => setTimeout(() => { f.rocket(); f.kick(); }, d));
+    startAmbientFireworks();
+  }
+  runGauge(targetPct, fire);
+}
 
 main();
 </script>
