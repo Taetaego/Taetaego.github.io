@@ -27,6 +27,8 @@
     --on-accent: #08120c;
     --tg-on-bg: #24322a;
     --tg-on-ink: #8ceab7;
+    --warn: #e8b54a;
+    --warn-soft: rgba(232,181,74,0.16);
   }
   html[data-theme="light"] {
     --bg: #eef3ee;
@@ -43,6 +45,8 @@
     --on-accent: #ffffff;
     --tg-on-bg: #ffffff;
     --tg-on-ink: #0b5c36;
+    --warn: #a3690c;
+    --warn-soft: rgba(163,105,12,0.14);
   }
   @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
@@ -60,6 +64,8 @@
       --on-accent: #08120c;
       --tg-on-bg: #24322a;
       --tg-on-ink: #8ceab7;
+      --warn: #e8b54a;
+      --warn-soft: rgba(232,181,74,0.16);
     }
   }
   * { box-sizing: border-box; }
@@ -82,6 +88,9 @@
   #catCard.card { animation-delay: .12s; }
   #logCard.card { animation-delay: .18s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
+  @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 75%, 100% { transform: scale(2.2); opacity: 0; } }
+  @keyframes sparkTwinkle { 0%, 100% { opacity: 0.25; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
@@ -128,9 +137,22 @@
   .pipeItem { position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 0; }
   .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
+  .pipeItem.current .dot {
+    position: relative; background: var(--surface); border: 2px solid var(--warn); color: transparent;
+    animation: warnGlow 1.8s ease-in-out infinite;
+  }
+  .pipeItem.current .dot::before {
+    content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--warn);
+    animation: ringPing 1.8s cubic-bezier(0,0,0.2,1) infinite;
+  }
+  .pipeItem.current .dot::after {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--warn);
+    animation: sparkTwinkle 1.2s ease-in-out infinite;
+  }
   .pipeItem .n { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   .pipeItem .name { font-size: 13px; font-weight: 500; color: var(--ink); }
   .pipeItem.todo .name { color: var(--ink3); }
+  .pipeItem.current .name { color: var(--ink); }
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -433,8 +455,10 @@ function renderPipeline(data) {
   for (const groupName of Object.keys(groups)) {
     const items = groups[groupName].map(c => {
       const isDone = c.index < lastTouchedIndex || (c.index === lastTouchedIndex && data.status === 'completed');
+      const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
+      const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      return `<div class="pipeItem ${isDone ? '' : 'todo'}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeGroup">
