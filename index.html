@@ -175,15 +175,16 @@
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
   .logHead { display: grid; grid-template-columns: 1fr 42px 62px 58px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
-  .logHead .c { position: relative; text-align: center; line-height: 1.25; }
+  .logHead .c { text-align: center; line-height: 1.25; }
+  .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
-    position: absolute; top: -5px; right: -3px; width: 11px; height: 11px; border-radius: 50%;
+    position: absolute; top: -5px; right: -12px; width: 11px; height: 11px; border-radius: 50%;
     border: none; background: none; color: var(--ink3); font-size: 7px; font-weight: 700;
     cursor: pointer; padding: 0; line-height: 1;
   }
   .logHead .infoBtn:hover { color: var(--accent2); }
   .infoPopover {
-    display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 180px; z-index: 20;
+    display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: max-content; max-width: 190px; z-index: 20;
     background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; padding: 11px;
     font-size: 10.5px; line-height: 1.5; color: var(--ink2); text-align: left; font-weight: 400;
   }
@@ -540,14 +541,8 @@ function renderLog(data) {
   let html = `
     <div class="logHead">
       <span>카테고리</span>
-      <span class="c">시작 시점
-        <button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button>
-        <div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지 편집되어 있었는지 (영상 길이 기준)</div>
-      </span>
-      <span class="c">시작 시간
-        <button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button>
-        <div class="infoPopover">이 작업을 실제로 시작한 시각</div>
-      </span>
+      <span class="c"><span class="lbl">시작 시점<button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button><div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지<br>편집되어 있었는지 (영상 길이 기준)</div></span></span>
+      <span class="c"><span class="lbl">시작 시간<button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button><div class="infoPopover">이 작업을 실제로 시작한 시각</div></span></span>
       <span class="c">이전 기록<br>으로부터</span>
     </div>
   `;
