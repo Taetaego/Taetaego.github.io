@@ -47,7 +47,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "베경음 & 마무리 점검",
+      "name" : "배경음 & 마무리 점검",
       "symbolName" : "music.note"
     },
     {
@@ -73,7 +73,7 @@
     }
   ],
   "entryCount" : 1,
-  "lastUpdate" : "2026-08-27T14:07:10Z",
+  "lastUpdate" : "2026-08-27T15:35:19Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카라인 & 무덤",
   "status" : "in_progress"
