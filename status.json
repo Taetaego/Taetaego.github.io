@@ -2,12 +2,17 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
+      "name" : "자막 추출",
+      "symbolName" : "captions.bubble"
+    },
+    {
+      "group" : "컷 편집",
       "name" : "1차 컷편집",
       "symbolName" : "scissors"
     },
     {
       "group" : "컷 편집",
-      "name" : "2차 컷편집",
+      "name" : "2차 세부 컷편집",
       "symbolName" : "scissors"
     },
     {
