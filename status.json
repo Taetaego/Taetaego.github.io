@@ -61,13 +61,20 @@
       "symbolName" : "text.below.photo"
     }
   ],
-  "createdAt" : "2026-08-27T13:50:30Z",
+  "createdAt" : "2026-08-27T14:06:26Z",
+  "currentStage" : "자막 추출",
   "entries" : [
-
+    {
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "0분",
+      "timestamp" : "2026-08-27T14:06:26Z",
+      "videoLength" : "0"
+    }
   ],
-  "entryCount" : 0,
-  "lastUpdate" : "2026-08-27T13:50:55Z",
+  "entryCount" : 1,
+  "lastUpdate" : "2026-08-27T14:06:26Z",
   "originalLength" : "4:32",
-  "projectTopic" : "페루 나스카라인 경비행기 & 무덤",
+  "projectTopic" : "페루 나스카라인 & 무덤",
   "status" : "in_progress"
 }
