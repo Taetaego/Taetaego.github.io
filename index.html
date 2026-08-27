@@ -105,8 +105,13 @@
   /* 히어로: 원형 게이지 */
   .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
   .hero:active { transform: scale(0.995); }
-  .donut { flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .donut .in { width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .donut { position: relative; overflow: hidden; flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .donut::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.4) 6deg, transparent 26deg);
+    animation: donutSheen 3.6s linear infinite;
+  }
+  .donut .in { position: relative; z-index: 2; width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
   .donut .steps { font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
   .heroRight { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
@@ -156,6 +161,28 @@
     animation: labelFade 1.8s ease-in-out infinite;
   }
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @keyframes donutSheen { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .pipeItem.current { position: relative; }
+  .pipeItem.current::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -30%; width: 30%; z-index: 0; pointer-events: none;
+    background: linear-gradient(100deg, transparent, var(--warn-soft), transparent);
+    animation: shimmerSweep 3.6s ease-in-out infinite;
+  }
+  @keyframes shimmerSweep { 0% { left: -30%; } 55%, 100% { left: 110%; } }
+  .pipeItem.current .dot .spark {
+    position: absolute; top: 50%; left: 50%; width: 3px; height: 3px; border-radius: 50%;
+    background: var(--warn); opacity: 0; pointer-events: none;
+    animation: sparkBurst 1.8s cubic-bezier(0,0,0.2,1) infinite;
+    animation-delay: -0.45s;
+  }
+  .pipeItem.current .dot .spark.s1 { --dx: 13px; --dy: -13px; }
+  .pipeItem.current .dot .spark.s2 { --dx: 13px; --dy: 13px; }
+  .pipeItem.current .dot .spark.s3 { --dx: -13px; --dy: 13px; }
+  .pipeItem.current .dot .spark.s4 { --dx: -13px; --dy: -13px; }
+  @keyframes sparkBurst {
+    0% { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 0.9; }
+    50%, 100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
+  }
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -463,7 +490,8 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      const sparks = isCurrent ? '<span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span><span class="spark s4"></span>' : '';
+      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}${sparks}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeGroup">
