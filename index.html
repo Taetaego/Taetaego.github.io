@@ -88,7 +88,7 @@
   #catCard.card { animation-delay: .12s; }
   #logCard.card { animation-delay: .18s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
+  @keyframes ringPing { 0%, 100% { transform: scale(0.7); opacity: 0; } 50% { transform: scale(2.2); opacity: 0.95; } }
   @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
@@ -149,7 +149,7 @@
   .pipeItem.todo .name { color: var(--ink3); }
   .pipeItem.current .name { color: var(--ink); display: inline-flex; align-items: center; }
   .pipeItem.current .name::after {
-    content: "진행 중"; display: inline-flex; align-items: center; margin-left: 8px; font-size: 10px; font-weight: 700; color: var(--warn);
+    content: "진행중"; display: inline-flex; align-items: center; margin-left: 8px; font-size: 10px; font-weight: 700; color: var(--warn);
     background: var(--warn-soft); padding: 2px 8px; border-radius: 99px; line-height: 1.4;
     animation: labelFade 1.8s ease-in-out infinite;
   }
