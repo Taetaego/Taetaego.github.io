@@ -61,19 +61,19 @@
       "symbolName" : "text.below.photo"
     }
   ],
-  "createdAt" : "2026-08-27T01:35:26Z",
+  "createdAt" : "2026-08-27T13:35:26Z",
   "currentStage" : "자막 추출",
   "entries" : [
     {
       "category" : "자막 추출",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "12시간 31분",
+      "elapsed" : "31분",
       "timestamp" : "2026-08-27T14:06:26Z",
       "videoLength" : "0"
     }
   ],
   "entryCount" : 1,
-  "lastUpdate" : "2026-08-27T14:06:41Z",
+  "lastUpdate" : "2026-08-27T14:06:53Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카라인 & 무덤",
   "status" : "in_progress"
