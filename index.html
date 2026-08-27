@@ -156,20 +156,6 @@
     animation: labelFade 1.8s ease-in-out infinite;
   }
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
-  .pipeItem.current .dot .spark {
-    position: absolute; top: 50%; left: 50%; width: 3px; height: 3px; border-radius: 50%;
-    background: var(--warn); opacity: 0; pointer-events: none;
-    animation: sparkBurst 1.8s cubic-bezier(0,0,0.2,1) infinite;
-    animation-delay: -0.45s;
-  }
-  .pipeItem.current .dot .spark.s1 { --dx: 13px; --dy: -13px; }
-  .pipeItem.current .dot .spark.s2 { --dx: 13px; --dy: 13px; }
-  .pipeItem.current .dot .spark.s3 { --dx: -13px; --dy: 13px; }
-  .pipeItem.current .dot .spark.s4 { --dx: -13px; --dy: -13px; }
-  @keyframes sparkBurst {
-    0% { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 0.9; }
-    50%, 100% { transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
-  }
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -477,8 +463,7 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      const sparks = isCurrent ? '<span class="spark s1"></span><span class="spark s2"></span><span class="spark s3"></span><span class="spark s4"></span>' : '';
-      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}${sparks}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeGroup">
