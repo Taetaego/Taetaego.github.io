@@ -61,20 +61,131 @@
       "symbolName" : "text.below.photo"
     }
   ],
-  "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "자막 추출",
+  "completedAt" : "2026-08-18T11:37:40Z",
+  "createdAt" : "2026-08-16T13:19:50Z",
+  "currentStage" : "완료",
+  "detailCutLength" : "1:06",
+  "detailCutRatio" : 7.8106508875739635,
   "entries" : [
     {
-      "category" : "자막 추출",
+      "category" : "자막 입력",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "0분",
-      "timestamp" : "2026-08-27T13:35:26Z",
+      "elapsed" : "13분",
+      "timestamp" : "2026-08-16T13:32:51Z",
+      "videoLength" : "23"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 57분",
+      "timestamp" : "2026-08-16T15:29:53Z",
+      "videoLength" : "32"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "7분",
+      "timestamp" : "2026-08-16T15:37:06Z",
+      "videoLength" : "32"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "9분",
+      "timestamp" : "2026-08-16T15:46:31Z",
+      "videoLength" : "33"
+    },
+    {
+      "category" : "추가 영상 삽입",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "1시간 2분",
+      "timestamp" : "2026-08-16T16:49:04Z",
+      "videoLength" : "39"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "20시간 14분",
+      "timestamp" : "2026-08-17T13:03:33Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "2시간 25분",
+      "timestamp" : "2026-08-17T15:28:34Z",
+      "videoLength" : "6"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "44분",
+      "timestamp" : "2026-08-17T16:13:32Z",
+      "videoLength" : "8"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "33분",
+      "timestamp" : "2026-08-17T16:47:21Z",
+      "videoLength" : "8"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "1시간 29분",
+      "timestamp" : "2026-08-17T18:16:30Z",
+      "videoLength" : "15"
+    },
+    {
+      "category" : "배경음 & 마무리 점검",
+      "categorySymbol" : "music.note",
+      "elapsed" : "1시간 23분",
+      "timestamp" : "2026-08-17T19:40:14Z",
+      "videoLength" : "31"
+    },
+    {
+      "category" : "최종 점검",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "23분",
+      "timestamp" : "2026-08-17T20:03:36Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "최종 점검",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "1시간 43분",
+      "timestamp" : "2026-08-17T21:47:31Z",
+      "videoLength" : "12"
+    },
+    {
+      "category" : "썸네일\/제목 기획",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "29분",
+      "timestamp" : "2026-08-17T22:16:37Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일\/제목 기획",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "11시간 53분",
+      "timestamp" : "2026-08-18T10:09:51Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "1시간 27분",
+      "timestamp" : "2026-08-18T11:37:40Z",
+      "videoLength" : "38"
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-08-27T15:35:19Z",
-  "originalLength" : "4:32",
-  "projectTopic" : "페루 나스카라인 & 무덤",
-  "status" : "in_progress"
+  "entryCount" : 16,
+  "finalLength" : "38",
+  "finalRatioVsDetailCut" : 57.57575757575758,
+  "finalRatioVsOriginal" : 4.497041420118343,
+  "lastUpdate" : "2026-08-27T15:38:58Z",
+  "originalLength" : "14:05",
+  "projectTopic" : "쿠스코 인티라이미 축제 마지막 (테스트)",
+  "status" : "completed"
 }
