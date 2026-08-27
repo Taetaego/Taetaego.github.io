@@ -78,6 +78,7 @@
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
   .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
+  .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
   #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap .card, #catCard.card, #logCard.card {
     opacity: 0; animation: cardIn .5s ease both;
@@ -210,19 +211,13 @@
       grid-template-columns: minmax(320px, 400px) 1fr;
       grid-template-areas:
         "topbar topbar"
-        "hero   stats"
-        "done   cat"
-        "pipe   log";
+        "left   right";
       align-items: start;
       gap: 16px;
     }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
-    #summaryCard { grid-area: hero; }
-    #doneCard { grid-area: done; }
-    #pipelineCard { grid-area: pipe; }
-    #statsWrap { grid-area: stats; }
-    #catCard { grid-area: cat; }
-    #logCard { grid-area: log; }
+    .colLeft { grid-area: left; display: flex; flex-direction: column; gap: 16px; }
+    .colRight { grid-area: right; display: flex; flex-direction: column; gap: 16px; }
     .hero { flex-direction: column; align-items: flex-start; gap: 20px; }
     .donut { width: 128px; height: 128px; }
     .donut .in { width: 98px; height: 98px; }
@@ -241,37 +236,41 @@
       </div>
     </div>
 
-    <div class="card hero" id="summaryCard" title="클릭하면 폭죽 한 번 더">
-      <div class="empty">불러오는 중…</div>
-    </div>
-
-    <div class="card doneCard" id="doneCard" style="display:none">
-      <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
-      <div class="doneList" id="doneList"></div>
-    </div>
-
-    <div class="card pipeCard" id="pipelineCard" style="display:none">
-      <div class="cardHead">
-        <span class="cardTitle">전체 진행 단계</span>
-        <span class="cardMeta mono" id="pipelineMeta"></span>
+    <div class="colLeft">
+      <div class="card hero" id="summaryCard" title="클릭하면 폭죽 한 번 더">
+        <div class="empty">불러오는 중…</div>
       </div>
-      <div id="pipelineBody"></div>
-    </div>
 
-    <div id="statsWrap">
-      <div class="stats" id="statsBody"></div>
-    </div>
-
-    <div class="card catCard" id="catCard" style="display:none">
-      <div class="cardHead">
-        <span class="cardTitle">카테고리별 기록</span>
-        <span class="cardMeta mono" id="catMeta"></span>
+      <div class="card doneCard" id="doneCard" style="display:none">
+        <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
+        <div class="doneList" id="doneList"></div>
       </div>
-      <div class="catChips" id="catBody"></div>
+
+      <div class="card pipeCard" id="pipelineCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">전체 진행 단계</span>
+          <span class="cardMeta mono" id="pipelineMeta"></span>
+        </div>
+        <div id="pipelineBody"></div>
+      </div>
     </div>
 
-    <div class="card logCard" id="logCard" style="display:none">
-      <div id="logBody"></div>
+    <div class="colRight">
+      <div id="statsWrap">
+        <div class="stats" id="statsBody"></div>
+      </div>
+
+      <div class="card catCard" id="catCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">카테고리별 기록</span>
+          <span class="cardMeta mono" id="catMeta"></span>
+        </div>
+        <div class="catChips" id="catBody"></div>
+      </div>
+
+      <div class="card logCard" id="logCard" style="display:none">
+        <div id="logBody"></div>
+      </div>
     </div>
   </div>
 
