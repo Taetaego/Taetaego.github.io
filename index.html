@@ -111,6 +111,7 @@
   .donut .steps { font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
   .heroRight { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
   .statusChip { align-self: flex-start; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: var(--soft); color: var(--accent2); }
+  .statusChip.wip { background: var(--warn-soft); color: var(--warn); }
   .topic { font-size: 16.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; word-break: keep-all; }
   .stageLabel { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
   .stageName { font-size: 12.5px; font-weight: 600; color: var(--accent2); }
@@ -148,6 +149,12 @@
   .pipeItem .name { font-size: 13px; font-weight: 500; color: var(--ink); }
   .pipeItem.todo .name { color: var(--ink3); }
   .pipeItem.current .name { color: var(--ink); }
+  .pipeItem.current .name::after {
+    content: "진행 중"; margin-left: 8px; font-size: 10px; font-weight: 700; color: var(--warn);
+    background: var(--warn-soft); padding: 2px 8px; border-radius: 99px;
+    animation: labelFade 1.8s ease-in-out infinite;
+  }
+  @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -416,6 +423,10 @@ function renderSummary(cardEl, data) {
   heroPct = pct;
   heroCompleted = isCompleted;
 
+  const entries = data.entries || [];
+  const lastEntryTime = entries.length ? entries[entries.length - 1].timestamp : null;
+  const chipTime = isCompleted ? data.lastUpdate : (lastEntryTime ?? data.lastUpdate);
+
   cardEl.innerHTML = `
     <div class="donut" id="donutGauge" style="background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
       <div class="in">
@@ -424,7 +435,7 @@ function renderSummary(cardEl, data) {
       </div>
     </div>
     <div class="heroRight">
-      <span class="statusChip">${statusLabel}${data.lastUpdate ? ` · ${relativeTime(data.lastUpdate)}` : ''}</span>
+      <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
       <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
