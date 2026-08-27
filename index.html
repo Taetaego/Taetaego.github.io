@@ -89,6 +89,7 @@
   #logCard.card { animation-delay: .18s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 75%, 100% { transform: scale(2.2); opacity: 0; } }
+  @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
@@ -96,7 +97,6 @@
   /* 상단 바 */
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
   .brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
-  .brand .mark { width: 26px; height: 26px; border-radius: 8px; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font: 700 10.5px/1 'JetBrains Mono', monospace; }
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
@@ -138,7 +138,7 @@
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
   .pipeItem.current .dot {
     position: relative; background: var(--surface); border: 2px solid var(--warn); color: transparent;
-    animation: labelFade 1.8s ease-in-out infinite;
+    animation: labelFade 1.8s ease-in-out infinite, warnGlow 1.8s ease-in-out infinite;
   }
   .pipeItem.current .dot::before {
     content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--warn);
@@ -233,7 +233,7 @@
   <canvas id="fxCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
     <div class="topbar">
-      <div class="brand"><span class="mark">TT</span>태태고 편집실</div>
+      <div class="brand">태태고 편집실</div>
       <div class="themeToggle" id="themeToggle">
         <button type="button" data-mode="light">LIGHT</button>
         <button type="button" data-mode="dark">DARK</button>
