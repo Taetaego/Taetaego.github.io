@@ -62,7 +62,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "1차 컷편집",
+  "currentStage" : "자막 추출",
   "entries" : [
     {
       "category" : "자막 추출",
@@ -72,15 +72,15 @@
       "videoLength" : ""
     },
     {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
       "elapsed" : "12시간 33분",
       "timestamp" : "2026-08-28T02:08:45Z",
-      "videoLength" : "0"
+      "videoLength" : ""
     }
   ],
   "entryCount" : 2,
-  "lastUpdate" : "2026-08-28T02:08:50Z",
+  "lastUpdate" : "2026-08-28T02:10:12Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
