@@ -18,7 +18,7 @@
     --surface2: #1a2426;
     --ink: #eef5f2;
     --ink2: #9fb3ae;
-    --ink3: #647672;
+    --ink3: #758984;
     --line: rgba(255,255,255,0.08);
     --line2: rgba(255,255,255,0.16);
     --accent: #34e0b0;
@@ -36,7 +36,7 @@
     --surface2: #e9efed;
     --ink: #0b1615;
     --ink2: #4a615c;
-    --ink3: #6f8580;
+    --ink3: #5f736e;
     --line: rgba(11,22,21,0.08);
     --line2: rgba(11,22,21,0.18);
     --accent: #0f9b78;
@@ -55,7 +55,7 @@
       --surface2: #1a2426;
       --ink: #eef5f2;
       --ink2: #9fb3ae;
-      --ink3: #647672;
+      --ink3: #758984;
       --line: rgba(255,255,255,0.08);
       --line2: rgba(255,255,255,0.16);
       --accent: #34e0b0;
@@ -109,12 +109,12 @@
   .donut { flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .donut .in { width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
-  .donut .steps { font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
+  .donut .steps { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
   .heroRight { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
   .statusChip { align-self: flex-start; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 99px; background: var(--soft); color: var(--accent2); }
   .statusChip.wip { background: var(--warn-soft); color: var(--warn); animation: labelFade 1.8s ease-in-out infinite; }
   .topic { font-size: 16.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; word-break: keep-all; }
-  .stageLabel { font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+  .stageLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
   .stageName { font-size: 12.5px; font-weight: 600; color: var(--accent2); }
 
   /* 프로젝트 완료 요약 */
@@ -128,7 +128,7 @@
   /* 전체 진행 단계 */
   .cardHead { display: flex; align-items: baseline; justify-content: space-between; }
   .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
-  .cardMeta { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .cardMeta { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   .pipeCard { display: flex; flex-direction: column; gap: 16px; }
   #pipelineBody { display: flex; flex-direction: column; gap: 22px; }
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
@@ -147,7 +147,7 @@
     animation: ringPing 1.8s cubic-bezier(0,0,0.2,1) infinite;
     animation-delay: -0.45s;
   }
-  .pipeItem .n { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .pipeItem .n { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   .pipeItem .name { font-size: 13px; font-weight: 500; color: var(--ink); }
   .pipeItem.todo .name { color: var(--ink3); }
   .pipeItem.current .name { color: var(--ink); display: inline-flex; align-items: center; }
@@ -170,11 +170,11 @@
   .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
   .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; }
   .catChip .mk { width: 18px; height: 18px; border-radius: 5px; background: var(--soft); display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
-  .catChip .cnt { font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .catChip .cnt { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 42px 62px 80px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
+  .logHead { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
   .logHead .c { text-align: center; line-height: 1.25; }
   .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
@@ -191,12 +191,12 @@
   .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
-  .logRow { display: grid; grid-template-columns: 1fr 42px 62px 80px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
+  .logRow { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
   .logRow:hover { background: var(--soft); }
   .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
-  .logRow .gap { font-size: 9.5px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
+  .logRow .gap { font-size: 10px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
   .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
 
   @media (max-width: 420px) {
@@ -214,16 +214,21 @@
       grid-template-areas:
         "topbar topbar"
         "left   right";
-      align-items: start;
+      align-items: stretch;
       gap: 16px;
     }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
     .colLeft { grid-area: left; display: flex; flex-direction: column; gap: 16px; }
     .colRight { grid-area: right; display: flex; flex-direction: column; gap: 16px; }
+    /* 파이프라인(12단계)이 왼쪽을 길게 끌고 가서 오른쪽 아래가 비는 걸 막는다.
+       작업 기록은 앞으로 계속 쌓이는 표라, 남는 높이를 이 카드가 흡수하는 게 자연스럽다. */
+    #logCard { flex: 1; }
     .hero { flex-direction: column; align-items: flex-start; gap: 20px; }
     .donut { width: 128px; height: 128px; }
     .donut .in { width: 98px; height: 98px; }
     .donut .pct { font-size: 28px; }
+    /* 넓어진 폭을 카테고리 열이 독차지하지 않도록 재배분 (모바일은 고정폭 유지) */
+    .logHead, .logRow { grid-template-columns: minmax(110px, 1.5fr) 1fr 1.1fr 1.2fr; }
   }
 </style>
 </head>
