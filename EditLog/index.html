@@ -135,19 +135,6 @@
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-  /* 밤에 방문했을 때만 떠다니는 반딧불이 (JS가 밤일 때만 레이어를 만든다) */
-  .fireflies { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .firefly {
-    position: absolute; width: 3px; height: 3px; border-radius: 50%;
-    background: #f2e6a0; box-shadow: 0 0 6px 2px rgba(242,230,160,0.55);
-    animation-name: fireflyDrift, fireflyBlink;
-    animation-timing-function: ease-in-out, ease-in-out;
-    animation-iteration-count: infinite, infinite;
-    animation-direction: alternate, alternate;
-  }
-  @keyframes fireflyDrift { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
-  @keyframes fireflyBlink { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.85; } }
-
   /* 맨 아래 이펙트 버튼들 */
   .fxBar { align-self: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
   .fireBtn {
@@ -157,7 +144,11 @@
     font-family: inherit; font-size: 12px; font-weight: 600;
     padding: 9px 18px; transition: transform .15s ease, background-color .15s ease, color .15s ease;
   }
-  .fireBtn:hover { background: var(--soft); color: var(--accent2); }
+  /* 모바일은 진짜 hover가 없어서 탭한 뒤 :hover가 그대로 남는다(초록 배경이 안 지워짐).
+     그래서 hover 스타일은 hover가 되는 기기에서만 적용한다. */
+  @media (hover: hover) {
+    .fireBtn:hover { background: var(--soft); color: var(--accent2); }
+  }
   .fireBtn:active { transform: scale(0.96); }
 
   /* 상단 바 */
@@ -268,17 +259,20 @@
     20% { transform: translateX(-3px); } 40% { transform: translateX(3px); }
     60% { transform: translateX(-2px); } 80% { transform: translateX(2px); }
   }
+  /* 문구가 길어져도 다른 행이 밀리지 않도록 흐름에서 빼고 오른쪽에 겹쳐 놓는다. */
   .pipeItem .poke {
-    white-space: nowrap; font-size: 10px; font-weight: 700; line-height: 1.4;
-    color: var(--warn); background: var(--warn-soft); padding: 2px 8px; border-radius: 99px;
-    opacity: 0; pointer-events: none;
+    position: absolute; right: 0; top: 50%; z-index: 2;
+    max-width: 62%; text-align: right; white-space: normal; word-break: keep-all;
+    font-size: 10px; font-weight: 700; line-height: 1.45;
+    color: var(--warn); background: var(--warn-soft); padding: 3px 9px; border-radius: 11px;
+    opacity: 0; pointer-events: none; transform: translateY(-50%);
   }
-  .pipeItem .poke.show { animation: pokeIn 1.8s ease forwards; }
+  .pipeItem .poke.show { animation: pokeIn 2.6s ease forwards; }
   @keyframes pokeIn {
-    0% { opacity: 0; transform: scale(.8); }
-    14% { opacity: 1; transform: scale(1); }
-    78% { opacity: 1; }
-    100% { opacity: 0; }
+    0% { opacity: 0; transform: translateY(-50%) scale(.86); }
+    10% { opacity: 1; transform: translateY(-50%) scale(1); }
+    84% { opacity: 1; transform: translateY(-50%) scale(1); }
+    100% { opacity: 0; transform: translateY(-50%) scale(1); }
   }
 
   /* 통계 타일 */
@@ -322,7 +316,9 @@
     border: none; background: none; color: var(--ink3); font-size: 7px; font-weight: 700;
     cursor: pointer; padding: 0; line-height: 1;
   }
-  .logHead .infoBtn:hover { color: var(--accent2); }
+  @media (hover: hover) {
+    .logHead .infoBtn:hover { color: var(--accent2); }
+  }
   .infoPopover {
     display: none; position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: max-content; max-width: 190px; z-index: 20;
     background: var(--surface); border: 1px solid var(--line2); border-radius: 14px; padding: 11px;
@@ -341,7 +337,13 @@
     animation: rowIn .35s ease both;
     animation-delay: calc(var(--r, 0) * 40ms);
   }
-  .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
+  @media (hover: hover) {
+    .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
+  }
+  /* 터치 기기에선 길게 눌러도 글자가 선택되지 않게 한다 (데스크톱은 복사 가능하게 유지). */
+  @media (hover: none) {
+    .logRow, .logHead { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  }
   @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   /* 행을 누르면 그 행의 그룹 색으로 번쩍이며 밖으로 퍼진다.
      등장 애니메이션(rowIn)이 fill:both로 transform을 잡고 있어서 배경·그림자만 쓴다. */
@@ -463,8 +465,6 @@
 
     <div class="fxBar" id="fxBar" style="display:none">
       <button type="button" class="fireBtn" id="fireBtn">🎆 폭죽</button>
-      <button type="button" class="fireBtn" id="meteorBtn">🌠 별똥별</button>
-      <button type="button" class="fireBtn" id="fireflyBtn">✨ 반딧불이</button>
     </div>
   </div>
 
@@ -479,9 +479,6 @@ async function main() {
 
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
-  document.getElementById('meteorBtn').addEventListener('click', launchMeteor);
-  document.getElementById('fireflyBtn').addEventListener('click', toggleFireflies);
-  initFireflies();
 
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -944,46 +941,114 @@ function paintTimes() {
   });
 }
 
-/* 30번째에 항복한다. 마지막 문구는 배열 끝에 계속 머문다.
-   누르는 사람을 탓하지 않고, 단계가 스스로를 이야기하는 톤으로 쓴다. */
-const TODO_TAUNTS = [
-  '아직 준비 중이에요',
-  '순서를 기다리고 있어요',
-  '앞 단계가 끝나면 시작해요',
-  '저도 얼른 하고 싶어요',
-  '대기실에서 스트레칭 중',
-  '커피 한 잔 하고 올게요',
-  '아직 워밍업이에요',
-  '차례가 오면 잘할게요',
-  '기다리는 것도 일이죠',
-  '열 번이나 찾아주셨네요',
-  '반가워요',
-  '이렇게 관심받아 본 적 없어요',
-  '기분이 좋아지는데요',
-  '오늘 하루 어떠셨어요',
-  '벌써 절반이네요',
-  '같이 기다려요',
-  '편집은 기다림의 예술이래요',
-  '렌더링도 기다리면 끝나잖아요',
-  '조금씩 가까워지고 있어요',
-  '스무 번째 인사드려요',
-  '슬슬 친해진 것 같아요',
-  '제 이름 기억하시죠',
-  '다음 프로젝트에서도 만나요',
-  '뭔가 일어날 것 같은 예감',
-  '예감이 점점 강해져요',
-  '거의 다 온 것 같은데',
-  '준비물을 챙기는 중이에요',
-  '두 번 남았어요',
-  '한 번만 더요',
-  '알았어요, 할게요',
+/* 아직 시작하지 않은 단계를 누르면 여행에 대한 문구가 하나씩 무작위로 뜬다. */
+const TRAVEL_LINES = [
+  '떠나는 이유는 돌아오기 위해',
+  '낯선 길에서 나를 만난다',
+  '길 위에서는 누구나 처음이다',
+  '오늘의 낯섦이 내일의 그리움',
+  '지도에 없는 길이 제일 좋다',
+  '짐은 가볍게 마음은 넓게',
+  '여행은 돌아온 뒤에 시작된다',
+  '사진보다 오래 남는 건 공기',
+  '길을 잃어야 보이는 것들',
+  '낯선 도시의 첫 아침처럼',
+  '모든 길은 누군가의 일상',
+  '느리게 걸어야 보이는 골목',
+  '돌아가는 길이 더 길었다',
+  '같은 길도 계절마다 다르다',
+  '발끝이 향하는 곳이 방향',
+  '멀리 왔다는 건 착각이다',
+  '길은 끝나도 여행은 남는다',
+  '익숙한 길을 낯설게 보기',
+  '한 걸음이 지도를 바꾼다',
+  '막다른 길에서 배운 것',
+  '스쳐간 얼굴이 오래 남는다',
+  '말이 안 통해도 웃음은 통한다',
+  '낯선 이의 친절을 기억한다',
+  '혼자여도 외롭지 않은 순간',
+  '동행은 목적지를 바꾼다',
+  '누군가의 고향을 지나며',
+  '이름 모를 이에게 받은 길',
+  '같이 본 노을은 두 배가 된다',
+  '헤어짐도 여행의 일부',
+  '다시 만날 것처럼 인사한다',
+  '서두르면 놓치는 풍경',
+  '기다림도 여행의 시간',
+  '해가 뜨는 걸 본 날의 기분',
+  '가장 긴 하루가 가장 짧다',
+  '시계를 보지 않아도 되는 날',
+  '천천히 흘러가는 오후',
+  '밤기차의 창밖 같은 시간',
+  '돌아보면 순식간이었다',
+  '오래 머물수록 깊어진다',
+  '떠날 때를 아는 용기',
+  '낯선 밤은 무섭고 설렌다',
+  '별이 많던 밤을 기억한다',
+  '밤의 도시는 다른 얼굴',
+  '잠들기 아까운 밤이 있다',
+  '새벽 공항의 조용함',
+  '불빛 하나에 안심이 된다',
+  '밤바다 소리만 들리는 곳',
+  '어둠 속에서 더 잘 보인다',
+  '하루의 끝에서 쓰는 기록',
+  '내일이 기대되는 밤',
+  '산은 오를수록 조용해진다',
+  '바다는 언제나 처음 같다',
+  '사막에서 배운 건 인내',
+  '비 오는 날의 도시도 좋다',
+  '구름 아래를 걸어본 날',
+  '초록이 지겨울 틈이 없다',
+  '창밖만 봐도 하루가 간다',
+  '풍경은 마음을 닮는다',
+  '너무 아름다워 말이 없었다',
+  '눈에 담는 게 최선일 때',
+  '그 나라의 아침 냄새',
+  '따뜻한 한 그릇의 위로',
+  '낯선 시장의 활기',
+  '현지의 커피 한 잔',
+  '이름 모를 과일의 맛',
+  '같은 음식도 여기선 다르다',
+  '배고픔도 추억이 된다',
+  '노점의 불빛 앞에서',
+  '물 한 모금이 고마운 날',
+  '식탁에서 배우는 문화',
+  '남기지 않으면 흐려진다',
+  '기록은 두 번째 여행',
+  '사진 한 장에 담긴 하루',
+  '편집하며 다시 걷는 길',
+  '영상은 기억의 지도',
+  '찍을 땐 몰랐던 순간들',
+  '덜어낼수록 선명해진다',
+  '남길 것과 보낼 것',
+  '다시 보면 새로운 장면',
+  '끝맺음도 여행의 일부',
+  '익숙함에서 벗어나는 연습',
+  '불편함이 남기는 것',
+  '계획대로 안 돼도 괜찮다',
+  '그날의 실수도 이야기가 된다',
+  '조금 용감해지는 순간',
+  '두려움 너머의 풍경',
+  '낯섦에 익숙해질 무렵',
+  '비우러 갔다가 채워 온다',
+  '돌아갈 곳이 있어 떠난다',
+  '집이 그리워지는 순간',
+  '짐을 푸는 밤의 여운',
+  '일상이 조금 달라 보인다',
+  '그곳의 시간은 아직 흐른다',
+  '또 가고 싶은 곳이 생겼다',
+  '다음 여행은 이미 시작됐다',
+  '여행은 사람을 바꾼다',
+  '떠나기 전보다 넓어졌다',
+  '기억은 계절처럼 돌아온다',
+  '언젠가 다시 그 길에서',
+  '좋은 여행 되세요',
 ];
 
-/** 아직 안 한 단계를 누르면 흔들리며 한마디 한다. 계속 누르면 멘트가 올라간다. */
+/** 아직 안 한 단계를 누르면 흔들리며 여행 문구를 하나 보여준다. */
 function initTodoPoke() {
   const body = document.getElementById('pipelineBody');
   if (!body) return;
-  let count = 0, resetTimer = null;
 
   // 완료된 단계는 체크가 한 번 더 찍히는 느낌만 준다.
   body.addEventListener('click', (ev) => {
@@ -1005,8 +1070,7 @@ function initTodoPoke() {
       bubble.className = 'poke';
       name.after(bubble);
     }
-    bubble.textContent = TODO_TAUNTS[Math.min(count, TODO_TAUNTS.length - 1)];
-    count++;
+    bubble.textContent = TRAVEL_LINES[Math.floor(Math.random() * TRAVEL_LINES.length)];
 
     // 애니메이션을 매번 처음부터 다시 돌리려면 클래스를 뗐다 붙이면서 리플로우를 강제해야 한다.
     item.classList.remove('poked');
@@ -1014,10 +1078,6 @@ function initTodoPoke() {
     void item.offsetWidth;
     item.classList.add('poked');
     bubble.classList.add('show');
-
-    // 30번까지 가야 하므로 손을 잠깐 멈춰도 진행이 날아가지 않게 넉넉히 잡는다.
-    clearTimeout(resetTimer);
-    resetTimer = setTimeout(() => { count = 0; }, 8000);
   });
 }
 
@@ -1081,49 +1141,6 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
-}
-
-/** 지금이 해가 진 뒤인지. */
-function isNightNow() {
-  const now = new Date();
-  const { at } = solarDay(now, SITE_LAT, SITE_LON);
-  const rise = at(-0.833, true), set = at(-0.833, false);
-  if (rise === null || set === null) return false;
-  const t = now.getTime();
-  return t < rise || t >= set;
-}
-
-/** 해가 진 뒤 방문하면 배경에 반딧불이가 천천히 떠다닌다 (낮에는 아예 안 뜬다). */
-function initFireflies() {
-  if (reducedMotion || !isNightNow()) return;
-  createFireflies();
-}
-
-/** 버튼용 — 이미 떠 있으면 걷어내고, 없으면 시간과 상관없이 띄운다. */
-function toggleFireflies() {
-  if (reducedMotion) return;
-  const existing = document.querySelector('.fireflies');
-  if (existing) { existing.remove(); return; }
-  createFireflies();
-}
-
-function createFireflies() {
-
-  const layer = document.createElement('div');
-  layer.className = 'fireflies';
-  layer.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < 14; i++) {
-    const f = document.createElement('span');
-    f.className = 'firefly';
-    f.style.left = (Math.random() * 100).toFixed(2) + '%';
-    f.style.top = (Math.random() * 100).toFixed(2) + '%';
-    f.style.setProperty('--dx', (Math.random() * 120 - 60).toFixed(0) + 'px');
-    f.style.setProperty('--dy', (Math.random() * 120 - 60).toFixed(0) + 'px');
-    f.style.animationDuration = `${(9 + Math.random() * 9).toFixed(1)}s, ${(2.2 + Math.random() * 2.6).toFixed(1)}s`;
-    f.style.animationDelay = `${(-Math.random() * 12).toFixed(1)}s, ${(-Math.random() * 4).toFixed(1)}s`;
-    layer.appendChild(f);
-  }
-  document.body.appendChild(layer);
 }
 
 /** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
@@ -1290,7 +1307,7 @@ function initFx() {
   const cv = document.getElementById('fxCanvas');
   if (!cv) return null;
   const ctx = cv.getContext('2d');
-  fx = { cv, ctx, ps: [], rs: [], ms: [], t: null, w: 0, h: 0 };
+  fx = { cv, ctx, ps: [], rs: [], t: null, w: 0, h: 0 };
 
   fx.sizeFn = () => {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1359,40 +1376,8 @@ function initFx() {
       ctx.lineWidth = p.r * p.life + 0.4;
       ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
     }
-    // 별똥별: 꼬리를 길게 끌며 사선으로 지나간다.
-    for (let i = fx.ms.length - 1; i >= 0; i--) {
-      const m = fx.ms[i];
-      m.x += m.vx; m.y += m.vy;
-      m.life -= 0.011;
-      if (m.life <= 0 || m.x > fx.w + 200 || m.y > fx.h + 200) { fx.ms.splice(i, 1); continue; }
-      const fade = Math.min(1, m.life * 1.6);
-      const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * m.tail, m.y - m.vy * m.tail);
-      g.addColorStop(0, `rgba(255,255,245,${0.95 * fade})`);
-      g.addColorStop(0.35, `rgba(190,215,255,${0.45 * fade})`);
-      g.addColorStop(1, 'rgba(190,215,255,0)');
-      ctx.strokeStyle = g;
-      ctx.lineWidth = m.w;
-      ctx.beginPath();
-      ctx.moveTo(m.x, m.y);
-      ctx.lineTo(m.x - m.vx * m.tail, m.y - m.vy * m.tail);
-      ctx.stroke();
-    }
-    if (fx.ps.length || fx.rs.length || fx.ms.length) fx.t = requestAnimationFrame(step);
+    if (fx.ps.length || fx.rs.length) fx.t = requestAnimationFrame(step);
     else { fx.t = null; ctx.clearRect(0, 0, fx.w, fx.h); }
-  };
-  fx.meteor = () => {
-    // 화면 왼쪽 위 어딘가에서 시작해 오른쪽 아래로 비스듬히 흐른다.
-    const speed = 11 + Math.random() * 7;
-    const angle = (Math.random() * 14 + 24) * Math.PI / 180;
-    fx.ms.push({
-      x: Math.random() * fx.w * 0.75 - fx.w * 0.12,
-      y: -30 - Math.random() * 60,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      life: 1,
-      tail: 7 + Math.random() * 6,
-      w: 1.6 + Math.random() * 1.2,
-    });
   };
   fx.kick = () => { if (!fx.t) fx.t = requestAnimationFrame(step); };
   return fx;
@@ -1446,17 +1431,6 @@ function launchFireworks() {
   if (!f) return;
   f.rocket();
   f.kick();
-}
-
-/** 별똥별 한 줄기. 가끔 두세 개가 이어서 흐르게 한다. */
-function launchMeteor() {
-  if (reducedMotion) return;
-  const f = initFx();
-  if (!f) return;
-  const n = 1 + (Math.random() < 0.45 ? 1 : 0) + (Math.random() < 0.2 ? 1 : 0);
-  for (let i = 0; i < n; i++) {
-    setTimeout(() => { f.meteor(); f.kick(); }, i * (140 + Math.random() * 180));
-  }
 }
 
 function celebrate(targetPct, isCompleted) {
