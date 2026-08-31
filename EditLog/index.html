@@ -108,19 +108,6 @@
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
 
-  /* 방문한 지금 시각의 하늘 — 하루치 그라데이션 위에 '지금' 표식이 놓인다.
-     여기 색은 글자용으로 밝기를 보정한 값이 아니라 진짜 하늘색을 쓴다. */
-  .skyBand {
-    position: relative; height: 6px; border-radius: 99px; overflow: visible;
-    background: var(--surface2); cursor: help;
-  }
-  .skyNow {
-    position: absolute; top: 50%; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px;
-    border-radius: 50%; background: var(--ink); border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px var(--line2);
-    transition: left .6s ease;
-  }
-
   /* 맨 아래 폭죽 버튼 */
   .fireBtn {
     align-self: center; margin-top: 4px; cursor: pointer;
@@ -327,14 +314,12 @@
       display: grid;
       grid-template-columns: minmax(320px, 400px) 1fr;
       grid-template-areas:
-        "sky    sky"
         "topbar topbar"
         "left   right"
         "fire   fire";
       align-items: stretch;
       gap: 16px;
     }
-    .skyBand { grid-area: sky; align-self: center; }
     /* 그리드에선 가로 정렬이 justify-self라, 이게 없으면 버튼이 두 칸 폭으로 늘어난다. */
     .fireBtn { grid-area: fire; justify-self: center; }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
@@ -355,9 +340,6 @@
 <body>
   <canvas id="fxCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
-    <div class="skyBand" id="skyBand" title="">
-      <span class="skyNow" id="skyNow"></span>
-    </div>
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="themeToggle" id="themeToggle">
@@ -415,9 +397,7 @@ async function main() {
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const summaryCard = document.getElementById('summaryCard');
 
-  // 하늘 띠와 폭죽 버튼은 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
-  paintSkyBand();
-  setInterval(paintSkyBand, 60000);   // '지금' 표식이 시간 따라 움직이게
+  // 폭죽 버튼은 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
 
   try {
@@ -602,6 +582,8 @@ function renderSummary(cardEl, data) {
   const statusLabel = isCompleted ? '완료' : '진행중';
   const stageText = isCompleted ? null : data.currentStage;
   heroPct = pct;
+  // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다 (숫자가 앞이라 좁아도 읽힘).
+  document.title = `${isCompleted ? '✓ ' : ''}${pct}% · 태태고 편집실`;
   heroCompleted = isCompleted;
 
   const entries = data.entries || [];
@@ -802,8 +784,6 @@ function solarDay(date, lat, lon) {
    흰 배경에서 잘 읽혀 거의 그대로 쓴다. */
 const SKY_DARK = ['#94a1dc','#95a1db','#a69dd5','#bc99b6','#e98a71','#f2a870','#f5c860','#ffe9a0','#f7d070','#f0a850','#f38567','#d88fa3','#bd95cf','#9e9ed7'];
 const SKY_LIGHT = ['#131a3a','#1b2450','#3a3070','#8a5a82','#c6411f','#b15510','#916809','#8a6a00','#8f6808','#a25f0e','#ce3710','#be4365','#6a3a80','#25255a'];
-// 상단 하늘 띠는 장식이라 밝기 보정 없이 진짜 하늘색을 그대로 쓴다.
-const SKY_TRUE = ['#131a3a','#1b2450','#3a3070','#8a5a82','#e8846a','#f2a870','#f5c860','#ffe9a0','#f7d070','#f0a850','#f0603a','#c04a6a','#6a3a80','#25255a'];
 // 구간 i는 stops[i] ~ stops[i+1] 사이를 뜻한다 (마지막은 자정으로 되돌아감).
 const SKY_PHASE = ['한밤','동트기 전','새벽','동틀 무렵','아침','오전','늦은 오전','한낮','오후','해 질 무렵','노을','땅거미','밤','한밤'];
 
@@ -856,23 +836,6 @@ function sunTint(iso) {
     };
   }
   return { color: rgb(hexToRgb(palette[0])), phase: '한밤' + detail };
-}
-
-/** 상단 띠에 오늘 하루치 하늘을 깔고, 보는 사람의 '지금'에 표식을 놓는다. */
-function paintSkyBand() {
-  const band = document.getElementById('skyBand'), marker = document.getElementById('skyNow');
-  if (!band || !marker) return;
-  const now = new Date();
-  const stops = skyStops(now);
-  if (stops.length < 2) return;
-
-  const t0 = stops[0][0], span = stops[stops.length - 1][0] - t0;
-  const parts = stops.map(([t, ci]) => `${SKY_TRUE[ci]} ${(((t - t0) / span) * 100).toFixed(2)}%`);
-  band.style.background = `linear-gradient(90deg, ${parts.join(', ')})`;
-
-  const k = Math.min(1, Math.max(0, (now.getTime() - t0) / span));
-  marker.style.left = (k * 100).toFixed(2) + '%';
-  band.title = `지금 · ${sunTint(now.toISOString()).phase}`;
 }
 
 /** 작업 기록의 시작 시간들을 그 시각의 하늘색으로 칠한다 (테마가 바뀌면 다시 칠한다). */
@@ -1169,12 +1132,13 @@ function runGauge(target, fire) {
   requestAnimationFrame(tick);
 }
 
-/** 프로젝트 완료 여부와 상관없이 폭죽만 쏜다 (맨 아래 버튼용). */
+/** 누를 때마다 폭죽 하나씩 (프로젝트 완료 여부와 무관). */
 function launchFireworks() {
   if (reducedMotion) return;
   const f = initFx();
   if (!f) return;
-  [0, 180, 420, 700, 1050, 1450].forEach(ms => setTimeout(() => { f.rocket(); f.kick(); }, ms));
+  f.rocket();
+  f.kick();
 }
 
 function celebrate(targetPct, isCompleted) {
