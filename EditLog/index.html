@@ -616,8 +616,8 @@ function renderSummary(cardEl, data) {
   const statusLabel = isCompleted ? '완료' : '진행중';
   const stageText = isCompleted ? null : data.currentStage;
   heroPct = pct;
-  // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다 (숫자가 앞이라 좁아도 읽힘).
-  document.title = `${isCompleted ? '✓ ' : ''}${pct}% · 태태고 편집실`;
+  // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다.
+  document.title = `태태고 편집실 · 진행률 ${pct}%`;
   heroCompleted = isCompleted;
 
   const entries = data.entries || [];
