@@ -84,17 +84,10 @@
       "elapsed" : "11시간 28분",
       "timestamp" : "2026-08-28T13:37:10Z",
       "videoLength" : "0"
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "2일 14시간 29분",
-      "timestamp" : "2026-08-31T04:06:25Z",
-      "videoLength" : "15"
     }
   ],
-  "entryCount" : 4,
-  "lastUpdate" : "2026-08-31T04:15:24Z",
+  "entryCount" : 3,
+  "lastUpdate" : "2026-08-31T07:48:00Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
