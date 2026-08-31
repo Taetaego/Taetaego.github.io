@@ -63,6 +63,8 @@
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
   "currentStage" : "2차 세부 컷편집",
+  "detailCutLength" : "24",
+  "detailCutRatio" : 8.823529411764707,
   "entries" : [
     {
       "category" : "자막 추출",
@@ -108,7 +110,7 @@
     }
   ],
   "entryCount" : 6,
-  "lastUpdate" : "2026-08-31T13:41:09Z",
+  "lastUpdate" : "2026-08-31T13:59:30Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
