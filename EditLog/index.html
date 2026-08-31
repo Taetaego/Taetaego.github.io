@@ -29,6 +29,10 @@
     --tg-on-ink: #8ceab7;
     --warn: #f2b84a;
     --warn-soft: rgba(242,184,74,0.16);
+    /* 작업 기록 행 왼쪽 바 — 카테고리가 속한 그룹을 색으로 구분 */
+    --grp-1: #34e0b0;
+    --grp-2: #5ab8f0;
+    --grp-3: #f2b84a;
   }
   html[data-theme="light"] {
     --bg: #f2f6f5;
@@ -47,6 +51,9 @@
     --tg-on-ink: #0b5c36;
     --warn: #a3690c;
     --warn-soft: rgba(163,105,12,0.14);
+    --grp-1: #0f9b78;
+    --grp-2: #1a7fb8;
+    --grp-3: #a3690c;
   }
   @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
@@ -66,6 +73,9 @@
       --tg-on-ink: #8ceab7;
       --warn: #f2b84a;
       --warn-soft: rgba(242,184,74,0.16);
+      --grp-1: #34e0b0;
+      --grp-2: #5ab8f0;
+      --grp-3: #f2b84a;
     }
   }
   * { box-sizing: border-box; }
@@ -106,8 +116,14 @@
   /* 히어로: 원형 게이지 */
   .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
   .hero:active { transform: scale(0.995); }
-  .donut { flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .donut .in { width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+  .donut { position: relative; flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  /* 단계 수만큼 링을 눈금으로 쪼개, 숫자를 읽지 않아도 몇 칸 왔는지 보이게 한다.
+     --seg(=360/전체단계)는 renderSummary에서 넣어준다. */
+  .donut::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+    background: repeating-conic-gradient(from 0deg, var(--bg) 0deg 1.6deg, transparent 1.6deg var(--seg, 30deg));
+  }
+  .donut .in { position: relative; z-index: 1; width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
   .donut .steps { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
   .heroRight { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
@@ -134,8 +150,22 @@
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
-  .pipeList::before { content: ""; position: absolute; left: 8px; top: 16px; bottom: 16px; width: 1px; background: var(--line2); }
   .pipeItem { position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+  /* 단계 연결선을 항목별 구간으로 나눠 그린다. 완료 구간만 accent로 채워서
+     진행도가 점(dot)뿐 아니라 선으로도 읽히게 한다. */
+  .pipeItem::before {
+    content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px;
+    background: var(--line2); z-index: 0;
+  }
+  .pipeItem:first-child::before { top: 50%; }
+  .pipeItem:last-child::before { bottom: 50%; }
+  .pipeItem.done::before {
+    background: var(--accent);
+    transform-origin: top;
+    animation: lineFill .45s ease both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+  @keyframes lineFill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
   .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
   .pipeItem.current .dot {
@@ -174,7 +204,7 @@
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .logHead { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; padding-bottom: 8px; padding-left: 10px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
   .logHead .c { text-align: center; line-height: 1.25; }
   .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
@@ -191,8 +221,18 @@
   .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
-  .logRow { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
-  .logRow:hover { background: var(--soft); }
+  /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
+     .logHead에 같은 크기의 padding-left를 줘서 헤더와 열이 어긋나지 않게 맞춘다. */
+  .logRow {
+    display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; align-items: center;
+    padding: 7px 0 7px 7px; border-top: 1px solid var(--line);
+    border-left: 3px solid var(--rowc, transparent);
+    transition: background-color .2s ease, box-shadow .2s ease;
+    animation: rowIn .35s ease both;
+    animation-delay: calc(var(--r, 0) * 40ms);
+  }
+  .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
+  @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
@@ -305,23 +345,29 @@ async function main() {
   }
 }
 
-function normalizeLength(s) {
+/** "4:32" -> 272, "24" -> 24. 숫자로 못 읽으면 null. */
+function parseMinutes(s) {
   if (s === null || s === undefined || s === '') return null;
   const str = String(s);
-  let totalMinutes;
-  if (str.includes(':')) {
-    const [h, m] = str.split(':').map(Number);
-    totalMinutes = h * 60 + m;
-  } else {
-    totalMinutes = Number(str);
-  }
-  if (!Number.isFinite(totalMinutes)) return str;
+  const total = str.includes(':')
+    ? str.split(':').map(Number).reduce((h, m) => h * 60 + m, 0)
+    : Number(str);
+  return Number.isFinite(total) ? total : null;
+}
+
+function formatMinutes(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   const parts = [];
   if (hours > 0) parts.push(`${hours}시간`);
   if (minutes > 0 || parts.length === 0) parts.push(`${minutes}분`);
   return parts.join(' ');
+}
+
+function normalizeLength(s) {
+  if (s === null || s === undefined || s === '') return null;
+  const total = parseMinutes(s);
+  return total === null ? String(s) : formatMinutes(total);
 }
 
 function formatDuration(ms) {
@@ -434,7 +480,7 @@ function renderSummary(cardEl, data) {
   const chipTime = isCompleted ? data.lastUpdate : (lastEntryTime ?? data.lastUpdate);
 
   cardEl.innerHTML = `
-    <div class="donut" id="donutGauge" style="background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
+    <div class="donut" id="donutGauge" style="--seg: ${progress && progress.total ? (360 / progress.total).toFixed(3) : 30}deg; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
       <div class="in">
         <span class="pct mono" id="donutPct">0%</span>
         <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
@@ -470,7 +516,7 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      return `<div class="pipeItem ${cls}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      return `<div class="pipeItem ${cls}" style="--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeGroup">
@@ -486,23 +532,55 @@ function renderPipeline(data) {
   document.getElementById('pipelineCard').style.display = '';
 }
 
-function statTile(label, value, subs) {
+/** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
+function statTile(label, value, subs, count) {
   if (value === null || value === undefined) return '';
   const subHtml = (subs || []).filter(Boolean).map(s => `<span class="sub">${s}</span>`).join('');
-  return `<div class="statTile"><span class="label">${label}</span><span class="value">${value}</span>${subHtml}</div>`;
+  const attrs = count ? ` data-count="${count.n}" data-fmt="${count.fmt}"` : '';
+  return `<div class="statTile"><span class="label">${label}</span><span class="value"${attrs}>${value}</span>${subHtml}</div>`;
+}
+
+/** 숫자 값이면 카운트업용 정보를, 아니면 null (— 같은 빈 값은 애니메이션 없음). */
+function counter(raw, fmt) {
+  const n = fmt === 'count' ? raw : parseMinutes(raw);
+  return n === null || n === undefined ? null : { n, fmt };
 }
 
 function renderStats(data) {
   let stats = '';
-  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength));
-  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null]);
+  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength), null, counter(data.originalLength, 'duration'));
+  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null], counter(data.detailCutLength, 'duration'));
   const finalSubs = [];
   if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
   if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalSubs);
-  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null);
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalSubs, counter(data.finalLength, 'duration'));
+  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null, null, counter(data.entryCount, 'count'));
 
   document.getElementById('statsBody').innerHTML = stats;
+  runCounters();
+}
+
+/** 통계 타일 숫자를 0에서 목표값까지 올린다 (reduced-motion이면 건너뜀). */
+function runCounters() {
+  const els = document.querySelectorAll('.statTile .value[data-count]');
+  if (reducedMotion) return;
+  const render = (el, n) => {
+    el.textContent = el.dataset.fmt === 'count' ? `${n}개` : formatMinutes(n);
+  };
+  els.forEach(el => {
+    const target = Number(el.dataset.count);
+    if (!Number.isFinite(target) || target <= 0) return;
+    // 여기서 0으로 미리 덮지 않는다 — 탭이 백그라운드라 rAF가 멈추면
+    // 이미 렌더된 실제 값이 그대로 남아야 하기 때문.
+    const t0 = performance.now(), dur = 900;
+    const tick = now => {
+      const k = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - k, 3);
+      render(el, Math.round(eased * target));
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
 }
 
 function renderCategoryChips(data) {
@@ -535,6 +613,15 @@ function renderLog(data) {
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
 
+  // 카테고리 → 그룹 색. 그룹 이름이 바뀌어도 깨지지 않도록 등장 순서로 토큰을 고른다.
+  const groupNames = [...new Set((data.allCategories || []).map(c => c.group))];
+  const groupByCat = {};
+  (data.allCategories || []).forEach(c => { groupByCat[c.name] = c.group; });
+  const rowColor = (catName) => {
+    const gi = groupNames.indexOf(groupByCat[catName]);
+    return gi < 0 ? 'transparent' : `var(--grp-${Math.min(gi, 2) + 1})`;
+  };
+
   const byDay = new Map();
   for (const e of entries) {
     const key = new Date(e.timestamp).toDateString();
@@ -551,6 +638,7 @@ function renderLog(data) {
       <span class="c">이전 기록<br>으로부터</span>
     </div>
   `;
+  let rowIndex = 0;
   for (const dayKey of sortedDayKeys) {
     const dayEntries = byDay.get(dayKey).slice();
     dayEntries.sort((a, b) => {
@@ -568,7 +656,7 @@ function renderLog(data) {
       const elapsed = escapeHtml(e.elapsed ?? '');
 
       html += `
-        <div class="logRow">
+        <div class="logRow" style="--rowc:${rowColor(e.category)};--r:${rowIndex++}">
           <span class="cat">${catLabel}</span>
           <span class="at">${length || '—'}</span>
           <span class="time mono">${time}</span>
