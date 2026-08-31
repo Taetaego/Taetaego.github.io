@@ -89,7 +89,8 @@
     -webkit-font-smoothing: antialiased;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
-  .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
+  /* position/z-index가 없으면 뒤에 붙는 반딧불이 레이어가 카드 위를 덮는다. */
+  .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
   #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #dayCard.card, #logCard.card {
@@ -128,6 +129,19 @@
   }
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* 밤에 방문했을 때만 떠다니는 반딧불이 (JS가 밤일 때만 레이어를 만든다) */
+  .fireflies { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .firefly {
+    position: absolute; width: 3px; height: 3px; border-radius: 50%;
+    background: #f2e6a0; box-shadow: 0 0 6px 2px rgba(242,230,160,0.55);
+    animation-name: fireflyDrift, fireflyBlink;
+    animation-timing-function: ease-in-out, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    animation-direction: alternate, alternate;
+  }
+  @keyframes fireflyDrift { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
+  @keyframes fireflyBlink { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.85; } }
 
   /* 맨 아래 폭죽 버튼 */
   .fireBtn {
@@ -227,7 +241,21 @@
   .donut:active { cursor: grabbing; }
 
   /* 아직 안 한 단계를 누르면 흔들리며 한마디 한다 */
-  .pipeItem.todo { cursor: pointer; }
+  .pipeItem.todo, .pipeItem.done { cursor: pointer; }
+  /* 완료 단계를 누르면 체크가 다시 찍히듯 튀고 초록 파문이 퍼진다 */
+  .pipeItem.done .dot { position: relative; }
+  .pipeItem.done .dot.rechecked { animation: checkPop .45s cubic-bezier(.2,1.5,.4,1); }
+  .pipeItem.done .dot.rechecked::after {
+    content: ""; position: absolute; inset: -2px; border-radius: 50%;
+    border: 2px solid var(--accent); animation: checkRing .55s ease-out forwards;
+  }
+  @keyframes checkPop {
+    0% { transform: scale(1); } 35% { transform: scale(0.72); } 100% { transform: scale(1); }
+  }
+  @keyframes checkRing {
+    0% { transform: scale(0.8); opacity: 0.9; }
+    100% { transform: scale(2.3); opacity: 0; }
+  }
   .pipeItem.poked { animation: poke .4s ease; }
   @keyframes poke {
     0%, 100% { transform: translateX(0); }
@@ -439,8 +467,9 @@ async function main() {
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const summaryCard = document.getElementById('summaryCard');
 
-  // 폭죽 버튼은 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
+  // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
+  initFireflies();
 
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -621,7 +650,9 @@ function pipelineProgress(data) {
   const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
   let lastTouchedIndex = -1;
   cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
-  const done = Math.max(lastTouchedIndex + 1, 0);
+  // 마지막으로 손댄 단계는 지금 '진행 중'이라 아직 완료가 아니다.
+  // 프로젝트가 완료 처리됐을 때만 그 단계까지 완료로 센다.
+  const done = Math.max(data.status === 'completed' ? lastTouchedIndex + 1 : lastTouchedIndex, 0);
   return { done, total: cats.length, pct: Math.round((done / cats.length) * 100), lastTouchedIndex };
 }
 
@@ -663,9 +694,9 @@ function renderPipeline(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return;
 
-  const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
-  let lastTouchedIndex = -1;
-  cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
+  // 완료 개수·현재 단계는 도넛과 같은 계산을 써야 두 곳이 어긋나지 않는다.
+  const progress = pipelineProgress(data);
+  const lastTouchedIndex = progress.lastTouchedIndex;
 
   const groups = {};
   cats.forEach((c, i) => { (groups[c.group] = groups[c.group] || []).push({ name: c.name, index: i }); });
@@ -688,8 +719,7 @@ function renderPipeline(data) {
   }
 
   document.getElementById('pipelineBody').innerHTML = html;
-  const done = Math.max(lastTouchedIndex + 1, 0);
-  document.getElementById('pipelineMeta').textContent = `${done} DONE`;
+  document.getElementById('pipelineMeta').textContent = `${progress.done} DONE`;
   document.getElementById('pipelineCard').style.display = '';
 }
 
@@ -902,13 +932,54 @@ function paintTimes() {
   });
 }
 
-const TODO_TAUNTS = ['아직이에요', '그만 눌러주세요', '누른다고 되는 게 아니에요', '정말 안 됩니다', '...', '알겠어요, 할게요'];
+// 30번째에 항복한다. 마지막 문구는 배열 끝에 계속 머문다.
+const TODO_TAUNTS = [
+  '아직이에요',
+  '아직 순서가 아니에요',
+  '그만 눌러주세요',
+  '눌러도 안 됩니다',
+  '진짜예요',
+  '누른다고 되는 게 아니에요',
+  '순서를 지켜주세요',
+  '앞 단계부터요',
+  '저도 답답해요',
+  '열 번째네요',
+  '끈질기시네요',
+  '그래도 안 돼요',
+  '손가락 안 아프세요?',
+  '이쯤 되면 취미인가요',
+  '절반 오셨어요',
+  '아직 절반 남았어요',
+  '뭘 기대하시는 거죠',
+  '숨은 기능 없어요',
+  '정말 없어요',
+  '스무 번째입니다',
+  '기록은 세고 있어요',
+  '이러다 진짜 열려요',
+  '농담이에요',
+  '안 열려요',
+  '거의 다 오셨는데',
+  '무엇을 위해서요',
+  '슬슬 지치는데요',
+  '두 번 남았어요',
+  '한 번만 더요',
+  '알았어요, 할게요',
+];
 
 /** 아직 안 한 단계를 누르면 흔들리며 한마디 한다. 계속 누르면 멘트가 올라간다. */
 function initTodoPoke() {
   const body = document.getElementById('pipelineBody');
   if (!body) return;
   let count = 0, resetTimer = null;
+
+  // 완료된 단계는 체크가 한 번 더 찍히는 느낌만 준다.
+  body.addEventListener('click', (ev) => {
+    const dot = ev.target.closest('.pipeItem.done')?.querySelector('.dot');
+    if (!dot || reducedMotion) return;
+    dot.classList.remove('rechecked');
+    void dot.offsetWidth;
+    dot.classList.add('rechecked');
+  });
 
   body.addEventListener('click', (ev) => {
     const item = ev.target.closest('.pipeItem.todo');
@@ -931,8 +1002,9 @@ function initTodoPoke() {
     item.classList.add('poked');
     bubble.classList.add('show');
 
+    // 30번까지 가야 하므로 손을 잠깐 멈춰도 진행이 날아가지 않게 넉넉히 잡는다.
     clearTimeout(resetTimer);
-    resetTimer = setTimeout(() => { count = 0; }, 5000);
+    resetTimer = setTimeout(() => { count = 0; }, 8000);
   });
 }
 
@@ -996,6 +1068,33 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
+}
+
+/** 해가 진 뒤 방문하면 배경에 반딧불이가 천천히 떠다닌다 (낮에는 아예 안 뜬다). */
+function initFireflies() {
+  if (reducedMotion) return;
+  const now = new Date();
+  const { at } = solarDay(now, SITE_LAT, SITE_LON);
+  const rise = at(-0.833, true), set = at(-0.833, false);
+  if (rise === null || set === null) return;
+  const t = now.getTime();
+  if (t >= rise && t < set) return;   // 해 떠 있는 동안은 없음
+
+  const layer = document.createElement('div');
+  layer.className = 'fireflies';
+  layer.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 14; i++) {
+    const f = document.createElement('span');
+    f.className = 'firefly';
+    f.style.left = (Math.random() * 100).toFixed(2) + '%';
+    f.style.top = (Math.random() * 100).toFixed(2) + '%';
+    f.style.setProperty('--dx', (Math.random() * 120 - 60).toFixed(0) + 'px');
+    f.style.setProperty('--dy', (Math.random() * 120 - 60).toFixed(0) + 'px');
+    f.style.animationDuration = `${(9 + Math.random() * 9).toFixed(1)}s, ${(2.2 + Math.random() * 2.6).toFixed(1)}s`;
+    f.style.animationDelay = `${(-Math.random() * 12).toFixed(1)}s, ${(-Math.random() * 4).toFixed(1)}s`;
+    layer.appendChild(f);
+  }
+  document.body.appendChild(layer);
 }
 
 /** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
