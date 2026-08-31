@@ -309,6 +309,16 @@
   }
   .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
   @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  /* 행을 누르면 그 행의 그룹 색으로 번쩍이며 밖으로 퍼진다.
+     등장 애니메이션(rowIn)이 fill:both로 transform을 잡고 있어서 배경·그림자만 쓴다. */
+  .logRow.pulsed { animation: rowPulse .6s ease; }
+  @keyframes rowPulse {
+    0% {
+      background-color: color-mix(in srgb, var(--rowc, var(--ink3)) 34%, transparent);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--rowc, var(--ink3)) 45%, transparent);
+    }
+    100% { background-color: transparent; box-shadow: 0 0 0 12px transparent; }
+  }
   /* 앱의 작업 기록 표처럼 카테고리 앞에 아이콘을 붙인다 (앱은 SF Symbol, 웹은 대응 이모지). */
   .logRow .cat { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 12px; font-weight: 500; }
   /* 아이콘 색은 행 왼쪽 바와 동일한 그룹 색을 따른다 (그룹이 없으면 기본 회색). */
@@ -445,6 +455,7 @@ async function main() {
     initDayBandReplay();
     setInterval(updateDayNow, 60000);
     renderLog(data);
+    initRowPulse();
     initDonutSpin();
     initTodoPoke();
     initCounterReplay();
@@ -985,6 +996,19 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
+}
+
+/** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
+function initRowPulse() {
+  const body = document.getElementById('logBody');
+  if (!body) return;
+  body.addEventListener('click', (ev) => {
+    const row = ev.target.closest('.logRow');
+    if (!row || reducedMotion) return;
+    row.classList.remove('pulsed');
+    void row.offsetWidth;
+    row.classList.add('pulsed');
+  });
 }
 
 /** 카테고리 칩을 누르면 흔들린다. */
