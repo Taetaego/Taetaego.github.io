@@ -199,7 +199,19 @@
   .catCard { display: flex; flex-direction: column; gap: 12px; }
   .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
   .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; }
-  .catChip .mk { width: 18px; height: 18px; border-radius: 5px; background: var(--soft); display: flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; }
+  /* 작업 기록 표와 같은 그룹 색을 쓰는 단색 아이콘 (배경은 그 색을 옅게 깐다). */
+  .catChip .mk {
+    width: 18px; height: 18px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--rowc, var(--ink3));
+    background: var(--soft);
+    background: color-mix(in srgb, currentColor 16%, transparent);
+  }
+  .catChip .mk svg {
+    width: 12px; height: 12px;
+    fill: none; stroke: currentColor; stroke-width: 1.9;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
   .catChip .cnt { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
 
   /* 작업 기록 */
@@ -486,6 +498,20 @@ function categorySvg(symbolName) {
   return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
 }
 
+/** 카테고리 이름 -> "--rowc:<그룹색>;" 인라인 스타일 조각을 만드는 함수를 돌려준다.
+    작업 기록 표와 카테고리별 기록 칩이 같은 색을 쓰도록 한 곳에서 정의한다.
+    그룹 이름이 바뀌어도 깨지지 않게 이름이 아닌 '등장 순서'로 토큰을 고르고,
+    목록에 없는 카테고리("완료" 등)는 아예 정의하지 않아 기본 회색으로 떨어지게 한다. */
+function makeGroupColorVar(data) {
+  const groupNames = [...new Set((data.allCategories || []).map(c => c.group))];
+  const groupByCat = {};
+  (data.allCategories || []).forEach(c => { groupByCat[c.name] = c.group; });
+  return (catName) => {
+    const gi = groupNames.indexOf(groupByCat[catName]);
+    return gi < 0 ? '' : `--rowc:var(--grp-${Math.min(gi, 2) + 1});`;
+  };
+}
+
 function pipelineProgress(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return null;
@@ -625,9 +651,10 @@ function renderCategoryChips(data) {
     if (!symbolByName.has(name)) symbolByName.set(name, e.categorySymbol);
   }
 
+  const chipColorVar = makeGroupColorVar(data);
   const html = Array.from(counts.entries()).map(([name, count]) => {
-    const icon = categoryIcon(symbolByName.get(name));
-    return `<span class="catChip"><span class="mk">${icon}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
+    const icon = categorySvg(symbolByName.get(name));
+    return `<span class="catChip" style="${chipColorVar(name)}"><span class="mk">${icon}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
   }).join('');
 
   document.getElementById('catBody').innerHTML = html;
@@ -643,17 +670,7 @@ function renderLog(data) {
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
 
-  // 카테고리 → 그룹 색. 그룹 이름이 바뀌어도 깨지지 않도록 등장 순서로 토큰을 고른다.
-  const groupNames = [...new Set((data.allCategories || []).map(c => c.group))];
-  const groupByCat = {};
-  (data.allCategories || []).forEach(c => { groupByCat[c.name] = c.group; });
-  // 그룹을 못 찾으면(카테고리 목록에 없는 "완료" 등) --rowc를 아예 정의하지 않는다.
-  // 그래야 바는 var(--rowc, transparent)로 안 그려지고, 아이콘은 var(--rowc, var(--ink3))로
-  // 기본 회색을 쓴다.
-  const rowColorVar = (catName) => {
-    const gi = groupNames.indexOf(groupByCat[catName]);
-    return gi < 0 ? '' : `--rowc:var(--grp-${Math.min(gi, 2) + 1});`;
-  };
+  const rowColorVar = makeGroupColorVar(data);
 
   const byDay = new Map();
   for (const e of entries) {
