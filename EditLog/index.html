@@ -99,7 +99,9 @@
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
   #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #dayCard.card, #logCard.card {
-    opacity: 0; animation: cardIn .5s ease both;
+    /* both가 아니라 backwards여야 등장이 끝난 뒤 transform이 풀려서 hover로 카드를
+       띄울 수 있다. 지연 동안의 opacity:0은 backwards가 알아서 처리한다. */
+    animation: cardIn .5s ease backwards;
   }
   #summaryCard.card { animation-delay: 0s; }
   #doneCard.card { animation-delay: .04s; }
@@ -133,6 +135,17 @@
     background: var(--ink); box-shadow: 0 0 0 1.5px var(--surface); transition: left .6s ease;
   }
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  /* '지금' 선 주위로 아주 옅은 파문 — 살아있는 대시보드 느낌만 주고 시선은 뺏지 않게. */
+  .dayNow::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%;
+    background: var(--ink); pointer-events: none;
+    animation: nowPulse 2.6s ease-out infinite;
+  }
+  @keyframes nowPulse {
+    0% { transform: scale(.5); opacity: .4; }
+    70%, 100% { transform: scale(2.8); opacity: 0; }
+  }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   /* 맨 아래 이펙트 버튼들 */
@@ -148,6 +161,13 @@
      그래서 hover 스타일은 hover가 되는 기기에서만 적용한다. */
   @media (hover: hover) {
     .fireBtn:hover { background: var(--soft); color: var(--accent2); }
+    /* 마우스를 올리면 카드가 2px 떠오른다 (터치 기기에선 hover가 남아 적용하지 않는다) */
+    #pipelineCard, #catCard, #dayCard, .statTile {
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    #pipelineCard:hover, #catCard:hover, #dayCard:hover, .statTile:hover {
+      transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.26);
+    }
   }
   .fireBtn:active { transform: scale(0.96); }
 
@@ -168,6 +188,9 @@
     content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
     background: repeating-conic-gradient(from 0deg, var(--bg) 0deg 1.6deg, transparent 1.6deg var(--seg, 30deg));
   }
+  /* 게이지가 다 차오른 뒤 한 번 톡 튄다 */
+  .donut.filled { animation: donutPop .5s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes donutPop { 0% { transform: scale(1); } 42% { transform: scale(1.05); } 100% { transform: scale(1); } }
   .donut .in { position: relative; z-index: 1; width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
   .donut .steps { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
@@ -195,7 +218,14 @@
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
-  .pipeItem { position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+  /* 단계가 01부터 순서대로 왼쪽에서 미끄러져 들어온다 (--i는 renderPipeline이 넣어준다).
+     backwards라 애니메이션이 끝나면 poke 흔들림이 transform을 넘겨받을 수 있다. */
+  .pipeItem {
+    position: relative; display: flex; align-items: center; gap: 10px; padding: 5px 0;
+    animation: stepIn .4s ease backwards;
+    animation-delay: calc(var(--i, 0) * 45ms + 140ms);
+  }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
   /* 단계 연결선을 항목별 구간으로 나눠 그린다. 완료 구간만 accent로 채워서
      진행도가 점(dot)뿐 아니라 선으로도 읽히게 한다. */
   .pipeItem::before {
@@ -253,7 +283,6 @@
     0% { transform: scale(0.8); opacity: 0.9; }
     100% { transform: scale(2.3); opacity: 0; }
   }
-  .pipeItem.poked { animation: poke .4s ease; }
   @keyframes poke {
     0%, 100% { transform: translateX(0); }
     20% { transform: translateX(-3px); } 40% { transform: translateX(3px); }
@@ -479,6 +508,7 @@ async function main() {
 
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
+  initNightMeteors();
 
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -778,7 +808,10 @@ function animateCounter(el) {
   const tick = (now) => {
     if (el._countRun !== run) return;
     const k = Math.min(1, (now - t0) / dur);
-    render(Math.round((1 - Math.pow(1 - k, 3)) * target));
+    // easeOutBack — 목표값을 살짝 넘겼다가 되돌아와 안착한다.
+    const c1 = 1.15, c3 = c1 + 1;
+    const eased = 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2);
+    render(Math.max(0, Math.round(eased * target)));
     if (k < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
@@ -1072,11 +1105,18 @@ function initTodoPoke() {
     }
     bubble.textContent = TRAVEL_LINES[Math.floor(Math.random() * TRAVEL_LINES.length)];
 
-    // 애니메이션을 매번 처음부터 다시 돌리려면 클래스를 뗐다 붙이면서 리플로우를 강제해야 한다.
-    item.classList.remove('poked');
+    // 흔들림은 WAAPI로 준다. CSS animation으로 하면 등장 애니메이션(stepIn)의
+    // animation 속성을 덮어써서, 흔들림이 끝난 뒤 항목이 사라져 버린다.
+    item.getAnimations().filter(a => a.id === 'shake').forEach(a => a.cancel());
+    const shake = item.animate([
+      { transform: 'translateX(0)' }, { transform: 'translateX(-3px)' },
+      { transform: 'translateX(3px)' }, { transform: 'translateX(-2px)' },
+      { transform: 'translateX(2px)' }, { transform: 'translateX(0)' },
+    ], { duration: 400, easing: 'ease' });
+    shake.id = 'shake';
+
     bubble.classList.remove('show');
-    void item.offsetWidth;
-    item.classList.add('poked');
+    void bubble.offsetWidth;
     bubble.classList.add('show');
   });
 }
@@ -1307,7 +1347,7 @@ function initFx() {
   const cv = document.getElementById('fxCanvas');
   if (!cv) return null;
   const ctx = cv.getContext('2d');
-  fx = { cv, ctx, ps: [], rs: [], t: null, w: 0, h: 0 };
+  fx = { cv, ctx, ps: [], rs: [], ms: [], t: null, w: 0, h: 0 };
 
   fx.sizeFn = () => {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -1376,8 +1416,32 @@ function initFx() {
       ctx.lineWidth = p.r * p.life + 0.4;
       ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
     }
-    if (fx.ps.length || fx.rs.length) fx.t = requestAnimationFrame(step);
+    // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다.
+    for (let i = fx.ms.length - 1; i >= 0; i--) {
+      const m = fx.ms[i];
+      m.x += m.vx; m.y += m.vy; m.life -= 0.011;
+      if (m.life <= 0 || m.x > fx.w + 220 || m.y > fx.h + 220) { fx.ms.splice(i, 1); continue; }
+      const fade = Math.min(1, m.life * 1.7);
+      const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * m.tail, m.y - m.vy * m.tail);
+      g.addColorStop(0, `rgba(255,255,245,${0.9 * fade})`);
+      g.addColorStop(0.35, `rgba(190,215,255,${0.4 * fade})`);
+      g.addColorStop(1, 'rgba(190,215,255,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = m.w;
+      ctx.beginPath(); ctx.moveTo(m.x, m.y);
+      ctx.lineTo(m.x - m.vx * m.tail, m.y - m.vy * m.tail); ctx.stroke();
+    }
+    if (fx.ps.length || fx.rs.length || fx.ms.length) fx.t = requestAnimationFrame(step);
     else { fx.t = null; ctx.clearRect(0, 0, fx.w, fx.h); }
+  };
+  fx.meteor = () => {
+    const speed = 11 + Math.random() * 7;
+    const angle = (24 + Math.random() * 14) * Math.PI / 180;
+    fx.ms.push({
+      x: Math.random() * fx.w * 0.75 - fx.w * 0.12,
+      y: -30 - Math.random() * 60,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 1, tail: 7 + Math.random() * 6, w: 1.5 + Math.random() * 1.1,
+    });
   };
   fx.kick = () => { if (!fx.t) fx.t = requestAnimationFrame(step); };
   return fx;
@@ -1411,8 +1475,14 @@ function runGauge(target, fire) {
     const p = e * target;
     el.textContent = Math.round(p) + '%';
     dn.style.background = `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
-    if (k < 1) requestAnimationFrame(tick);
-    else if (fire) {
+    if (k < 1) { requestAnimationFrame(tick); return; }
+    // 다 차오르면 한 번 톡 튄다. 드래그 회전이 걸려 있으면 그쪽을 방해하지 않는다.
+    if (!dn.style.transform) {
+      dn.classList.remove('filled');
+      void dn.offsetWidth;
+      dn.classList.add('filled');
+    }
+    if (fire) {
       const f = initFx();
       if (f) {
         const r = dn.getBoundingClientRect();
@@ -1422,6 +1492,31 @@ function runGauge(target, fire) {
     }
   };
   requestAnimationFrame(tick);
+}
+
+/** 지금이 해가 진 뒤인지. */
+function isNightNow() {
+  const now = new Date();
+  const { at } = solarDay(now, SITE_LAT, SITE_LON);
+  const rise = at(-0.833, true), set = at(-0.833, false);
+  if (rise === null || set === null) return false;
+  const t = now.getTime();
+  return t < rise || t >= set;
+}
+
+/** 밤에만, 10~20초에 한 번씩 별똥별이 스쳐 간다. 낮이 되면 저절로 멈춘다. */
+function initNightMeteors() {
+  if (reducedMotion) return;
+  const schedule = () => {
+    setTimeout(() => {
+      if (!document.hidden && isNightNow()) {
+        const f = initFx();
+        if (f) { f.meteor(); f.kick(); }
+      }
+      schedule();
+    }, 10000 + Math.random() * 10000);
+  };
+  schedule();
 }
 
 /** 누를 때마다 폭죽 하나씩 (프로젝트 완료 여부와 무관). */
