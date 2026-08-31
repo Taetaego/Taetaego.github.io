@@ -16,42 +16,42 @@
       "symbolName" : "scissors"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "자막 입력",
       "symbolName" : "captions.bubble"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "추가 영상 삽입",
       "symbolName" : "photo.on.rectangle"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "맞춤법 검사",
       "symbolName" : "text.badge.checkmark"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "자막 색상 변경",
       "symbolName" : "paintpalette"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "하이라이트 배치",
       "symbolName" : "star.bubble"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "지도\/위치 추가",
       "symbolName" : "map"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "배경음 & 검수",
       "symbolName" : "music.note"
     },
     {
-      "group" : "후반 작업",
+      "group" : "중간 작업",
       "name" : "최종 검수",
       "symbolName" : "checkmark.seal"
     },

@@ -204,7 +204,7 @@
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; padding-bottom: 8px; padding-left: 10px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .logHead { display: grid; grid-template-columns: 1fr 56px 60px 76px; gap: 6px; padding-bottom: 8px; padding-left: 10px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
   .logHead .c { text-align: center; line-height: 1.25; }
   .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
@@ -224,7 +224,7 @@
   /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
      .logHead에 같은 크기의 padding-left를 줘서 헤더와 열이 어긋나지 않게 맞춘다. */
   .logRow {
-    display: grid; grid-template-columns: 1fr 56px 64px 86px; gap: 6px; align-items: center;
+    display: grid; grid-template-columns: 1fr 56px 60px 76px; gap: 6px; align-items: center;
     padding: 7px 0 7px 7px; border-top: 1px solid var(--line);
     border-left: 3px solid var(--rowc, transparent);
     transition: background-color .2s ease, box-shadow .2s ease;
@@ -233,7 +233,10 @@
   }
   .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
   @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 앱의 작업 기록 표처럼 카테고리 앞에 아이콘을 붙인다 (앱은 SF Symbol, 웹은 대응 이모지). */
+  .logRow .cat { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 12px; font-weight: 500; }
+  .logRow .cat .catIcon { flex: none; font-size: 10.5px; line-height: 1; }
+  .logRow .cat .catName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
   .logRow .gap { font-size: 10px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
@@ -651,13 +654,14 @@ function renderLog(data) {
 
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
+      const catIcon = categoryIcon(e.categorySymbol);
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
 
       html += `
         <div class="logRow" style="--rowc:${rowColor(e.category)};--r:${rowIndex++}">
-          <span class="cat">${catLabel}</span>
+          <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
           <span class="at">${length || '—'}</span>
           <span class="time mono">${time}</span>
           <span class="gap">${elapsed || '—'}</span>
