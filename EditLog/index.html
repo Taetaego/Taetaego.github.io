@@ -90,7 +90,7 @@
   .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #timelineCard.card, #logCard.card {
+  #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #logCard.card {
     opacity: 0; animation: cardIn .5s ease both;
   }
   #summaryCard.card { animation-delay: 0s; }
@@ -98,8 +98,7 @@
   #pipelineCard.card { animation-delay: .08s; }
   #statsWrap { animation-delay: .12s; }
   #catCard.card { animation-delay: .16s; }
-  #timelineCard.card { animation-delay: .2s; }
-  #logCard.card { animation-delay: .24s; }
+  #logCard.card { animation-delay: .2s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
   @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
@@ -189,28 +188,6 @@
   }
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
-  /* 편집 타임라인 — 편집본 기준으로, 각 단계에서 영상 어디쯤에서 작업을 시작했는지 */
-  .tlCard { display: flex; flex-direction: column; gap: 14px; }
-  #timelineBody { display: flex; flex-direction: column; gap: 9px; }
-  .tlRow { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; }
-  .tlName { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 11px; color: var(--ink2); }
-  .tlName .catIcon { flex: none; display: flex; width: 12px; height: 12px; color: var(--rowc, var(--ink3)); }
-  .tlName .catIcon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-  .tlName .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tlTrack { position: relative; height: 18px; border-radius: 5px; background: var(--surface2); }
-  .tlFill {
-    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px;
-    background: color-mix(in srgb, var(--rowc, var(--ink3)) 26%, transparent);
-    transform-origin: left; animation: tlGrow .55s ease both;
-  }
-  .tlMark {
-    position: absolute; top: 50%; width: 2px; height: 11px; margin-top: -5.5px; border-radius: 1px;
-    background: var(--rowc, var(--ink3)); animation: tlPop .3s ease both;
-  }
-  .tlAxis { display: flex; justify-content: space-between; padding-left: 114px; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
-  @keyframes tlGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
   /* 도넛 게이지: 잡고 돌릴 수 있다 (놓으면 튕겨 돌아옴) */
   .donut { cursor: grab; touch-action: none; }
   .donut:active { cursor: grabbing; }
@@ -236,13 +213,12 @@
     100% { opacity: 0; }
   }
 
-  /* 오래 쉬었으면 배지 (열 폭을 건드리지 않게 카드 여백 쪽으로 띄운다) */
-  .logRow .gap { position: relative; }
-  .logRow .gap .zzz { position: absolute; right: -13px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1; }
-
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .statTile { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--accent); }
+  /* 숫자가 있는 타일은 눌러서 카운트업을 다시 볼 수 있다 */
+  .statTile:has(.value[data-count]) { cursor: pointer; }
+  .statTile:has(.value[data-count]):active { transform: scale(0.985); }
   .statTile .label { font-size: 10px; font-weight: 600; color: var(--ink3); }
   .statTile .value { font-size: 17px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
   .statTile .sub { font-size: 10px; line-height: 1.4; color: var(--ink2); }
@@ -388,14 +364,6 @@
         <div class="catChips" id="catBody"></div>
       </div>
 
-      <div class="card tlCard" id="timelineCard" style="display:none">
-        <div class="cardHead">
-          <span class="cardTitle">편집 타임라인</span>
-          <span class="cardMeta mono" id="timelineMeta"></span>
-        </div>
-        <div id="timelineBody"></div>
-      </div>
-
       <div class="card logCard" id="logCard" style="display:none">
         <div id="logBody"></div>
       </div>
@@ -418,10 +386,10 @@ async function main() {
     renderPipeline(data);
     renderStats(data);
     renderCategoryChips(data);
-    renderTimeline(data);
     renderLog(data);
     initDonutSpin();
     initTodoPoke();
+    initCounterReplay();
     summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
     setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
@@ -680,68 +648,41 @@ function renderStats(data) {
 }
 
 /** 통계 타일 숫자를 0에서 목표값까지 올린다 (reduced-motion이면 건너뜀). */
-function runCounters() {
-  const els = document.querySelectorAll('.statTile .value[data-count]');
-  if (reducedMotion) return;
-  const render = (el, n) => {
+/** 타일 숫자 하나를 0에서 목표값까지 올린다. 애니메이션 도중 다시 부르면 이전 것은 버린다. */
+function animateCounter(el) {
+  const target = Number(el.dataset.count);
+  if (!Number.isFinite(target) || target <= 0) return;
+  const render = (n) => {
     el.textContent = el.dataset.fmt === 'count' ? `${n}개` : formatMinutes(n);
   };
-  els.forEach(el => {
-    const target = Number(el.dataset.count);
-    if (!Number.isFinite(target) || target <= 0) return;
-    // 여기서 0으로 미리 덮지 않는다 — 탭이 백그라운드라 rAF가 멈추면
-    // 이미 렌더된 실제 값이 그대로 남아야 하기 때문.
-    const t0 = performance.now(), dur = 1600;
-    const tick = now => {
-      const k = Math.min(1, (now - t0) / dur);
-      const eased = 1 - Math.pow(1 - k, 3);
-      render(el, Math.round(eased * target));
-      if (k < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
+  if (reducedMotion) { render(target); return; }
+
+  // 연타로 rAF 루프가 여러 개 겹쳐 숫자가 튀는 걸 막는다.
+  const run = el._countRun = (el._countRun || 0) + 1;
+  // 여기서 0으로 미리 덮지 않는다 — 탭이 백그라운드라 rAF가 멈추면
+  // 이미 렌더된 실제 값이 그대로 남아야 하기 때문.
+  const t0 = performance.now(), dur = 1600;
+  const tick = (now) => {
+    if (el._countRun !== run) return;
+    const k = Math.min(1, (now - t0) / dur);
+    render(Math.round((1 - Math.pow(1 - k, 3)) * target));
+    if (k < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
-/** 편집 타임라인. "시작 시점"은 편집본 기준(= 편집하다 멈춘 지점)이므로,
-    축은 완성본 > 컷편집본 > 관측된 최대값 순으로 잡는다. */
-function renderTimeline(data) {
-  const withPos = (data.entries || [])
-    .map(e => ({ name: e.category || '체크포인트', pos: parseMinutes(e.videoLength) }))
-    .filter(e => e.pos !== null);
-  if (withPos.length === 0) return;
+function runCounters() {
+  document.querySelectorAll('.statTile .value[data-count]').forEach(animateCounter);
+}
 
-  const colorVar = makeGroupColorVar(data);
-  const symbolByCat = {}, order = {};
-  (data.allCategories || []).forEach((c, i) => { symbolByCat[c.name] = c.symbolName; order[c.name] = i; });
-
-  const observed = withPos.reduce((m, e) => Math.max(m, e.pos), 0);
-  const axisMax = Math.max(parseMinutes(data.finalLength) || 0, parseMinutes(data.detailCutLength) || 0, observed, 1);
-
-  const byCat = new Map();
-  for (const e of withPos) {
-    if (!byCat.has(e.name)) byCat.set(e.name, []);
-    byCat.get(e.name).push(e.pos);
-  }
-  const cats = [...byCat.keys()].sort((a, b) => (order[a] ?? 999) - (order[b] ?? 999));
-
-  const pct = (v) => (v / axisMax * 100).toFixed(2);
-  let html = '';
-  cats.forEach((name, i) => {
-    const pts = byCat.get(name).slice().sort((a, b) => a - b);
-    const reach = pts[pts.length - 1];
-    const marks = pts.map(p =>
-      `<span class="tlMark" style="left:calc(${pct(p)}% - 1px);animation-delay:${i * 70 + 140}ms" title="${escapeHtml(formatMinutes(p))} 지점에서 시작"></span>`
-    ).join('');
-    html += `<div class="tlRow" style="${colorVar(name)}">
-        <span class="tlName"><span class="catIcon">${categorySvg(symbolByCat[name])}</span><span class="t">${escapeHtml(name)}</span></span>
-        <span class="tlTrack"><span class="tlFill" style="width:${pct(reach)}%;animation-delay:${i * 70}ms"></span>${marks}</span>
-      </div>`;
+/** 통계 타일을 누르면 카운트업을 다시 재생한다. */
+function initCounterReplay() {
+  const body = document.getElementById('statsBody');
+  if (!body) return;
+  body.addEventListener('click', (ev) => {
+    const value = ev.target.closest('.statTile')?.querySelector('.value[data-count]');
+    if (value) animateCounter(value);
   });
-  html += `<div class="tlAxis"><span>0분</span><span>${escapeHtml(formatMinutes(axisMax))}</span></div>`;
-
-  document.getElementById('timelineBody').innerHTML = html;
-  document.getElementById('timelineMeta').textContent = `${formatMinutes(axisMax)} 기준`;
-  document.getElementById('timelineCard').style.display = '';
 }
 
 /** 도넛을 잡고 돌릴 수 있게 한다. 놓으면 원래 각도로 튕겨 돌아온다.
@@ -783,7 +724,79 @@ function initDonutSpin() {
   }, true);
 }
 
-const TODO_TAUNTS = ['아직이야', '그만 눌러', '누른다고 되냐', '진짜 안 된다니까', '...', '알겠어 할게'];
+/* ===== 작업 시작 시각을 그날의 해에 맞춰 물들이기 =====
+   일출·일몰은 날짜별 표가 아니라 위경도+날짜로 계산되는 공식이라 데이터가 늘지 않는다.
+   고정 시간대(6시~18시 식)로 하면 한국 기준 일몰이 12월 17:17 / 6월 19:57로 2시간 반
+   차이나서 겨울 저녁이 '낮'으로 칠해지기 때문에 실제 값을 쓴다. */
+const SITE_LAT = 37.5665, SITE_LON = 126.9780;   // 서울 기준
+
+/** 그날의 새벽·일출·정오·일몰·황혼 시각 (SunCalc와 같은 표준 태양 위치 공식). */
+function sunEvents(date, lat, lon) {
+  const rad = Math.PI / 180, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545;
+  const toJulian = (d) => d.valueOf() / dayMs - 0.5 + J1970;
+  const fromJulian = (j) => new Date((j + 0.5 - J1970) * dayMs);
+  const lw = -lon * rad, phi = lat * rad;
+  const n = Math.round(toJulian(date) - J2000 - 0.0009 - lw / (2 * Math.PI));
+  const ds = 0.0009 + lw / (2 * Math.PI) + n;
+  const M = (357.5291 + 0.98560028 * ds) * rad;
+  const C = (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) * rad;
+  const L = M + C + Math.PI + 102.9372 * rad;
+  const Jnoon = J2000 + ds + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L);
+  const dec = Math.asin(Math.sin(L) * Math.sin(23.4397 * rad));
+  const setJ = (h) => {
+    const cosW = (Math.sin(h * rad) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec));
+    if (cosW > 1 || cosW < -1) return null;   // 백야 / 극야
+    const a = 0.0009 + (Math.acos(cosW) + lw) / (2 * Math.PI) + n;
+    return J2000 + a + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L);
+  };
+  const jSet = setJ(-0.833), jDusk = setJ(-6);
+  return {
+    noon: fromJulian(Jnoon),
+    rise: jSet === null ? null : fromJulian(Jnoon - (jSet - Jnoon)),
+    set: jSet === null ? null : fromJulian(jSet),
+    dawn: jDusk === null ? null : fromJulian(Jnoon - (jDusk - Jnoon)),
+    dusk: jDusk === null ? null : fromJulian(jDusk),
+  };
+}
+
+// 테마별로 대비를 맞춘 색 (다크 최저 7.5:1, 라이트 최저 5.7:1)
+const SUN_COLORS = {
+  dark:  { night: [143,168,232], rise: [224,160,200], noon: [242,207,90], set: [240,160,96] },
+  light: { night: [58,90,156],   rise: [150,65,122],  noon: [122,100,16], set: [156,82,24] },
+};
+
+function sunTint(iso) {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const C = SUN_COLORS[isLight ? 'light' : 'dark'];
+  const d = new Date(iso), t = d.getTime();
+  const s = sunEvents(d, SITE_LAT, SITE_LON);
+  const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+  if (!s.rise || !s.set) return { color: rgb(C.noon), phase: '' };
+
+  const mix = (from, to, a, b) => {
+    const k = Math.min(1, Math.max(0, (t - from.getTime()) / (to.getTime() - from.getTime())));
+    return rgb(a.map((v, i) => Math.round(v + (b[i] - v) * k)));
+  };
+  const hm = (x) => formatTimeOnly(x.toISOString());
+  const detail = ` (해 뜸 ${hm(s.rise)} · 해 짐 ${hm(s.set)})`;
+
+  if (t < s.dawn.getTime() || t >= s.dusk.getTime()) return { color: rgb(C.night), phase: '밤' + detail };
+  if (t < s.rise.getTime()) return { color: mix(s.dawn, s.rise, C.night, C.rise), phase: '동틀 무렵' + detail };
+  if (t < s.noon.getTime()) return { color: mix(s.rise, s.noon, C.rise, C.noon), phase: '오전' + detail };
+  if (t < s.set.getTime()) return { color: mix(s.noon, s.set, C.noon, C.set), phase: '오후' + detail };
+  return { color: mix(s.set, s.dusk, C.set, C.night), phase: '해 질 무렵' + detail };
+}
+
+/** 작업 기록의 시작 시간들을 그 시각의 하늘색으로 칠한다 (테마가 바뀌면 다시 칠한다). */
+function paintTimes() {
+  document.querySelectorAll('.logRow .time[data-ts]').forEach((el) => {
+    const { color, phase } = sunTint(el.dataset.ts);
+    el.style.color = color;
+    el.title = phase;
+  });
+}
+
+const TODO_TAUNTS = ['아직이에요', '그만 눌러주세요', '누른다고 되는 게 아니에요', '정말 안 됩니다', '...', '알겠어요, 할게요'];
 
 /** 아직 안 한 단계를 누르면 흔들리며 한마디 한다. 계속 누르면 멘트가 올라간다. */
 function initTodoPoke() {
@@ -883,17 +896,13 @@ function renderLog(data) {
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
-      // 오래 쉬었으면 배지 하나 (2일↑ 😴, 5일↑ 🪦)
-      const gapDays = Number(/(\d+)일/.exec(e.elapsed || '')?.[1] ?? 0);
-      const zzz = gapDays >= 5 ? '🪦' : (gapDays >= 2 ? '😴' : '');
-      const zzzHtml = zzz ? `<span class="zzz" title="${gapDays}일 쉬고 복귀">${zzz}</span>` : '';
 
       html += `
         <div class="logRow" style="${rowColorVar(e.category)}--r:${rowIndex++}">
           <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
           <span class="at">${length || '—'}</span>
-          <span class="time mono">${time}</span>
-          <span class="gap">${elapsed || '—'}${zzzHtml}</span>
+          <span class="time mono" data-ts="${escapeHtml(e.timestamp)}">${time}</span>
+          <span class="gap">${elapsed || '—'}</span>
         </div>
       `;
     }
@@ -901,6 +910,7 @@ function renderLog(data) {
   document.getElementById('logBody').innerHTML = html;
   document.getElementById('logCard').style.display = '';
   initInfoPopover();
+  paintTimes();
 }
 
 function initInfoPopover() {
@@ -931,6 +941,8 @@ function applyTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   document.querySelectorAll('#themeToggle button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   try { localStorage.setItem('theme', mode); } catch (e) {}
+  // 시작 시간 색은 테마별로 대비를 맞춰둔 값이라 테마가 바뀌면 다시 칠해야 한다.
+  paintTimes();
 }
 (function initTheme() {
   let saved = null;
