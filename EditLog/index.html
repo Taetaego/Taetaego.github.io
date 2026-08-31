@@ -114,6 +114,7 @@
 
   /* 작업 시간대 — 하루치 하늘 위에 세션을 점으로 찍는다 (0시~24시 벽시계 기준) */
   .dayCard { display: flex; flex-direction: column; gap: 10px; }
+  #dayCard { cursor: pointer; }   /* 누르면 등장 애니메이션을 다시 재생 */
   .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
   .daySpot {
     position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
@@ -438,6 +439,7 @@ async function main() {
     renderStats(data);
     renderCategoryChips(data);
     renderDayBand(data);
+    initDayBandReplay();
     setInterval(updateDayNow, 60000);
     renderLog(data);
     initDonutSpin();
@@ -980,6 +982,26 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
+}
+
+/** 카드를 누르면 등장 애니메이션과 점 튀어오르기를 처음부터 다시 재생한다. */
+function initDayBandReplay() {
+  const card = document.getElementById('dayCard');
+  if (!card) return;
+  card.addEventListener('click', () => {
+    if (reducedMotion) return;
+    const spots = [...card.querySelectorAll('.daySpot')];
+    // 애니메이션을 껐다 켜면서 리플로우를 강제해야 처음부터 다시 돈다.
+    card.style.animation = 'none';
+    spots.forEach(s => { s.style.animation = 'none'; });
+    void card.offsetWidth;
+    card.style.animation = '';
+    card.style.animationDelay = '0s';   // 최초 로드용 0.2s 지연은 빼고 바로 재생
+    spots.forEach((s, i) => {
+      s.style.animation = '';
+      s.style.animationDelay = `${i * 45}ms`;
+    });
+  });
 }
 
 /** 띠 위의 '지금' 표식을 현재 시각으로 옮긴다. */
