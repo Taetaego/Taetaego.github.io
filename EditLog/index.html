@@ -235,7 +235,13 @@
   @keyframes rowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   /* 앱의 작업 기록 표처럼 카테고리 앞에 아이콘을 붙인다 (앱은 SF Symbol, 웹은 대응 이모지). */
   .logRow .cat { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 12px; font-weight: 500; }
-  .logRow .cat .catIcon { flex: none; font-size: 10.5px; line-height: 1; }
+  /* 아이콘 색은 행 왼쪽 바와 동일한 그룹 색을 따른다 (그룹이 없으면 기본 회색). */
+  .logRow .cat .catIcon { flex: none; display: flex; width: 14px; height: 14px; color: var(--rowc, var(--ink3)); }
+  .logRow .cat .catIcon svg {
+    width: 100%; height: 100%;
+    fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
   .logRow .cat .catName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
@@ -459,6 +465,27 @@ function categoryIcon(symbolName) {
   return SYMBOL_EMOJI[symbolName] || '🔧';
 }
 
+/** 작업 기록 표용 단색 아이콘. 앱의 SF Symbol에 대응하며, stroke가 currentColor라
+    행 왼쪽 바와 같은 그룹 색을 그대로 따라간다. */
+const SYMBOL_SVG = {
+  'scissors': '<circle cx="6" cy="18" r="2.6"/><circle cx="18" cy="18" r="2.6"/><path d="M8.2 16.1 18 4"/><path d="M15.8 16.1 6 4"/>',
+  'captions.bubble': '<rect x="3" y="4.5" width="18" height="12" rx="3"/><path d="M8 16.5v3.5l4-3.5"/><path d="M7.5 9h4M7.5 12.5h9"/>',
+  'photo.on.rectangle': '<rect x="7" y="3.5" width="14" height="11" rx="2"/><path d="M9 11.5l2.8-2.8 2.6 2.6 1.9-1.9L21 12"/><path d="M17 18.5H5a2 2 0 0 1-2-2V8"/>',
+  'text.badge.checkmark': '<path d="M3 6.5h11M3 11.5h8M3 16.5h7"/><path d="M14.5 16.2 17 18.7 22 13.4"/>',
+  'paintpalette': '<path d="M12 3.2a8.8 8.8 0 1 0 0 17.6c1 0 1.7-.7 1.7-1.6 0-.4-.2-.8-.5-1.1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5h1.5a4.9 4.9 0 0 0 4.9-4.9c0-4.3-4-7.5-8.7-7.5z"/><circle cx="7.6" cy="11.2" r="1.1"/><circle cx="10.2" cy="7.4" r="1.1"/><circle cx="14.8" cy="7.4" r="1.1"/>',
+  'star.bubble': '<path d="M12 3.4l2.7 5.4 6 .9-4.3 4.2 1 6-5.4-2.8-5.4 2.8 1-6L3.3 9.7l6-.9z"/>',
+  'map': '<path d="M9 4 3 6.6v13.6L9 17.6l6 2.6 6-2.6V4l-6 2.6z"/><path d="M9 4v13.6M15 6.6v13.6"/>',
+  'music.note': '<path d="M9 18.2V6.1l11-2v12.1"/><circle cx="6" cy="18.2" r="3"/><circle cx="17" cy="16.2" r="3"/>',
+  'checkmark.seal': '<path d="M12 2.8l2.3 1.8 2.9-.2.9 2.8 2.5 1.5-1 2.7 1 2.7-2.5 1.5-.9 2.8-2.9-.2L12 21.2l-2.3-1.8-2.9.2-.9-2.8-2.5-1.5 1-2.7-1-2.7 2.5-1.5.9-2.8 2.9.2z"/><path d="M8.7 12.1l2.3 2.3 4.3-4.5"/>',
+  'text.below.photo': '<rect x="3" y="3.8" width="18" height="10.4" rx="2"/><path d="M3 17.6h18M3 20.6h12"/>',
+  'flag': '<path d="M5 21.2V3.6"/><path d="M5 4.6h11l-1.6 3.6L16 12H5z"/>',
+};
+
+function categorySvg(symbolName) {
+  const inner = SYMBOL_SVG[symbolName] || '<circle cx="12" cy="12" r="7.5"/>';
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${inner}</svg>`;
+}
+
 function pipelineProgress(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return null;
@@ -620,9 +647,12 @@ function renderLog(data) {
   const groupNames = [...new Set((data.allCategories || []).map(c => c.group))];
   const groupByCat = {};
   (data.allCategories || []).forEach(c => { groupByCat[c.name] = c.group; });
-  const rowColor = (catName) => {
+  // 그룹을 못 찾으면(카테고리 목록에 없는 "완료" 등) --rowc를 아예 정의하지 않는다.
+  // 그래야 바는 var(--rowc, transparent)로 안 그려지고, 아이콘은 var(--rowc, var(--ink3))로
+  // 기본 회색을 쓴다.
+  const rowColorVar = (catName) => {
     const gi = groupNames.indexOf(groupByCat[catName]);
-    return gi < 0 ? 'transparent' : `var(--grp-${Math.min(gi, 2) + 1})`;
+    return gi < 0 ? '' : `--rowc:var(--grp-${Math.min(gi, 2) + 1});`;
   };
 
   const byDay = new Map();
@@ -654,13 +684,13 @@ function renderLog(data) {
 
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
-      const catIcon = categoryIcon(e.categorySymbol);
+      const catIcon = categorySvg(e.categorySymbol);
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
 
       html += `
-        <div class="logRow" style="--rowc:${rowColor(e.category)};--r:${rowIndex++}">
+        <div class="logRow" style="${rowColorVar(e.category)}--r:${rowIndex++}">
           <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
           <span class="at">${length || '—'}</span>
           <span class="time mono">${time}</span>
