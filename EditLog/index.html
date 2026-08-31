@@ -90,7 +90,7 @@
   .page { width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #logCard.card {
+  #summaryCard.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #timelineCard.card, #logCard.card {
     opacity: 0; animation: cardIn .5s ease both;
   }
   #summaryCard.card { animation-delay: 0s; }
@@ -98,7 +98,8 @@
   #pipelineCard.card { animation-delay: .08s; }
   #statsWrap { animation-delay: .12s; }
   #catCard.card { animation-delay: .16s; }
-  #logCard.card { animation-delay: .2s; }
+  #timelineCard.card { animation-delay: .2s; }
+  #logCard.card { animation-delay: .24s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
   @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
@@ -187,6 +188,57 @@
     animation: labelFade 1.8s ease-in-out infinite;
   }
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+  /* 편집 타임라인 — 편집본 기준으로, 각 단계에서 영상 어디쯤에서 작업을 시작했는지 */
+  .tlCard { display: flex; flex-direction: column; gap: 14px; }
+  #timelineBody { display: flex; flex-direction: column; gap: 9px; }
+  .tlRow { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: center; }
+  .tlName { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 11px; color: var(--ink2); }
+  .tlName .catIcon { flex: none; display: flex; width: 12px; height: 12px; color: var(--rowc, var(--ink3)); }
+  .tlName .catIcon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .tlName .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tlTrack { position: relative; height: 18px; border-radius: 5px; background: var(--surface2); }
+  .tlFill {
+    position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px;
+    background: color-mix(in srgb, var(--rowc, var(--ink3)) 26%, transparent);
+    transform-origin: left; animation: tlGrow .55s ease both;
+  }
+  .tlMark {
+    position: absolute; top: 50%; width: 2px; height: 11px; margin-top: -5.5px; border-radius: 1px;
+    background: var(--rowc, var(--ink3)); animation: tlPop .3s ease both;
+  }
+  .tlAxis { display: flex; justify-content: space-between; padding-left: 114px; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  @keyframes tlGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* 도넛 게이지: 잡고 돌릴 수 있다 (놓으면 튕겨 돌아옴) */
+  .donut { cursor: grab; touch-action: none; }
+  .donut:active { cursor: grabbing; }
+
+  /* 아직 안 한 단계를 누르면 흔들리며 한마디 한다 */
+  .pipeItem.todo { cursor: pointer; }
+  .pipeItem.poked { animation: poke .4s ease; }
+  @keyframes poke {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); } 40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); } 80% { transform: translateX(2px); }
+  }
+  .pipeItem .poke {
+    white-space: nowrap; font-size: 10px; font-weight: 700; line-height: 1.4;
+    color: var(--warn); background: var(--warn-soft); padding: 2px 8px; border-radius: 99px;
+    opacity: 0; pointer-events: none;
+  }
+  .pipeItem .poke.show { animation: pokeIn 1.8s ease forwards; }
+  @keyframes pokeIn {
+    0% { opacity: 0; transform: scale(.8); }
+    14% { opacity: 1; transform: scale(1); }
+    78% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 오래 쉬었으면 배지 (열 폭을 건드리지 않게 카드 여백 쪽으로 띄운다) */
+  .logRow .gap { position: relative; }
+  .logRow .gap .zzz { position: absolute; right: -13px; top: 50%; transform: translateY(-50%); font-size: 11px; line-height: 1; }
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -336,6 +388,14 @@
         <div class="catChips" id="catBody"></div>
       </div>
 
+      <div class="card tlCard" id="timelineCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">편집 타임라인</span>
+          <span class="cardMeta mono" id="timelineMeta"></span>
+        </div>
+        <div id="timelineBody"></div>
+      </div>
+
       <div class="card logCard" id="logCard" style="display:none">
         <div id="logBody"></div>
       </div>
@@ -358,7 +418,10 @@ async function main() {
     renderPipeline(data);
     renderStats(data);
     renderCategoryChips(data);
+    renderTimeline(data);
     renderLog(data);
+    initDonutSpin();
+    initTodoPoke();
     summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
     setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
@@ -639,6 +702,121 @@ function runCounters() {
   });
 }
 
+/** 편집 타임라인. "시작 시점"은 편집본 기준(= 편집하다 멈춘 지점)이므로,
+    축은 완성본 > 컷편집본 > 관측된 최대값 순으로 잡는다. */
+function renderTimeline(data) {
+  const withPos = (data.entries || [])
+    .map(e => ({ name: e.category || '체크포인트', pos: parseMinutes(e.videoLength) }))
+    .filter(e => e.pos !== null);
+  if (withPos.length === 0) return;
+
+  const colorVar = makeGroupColorVar(data);
+  const symbolByCat = {}, order = {};
+  (data.allCategories || []).forEach((c, i) => { symbolByCat[c.name] = c.symbolName; order[c.name] = i; });
+
+  const observed = withPos.reduce((m, e) => Math.max(m, e.pos), 0);
+  const axisMax = Math.max(parseMinutes(data.finalLength) || 0, parseMinutes(data.detailCutLength) || 0, observed, 1);
+
+  const byCat = new Map();
+  for (const e of withPos) {
+    if (!byCat.has(e.name)) byCat.set(e.name, []);
+    byCat.get(e.name).push(e.pos);
+  }
+  const cats = [...byCat.keys()].sort((a, b) => (order[a] ?? 999) - (order[b] ?? 999));
+
+  const pct = (v) => (v / axisMax * 100).toFixed(2);
+  let html = '';
+  cats.forEach((name, i) => {
+    const pts = byCat.get(name).slice().sort((a, b) => a - b);
+    const reach = pts[pts.length - 1];
+    const marks = pts.map(p =>
+      `<span class="tlMark" style="left:calc(${pct(p)}% - 1px);animation-delay:${i * 70 + 140}ms" title="${escapeHtml(formatMinutes(p))} 지점에서 시작"></span>`
+    ).join('');
+    html += `<div class="tlRow" style="${colorVar(name)}">
+        <span class="tlName"><span class="catIcon">${categorySvg(symbolByCat[name])}</span><span class="t">${escapeHtml(name)}</span></span>
+        <span class="tlTrack"><span class="tlFill" style="width:${pct(reach)}%;animation-delay:${i * 70}ms"></span>${marks}</span>
+      </div>`;
+  });
+  html += `<div class="tlAxis"><span>0분</span><span>${escapeHtml(formatMinutes(axisMax))}</span></div>`;
+
+  document.getElementById('timelineBody').innerHTML = html;
+  document.getElementById('timelineMeta').textContent = `${formatMinutes(axisMax)} 기준`;
+  document.getElementById('timelineCard').style.display = '';
+}
+
+/** 도넛을 잡고 돌릴 수 있게 한다. 놓으면 원래 각도로 튕겨 돌아온다.
+    드래그였을 땐 히어로 카드의 폭죽 클릭이 같이 터지지 않게 막는다. */
+function initDonutSpin() {
+  const donut = document.getElementById('donutGauge');
+  if (!donut || reducedMotion) return;
+  let dragging = false, base = 0, current = 0, moved = false;
+
+  const angleAt = (ev) => {
+    const r = donut.getBoundingClientRect();
+    return Math.atan2(ev.clientY - (r.top + r.height / 2), ev.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
+  };
+  donut.addEventListener('pointerdown', (ev) => {
+    dragging = true; moved = false;
+    base = angleAt(ev) - current;
+    try { donut.setPointerCapture(ev.pointerId); } catch (e) { /* 포인터 캡처 실패해도 드래그는 계속 */ }
+    donut.style.transition = 'none';
+    ev.preventDefault();
+  });
+  donut.addEventListener('pointermove', (ev) => {
+    if (!dragging) return;
+    const next = angleAt(ev) - base;
+    if (Math.abs(next - current) > 1.5) moved = true;
+    current = next;
+    donut.style.transform = `rotate(${current}deg)`;
+  });
+  const release = () => {
+    if (!dragging) return;
+    dragging = false;
+    current = 0;
+    donut.style.transition = 'transform 1s cubic-bezier(.2,1.5,.4,1)';
+    donut.style.transform = 'rotate(0deg)';
+  };
+  donut.addEventListener('pointerup', release);
+  donut.addEventListener('pointercancel', release);
+  donut.addEventListener('click', (ev) => {
+    if (moved) { ev.stopPropagation(); moved = false; }
+  }, true);
+}
+
+const TODO_TAUNTS = ['아직이야', '그만 눌러', '누른다고 되냐', '진짜 안 된다니까', '...', '알겠어 할게'];
+
+/** 아직 안 한 단계를 누르면 흔들리며 한마디 한다. 계속 누르면 멘트가 올라간다. */
+function initTodoPoke() {
+  const body = document.getElementById('pipelineBody');
+  if (!body) return;
+  let count = 0, resetTimer = null;
+
+  body.addEventListener('click', (ev) => {
+    const item = ev.target.closest('.pipeItem.todo');
+    if (!item) return;
+
+    const name = item.querySelector('.name');
+    let bubble = item.querySelector('.poke');
+    if (!bubble) {
+      bubble = document.createElement('span');
+      bubble.className = 'poke';
+      name.after(bubble);
+    }
+    bubble.textContent = TODO_TAUNTS[Math.min(count, TODO_TAUNTS.length - 1)];
+    count++;
+
+    // 애니메이션을 매번 처음부터 다시 돌리려면 클래스를 뗐다 붙이면서 리플로우를 강제해야 한다.
+    item.classList.remove('poked');
+    bubble.classList.remove('show');
+    void item.offsetWidth;
+    item.classList.add('poked');
+    bubble.classList.add('show');
+
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(() => { count = 0; }, 5000);
+  });
+}
+
 function renderCategoryChips(data) {
   const entries = data.entries || [];
   if (entries.length === 0) return;
@@ -705,13 +883,17 @@ function renderLog(data) {
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
+      // 오래 쉬었으면 배지 하나 (2일↑ 😴, 5일↑ 🪦)
+      const gapDays = Number(/(\d+)일/.exec(e.elapsed || '')?.[1] ?? 0);
+      const zzz = gapDays >= 5 ? '🪦' : (gapDays >= 2 ? '😴' : '');
+      const zzzHtml = zzz ? `<span class="zzz" title="${gapDays}일 쉬고 복귀">${zzz}</span>` : '';
 
       html += `
         <div class="logRow" style="${rowColorVar(e.category)}--r:${rowIndex++}">
           <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
           <span class="at">${length || '—'}</span>
           <span class="time mono">${time}</span>
-          <span class="gap">${elapsed || '—'}</span>
+          <span class="gap">${elapsed || '—'}${zzzHtml}</span>
         </div>
       `;
     }
