@@ -174,7 +174,7 @@
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 42px 62px 58px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
+  .logHead { display: grid; grid-template-columns: 1fr 42px 62px 80px; gap: 6px; padding-bottom: 8px; border-bottom: 1px solid var(--line2); font-size: 9px; font-weight: 600; color: var(--ink3); }
   .logHead .c { text-align: center; line-height: 1.25; }
   .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
@@ -191,12 +191,12 @@
   .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
-  .logRow { display: grid; grid-template-columns: 1fr 42px 62px 58px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
+  .logRow { display: grid; grid-template-columns: 1fr 42px 62px 80px; gap: 6px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); transition: background-color .2s ease; }
   .logRow:hover { background: var(--soft); }
   .logRow .cat { font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
-  .logRow .gap { font-size: 9.5px; line-height: 1.2; text-align: center; color: var(--ink3); }
+  .logRow .gap { font-size: 9.5px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
   .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
 
   @media (max-width: 420px) {
