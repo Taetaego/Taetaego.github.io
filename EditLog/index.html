@@ -730,11 +730,12 @@ function initDonutSpin() {
    차이나서 겨울 저녁이 '낮'으로 칠해지기 때문에 실제 값을 쓴다. */
 const SITE_LAT = 37.5665, SITE_LON = 126.9780;   // 서울 기준
 
-/** 그날의 새벽·일출·정오·일몰·황혼 시각 (SunCalc와 같은 표준 태양 위치 공식). */
-function sunEvents(date, lat, lon) {
+/** 그날의 태양 고도별 시각. at(고도, 오전이면 true)로 뽑아 쓴다.
+    (SunCalc와 같은 표준 태양 위치 공식) */
+function solarDay(date, lat, lon) {
   const rad = Math.PI / 180, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545;
   const toJulian = (d) => d.valueOf() / dayMs - 0.5 + J1970;
-  const fromJulian = (j) => new Date((j + 0.5 - J1970) * dayMs);
+  const fromJulian = (j) => (j + 0.5 - J1970) * dayMs;
   const lw = -lon * rad, phi = lat * rad;
   const n = Math.round(toJulian(date) - J2000 - 0.0009 - lw / (2 * Math.PI));
   const ds = 0.0009 + lw / (2 * Math.PI) + n;
@@ -743,48 +744,74 @@ function sunEvents(date, lat, lon) {
   const L = M + C + Math.PI + 102.9372 * rad;
   const Jnoon = J2000 + ds + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L);
   const dec = Math.asin(Math.sin(L) * Math.sin(23.4397 * rad));
-  const setJ = (h) => {
+  const noon = fromJulian(Jnoon);
+  const at = (h, rising) => {
     const cosW = (Math.sin(h * rad) - Math.sin(phi) * Math.sin(dec)) / (Math.cos(phi) * Math.cos(dec));
     if (cosW > 1 || cosW < -1) return null;   // 백야 / 극야
     const a = 0.0009 + (Math.acos(cosW) + lw) / (2 * Math.PI) + n;
-    return J2000 + a + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L);
+    const setMs = fromJulian(J2000 + a + 0.0053 * Math.sin(M) - 0.0069 * Math.sin(2 * L));
+    return rising ? noon - (setMs - noon) : setMs;
   };
-  const jSet = setJ(-0.833), jDusk = setJ(-6);
-  return {
-    noon: fromJulian(Jnoon),
-    rise: jSet === null ? null : fromJulian(Jnoon - (jSet - Jnoon)),
-    set: jSet === null ? null : fromJulian(jSet),
-    dawn: jDusk === null ? null : fromJulian(Jnoon - (jDusk - Jnoon)),
-    dusk: jDusk === null ? null : fromJulian(jDusk),
-  };
+  return { noon, at };
 }
 
-// 테마별로 대비를 맞춘 색 (다크 최저 7.5:1, 라이트 최저 5.7:1)
-const SUN_COLORS = {
-  dark:  { night: [143,168,232], rise: [224,160,200], noon: [242,207,90], set: [240,160,96] },
-  light: { night: [58,90,156],   rise: [150,65,122],  noon: [122,100,16], set: [156,82,24] },
-};
+/* 실제 하늘색을 따라가는 14개 스톱. 색상·채도는 진짜 하늘값을 쓰고 명도만 테마별로
+   읽히게 올렸다 (다크 최저 7.0:1, 라이트 최저 5.0:1). 라이트는 원래 하늘색이 이미
+   흰 배경에서 잘 읽혀 거의 그대로 쓴다. */
+const SKY_DARK = ['#94a1dc','#95a1db','#a69dd5','#bc99b6','#e98a71','#f2a870','#f5c860','#ffe9a0','#f7d070','#f0a850','#f38567','#d88fa3','#bd95cf','#9e9ed7'];
+const SKY_LIGHT = ['#131a3a','#1b2450','#3a3070','#8a5a82','#c6411f','#b15510','#916809','#8a6a00','#8f6808','#a25f0e','#ce3710','#be4365','#6a3a80','#25255a'];
+// 구간 i는 stops[i] ~ stops[i+1] 사이를 뜻한다 (마지막은 자정으로 되돌아감).
+const SKY_PHASE = ['한밤','동트기 전','새벽','동틀 무렵','아침','오전','늦은 오전','한낮','오후','해 질 무렵','노을','땅거미','밤','한밤'];
 
+const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+
+/** 하루를 태양 고도 기준 14구간으로 나눠 [시각, 색인덱스] 목록을 만든다. */
+function skyStops(date) {
+  const { noon, at } = solarDay(date, SITE_LAT, SITE_LON);
+  const H = 3600000;
+  const rise = at(-0.833, true), set = at(-0.833, false);
+  const mid = noon - 12 * H;
+  const lerpT = (a, b, k) => (a === null || b === null ? null : a + (b - a) * k);
+  return [
+    [mid, 0],
+    [at(-18, true), 1], [at(-12, true), 2], [at(-6, true), 3],
+    [rise, 4],
+    [lerpT(rise, noon, 0.30), 5], [lerpT(rise, noon, 0.65), 6],
+    [noon, 7],
+    [lerpT(noon, set, 0.55), 8], [lerpT(noon, set, 0.88), 9],
+    [set, 10],
+    [at(-6, false), 11], [at(-12, false), 12], [at(-18, false), 13],
+    [mid + 24 * H, 0],
+  ].filter(([t]) => t !== null && Number.isFinite(t));
+}
+
+/** 그 시각의 하늘색과 구간 이름. */
 function sunTint(iso) {
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const C = SUN_COLORS[isLight ? 'light' : 'dark'];
+  const palette = document.documentElement.getAttribute('data-theme') === 'light' ? SKY_LIGHT : SKY_DARK;
   const d = new Date(iso), t = d.getTime();
-  const s = sunEvents(d, SITE_LAT, SITE_LON);
+  const stops = skyStops(d);
   const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
-  if (!s.rise || !s.set) return { color: rgb(C.noon), phase: '' };
 
-  const mix = (from, to, a, b) => {
-    const k = Math.min(1, Math.max(0, (t - from.getTime()) / (to.getTime() - from.getTime())));
-    return rgb(a.map((v, i) => Math.round(v + (b[i] - v) * k)));
-  };
-  const hm = (x) => formatTimeOnly(x.toISOString());
-  const detail = ` (해 뜸 ${hm(s.rise)} · 해 짐 ${hm(s.set)})`;
+  const { noon, at } = solarDay(d, SITE_LAT, SITE_LON);
+  const rise = at(-0.833, true), set = at(-0.833, false);
+  const hm = (ms) => formatTimeOnly(new Date(ms).toISOString());
+  const detail = rise && set ? ` (해 뜸 ${hm(rise)} · 해 짐 ${hm(set)})` : '';
 
-  if (t < s.dawn.getTime() || t >= s.dusk.getTime()) return { color: rgb(C.night), phase: '밤' + detail };
-  if (t < s.rise.getTime()) return { color: mix(s.dawn, s.rise, C.night, C.rise), phase: '동틀 무렵' + detail };
-  if (t < s.noon.getTime()) return { color: mix(s.rise, s.noon, C.rise, C.noon), phase: '오전' + detail };
-  if (t < s.set.getTime()) return { color: mix(s.noon, s.set, C.noon, C.set), phase: '오후' + detail };
-  return { color: mix(s.set, s.dusk, C.set, C.night), phase: '해 질 무렵' + detail };
+  // 첫 스톱(자정) 이전이나 마지막(다음 자정) 이후면 양끝이 같은 자정색이라 그대로 쓴다.
+  if (stops.length < 2 || t <= stops[0][0] || t >= stops[stops.length - 1][0]) {
+    return { color: rgb(hexToRgb(palette[0])), phase: '한밤' + detail };
+  }
+  for (let i = 0; i < stops.length - 1; i++) {
+    const [t0, c0] = stops[i], [t1, c1] = stops[i + 1];
+    if (t < t0 || t >= t1) continue;
+    const k = (t - t0) / (t1 - t0);
+    const a = hexToRgb(palette[c0]), b = hexToRgb(palette[c1]);
+    return {
+      color: rgb(a.map((v, j) => Math.round(v + (b[j] - v) * k))),
+      phase: SKY_PHASE[c0] + detail,
+    };
+  }
+  return { color: rgb(hexToRgb(palette[0])), phase: '한밤' + detail };
 }
 
 /** 작업 기록의 시작 시간들을 그 시각의 하늘색으로 칠한다 (테마가 바뀌면 다시 칠한다). */
