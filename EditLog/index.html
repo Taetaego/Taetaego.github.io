@@ -100,13 +100,33 @@
   #pipelineCard.card { animation-delay: .08s; }
   #statsWrap { animation-delay: .12s; }
   #catCard.card { animation-delay: .16s; }
-  #logCard.card { animation-delay: .2s; }
+  #dayCard.card { animation-delay: .2s; }
+  #logCard.card { animation-delay: .24s; }
+  /* 카드들이 display:none으로 시작하므로, 버튼도 렌더가 끝난 뒤 같이 나타나야
+     위에 잠깐 붙었다가 아래로 튀는 일이 없다. */
+  #fireBtn { opacity: 0; animation: cardIn .5s ease both; animation-delay: .28s; }
   @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
   @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
+
+  /* 작업 시간대 — 하루치 하늘 위에 세션을 점으로 찍는다 (0시~24시 벽시계 기준) */
+  .dayCard { display: flex; flex-direction: column; gap: 10px; }
+  .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
+  .daySpot {
+    position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
+    border-radius: 50%; background: rgba(255,255,255,0.92);
+    box-shadow: 0 0 0 1.5px rgba(0,0,0,0.45);
+    animation: tlPop .3s ease both;
+  }
+  .dayNow {
+    position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px;
+    background: var(--ink); box-shadow: 0 0 0 1.5px var(--surface); transition: left .6s ease;
+  }
+  .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   /* 맨 아래 폭죽 버튼 */
   .fireBtn {
@@ -380,12 +400,21 @@
         <div class="catChips" id="catBody"></div>
       </div>
 
+      <div class="card dayCard" id="dayCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">작업 시간대</span>
+          <span class="cardMeta mono" id="dayMeta"></span>
+        </div>
+        <div class="dayBand" id="dayBand"><span class="dayNow" id="dayNow"></span></div>
+        <div class="dayAxis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
+      </div>
+
       <div class="card logCard" id="logCard" style="display:none">
         <div id="logBody"></div>
       </div>
     </div>
 
-    <button type="button" class="fireBtn" id="fireBtn">🎆 폭죽 터뜨리기</button>
+    <button type="button" class="fireBtn" id="fireBtn" style="display:none">🎆 폭죽 터뜨리기</button>
   </div>
 
 <script>
@@ -408,6 +437,8 @@ async function main() {
     renderPipeline(data);
     renderStats(data);
     renderCategoryChips(data);
+    renderDayBand(data);
+    setInterval(updateDayNow, 60000);
     renderLog(data);
     initDonutSpin();
     initTodoPoke();
@@ -416,6 +447,9 @@ async function main() {
     setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
+  } finally {
+    // 카드 배치가 끝난 뒤에 꺼내야 버튼이 제자리에서 나타난다.
+    document.getElementById('fireBtn').style.display = '';
   }
 }
 
@@ -809,9 +843,14 @@ function skyStops(date) {
   ].filter(([t]) => t !== null && Number.isFinite(t));
 }
 
-/** 그 시각의 하늘색과 구간 이름. */
-function sunTint(iso) {
-  const palette = document.documentElement.getAttribute('data-theme') === 'light' ? SKY_LIGHT : SKY_DARK;
+// 상단 띠·시간대 카드처럼 장식으로 쓰는 자리엔 밝기 보정 없이 진짜 하늘색을 쓴다.
+const SKY_TRUE = ['#131a3a','#1b2450','#3a3070','#8a5a82','#e8846a','#f2a870','#f5c860','#ffe9a0','#f7d070','#f0a850','#f0603a','#c04a6a','#6a3a80','#25255a'];
+
+const themeSkyPalette = () =>
+  document.documentElement.getAttribute('data-theme') === 'light' ? SKY_LIGHT : SKY_DARK;
+
+/** 그 시각의 하늘색과 구간 이름. palette를 주면 그 팔레트로 계산한다. */
+function sunTint(iso, palette = themeSkyPalette()) {
   const d = new Date(iso), t = d.getTime();
   const stops = skyStops(d);
   const rgb = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
@@ -902,6 +941,54 @@ function renderCategoryChips(data) {
   document.getElementById('catBody').innerHTML = html;
   document.getElementById('catMeta').textContent = String(entries.length);
   document.getElementById('catCard').style.display = '';
+}
+
+/** 0시~24시 하늘 그라데이션 위에 세션 시각을 점으로 찍는다.
+    여러 날의 기록이 한 축에 겹치므로 "몇 시에 일하는 사람인지"가 드러난다. */
+function renderDayBand(data) {
+  const entries = data.entries || [];
+  if (entries.length === 0) return;
+  const band = document.getElementById('dayBand');
+  const now = new Date();
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  // 30분 간격으로 진짜 하늘색을 뽑아 잇는다 (자정 넘어가는 처리 없이 매끄럽다).
+  const stops = [];
+  for (let m = 0; m <= 1440; m += 30) {
+    const t = new Date(base.getTime() + m * 60000);
+    stops.push(`${sunTint(t.toISOString(), SKY_TRUE).color} ${(m / 14.4).toFixed(2)}%`);
+  }
+  band.style.background = `linear-gradient(90deg, ${stops.join(',')})`;
+
+  const frac = (d) => (d.getHours() * 60 + d.getMinutes()) / 1440;
+  band.insertAdjacentHTML('beforeend', entries.map((e, i) => {
+    const d = new Date(e.timestamp);
+    const label = `${e.category || '체크포인트'} · ${formatTimeOnly(e.timestamp)}`;
+    return `<span class="daySpot" style="left:${(frac(d) * 100).toFixed(2)}%;animation-delay:${i * 45}ms" title="${escapeHtml(label)}"></span>`;
+  }).join(''));
+
+  // 해가 진 뒤~뜨기 전에 시작한 기록의 비율
+  let night = 0;
+  for (const e of entries) {
+    const d = new Date(e.timestamp);
+    const { at } = solarDay(d, SITE_LAT, SITE_LON);
+    const rise = at(-0.833, true), set = at(-0.833, false);
+    if (rise === null || set === null) continue;
+    if (d.getTime() < rise || d.getTime() >= set) night++;
+  }
+  document.getElementById('dayMeta').textContent = `밤 작업 ${Math.round(night / entries.length * 100)}%`;
+
+  updateDayNow();
+  document.getElementById('dayCard').style.display = '';
+}
+
+/** 띠 위의 '지금' 표식을 현재 시각으로 옮긴다. */
+function updateDayNow() {
+  const marker = document.getElementById('dayNow');
+  if (!marker) return;
+  const now = new Date();
+  marker.style.left = (((now.getHours() * 60 + now.getMinutes()) / 1440) * 100).toFixed(2) + '%';
+  marker.title = `지금 · ${formatTimeOnly(now.toISOString())}`;
 }
 
 function renderLog(data) {
