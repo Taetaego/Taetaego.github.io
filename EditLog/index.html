@@ -984,7 +984,7 @@ function renderDayBand(data) {
   document.getElementById('dayCard').style.display = '';
 }
 
-/** 카드를 누르면 등장 애니메이션과 점 튀어오르기를 처음부터 다시 재생한다. */
+/** 카드를 누르면 카드는 그대로 두고 안의 점들만 다시 튀어오르게 한다. */
 function initDayBandReplay() {
   const card = document.getElementById('dayCard');
   if (!card) return;
@@ -992,11 +992,8 @@ function initDayBandReplay() {
     if (reducedMotion) return;
     const spots = [...card.querySelectorAll('.daySpot')];
     // 애니메이션을 껐다 켜면서 리플로우를 강제해야 처음부터 다시 돈다.
-    card.style.animation = 'none';
     spots.forEach(s => { s.style.animation = 'none'; });
     void card.offsetWidth;
-    card.style.animation = '';
-    card.style.animationDelay = '0s';   // 최초 로드용 0.2s 지연은 빼고 바로 재생
     spots.forEach((s, i) => {
       s.style.animation = '';
       s.style.animationDelay = `${i * 45}ms`;
