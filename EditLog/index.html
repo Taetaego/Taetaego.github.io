@@ -260,7 +260,9 @@
   /* 카테고리별 기록 */
   .catCard { display: flex; flex-direction: column; gap: 12px; }
   .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; }
+  /* 누르면 흔들린다 (파이프라인 단계와 같은 poke 키프레임 재사용) */
+  .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; cursor: pointer; }
+  .catChip.shook { animation: poke .4s ease; }
   /* 작업 기록 표와 같은 그룹 색을 쓰는 단색 아이콘 (배경은 그 색을 옅게 깐다). */
   .catChip .mk {
     width: 18px; height: 18px; border-radius: 5px;
@@ -438,6 +440,7 @@ async function main() {
     renderPipeline(data);
     renderStats(data);
     renderCategoryChips(data);
+    initChipShake();
     renderDayBand(data);
     initDayBandReplay();
     setInterval(updateDayNow, 60000);
@@ -982,6 +985,20 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
+}
+
+/** 카테고리 칩을 누르면 흔들린다. */
+function initChipShake() {
+  const body = document.getElementById('catBody');
+  if (!body) return;
+  body.addEventListener('click', (ev) => {
+    const chip = ev.target.closest('.catChip');
+    if (!chip || reducedMotion) return;
+    // 연타해도 처음부터 다시 흔들리도록 클래스를 뗐다 붙이며 리플로우를 강제한다.
+    chip.classList.remove('shook');
+    void chip.offsetWidth;
+    chip.classList.add('shook');
+  });
 }
 
 /** 카드를 누르면 카드는 그대로 두고 안의 점들만 다시 튀어오르게 한다. */
