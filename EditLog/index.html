@@ -30,6 +30,7 @@
     --warn: #f2b84a;
     --warn-soft: rgba(242,184,74,0.16);
     /* 작업 기록 행 왼쪽 바 — 카테고리가 속한 그룹을 색으로 구분 */
+    --grain: 0.045;
     --grp-1: #34e0b0;
     --grp-2: #5ab8f0;
     --grp-3: #f2b84a;
@@ -51,6 +52,7 @@
     --tg-on-ink: #0b5c36;
     --warn: #a3690c;
     --warn-soft: rgba(163,105,12,0.14);
+    --grain: 0.03;
     --grp-1: #0f9b78;
     --grp-2: #1a7fb8;
     --grp-3: #a3690c;
@@ -73,7 +75,8 @@
       --tg-on-ink: #8ceab7;
       --warn: #f2b84a;
       --warn-soft: rgba(242,184,74,0.16);
-      --grp-1: #34e0b0;
+      --grain: 0.045;
+    --grp-1: #34e0b0;
       --grp-2: #5ab8f0;
       --grp-3: #f2b84a;
     }
@@ -162,6 +165,35 @@
   }
   .fireBtn:active { transform: scale(0.96); }
 
+  /* 화면 전체에 얇게 깔리는 필름 그레인 (아날로그 질감) */
+  .grain {
+    position: fixed; inset: -20%; pointer-events: none; z-index: 10000;
+    opacity: var(--grain); mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.9'/></svg>");
+    animation: grainShift .55s steps(4) infinite;
+  }
+  @keyframes grainShift {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-1.4%, 1.1%); }
+    50% { transform: translate(1.2%, -0.8%); }
+    75% { transform: translate(-0.6%, 1.6%); }
+    100% { transform: translate(0, 0); }
+  }
+
+  /* 커서를 따라다니는 은은한 빛 (마우스 있는 기기에서만 JS가 붙인다) */
+  .cursorLight {
+    position: fixed; width: 420px; height: 420px; margin: -210px 0 0 -210px;
+    border-radius: 50%; pointer-events: none; z-index: 2;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+    mix-blend-mode: soft-light; opacity: 0; transition: opacity .35s ease; will-change: transform;
+  }
+  .cursorLight.on { opacity: 1; }
+
+  /* 움직임 최소화 설정이면 분위기 효과는 아예 끈다 */
+  @media (prefers-reduced-motion: reduce) {
+    .grain, .cursorLight, .donutGlow, .donutSpark, .pipeGleam { display: none !important; }
+  }
+
   /* 상단 바 */
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
   .brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
@@ -179,9 +211,30 @@
     content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
     background: repeating-conic-gradient(from 0deg, var(--bg) 0deg 1.6deg, transparent 1.6deg var(--seg, 30deg));
   }
-  /* 게이지가 다 차오른 뒤 한 번 톡 튄다 */
-  .donut.filled { animation: donutPop .5s cubic-bezier(.2,1.6,.4,1); }
-  @keyframes donutPop { 0% { transform: scale(1); } 42% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  /* 도넛 뒤에서 천천히 숨쉬는 발광 */
+  .donutGlow {
+    position: absolute; inset: -18px; border-radius: 50%; pointer-events: none; z-index: 0;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 28%, transparent), transparent 68%);
+    filter: blur(6px);
+    animation: glowBreath 3.6s ease-in-out infinite;
+  }
+  @keyframes glowBreath {
+    0%, 100% { opacity: .45; transform: scale(.96); }
+    50% { opacity: .9; transform: scale(1.04); }
+  }
+  /* 게이지가 끝나는 지점에서 반짝이는 점 (각도는 JS가 --spark로 넣어준다) */
+  .donutSpark { position: absolute; inset: 0; pointer-events: none; z-index: 3; rotate: var(--spark, 0deg); }
+  .donutSpark .tip {
+    position: absolute; top: 0; left: 50%; width: 7px; height: 7px;
+    margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #fff;
+    box-shadow: 0 0 8px 3px color-mix(in srgb, var(--accent) 80%, white),
+                0 0 18px 6px color-mix(in srgb, var(--accent) 55%, transparent);
+    animation: sparkPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes sparkPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(.72); opacity: .7; }
+  }
   .donut .in { position: relative; z-index: 1; width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
   .donut .steps { font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; color: var(--ink3); }
@@ -209,6 +262,19 @@
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
+  /* 완료 구간을 따라 빛 한 점이 위에서 아래로 흘러내린다 */
+  .pipeGleam {
+    position: absolute; left: 6px; top: 0; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent2); pointer-events: none; z-index: 2;
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--accent) 70%, transparent);
+    animation: gleamRun 2.8s ease-in-out 1.1s infinite;
+  }
+  @keyframes gleamRun {
+    0% { top: 4%; opacity: 0; }
+    12% { opacity: .95; }
+    88% { opacity: .95; }
+    100% { top: 92%; opacity: 0; }
+  }
   /* 단계가 01부터 순서대로 왼쪽에서 미끄러져 들어온다 (--i는 renderPipeline이 넣어준다).
      backwards라 애니메이션이 끝나면 poke 흔들림이 transform을 넘겨받을 수 있다. */
   .pipeItem {
@@ -500,6 +566,7 @@ async function main() {
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
   initNightMeteors();
+  initAmbientLayers();
 
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -518,6 +585,7 @@ async function main() {
     initDonutSpin();
     initTodoPoke();
     initCounterReplay();
+    initCardTilt();
     summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
     setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
@@ -703,6 +771,8 @@ function renderSummary(cardEl, data) {
 
   cardEl.innerHTML = `
     <div class="donut" id="donutGauge" style="--seg: ${progress && progress.total ? (360 / progress.total).toFixed(3) : 30}deg; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
+      <span class="donutGlow" aria-hidden="true"></span>
+      <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
       <div class="in">
         <span class="pct mono" id="donutPct">0%</span>
         <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
@@ -743,7 +813,7 @@ function renderPipeline(data) {
     html += `
       <div class="pipeGroup">
         <div class="pipeGroupTitle">${escapeHtml(groupName)}</div>
-        <div class="pipeList">${items}</div>
+        <div class="pipeList">${items}${progress.done > 0 ? '<span class="pipeGleam" aria-hidden="true"></span>' : ''}</div>
       </div>
     `;
   }
@@ -1447,6 +1517,14 @@ function startAmbientFireworks() {
   }, 2800);
 }
 
+/** 진행률(%)에 맞춰 반짝이는 점의 각도를 맞춘다. 0에 가까우면 숨긴다. */
+function setSparkAngle(pct) {
+  const spark = document.getElementById('donutSpark');
+  if (!spark) return;
+  spark.style.setProperty('--spark', (pct * 3.6).toFixed(2) + 'deg');
+  spark.style.display = pct > 2 ? '' : 'none';
+}
+
 function runGauge(target, fire) {
   const el = document.getElementById('donutPct');
   const dn = document.getElementById('donutGauge');
@@ -1454,6 +1532,7 @@ function runGauge(target, fire) {
   if (reducedMotion) {
     el.textContent = target + '%';
     dn.style.background = `conic-gradient(var(--accent) 0 ${target}%, var(--surface2) ${target}% 100%)`;
+    setSparkAngle(target);
     return;
   }
   const t0 = performance.now(), dur = 1500;
@@ -1463,13 +1542,9 @@ function runGauge(target, fire) {
     const p = e * target;
     el.textContent = Math.round(p) + '%';
     dn.style.background = `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
+    // 반짝이는 점을 게이지가 끝나는 각도에 붙여 같이 돌린다 (100% = 360도).
+    setSparkAngle(p);
     if (k < 1) { requestAnimationFrame(tick); return; }
-    // 다 차오르면 한 번 톡 튄다. 드래그 회전이 걸려 있으면 그쪽을 방해하지 않는다.
-    if (!dn.style.transform) {
-      dn.classList.remove('filled');
-      void dn.offsetWidth;
-      dn.classList.add('filled');
-    }
     if (fire) {
       const f = initFx();
       if (f) {
@@ -1480,6 +1555,55 @@ function runGauge(target, fire) {
     }
   };
   requestAnimationFrame(tick);
+}
+
+/** 필름 그레인과 커서 빛 레이어를 깐다. 커서 빛은 마우스가 있는 기기에서만. */
+function initAmbientLayers() {
+  if (reducedMotion) return;
+  const grain = document.createElement('div');
+  grain.className = 'grain';
+  grain.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(grain);
+
+  if (!matchMedia('(hover: hover)').matches) return;
+  const light = document.createElement('div');
+  light.className = 'cursorLight';
+  light.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(light);
+
+  let raf = 0, x = 0, y = 0;
+  addEventListener('pointermove', (ev) => {
+    x = ev.clientX; y = ev.clientY;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      light.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      light.classList.add('on');
+    });
+  });
+  document.addEventListener('mouseleave', () => light.classList.remove('on'));
+}
+
+/** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
+function initCardTilt() {
+  if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
+  const cards = ['summaryCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard']
+    .map(id => document.getElementById(id)).filter(Boolean);
+
+  for (const el of cards) {
+    el.addEventListener('pointermove', (ev) => {
+      const r = el.getBoundingClientRect();
+      const nx = (ev.clientX - r.left) / r.width - 0.5;
+      const ny = (ev.clientY - r.top) / r.height - 0.5;
+      el.style.transition = 'transform .12s ease, box-shadow .18s ease';
+      el.style.transform =
+        `perspective(900px) rotateX(${(-ny * 6).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg) translateY(-2px)`;
+    });
+    el.addEventListener('pointerleave', () => {
+      el.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), box-shadow .18s ease';
+      el.style.transform = '';
+    });
+  }
 }
 
 /** 지금이 해가 진 뒤인지. */
