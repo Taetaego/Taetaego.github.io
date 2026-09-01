@@ -222,11 +222,12 @@
     margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #fff;
     box-shadow: 0 0 8px 3px color-mix(in srgb, var(--accent) 80%, white),
                 0 0 18px 6px color-mix(in srgb, var(--accent) 55%, transparent);
-    animation: sparkPulse 1.6s ease-in-out infinite;
+    /* '진행중' 표시(labelFade)와 같은 1.8초 주기·같은 위상·같은 밝기 폭 */
+    animation: sparkPulse 1.8s ease-in-out infinite;
   }
   @keyframes sparkPulse {
     0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(.72); opacity: .7; }
+    50% { transform: scale(.72); opacity: .55; }
   }
   .donut .in { position: relative; z-index: 1; width: 86px; height: 86px; border-radius: 50%; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
   .donut .pct { font: 700 25px/1 'JetBrains Mono', monospace; letter-spacing: -0.04em; }
@@ -263,6 +264,22 @@
     animation-delay: calc(var(--i, 0) * 45ms + 140ms);
   }
   @keyframes stepIn { from { opacity: 0; translate: -8px 0; } to { opacity: 1; translate: 0 0; } }
+  /* 단계를 잇는 세로선. 항목별 구간으로 나눠 그리고 완료 구간만 accent로 채운다.
+     첫/마지막 항목은 점 중심에서 끊어 선이 밖으로 삐져나오지 않게 한다 —
+     그래서 .pipeList 안에는 .pipeItem 외의 요소를 넣으면 안 된다(:last-child가 깨짐). */
+  .pipeItem::before {
+    content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px;
+    background: var(--line2); z-index: 0;
+  }
+  .pipeItem:first-child::before { top: 50%; }
+  .pipeItem:last-child::before { bottom: 50%; }
+  .pipeItem.done::before {
+    background: var(--accent);
+    transform-origin: top;
+    animation: lineFill .45s ease both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+  @keyframes lineFill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
   .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
   .pipeItem.current .dot {
