@@ -255,7 +255,14 @@
   .statusChip.wip { background: var(--warn-soft); color: var(--warn); animation: labelFade 1.8s ease-in-out infinite; }
   .topic { font-size: 16.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.02em; word-break: keep-all; }
   .stageLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
-  .stageName { font-size: 12.5px; font-weight: 600; color: var(--accent2); }
+  .stageName { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--accent2); }
+  /* 다른 곳(카테고리 칩·작업 기록)과 같은 단색 SVG 아이콘 스타일을 그대로 쓴다. */
+  .stageName .stageIcon { flex: none; display: flex; width: 13px; height: 13px; }
+  .stageName .stageIcon svg {
+    width: 100%; height: 100%;
+    fill: none; stroke: currentColor; stroke-width: 1.9;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
 
   /* 프로젝트 완료 요약 */
   .doneCard { display: flex; flex-direction: column; gap: 12px; }
@@ -841,7 +848,7 @@ function renderSummary(cardEl, data) {
   const statusLabel = isCompleted ? '완료' : '진행중';
   const stageText = isCompleted ? null : data.currentStage;
   const stageCat = stageText ? (data.allCategories || []).find(c => c.name === stageText) : null;
-  const stageEmoji = stageText ? categoryIcon(stageCat ? stageCat.symbolName : null) : '';
+  const stageIcon = stageText ? categorySvg(stageCat ? stageCat.symbolName : null) : '';
   heroPct = pct;
   // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다.
   document.title = `태태고 편집실 · 진행률 ${pct}%`;
@@ -868,7 +875,7 @@ function renderSummary(cardEl, data) {
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
           <span class="stageLabel">현재 단계</span>
-          <span class="stageName">${stageEmoji} ${escapeHtml(stageText)}</span>
+          <span class="stageName"><span class="stageIcon">${stageIcon}</span>${escapeHtml(stageText)}</span>
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 리퀴드로 보기</button>
     </div>
