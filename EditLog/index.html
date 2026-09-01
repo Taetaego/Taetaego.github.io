@@ -202,8 +202,6 @@
   /* 브랜드·시계·테마·색 모두 한 줄에. */
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
   .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
-  .nowClock .blink { animation: colonBlink 1s steps(1) infinite; }
-  @keyframes colonBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
   .accentPicker { display: flex; gap: 3px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .accentSwatch {
     width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
@@ -1510,8 +1508,7 @@ function initSeoulClock() {
     const t = new Date().toLocaleTimeString('ko-KR', {
       timeZone: 'Asia/Seoul', hour12: false, hour: '2-digit', minute: '2-digit',
     });
-    // 콜론만 깜박이게 (숫자는 그대로)
-    el.innerHTML = t.replace(':', '<span class="blink">:</span>');
+    el.textContent = t;
   };
   tick();
   setInterval(tick, 15000);
