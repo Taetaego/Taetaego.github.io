@@ -199,12 +199,15 @@
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
 
-  /* 오른쪽 묶음을 2행으로: 위쪽은 도시 라벨+테마 전환, 아래쪽은 시각+색 선택. */
-  .topRight { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-  .topRow { display: flex; align-items: center; gap: 6px; }
-  .clockLabel { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
-  .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
+  /* 오른쪽 묶음은 2열×2행 표: 왼쪽 열은 도시 라벨/시각, 오른쪽 열은 테마/색 선택 —
+     각 열이 서로 독립적으로 정렬되도록 grid로 짠다 (브랜드는 topbar의 세로 중앙정렬로
+     이 표 전체와 나란히 놓여 A1:A2 병합 칸처럼 보인다). */
+  .topRight { display: grid; grid-template-columns: auto auto; justify-content: end; align-items: center; column-gap: 10px; row-gap: 6px; }
+  .clockLabel { grid-column: 1; grid-row: 1; justify-self: end; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
+  .nowClock { grid-column: 1; grid-row: 2; justify-self: end; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
   .nowClock .blink { animation: colonBlink 1s steps(1) infinite; }
+  .topRight .themeToggle { grid-column: 2; grid-row: 1; }
+  .topRight .accentPicker { grid-column: 2; grid-row: 2; }
   @keyframes colonBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
   .accentPicker { display: flex; gap: 3px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .accentSwatch {
@@ -568,17 +571,13 @@
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
-        <div class="topRow">
-          <span class="clockLabel">SEOUL</span>
-          <div class="themeToggle" id="themeToggle">
-            <button type="button" data-mode="light">LIGHT</button>
-            <button type="button" data-mode="dark">DARK</button>
-          </div>
+        <span class="clockLabel">SEOUL</span>
+        <div class="themeToggle" id="themeToggle">
+          <button type="button" data-mode="light">LIGHT</button>
+          <button type="button" data-mode="dark">DARK</button>
         </div>
-        <div class="topRow">
-          <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">--:--</span>
-          <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
-        </div>
+        <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">--:--</span>
+        <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
       </div>
     </div>
 
