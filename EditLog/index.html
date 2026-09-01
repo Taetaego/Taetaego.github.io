@@ -116,6 +116,7 @@
   /* 카드들이 display:none으로 시작하므로, 버튼도 렌더가 끝난 뒤 같이 나타나야
      위에 잠깐 붙었다가 아래로 튀는 일이 없다. */
   #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .28s; }
+  #madeBy { opacity: 0; animation: cardIn .5s ease both; animation-delay: .32s; }
   /* transform이 아니라 독립 속성 translate를 쓴다. transform으로 하면 등장 애니메이션이
      그 속성을 붙잡고 있어서 hover의 translateY(-2px)가 먹지 않는다. */
   @keyframes cardIn { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
@@ -627,7 +628,7 @@
       <button type="button" class="fireBtn" id="btnRain">🌧️ 비</button>
     </div>
 
-    <div class="madeBy">Made by Taetaego</div>
+    <div class="madeBy" id="madeBy" style="display:none">Made by Taetaego</div>
   </div>
 
 <script>
@@ -662,7 +663,6 @@ async function main() {
     renderLog(data);
     initRowPulse();
     initGaugeToggle();
-    initTeletype();
     initGalaxy(data);
     initRunningLight(data);
     initDonutSpin();
@@ -675,8 +675,9 @@ async function main() {
     summaryCard.style.display = '';
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   } finally {
-    // 카드 배치가 끝난 뒤에 꺼내야 버튼이 제자리에서 나타난다.
+    // 카드 배치가 끝난 뒤에 꺼내야 버튼·푸터가 제자리에서 나타난다.
     document.getElementById('fxBar').style.display = '';
+    document.getElementById('madeBy').style.display = '';
     initSpotlight();
   }
 }
@@ -871,7 +872,7 @@ function renderSummary(cardEl, data) {
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
           <span class="stageLabel">현재 단계</span>
-          <span class="stageName" id="stageName" data-stage="${escapeHtml(stageText)}">${escapeHtml(stageText)}</span>
+          <span class="stageName">${escapeHtml(stageText)}</span>
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 리퀴드로 보기</button>
     </div>
@@ -1938,21 +1939,6 @@ function startLiquid() {
   requestAnimationFrame(draw);
 }
 
-/* ===== 29 텔레타이프 현재 단계 ===== */
-function initTeletype() {
-  const el = document.getElementById('stageName');
-  if (!el) return;
-  const word = el.dataset.stage || el.textContent;
-  if (reducedMotion) return;
-  el.textContent = '';
-  let i = 0;
-  const tick = () => {
-    el.textContent = word.slice(0, ++i);
-    if (i < word.length) setTimeout(tick, 95);
-  };
-  setTimeout(tick, 420);
-}
-
 /* ===== 31 살아있는 하늘 배경 — 지금 시각의 하늘색을 상단에 옅게 ===== */
 function initSkyTop() {
   if (reducedMotion) return;
@@ -2221,34 +2207,42 @@ function initRunningLight(data) {
 /** 🌧️ 비 — 빗줄기만, 짧게 지나간다 */
 function fxRain() {
   if (reducedMotion) return;
+  const DUR = 3400, RAMP_UP = 900, RAMP_DOWN = 1200;
   let cv = document.getElementById('rainCanvas');
-  if (cv) { cv._until = performance.now() + 3400; return; }
+  if (cv) { cv._until = performance.now() + DUR; return; }
   cv = document.createElement('canvas');
   cv.id = 'rainCanvas';
   cv.setAttribute('aria-hidden', 'true');
-  cv._until = performance.now() + 3400;
+  cv._start = performance.now();
+  cv._until = cv._start + DUR;
   document.body.appendChild(cv);
   const drops = Array.from({ length: 90 }, () => ({
     x: Math.random(), y: Math.random(), v: 0.006 + Math.random() * 0.014,
     len: 12 + Math.random() * 30, w: 0.8 + Math.random() * 1.2,
   }));
   const draw = (now) => {
+    if (now >= cv._until) { cv.remove(); return; }
     const f = fitCanvas(cv);
     if (!f) { requestAnimationFrame(draw); return; }
     const { w, h, ctx } = f;
-    const fade = Math.max(0, Math.min(1, (cv._until - now) / 1200));
-    if (fade <= 0) { cv.remove(); return; }
+    // 시작할 땐 빗줄기 수를 서서히 늘리고, 끝날 땐 서서히 줄인다 (뚝 나타났다 뚝 끊기지 않게).
+    const rampUp = Math.max(0, Math.min(1, (now - cv._start) / RAMP_UP));
+    const rampDown = Math.max(0, Math.min(1, (cv._until - now) / RAMP_DOWN));
+    const level = Math.min(rampUp, rampDown);
+    const activeCount = Math.round(drops.length * level);
     ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = `rgba(190,215,255,${0.45 * fade})`;
-    drops.forEach((d) => {
+    ctx.strokeStyle = `rgba(190,215,255,${0.45 * level})`;
+    for (let i = 0; i < drops.length; i++) {
+      const d = drops[i];
       d.y += d.v;
       if (d.y > 1.1) { d.y = -0.1; d.x = Math.random(); }
+      if (i >= activeCount) continue;
       ctx.lineWidth = d.w;
       ctx.beginPath();
       ctx.moveTo(d.x * w, d.y * h);
       ctx.lineTo(d.x * w + 3, d.y * h - d.len);
       ctx.stroke();
-    });
+    }
     requestAnimationFrame(draw);
   };
   requestAnimationFrame(draw);
