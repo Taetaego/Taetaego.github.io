@@ -199,7 +199,10 @@
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
 
-  .topRight { display: flex; align-items: center; gap: 6px; }
+  /* 오른쪽 묶음을 2행으로: 위쪽은 도시 라벨+테마 전환, 아래쪽은 시각+색 선택. */
+  .topRight { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .topRow { display: flex; align-items: center; gap: 6px; }
+  .clockLabel { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
   .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
   .nowClock .blink { animation: colonBlink 1s steps(1) infinite; }
   @keyframes colonBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
@@ -524,7 +527,7 @@
        브랜드는 한 줄을 그대로 쓰게 하고, 오른쪽 묶음은 그 아래로 내려 넓게 쓴다. */
     .topbar { flex-wrap: wrap; row-gap: 6px; }
     .brand { white-space: nowrap; }
-    .topRight { width: 100%; justify-content: flex-end; }
+    .topRight { width: 100%; }
   }
 
   /* 웹(데스크톱) 버전: 모바일 카드 구성을 2열로 재배치 */
@@ -565,12 +568,17 @@
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
-        <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">SEOUL --:--</span>
-        <div class="themeToggle" id="themeToggle">
-          <button type="button" data-mode="light">LIGHT</button>
-          <button type="button" data-mode="dark">DARK</button>
+        <div class="topRow">
+          <span class="clockLabel">SEOUL</span>
+          <div class="themeToggle" id="themeToggle">
+            <button type="button" data-mode="light">LIGHT</button>
+            <button type="button" data-mode="dark">DARK</button>
+          </div>
         </div>
-        <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
+        <div class="topRow">
+          <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">--:--</span>
+          <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
+        </div>
       </div>
     </div>
 
@@ -1515,7 +1523,7 @@ function initSeoulClock() {
       timeZone: 'Asia/Seoul', hour12: false, hour: '2-digit', minute: '2-digit',
     });
     // 콜론만 깜박이게 (숫자는 그대로)
-    el.innerHTML = 'SEOUL ' + t.replace(':', '<span class="blink">:</span>');
+    el.innerHTML = t.replace(':', '<span class="blink">:</span>');
   };
   tick();
   setInterval(tick, 15000);
