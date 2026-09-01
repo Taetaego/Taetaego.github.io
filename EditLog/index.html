@@ -1551,7 +1551,23 @@ initSeoulClock();
 })();
 
 /* ===== 폭죽 (완료된 프로젝트일 때만) ===== */
-const FX_HUES = [0, 25, 48, 140, 165, 195, 220, 275, 320];
+/** #rrggbb -> 색상환 각도(0~360). 폭죽 색을 지금 고른 하이라이트 색에 맞추는 데 쓴다. */
+function hexToHue(hex) {
+  const m = /^#([0-9a-f]{6})$/i.exec(String(hex).trim());
+  if (!m) return 160;
+  const n = parseInt(m[1], 16);
+  const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  if (d === 0) return 0;
+  let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  h *= 60;
+  return h < 0 ? h + 360 : h;
+}
+/** 지금 하이라이트 색을 중심으로 한 폭죽 색 팔레트 (매번 새로 뽑아 accent 변경에 바로 반응). */
+function fxHues() {
+  const base = hexToHue(accentColor());
+  return [base - 48, base - 24, base, base, base + 24, base + 48].map(h => ((h % 360) + 360) % 360);
+}
 let fx = null;
 let fxTimer = null;
 
@@ -1575,8 +1591,9 @@ function initFx() {
 
   fx.boom = (x, y, big) => {
     const n = big ? 130 : 80;
-    const hue = FX_HUES[Math.floor(Math.random() * FX_HUES.length)];
-    const hue2 = Math.random() < 0.35 ? FX_HUES[Math.floor(Math.random() * FX_HUES.length)] : hue;
+    const hues = fxHues();
+    const hue = hues[Math.floor(Math.random() * hues.length)];
+    const hue2 = Math.random() < 0.35 ? hues[Math.floor(Math.random() * hues.length)] : hue;
     for (let i = 0; i < n; i++) {
       const a = (Math.PI * 2 * i) / n + Math.random() * 0.25;
       const sp = (big ? 4.8 : 3.4) * (0.35 + Math.random() * 0.65);
@@ -1611,7 +1628,7 @@ function initFx() {
     for (let i = fx.rs.length - 1; i >= 0; i--) {
       const r = fx.rs[i];
       r.x += r.vx; r.y += r.vy; r.vy += 0.055;
-      ctx.strokeStyle = 'rgba(140,234,183,0.9)';
+      ctx.strokeStyle = hexAlpha(accentColor(), 0.9);
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.vx * 2.6, r.y - r.vy * 2.6); ctx.stroke();
       if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55); }
