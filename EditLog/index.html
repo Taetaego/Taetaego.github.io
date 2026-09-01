@@ -202,13 +202,14 @@
   /* 브랜드·시계·테마·색 모두 한 줄에. */
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
   .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
-  .accentPicker { display: flex; gap: 3px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
+  .accentPicker { display: flex; gap: 7px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .accentSwatch {
-    width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
+    position: relative; width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
     transition: transform .15s ease;
   }
-  .accentSwatch[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 2px var(--surface), 0 0 0 3.5px currentColor; }
+  /* 선택 표시 링이 옆 스와치의 영역까지 번지므로, 선택된 것이 이웃 위에 그려지게 한다. */
+  .accentSwatch[aria-pressed="true"] { z-index: 1; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 2px var(--surface), 0 0 0 3.5px currentColor; }
   .accentSwatch:active { transform: scale(0.9); }
 
   /* 히어로: 원형 게이지 */
@@ -1655,17 +1656,19 @@ function initFx() {
       ctx.lineWidth = p.r * p.life + 0.4;
       ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
     }
-    // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다.
+    // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다. 화면 밖으로 완전히 나갈 때까지는
+    // (여유폭 220px, 꼬리 길이보다 넉넉해 잘려 보이지 않는다) 밝기를 그대로 유지한다 —
+    // 예전엔 시간 기준으로 따로 페이드했는데, 화면이 크면 그 페이드가 먼저 끝나버려서
+    // 화면 중간에서 뚝 사라져 보였다.
     for (let i = fx.ms.length - 1; i >= 0; i--) {
       const m = fx.ms[i];
-      m.x += m.vx; m.y += m.vy; m.life -= (m.dec || 0.011);
-      if (m.life <= 0 || m.x > fx.w + 220 || m.y > fx.h + 220) { fx.ms.splice(i, 1); continue; }
-      const fade = Math.min(1, m.life * 1.7);
+      m.x += m.vx; m.y += m.vy;
+      if (m.x > fx.w + 220 || m.y > fx.h + 220) { fx.ms.splice(i, 1); continue; }
       const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * m.tail, m.y - m.vy * m.tail);
-      g.addColorStop(0, `rgba(255,255,245,${0.9 * fade})`);
-      g.addColorStop(0.22, `rgba(205,226,255,${0.55 * fade})`);
-      g.addColorStop(0.5, `rgba(190,215,255,${0.28 * fade})`);
-      g.addColorStop(0.78, `rgba(180,205,255,${0.12 * fade})`);
+      g.addColorStop(0, 'rgba(255,255,245,0.9)');
+      g.addColorStop(0.22, 'rgba(205,226,255,0.55)');
+      g.addColorStop(0.5, 'rgba(190,215,255,0.28)');
+      g.addColorStop(0.78, 'rgba(180,205,255,0.12)');
       g.addColorStop(1, 'rgba(190,215,255,0)');
       ctx.strokeStyle = g; ctx.lineWidth = m.w;
       ctx.beginPath(); ctx.moveTo(m.x, m.y);
@@ -1684,7 +1687,7 @@ function initFx() {
       x: Math.random() * fx.w * (narrow ? 1.0 : 0.75) - fx.w * (narrow ? 0.3 : 0.12),
       y: -30 - Math.random() * (narrow ? 30 : 60),
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      life: 1, tail: 48 + Math.random() * 24, w: 1.7 + Math.random() * 1.2, dec: 0.0042,
+      tail: 48 + Math.random() * 24, w: 1.7 + Math.random() * 1.2,
     });
   };
   fx.kick = () => { if (!fx.t) fx.t = requestAnimationFrame(step); };
@@ -2210,7 +2213,7 @@ function initRunningLight(data) {
 /** 🌧️ 비 — 빗줄기만, 짧게 지나간다 */
 function fxRain() {
   if (reducedMotion) return;
-  const DUR = 3400, RAMP_UP = 900, RAMP_DOWN = 1200;
+  const DUR = 8000, RAMP_UP = 900, RAMP_DOWN = 1500;
   let cv = document.getElementById('rainCanvas');
   if (cv) { cv._until = performance.now() + DUR; return; }
   cv = document.createElement('canvas');
