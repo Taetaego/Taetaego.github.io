@@ -467,9 +467,10 @@
   .card, .statTile { position: relative; }
   .spotLayer { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
 
-  /* ===== 10 리퀴드 진행률 (도넛 ↔ 리퀴드 전환) ===== */
+  /* ===== 10 물결 진행률 (도넛 ↔ 물결 전환) ===== */
   .gaugeSwap {
-    align-self: flex-start; border: 1px solid var(--line2); border-radius: 99px;
+    position: absolute; top: 14px; right: 14px; z-index: 2;
+    border: 1px solid var(--line2); border-radius: 99px;
     background: var(--surface); color: var(--ink3); font-family: inherit;
     font-size: 10px; font-weight: 600; padding: 6px 11px; cursor: pointer;
     transition: transform .15s ease, background-color .15s ease, color .15s ease;
@@ -877,7 +878,7 @@ function renderSummary(cardEl, data) {
           <span class="stageLabel">현재 단계</span>
           <span class="stageName"><span class="stageIcon">${stageIcon}</span>${escapeHtml(stageText)}</span>
         </div>` : ''}
-      <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 리퀴드로 보기</button>
+      <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
     </div>
   `;
 }
@@ -1887,7 +1888,7 @@ function initGaugeToggle() {
   btn.addEventListener('click', (ev) => {
     ev.stopPropagation();   // 히어로 카드의 폭죽까지 터지지 않게
     const on = donut.classList.toggle('liquid');
-    btn.textContent = on ? '◎ 도넛으로 보기' : '🌊 리퀴드로 보기';
+    btn.textContent = on ? '◎ 도넛으로 보기' : '🌊 물결로 보기';
     if (on) startLiquid(); else liquidRun++;
   });
 }
