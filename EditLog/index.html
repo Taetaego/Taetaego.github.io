@@ -142,6 +142,11 @@
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+  .madeBy {
+    align-self: center; padding-top: 2px;
+    font: 500 10px/1 'JetBrains Mono', monospace; letter-spacing: 0.14em; color: var(--ink3);
+  }
+
   /* 맨 아래 이펙트 버튼들 */
   .fxBar { align-self: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
   .fireBtn {
@@ -192,6 +197,19 @@
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
+
+  .topRight { display: flex; align-items: center; gap: 6px; }
+  .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
+  .nowClock .blink { animation: colonBlink 1s steps(1) infinite; }
+  @keyframes colonBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  .accentPicker { display: flex; gap: 3px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
+  .accentSwatch {
+    width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    transition: transform .15s ease;
+  }
+  .accentSwatch[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 2px var(--surface), 0 0 0 3.5px currentColor; }
+  .accentSwatch:active { transform: scale(0.9); }
 
   /* 히어로: 원형 게이지 */
   .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
@@ -438,6 +456,66 @@
   .logRow .gap { font-size: 10px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
   .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
 
+  /* ===== 04 커서 스포트라이트 ===== */
+  .card, .statTile { position: relative; }
+  .spotLayer { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
+
+  /* ===== 10 리퀴드 진행률 (도넛 ↔ 리퀴드 전환) ===== */
+  .gaugeSwap {
+    align-self: flex-start; border: 1px solid var(--line2); border-radius: 99px;
+    background: var(--surface); color: var(--ink3); font-family: inherit;
+    font-size: 10px; font-weight: 600; padding: 6px 11px; cursor: pointer;
+    transition: transform .15s ease, background-color .15s ease, color .15s ease;
+  }
+  @media (hover: hover) { .gaugeSwap:hover { background: var(--soft); color: var(--accent2); } }
+  .gaugeSwap:active { transform: scale(0.96); }
+  #liquidCanvas { display: none; position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; z-index: 0; }
+  .donut.liquid { background: var(--surface2) !important; }
+  .donut.liquid::after { display: none; }
+  .donut.liquid #liquidCanvas { display: block; }
+  .donut.liquid .donutGlow, .donut.liquid .donutSpark { display: none; }
+  .donut.liquid { box-shadow: inset 0 0 0 2px var(--line2), 0 6px 20px rgba(0,0,0,.28); }
+  .donut.liquid .in { background: transparent; width: 100%; height: 100%; }
+  .donut.liquid .pct { text-shadow: 0 1px 8px rgba(0,0,0,.45); }
+  .donut.liquid .steps { color: var(--ink2); text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+
+  #cometCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; }
+  #fx2Canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+
+  /* ===== 29 텔레타이프 현재 단계 ===== */
+
+  /* ===== 31 살아있는 하늘 배경 ===== */
+  .skyTop { position: fixed; left: 0; right: 0; top: 0; height: 300px; pointer-events: none; z-index: 0; opacity: .3; transition: background 4s linear; }
+  html[data-theme="light"] .skyTop { opacity: .18; }
+
+  /* 화면 전체에 잠깐 얹는 이펙트 레이어 (되감기 · 컷 · 색보정) */
+  .fxLayer { position: fixed; pointer-events: none; z-index: 10001; }
+  #galaxyCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+  #rainCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10001; }
+
+  /* 08 카드 유리 반사 — 반사광이 천천히 스친다 */
+  /* 13 러닝 라이트 — 완료 카드 테두리를 빛이 한 바퀴 */
+  #doneCard.running { position: relative; overflow: hidden; border-color: transparent; }
+  #doneCard.running::before {
+    content: ""; position: absolute; inset: -60%; z-index: 0;
+    background: conic-gradient(from 0deg, transparent 0deg 300deg, var(--accent) 348deg, var(--accent2) 356deg, transparent 360deg);
+    animation: runLight 3.6s linear infinite;
+  }
+  #doneCard.running::after {
+    content: ""; position: absolute; inset: 1.5px; z-index: 0;
+    border-radius: 22.5px; background: var(--surface);
+  }
+  #doneCard.running > * { position: relative; z-index: 1; }
+  @keyframes runLight { to { rotate: 360deg; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #galaxyCanvas { display: none !important; }
+    #doneCard.running::before { animation: none !important; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skyTop, #cometCanvas, .spotLayer { display: none !important; }
+  }
+
   @media (max-width: 420px) {
     body { padding: 18px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
@@ -459,6 +537,7 @@
     }
     /* 그리드에선 가로 정렬이 justify-self라, 이게 없으면 버튼이 두 칸 폭으로 늘어난다. */
     .fxBar { grid-area: fire; justify-self: center; }
+    .madeBy { grid-column: 1 / -1; justify-self: center; }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
     .colLeft { grid-area: left; display: flex; flex-direction: column; gap: 16px; }
     .colRight { grid-area: right; display: flex; flex-direction: column; gap: 16px; }
@@ -479,16 +558,18 @@
   <div class="page">
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
-      <div class="themeToggle" id="themeToggle">
-        <button type="button" data-mode="light">LIGHT</button>
-        <button type="button" data-mode="dark">DARK</button>
+      <div class="topRight">
+        <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">SEOUL --:--</span>
+        <div class="themeToggle" id="themeToggle">
+          <button type="button" data-mode="light">LIGHT</button>
+          <button type="button" data-mode="dark">DARK</button>
+        </div>
+        <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
       </div>
     </div>
 
     <div class="colLeft">
-      <div class="card hero" id="summaryCard" title="클릭하면 폭죽 한 번 더">
-        <div class="empty">불러오는 중…</div>
-      </div>
+      <div class="card hero" id="summaryCard" style="display:none" title="클릭하면 폭죽 한 번 더"></div>
 
       <div class="card doneCard" id="doneCard" style="display:none">
         <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
@@ -533,7 +614,15 @@
 
     <div class="fxBar" id="fxBar" style="display:none">
       <button type="button" class="fireBtn" id="fireBtn">🎆 폭죽</button>
+      <button type="button" class="fireBtn" id="btnMeteor">🌠 별똥별 소나기</button>
+      <button type="button" class="fireBtn" id="btnPetal">🌸 꽃잎</button>
+      <button type="button" class="fireBtn" id="btnFly">✨ 반딧불이</button>
+      <button type="button" class="fireBtn" id="btnCut">✂️ 화면 컷편집</button>
+      <button type="button" class="fireBtn" id="btnSlot">🎰 숫자 슬롯</button>
+      <button type="button" class="fireBtn" id="btnRain">🌧️ 비</button>
     </div>
+
+    <div class="madeBy">Made by Taetaego</div>
   </div>
 
 <script>
@@ -547,8 +636,11 @@ async function main() {
 
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
+  initFxButtons();
   initNightMeteors();
   initAmbientLayers();
+  initSkyTop();
+  initComet();
 
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
@@ -564,6 +656,10 @@ async function main() {
     setInterval(updateDayNow, 60000);
     renderLog(data);
     initRowPulse();
+    initGaugeToggle();
+    initTeletype();
+    initGalaxy(data);
+    initRunningLight(data);
     initDonutSpin();
     initTodoPoke();
     initCounterReplay();
@@ -571,10 +667,12 @@ async function main() {
     summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
     setTimeout(() => celebrate(heroPct, heroCompleted), 150);
   } catch (e) {
+    summaryCard.style.display = '';
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
   } finally {
     // 카드 배치가 끝난 뒤에 꺼내야 버튼이 제자리에서 나타난다.
     document.getElementById('fxBar').style.display = '';
+    initSpotlight();
   }
 }
 
@@ -751,8 +849,10 @@ function renderSummary(cardEl, data) {
   const lastEntryTime = entries.length ? entries[entries.length - 1].timestamp : null;
   const chipTime = isCompleted ? data.lastUpdate : (lastEntryTime ?? data.lastUpdate);
 
+  cardEl.style.display = '';
   cardEl.innerHTML = `
     <div class="donut" id="donutGauge" style="--seg: ${progress && progress.total ? (360 / progress.total).toFixed(3) : 30}deg; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
+      <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
       <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
       <div class="in">
@@ -766,8 +866,9 @@ function renderSummary(cardEl, data) {
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
           <span class="stageLabel">현재 단계</span>
-          <span class="stageName">${escapeHtml(stageText)}</span>
+          <span class="stageName" id="stageName" data-stage="${escapeHtml(stageText)}">${escapeHtml(stageText)}</span>
         </div>` : ''}
+      <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 리퀴드로 보기</button>
     </div>
   `;
 }
@@ -1360,13 +1461,85 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+/* ===== 하이라이트 색 (LIGHT/DARK 옆에서 선택) =====
+   테마별로 대비가 맞는 짝을 미리 정해두고 --accent / --accent2 / --soft만 덮어쓴다. */
+const ACCENTS = {
+  mint:     { label: '민트',   dark: ['#34e0b0', '#8ff0d4'], light: ['#0f9b78', '#076b52'] },
+  blue:     { label: '블루',   dark: ['#5ab8f0', '#a9dcfb'], light: ['#1a7fb8', '#0d5580'] },
+  amber:    { label: '앰버',   dark: ['#f2b84a', '#ffd98a'], light: ['#a3690c', '#7a4d06'] },
+  coral:    { label: '코랄',   dark: ['#ff8f6b', '#ffbfa8'], light: ['#c8502a', '#93361a'] },
+  lavender: { label: '라벤더', dark: ['#b39cf0', '#d6c8ff'], light: ['#6a4fbf', '#4b3590'] },
+};
+
+function accentSoft(hex, a) {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+let accentKey = 'mint';
+
+function applyAccent(key) {
+  if (!ACCENTS[key]) key = 'mint';
+  accentKey = key;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const [accent, accent2] = ACCENTS[key][isLight ? 'light' : 'dark'];
+  const root = document.documentElement.style;
+  root.setProperty('--accent', accent);
+  root.setProperty('--accent2', accent2);
+  root.setProperty('--soft', accentSoft(accent, isLight ? 0.12 : 0.14));
+  root.setProperty('--tg-on-ink', accent2);
+  root.setProperty('--grp-1', accent);   // 카테고리 칩·기록 행의 첫 그룹 색
+  // 캔버스 이펙트가 즉시 새 색을 쓰게 캐시를 버린다 (선언보다 먼저 불릴 수 있어 방어)
+  if (typeof _accCache === 'object' && _accCache) _accCache.t = -1e9;
+  document.querySelectorAll('.accentSwatch').forEach((b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.accent === key));
+    b.style.color = accent;
+  });
+  try { localStorage.setItem('accent', key); } catch (e) {}
+}
+
+/** 오른쪽 위 시계 — 서울(KST) 기준 */
+function initSeoulClock() {
+  const el = document.getElementById('nowClock');
+  if (!el) return;
+  const tick = () => {
+    const t = new Date().toLocaleTimeString('ko-KR', {
+      timeZone: 'Asia/Seoul', hour12: false, hour: '2-digit', minute: '2-digit',
+    });
+    // 콜론만 깜박이게 (숫자는 그대로)
+    el.innerHTML = 'SEOUL ' + t.replace(':', '<span class="blink">:</span>');
+  };
+  tick();
+  setInterval(tick, 15000);
+}
+
+function initAccentPicker() {
+  const host = document.getElementById('accentPicker');
+  if (!host) return;
+  host.innerHTML = Object.entries(ACCENTS).map(([key, v]) =>
+    `<button type="button" class="accentSwatch" data-accent="${key}" aria-pressed="false" aria-label="${v.label}" title="${v.label}" style="background:${v.dark[0]}"></button>`
+  ).join('');
+  host.addEventListener('click', (e) => {
+    const b = e.target.closest('.accentSwatch');
+    if (b) applyAccent(b.dataset.accent);
+  });
+  let saved = null;
+  try { saved = localStorage.getItem('accent'); } catch (e) {}
+  applyAccent(saved || 'mint');
+}
+
 function applyTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   document.querySelectorAll('#themeToggle button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   try { localStorage.setItem('theme', mode); } catch (e) {}
+  applyAccent(accentKey);
   // 시작 시간 색은 테마별로 대비를 맞춰둔 값이라 테마가 바뀌면 다시 칠해야 한다.
   paintTimes();
 }
+initAccentPicker();
+initSeoulClock();
 (function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
@@ -1459,12 +1632,14 @@ function initFx() {
     // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다.
     for (let i = fx.ms.length - 1; i >= 0; i--) {
       const m = fx.ms[i];
-      m.x += m.vx; m.y += m.vy; m.life -= 0.011;
+      m.x += m.vx; m.y += m.vy; m.life -= (m.dec || 0.011);
       if (m.life <= 0 || m.x > fx.w + 220 || m.y > fx.h + 220) { fx.ms.splice(i, 1); continue; }
       const fade = Math.min(1, m.life * 1.7);
       const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * m.tail, m.y - m.vy * m.tail);
       g.addColorStop(0, `rgba(255,255,245,${0.9 * fade})`);
-      g.addColorStop(0.35, `rgba(190,215,255,${0.4 * fade})`);
+      g.addColorStop(0.22, `rgba(205,226,255,${0.55 * fade})`);
+      g.addColorStop(0.5, `rgba(190,215,255,${0.28 * fade})`);
+      g.addColorStop(0.78, `rgba(180,205,255,${0.12 * fade})`);
       g.addColorStop(1, 'rgba(190,215,255,0)');
       ctx.strokeStyle = g; ctx.lineWidth = m.w;
       ctx.beginPath(); ctx.moveTo(m.x, m.y);
@@ -1474,13 +1649,16 @@ function initFx() {
     else { fx.t = null; ctx.clearRect(0, 0, fx.w, fx.h); }
   };
   fx.meteor = () => {
-    const speed = 11 + Math.random() * 7;
-    const angle = (24 + Math.random() * 14) * Math.PI / 180;
+    const speed = 19 + Math.random() * 10;
+    // 좁은 화면에선 완만한 사선이 오른쪽 모서리로 바로 빠져나가 안 보인다 → 각도를 세운다.
+    const narrow = fx.w < 620;
+    // 좁은 화면은 살짝만 세워 사선을 유지한다 (너무 세우면 빗줄기처럼 보인다).
+    const angle = (narrow ? 34 + Math.random() * 12 : 24 + Math.random() * 14) * Math.PI / 180;
     fx.ms.push({
-      x: Math.random() * fx.w * 0.75 - fx.w * 0.12,
-      y: -30 - Math.random() * 60,
+      x: Math.random() * fx.w * (narrow ? 1.0 : 0.75) - fx.w * (narrow ? 0.3 : 0.12),
+      y: -30 - Math.random() * (narrow ? 30 : 60),
       vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      life: 1, tail: 7 + Math.random() * 6, w: 1.5 + Math.random() * 1.1,
+      life: 1, tail: 48 + Math.random() * 24, w: 1.7 + Math.random() * 1.2, dec: 0.0042,
     });
   };
   fx.kick = () => { if (!fx.t) fx.t = requestAnimationFrame(step); };
@@ -1615,6 +1793,458 @@ function celebrate(targetPct, isCompleted) {
     startAmbientFireworks();
   }
   runGauge(targetPct, fire);
+}
+
+/* ==========================================================================
+   추가 이펙트 (04 스포트라이트 · 09 별자리 · 10 리퀴드 게이지 · 15 영사기
+   17 작업 잔디 · 27 스플라이스 등장 · 29 텔레타이프 · 31 하늘 배경
+   32 혜성 커서 · 버튼 이펙트 8종)
+   ========================================================================== */
+
+/** 캔버스 실제 크기를 매 프레임 맞춘다 (레이아웃 전 0 측정·리사이즈 대응). */
+function fitCanvas(cv) {
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return null;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
+  if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { w, h, ctx };
+}
+
+/** 테마가 바뀌어도 따라오도록 --accent 값을 0.5초 캐시로 읽는다. */
+var _accCache = { t: -1e9, v: '#34e0b0' };
+function accentColor() {
+  const now = performance.now();
+  if (now - _accCache.t > 500) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    _accCache = { t: now, v: v || '#34e0b0' };
+  }
+  return _accCache.v;
+}
+
+/* ===== 04 커서 스포트라이트 ===== */
+/** #rrggbb -> rgba() (캔버스 그라디언트는 color-mix를 못 읽는다) */
+function hexAlpha(hex, a) {
+  const m = /^#([0-9a-f]{6})$/i.exec(String(hex).trim());
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function initSpotlight() {
+  if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
+  document.querySelectorAll('.card, .statTile').forEach((card) => {
+    if (card._spotLayer) return;
+    const layer = document.createElement('span');
+    layer.className = 'spotLayer';
+    layer.setAttribute('aria-hidden', 'true');
+    card.appendChild(layer);
+    card._spotLayer = layer;
+    card.addEventListener('pointermove', (ev) => {
+      const r = card.getBoundingClientRect();
+      layer.style.opacity = '1';
+      layer.style.background = `radial-gradient(220px circle at ${ev.clientX - r.left}px ${ev.clientY - r.top}px,` +
+        ` color-mix(in srgb, ${accentColor()} 16%, transparent), transparent 70%)`;
+    });
+    card.addEventListener('pointerleave', () => { layer.style.opacity = '0'; });
+  });
+}
+
+/* ===== 10 리퀴드 진행률 — 버튼으로 도넛 ↔ 물결 전환 ===== */
+let liquidRun = 0;
+function initGaugeToggle() {
+  initLiquidRefill();
+  const btn = document.getElementById('gaugeSwap');
+  const donut = document.getElementById('donutGauge');
+  if (!btn || !donut) return;
+  btn.addEventListener('click', (ev) => {
+    ev.stopPropagation();   // 히어로 카드의 폭죽까지 터지지 않게
+    const on = donut.classList.toggle('liquid');
+    btn.textContent = on ? '◎ 도넛으로 보기' : '🌊 리퀴드로 보기';
+    if (on) startLiquid(); else liquidRun++;
+  });
+}
+
+/** 리퀴드 상태에서 도넛을 누르면 물을 다시 밑에서부터 채운다. */
+function initLiquidRefill() {
+  const donut = document.getElementById('donutGauge');
+  if (!donut) return;
+  donut.addEventListener('click', (ev) => {
+    if (!donut.classList.contains('liquid')) return;
+    ev.stopPropagation();
+    startLiquid();
+  });
+}
+
+function startLiquid() {
+  const cv = document.getElementById('liquidCanvas');
+  if (!cv) return;
+  const my = ++liquidRun;
+  const t0 = performance.now();
+  const draw = (now) => {
+    if (my !== liquidRun) return;
+    const f = fitCanvas(cv);
+    if (!f) { requestAnimationFrame(draw); return; }
+    const { w: s, ctx } = f;
+    const t = Math.max(0, now - t0) / 1000;
+    const target = Math.max(0, Math.min(1, heroPct / 100));
+    const fill = reducedMotion ? target : target * Math.min(1, 1 - Math.pow(1 - Math.min(1, t / 1.6), 3));
+    const acc = accentColor();
+    ctx.clearRect(0, 0, s, s);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(s / 2, s / 2, s / 2 - 1, 0, 6.284); ctx.clip();
+    const level = s * (1 - fill);
+    const grad = ctx.createLinearGradient(0, level, 0, s);
+    grad.addColorStop(0, acc);
+    grad.addColorStop(1, hexAlpha(acc, 0.45));
+    [[9, 1.5, 0.55, 0.92], [6, 2.3, -0.9, 0.45]].forEach(([amp, freq, spd, alpha]) => {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(0, s);
+      for (let x = 0; x <= s; x += 4) {
+        ctx.lineTo(x, level + Math.sin((x / s) * freq * 6.284 + t * spd * 2.4) * (reducedMotion ? 0 : amp));
+      }
+      ctx.lineTo(s, s); ctx.closePath(); ctx.fill();
+    });
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    if (!reducedMotion) requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+}
+
+/* ===== 29 텔레타이프 현재 단계 ===== */
+function initTeletype() {
+  const el = document.getElementById('stageName');
+  if (!el) return;
+  const word = el.dataset.stage || el.textContent;
+  if (reducedMotion) return;
+  el.textContent = '';
+  let i = 0;
+  const tick = () => {
+    el.textContent = word.slice(0, ++i);
+    if (i < word.length) setTimeout(tick, 95);
+  };
+  setTimeout(tick, 420);
+}
+
+/* ===== 31 살아있는 하늘 배경 — 지금 시각의 하늘색을 상단에 옅게 ===== */
+function initSkyTop() {
+  if (reducedMotion) return;
+  const layer = document.createElement('div');
+  layer.className = 'skyTop';
+  layer.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(layer);
+  // 지금 색과 40분 뒤 색을 함께 깔아 일출·일몰 전후로 하늘이 실제처럼 번지게 한다.
+  // (sunTint는 서울 기준 태양 고도 공식이라 계절에 따라 일출·일몰이 자동으로 옮겨진다.)
+  const paint = () => {
+    const now = new Date();
+    const soon = new Date(now.getTime() + 40 * 60000);
+    const a = sunTint(now.toISOString(), SKY_TRUE);
+    const b = sunTint(soon.toISOString(), SKY_TRUE);
+    layer.style.background = `linear-gradient(180deg, ${a.color} 0%, ${b.color} 46%, transparent 100%)`;
+    layer.title = a.phase;
+  };
+  paint();
+  setInterval(paint, 60000);   // 1분마다 갱신 — 일출·일몰 무렵엔 눈에 보이게 변한다
+}
+
+/* ===== 32 혜성 커서 — 지나간 자리에 잔상 ===== */
+function initComet() {
+  if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
+  const cv = document.createElement('canvas');
+  cv.id = 'cometCanvas';
+  cv.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(cv);
+  const trail = [];
+  let lastMove = 0;
+  window.addEventListener('pointermove', (ev) => {
+    trail.push({ x: ev.clientX, y: ev.clientY });
+    if (trail.length > 24) trail.shift();
+    lastMove = performance.now();
+  }, { passive: true });
+
+  const draw = (now) => {
+    const f = fitCanvas(cv);
+    if (!f) { requestAnimationFrame(draw); return; }
+    const { w, h, ctx } = f;
+    ctx.clearRect(0, 0, w, h);
+    const acc = accentColor();
+    for (let i = 1; i < trail.length; i++) {
+      const a = i / trail.length;
+      ctx.strokeStyle = acc;
+      ctx.globalAlpha = a * 0.5;
+      ctx.lineWidth = 1 + a * 4;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(trail[i - 1].x, trail[i - 1].y); ctx.lineTo(trail[i].x, trail[i].y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    if (trail.length > 1 && now - lastMove > 45) trail.shift();
+    requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+}
+
+/* ===== 버튼 이펙트 : 꽃잎 · 반딧불이용 파티클 레이어 ===== */
+let fx2 = null;
+function initFx2() {
+  if (fx2) return fx2;
+  const cv = document.createElement('canvas');
+  cv.id = 'fx2Canvas';
+  cv.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(cv);
+  fx2 = { cv, parts: [], loop: null };
+  return fx2;
+}
+
+/** 지금 계절 (버튼 이름·이모지·꽃잎 색이 같은 값을 쓴다) */
+function currentSeason() {
+  const m = new Date().getMonth();
+  if (m >= 2 && m <= 4) return { label: '🌸 꽃잎', color: '#f7c8d8', speed: 1 };
+  if (m >= 5 && m <= 7) return { label: '🍃 초록잎', color: '#8fd6a8', speed: 1.15 };
+  if (m >= 8 && m <= 10) return { label: '🍁 낙엽', color: '#f2b84a', speed: 1.9 };
+  return { label: '❄️ 눈', color: '#eef5f2', speed: 0.8 };
+}
+
+function fx2Spawn(kind) {
+  if (reducedMotion) return;
+  const f = initFx2();
+  const W = window.innerWidth, H = window.innerHeight;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  // 계절에 맞춰 꽃잎 / 낙엽 / 눈으로 바뀐다.
+  const season = currentSeason();
+  if (kind === 'petal') {
+    for (let i = 0; i < 26; i++) f.parts.push({
+      kind, x: rand(0, W), y: rand(-H * 0.6, -10), vx: rand(-0.35, 0.35) * season.speed, vy: rand(0.7, 1.7) * season.speed,
+      r: rand(3, 6.5), rot: rand(0, 6.28), spin: rand(-0.03, 0.03), sway: rand(0.5, 1.5),
+      tw: rand(0, 6.28), life: 1, decay: 0.0016, color: season.color, delay: i * 90,
+    });
+  } else {
+    for (let i = 0; i < 15; i++) f.parts.push({
+      kind: 'firefly', x: rand(0.05, 0.95) * W, y: rand(0.15, 0.95) * H,
+      vx: rand(-0.35, 0.35), vy: rand(-0.45, 0.2), tw: rand(0, 6.28),
+      r: rand(1.4, 2.8), life: 1, decay: rand(0.0022, 0.0045), delay: i * 45,
+    });
+  }
+  if (f.loop) return;
+  let last = performance.now();
+  const draw = (now) => {
+    const fit = fitCanvas(f.cv);
+    if (!fit) { f.loop = requestAnimationFrame(draw); return; }
+    const { w, h, ctx } = fit;
+    const dt = Math.min(40, Math.max(0, now - last)); last = now;
+    const acc = accentColor();
+    ctx.clearRect(0, 0, w, h);
+    f.parts = f.parts.filter((p) => {
+      if (p.delay > 0) { p.delay -= dt; return true; }
+      if (p.kind === 'petal') {
+        p.tw += 0.03 * dt / 16;
+        p.x += (p.vx + Math.sin(p.tw) * p.sway) * dt / 16;
+        p.y += p.vy * dt / 16; p.rot += p.spin * dt / 16;
+        if (p.y > h + 20) p.life = 0;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.ellipse(0, 0, p.r * 1.6, p.r * 0.8, 0, 0, 6.284); ctx.fill();
+        ctx.restore(); ctx.globalAlpha = 1;
+      } else {
+        p.tw += 0.05 * dt / 16;
+        p.vx = Math.max(-0.7, Math.min(0.7, p.vx + (Math.random() - 0.5) * 0.05));
+        p.vy = Math.max(-0.7, Math.min(0.7, p.vy + (Math.random() - 0.5) * 0.05));
+        p.x += p.vx * dt / 16; p.y += p.vy * dt / 16; p.life -= p.decay * dt / 16;
+        ctx.globalAlpha = (0.45 + 0.55 * (0.5 + 0.5 * Math.sin(p.tw))) * Math.max(0, p.life);
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = 14; ctx.shadowColor = acc;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.284); ctx.fill();
+        ctx.shadowBlur = 0; ctx.globalAlpha = 1;
+      }
+      return p.life > 0 && p.y < h + 120;
+    });
+    if (f.parts.length) f.loop = requestAnimationFrame(draw);
+    else { ctx.clearRect(0, 0, w, h); f.loop = null; }
+  };
+  f.loop = requestAnimationFrame(draw);
+}
+
+/** 화면 전체 위에 잠깐 얹는 레이어. */
+function fxLayer(css, ms) {
+  const el = document.createElement('div');
+  el.className = 'fxLayer';
+  el.setAttribute('aria-hidden', 'true');
+  el.style.cssText += css;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), ms);
+  return el;
+}
+
+/** 🌠 별똥별 소나기 — 기존 별똥별을 20개 연달아 */
+function meteorShower() {
+  if (reducedMotion) return;
+  const f = initFx();
+  if (!f) return;
+  for (let i = 0; i < 7; i++) setTimeout(() => { f.meteor(); f.kick(); }, i * 420 + Math.random() * 220);
+}
+
+/** ✂️ 화면 컷편집 */
+function fxScreenCut() {
+  if (reducedMotion) return;
+  const page = document.querySelector('.page');
+  const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
+  if (line && line.animate) line.animate([
+    { opacity: 0, transform: 'rotate(-8deg) scaleX(0)' },
+    { opacity: 1, transform: 'rotate(-8deg) scaleX(1)', offset: 0.45 },
+    { opacity: 0, transform: 'rotate(-8deg) scaleX(1)' },
+  ], { duration: 650, easing: 'ease-out' });
+  if (!page) return;
+  setTimeout(() => {
+    page.style.transition = 'transform .45s cubic-bezier(.2,1.5,.4,1)';
+    page.style.transform = 'translateX(14px) skewX(-1.5deg)';
+    setTimeout(() => { page.style.transform = ''; }, 220);
+    setTimeout(() => { page.style.transition = ''; }, 720);
+  }, 300);
+}
+
+/** 🎰 숫자 슬롯 — 화면의 숫자가 돌다 멈춘다 */
+function fxSlot() {
+  if (reducedMotion) return;
+  const digits = '0123456789';
+  // 날짜·경과 시간·비율까지, 화면에서 숫자가 들어간 잎 요소를 모두 돌린다.
+  const targets = [...document.querySelectorAll('.page *')]
+    .filter(el => el.children.length === 0
+      && !el.closest('.topRight')
+      && /\d/.test(el.textContent || '')
+      && (el.textContent || '').length <= 24)
+    .slice(0, 160);
+  targets.forEach((el, i) => {
+    const final = el.dataset.slotFinal || el.textContent;
+    el.dataset.slotFinal = final;
+    const run = el._slotRun = (el._slotRun || 0) + 1;
+    const t0 = performance.now(), dur = 700 + (i % 7) * 90;
+    const step = (now) => {
+      if (el._slotRun !== run) return;
+      if (Math.max(0, now - t0) >= dur) { el.textContent = final; return; }
+      el.textContent = final.replace(/\d/g, () => digits[Math.floor(Math.random() * 10)]);
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(() => { if (el._slotRun === run) el.textContent = final; }, dur + 200);
+  });
+}
+
+/* ===== 06 + 12 은하수 패럴랙스 (밤에만) — 별 수는 마지막 기록 이후 흐른 시간에 비례 ===== */
+function initGalaxy(data) {
+  if (reducedMotion) return;
+  const entries = data.entries || [];
+  const lastTs = entries.length ? new Date(entries[entries.length - 1].timestamp).getTime() : Date.now();
+  const cv = document.createElement('canvas');
+  cv.id = 'galaxyCanvas';
+  cv.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(cv);
+
+  const layers = [
+    { r: 0.5, depth: 0.25, spd: 0.004, share: 0.55 },
+    { r: 0.9, depth: 0.55, spd: 0.008, share: 0.3 },
+    { r: 1.5, depth: 1.0, spd: 0.014, share: 0.15 },
+  ].map((L) => ({ ...L, stars: Array.from({ length: 130 }, () => ({ x: Math.random(), y: Math.random(), tw: Math.random() * 6.28 })) }));
+
+  let px = 0.5, py = 0.5;
+  window.addEventListener('pointermove', (ev) => {
+    px = ev.clientX / window.innerWidth; py = ev.clientY / window.innerHeight;
+  }, { passive: true });
+
+  const draw = (now) => {
+    const f = fitCanvas(cv);
+    if (!f) { requestAnimationFrame(draw); return; }
+    const { w, h, ctx } = f;
+    ctx.clearRect(0, 0, w, h);
+    // 낮에는 은하수를 접는다 (별똥별과 같은 규칙)
+    if (!document.hidden && isNightNow()) {
+      const idleHours = Math.max(0, (Date.now() - lastTs) / 3600000);
+      const fill = Math.min(1, 0.12 + idleHours / 72);   // 3일 방치 = 가득
+      const band = ctx.createLinearGradient(0, h * 0.1, w, h * 0.7);
+      band.addColorStop(0, 'rgba(120,140,220,0)');
+      band.addColorStop(0.45, `rgba(150,170,235,${(0.05 + fill * 0.07).toFixed(3)})`);
+      band.addColorStop(1, 'rgba(120,140,220,0)');
+      ctx.fillStyle = band;
+      ctx.fillRect(0, 0, w, h);
+      layers.forEach((L) => {
+        const n = Math.round(L.stars.length * L.share * fill * 2.2);
+        const ox = (px - 0.5) * -30 * L.depth, oy = (py - 0.5) * -20 * L.depth;
+        for (let i = 0; i < n && i < L.stars.length; i++) {
+          const st = L.stars[i];
+          st.x += L.spd / 60;
+          if (st.x > 1.05) st.x = -0.05;
+          ctx.globalAlpha = (0.25 + 0.55 * (0.5 + 0.5 * Math.sin(now / 900 + st.tw))) * (0.5 + L.depth * 0.5);
+          ctx.fillStyle = '#eef5f2';
+          ctx.beginPath(); ctx.arc(st.x * w + ox, st.y * h + oy, L.r, 0, 6.284); ctx.fill();
+        }
+      });
+      ctx.globalAlpha = 1;
+    }
+    requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+}
+
+/* ===== 13 완료 카드 러닝 라이트 ===== */
+function initRunningLight(data) {
+  if (data.status !== 'completed' || reducedMotion) return;
+  const card = document.getElementById('doneCard');
+  if (card) card.classList.add('running');
+}
+
+/** 🌧️ 비 — 빗줄기만, 짧게 지나간다 */
+function fxRain() {
+  if (reducedMotion) return;
+  let cv = document.getElementById('rainCanvas');
+  if (cv) { cv._until = performance.now() + 3400; return; }
+  cv = document.createElement('canvas');
+  cv.id = 'rainCanvas';
+  cv.setAttribute('aria-hidden', 'true');
+  cv._until = performance.now() + 3400;
+  document.body.appendChild(cv);
+  const drops = Array.from({ length: 90 }, () => ({
+    x: Math.random(), y: Math.random(), v: 0.006 + Math.random() * 0.014,
+    len: 12 + Math.random() * 30, w: 0.8 + Math.random() * 1.2,
+  }));
+  const draw = (now) => {
+    const f = fitCanvas(cv);
+    if (!f) { requestAnimationFrame(draw); return; }
+    const { w, h, ctx } = f;
+    const fade = Math.max(0, Math.min(1, (cv._until - now) / 1200));
+    if (fade <= 0) { cv.remove(); return; }
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = `rgba(190,215,255,${0.45 * fade})`;
+    drops.forEach((d) => {
+      d.y += d.v;
+      if (d.y > 1.1) { d.y = -0.1; d.x = Math.random(); }
+      ctx.lineWidth = d.w;
+      ctx.beginPath();
+      ctx.moveTo(d.x * w, d.y * h);
+      ctx.lineTo(d.x * w + 3, d.y * h - d.len);
+      ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+}
+
+function initFxButtons() {
+  const wire = (id, fn) => {
+    const b = document.getElementById(id);
+    if (b) b.addEventListener('click', fn);
+  };
+  wire('btnMeteor', meteorShower);
+  const petalBtn = document.getElementById('btnPetal');
+  if (petalBtn) petalBtn.textContent = currentSeason().label;
+  wire('btnPetal', () => fx2Spawn('petal'));
+  wire('btnFly', () => fx2Spawn('firefly'));
+  wire('btnCut', fxScreenCut);
+  wire('btnSlot', fxSlot);
+  wire('btnRain', fxRain);
 }
 
 main();
