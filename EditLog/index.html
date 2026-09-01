@@ -840,6 +840,8 @@ function renderSummary(cardEl, data) {
   const pct = progress ? progress.pct : 0;
   const statusLabel = isCompleted ? '완료' : '진행중';
   const stageText = isCompleted ? null : data.currentStage;
+  const stageCat = stageText ? (data.allCategories || []).find(c => c.name === stageText) : null;
+  const stageEmoji = stageText ? categoryIcon(stageCat ? stageCat.symbolName : null) : '';
   heroPct = pct;
   // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다.
   document.title = `태태고 편집실 · 진행률 ${pct}%`;
@@ -866,7 +868,7 @@ function renderSummary(cardEl, data) {
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
           <span class="stageLabel">현재 단계</span>
-          <span class="stageName">${escapeHtml(stageText)}</span>
+          <span class="stageName">${stageEmoji} ${escapeHtml(stageText)}</span>
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 리퀴드로 보기</button>
     </div>
