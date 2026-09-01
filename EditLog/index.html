@@ -180,18 +180,10 @@
     100% { transform: translate(0, 0); }
   }
 
-  /* 커서를 따라다니는 은은한 빛 (마우스 있는 기기에서만 JS가 붙인다) */
-  .cursorLight {
-    position: fixed; width: 420px; height: 420px; margin: -210px 0 0 -210px;
-    border-radius: 50%; pointer-events: none; z-index: 2;
-    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
-    mix-blend-mode: soft-light; opacity: 0; transition: opacity .35s ease; will-change: transform;
-  }
-  .cursorLight.on { opacity: 1; }
 
   /* 움직임 최소화 설정이면 분위기 효과는 아예 끈다 */
   @media (prefers-reduced-motion: reduce) {
-    .grain, .cursorLight, .donutGlow, .donutSpark, .pipeGleam { display: none !important; }
+    .grain, .donutGlow, .donutSpark { display: none !important; }
   }
 
   /* 상단 바 */
@@ -211,16 +203,17 @@
     content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
     background: repeating-conic-gradient(from 0deg, var(--bg) 0deg 1.6deg, transparent 1.6deg var(--seg, 30deg));
   }
-  /* 도넛 뒤에서 천천히 숨쉬는 발광 */
+  /* 도넛 뒤에서 숨쉬는 발광. '진행중' 표시(labelFade)와 같은 1.8초 주기·같은 위상이라
+     둘이 동시에 가장 밝아진다. */
   .donutGlow {
     position: absolute; inset: -18px; border-radius: 50%; pointer-events: none; z-index: 0;
     background: radial-gradient(circle, color-mix(in srgb, var(--accent) 28%, transparent), transparent 68%);
     filter: blur(6px);
-    animation: glowBreath 3.6s ease-in-out infinite;
+    animation: glowBreath 1.8s ease-in-out infinite;
   }
   @keyframes glowBreath {
-    0%, 100% { opacity: .45; transform: scale(.96); }
-    50% { opacity: .9; transform: scale(1.04); }
+    0%, 100% { opacity: .9; transform: scale(1.04); }
+    50% { opacity: .45; transform: scale(.96); }
   }
   /* 게이지가 끝나는 지점에서 반짝이는 점 (각도는 JS가 --spark로 넣어준다) */
   .donutSpark { position: absolute; inset: 0; pointer-events: none; z-index: 3; rotate: var(--spark, 0deg); }
@@ -262,19 +255,6 @@
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
-  /* 완료 구간을 따라 빛 한 점이 위에서 아래로 흘러내린다 */
-  .pipeGleam {
-    position: absolute; left: 6px; top: 0; width: 5px; height: 5px; border-radius: 50%;
-    background: var(--accent2); pointer-events: none; z-index: 2;
-    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--accent) 70%, transparent);
-    animation: gleamRun 2.8s ease-in-out 1.1s infinite;
-  }
-  @keyframes gleamRun {
-    0% { top: 4%; opacity: 0; }
-    12% { opacity: .95; }
-    88% { opacity: .95; }
-    100% { top: 92%; opacity: 0; }
-  }
   /* 단계가 01부터 순서대로 왼쪽에서 미끄러져 들어온다 (--i는 renderPipeline이 넣어준다).
      backwards라 애니메이션이 끝나면 poke 흔들림이 transform을 넘겨받을 수 있다. */
   .pipeItem {
@@ -283,21 +263,6 @@
     animation-delay: calc(var(--i, 0) * 45ms + 140ms);
   }
   @keyframes stepIn { from { opacity: 0; translate: -8px 0; } to { opacity: 1; translate: 0 0; } }
-  /* 단계 연결선을 항목별 구간으로 나눠 그린다. 완료 구간만 accent로 채워서
-     진행도가 점(dot)뿐 아니라 선으로도 읽히게 한다. */
-  .pipeItem::before {
-    content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px;
-    background: var(--line2); z-index: 0;
-  }
-  .pipeItem:first-child::before { top: 50%; }
-  .pipeItem:last-child::before { bottom: 50%; }
-  .pipeItem.done::before {
-    background: var(--accent);
-    transform-origin: top;
-    animation: lineFill .45s ease both;
-    animation-delay: calc(var(--i, 0) * 70ms);
-  }
-  @keyframes lineFill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
   .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
   .pipeItem.current .dot {
@@ -813,7 +778,7 @@ function renderPipeline(data) {
     html += `
       <div class="pipeGroup">
         <div class="pipeGroupTitle">${escapeHtml(groupName)}</div>
-        <div class="pipeList">${items}${progress.done > 0 ? '<span class="pipeGleam" aria-hidden="true"></span>' : ''}</div>
+        <div class="pipeList">${items}</div>
       </div>
     `;
   }
@@ -1557,38 +1522,23 @@ function runGauge(target, fire) {
   requestAnimationFrame(tick);
 }
 
-/** 필름 그레인과 커서 빛 레이어를 깐다. 커서 빛은 마우스가 있는 기기에서만. */
+/** 화면 전체에 필름 그레인 레이어를 깐다. */
 function initAmbientLayers() {
   if (reducedMotion) return;
   const grain = document.createElement('div');
   grain.className = 'grain';
   grain.setAttribute('aria-hidden', 'true');
   document.body.appendChild(grain);
-
-  if (!matchMedia('(hover: hover)').matches) return;
-  const light = document.createElement('div');
-  light.className = 'cursorLight';
-  light.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(light);
-
-  let raf = 0, x = 0, y = 0;
-  addEventListener('pointermove', (ev) => {
-    x = ev.clientX; y = ev.clientY;
-    if (raf) return;
-    raf = requestAnimationFrame(() => {
-      raf = 0;
-      light.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      light.classList.add('on');
-    });
-  });
-  document.addEventListener('mouseleave', () => light.classList.remove('on'));
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
-  const cards = ['summaryCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard']
-    .map(id => document.getElementById(id)).filter(Boolean);
+  const cards = [
+    ...['summaryCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard']
+      .map(id => document.getElementById(id)).filter(Boolean),
+    ...document.querySelectorAll('.statTile'),   // 통계 타일도 같이 기울어지게
+  ];
 
   for (const el of cards) {
     el.addEventListener('pointermove', (ev) => {
