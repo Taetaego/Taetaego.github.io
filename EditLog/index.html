@@ -117,6 +117,11 @@
      위에 잠깐 붙었다가 아래로 튀는 일이 없다. */
   #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .28s; }
   #madeBy { opacity: 0; animation: cardIn .5s ease both; animation-delay: .32s; }
+  /* 등장 애니메이션 중에는 카드의 opacity가 1보다 작아 카드가 쌓임 맥락을 만든다.
+     그러면 그 안의 메모 말풍선(z-index:20)이 카드 안에 갇혀, 뒤에 오는 버튼 바에
+     가려진다. 기록 카드를 버튼 바보다 위에 두어 항상 말풍선이 보이게 한다. */
+  #logCard { z-index: 2; }
+  #fxBar, #madeBy { position: relative; z-index: 1; }
   /* transform이 아니라 독립 속성 translate를 쓴다. transform으로 하면 등장 애니메이션이
      그 속성을 붙잡고 있어서 hover의 translateY(-2px)가 먹지 않는다. */
   @keyframes cardIn { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
