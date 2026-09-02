@@ -289,7 +289,7 @@
   .pipeCard { display: flex; flex-direction: column; gap: 12px; }
   #pipelineBody { display: flex; flex-direction: column; gap: 10px; }
   .pipeGroup { display: flex; flex-direction: column; gap: 4px; }
-  .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
+  .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--rowc, var(--accent2)); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
   /* 단계가 01부터 순서대로 왼쪽에서 미끄러져 들어온다 (--i는 renderPipeline이 넣어준다).
      backwards라 애니메이션이 끝나면 poke 흔들림이 transform을 넘겨받을 수 있다. */
@@ -979,8 +979,9 @@ function renderPipeline(data) {
       const n = String(c.index + 1).padStart(2, '0');
       return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
+    // 그룹 제목도 그 그룹의 카테고리 색을 쓴다 (그룹 안 아무 항목이나 같은 색이다).
     html += `
-      <div class="pipeGroup">
+      <div class="pipeGroup" style="${iconColorVar(groups[groupName][0].name)}">
         <div class="pipeGroupTitle">${escapeHtml(groupName)}</div>
         <div class="pipeList">${items}</div>
       </div>
@@ -1613,7 +1614,8 @@ function applyAccent(key) {
   root.setProperty('--accent2', accent2);
   root.setProperty('--soft', accentSoft(accent, isLight ? 0.12 : 0.14));
   root.setProperty('--tg-on-ink', accent2);
-  root.setProperty('--grp-1', accent);   // 카테고리 칩·기록 행의 첫 그룹 색
+  // 카테고리 그룹 색(--grp-1~4)은 건드리지 않는다 — 하이라이트 색을 바꿔도
+  // 단계·칩·기록 행의 카테고리 색은 그대로 유지돼야 한다.
   // 캔버스 이펙트가 즉시 새 색을 쓰게 캐시를 버린다 (선언보다 먼저 불릴 수 있어 방어)
   if (typeof _accCache === 'object' && _accCache) _accCache.t = -1e9;
   document.querySelectorAll('.accentSwatch').forEach((b) => {
