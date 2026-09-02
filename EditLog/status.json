@@ -135,10 +135,17 @@
       "elapsed" : "1시간 7분",
       "timestamp" : "2026-09-01T12:26:03Z",
       "videoLength" : "6"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "23시간 2분",
+      "timestamp" : "2026-09-02T11:28:30Z",
+      "videoLength" : "8"
     }
   ],
-  "entryCount" : 10,
-  "lastUpdate" : "2026-09-01T12:26:05Z",
+  "entryCount" : 11,
+  "lastUpdate" : "2026-09-02T11:28:33Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
