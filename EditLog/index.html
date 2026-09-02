@@ -1813,7 +1813,8 @@ function setSparkAngle(pct) {
   spark.style.display = pct > 2 ? '' : 'none';
 }
 
-function runGauge(target, fire) {
+/** keepNumber를 주면 링만 0%에서 다시 채우고 가운데 숫자는 최종값 그대로 둔다. */
+function runGauge(target, fire, keepNumber = false) {
   const el = document.getElementById('donutPct');
   const dn = document.getElementById('donutGauge');
   if (!el || !dn) return;
@@ -1823,12 +1824,13 @@ function runGauge(target, fire) {
     setSparkAngle(target);
     return;
   }
+  if (keepNumber) el.textContent = target + '%';
   const t0 = performance.now(), dur = 1500;
   const tick = now => {
     const k = Math.min(1, (now - t0) / dur);
     const e = 1 - Math.pow(1 - k, 3);
     const p = e * target;
-    el.textContent = Math.round(p) + '%';
+    if (!keepNumber) el.textContent = Math.round(p) + '%';
     dn.style.background = `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
     // 반짝이는 점을 게이지가 끝나는 각도에 붙여 같이 돌린다 (100% = 360도).
     setSparkAngle(p);
@@ -1995,8 +1997,8 @@ function initGaugeToggle() {
     if (on) {
       startLiquid();
     } else {
-      liquidRun++;               // 물결 루프 정지
-      runGauge(heroPct, false);  // 도넛을 0%부터 다시 채운다
+      liquidRun++;                     // 물결 루프 정지
+      runGauge(heroPct, false, true);  // 링만 0%부터 다시 채우고 숫자는 그대로
     }
   });
 }
