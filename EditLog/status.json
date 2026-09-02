@@ -74,7 +74,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "자막 색상 변경",
+  "currentStage" : "하이라이트 배치",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -190,10 +190,17 @@
       "elapsed" : "10분",
       "timestamp" : "2026-09-02T17:41:25Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "하이라이트 배치",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "37분",
+      "timestamp" : "2026-09-02T18:18:27Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 16,
-  "lastUpdate" : "2026-09-02T17:41:27Z",
+  "entryCount" : 17,
+  "lastUpdate" : "2026-09-02T18:18:29Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
