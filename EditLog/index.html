@@ -1656,14 +1656,14 @@ function initFx() {
       ctx.lineWidth = p.r * p.life + 0.4;
       ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
     }
-    // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다. 화면 밖으로 완전히 나갈 때까지는
-    // (여유폭 220px, 꼬리 길이보다 넉넉해 잘려 보이지 않는다) 밝기를 그대로 유지한다 —
-    // 예전엔 시간 기준으로 따로 페이드했는데, 화면이 크면 그 페이드가 먼저 끝나버려서
-    // 화면 중간에서 뚝 사라져 보였다.
+    // 별똥별: 꼬리를 끌며 사선으로 스쳐 지나간다.
+    // 꼬리 길이는 vx*tail이라 1400~1800px까지 나온다. 그래서 머리가 화면을 벗어난 걸로
+    // 지우면 아직 화면을 가로지르고 있는 꼬리째 사라져 버린다 — 꼬리 끝까지 나간 뒤에 지운다.
     for (let i = fx.ms.length - 1; i >= 0; i--) {
       const m = fx.ms[i];
       m.x += m.vx; m.y += m.vy;
-      if (m.x > fx.w + 220 || m.y > fx.h + 220) { fx.ms.splice(i, 1); continue; }
+      const tailX = m.x - m.vx * m.tail, tailY = m.y - m.vy * m.tail;
+      if (tailX > fx.w || tailY > fx.h) { fx.ms.splice(i, 1); continue; }
       const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * m.tail, m.y - m.vy * m.tail);
       g.addColorStop(0, 'rgba(255,255,245,0.9)');
       g.addColorStop(0.22, 'rgba(205,226,255,0.55)');
@@ -1897,6 +1897,29 @@ function sfxNoise(dur, opts = {}) {
   src.start(t0); src.stop(t0 + dur + 0.03);
 }
 
+/** 🦗 귀뚜라미 — 4.5kHz대 짧은 펄스를 촘촘히 묶은 게 한 번의 울음, 그걸 여러 번 반복한다. */
+function sfxCricket() {
+  const chirps = 5;
+  for (let c = 0; c < chirps; c++) {
+    const base = c * 0.62 + Math.random() * 0.05;
+    const hz = 4300 + Math.random() * 500;
+    for (let p = 0; p < 4; p++) {
+      const at = base + p * 0.036;
+      sfxTone(hz, 0.022, { type: 'sine', gain: 0.05, delay: at, attack: 0.004 });
+      sfxTone(hz * 1.5, 0.022, { type: 'sine', gain: 0.018, delay: at, attack: 0.004 });
+    }
+  }
+}
+
+/** ⚔️ 검이 스치는 소리 — 빠르게 쓸려 내려가는 소음 + 금속 여운. */
+function sfxSlash() {
+  sfxSweepNoise(0.22, { gain: 0.2, from: 9000, to: 900, q: 1.1 });
+  sfxSweepNoise(0.1, { gain: 0.12, from: 6000, to: 2000, q: 3, delay: 0.02 });
+  // 벤 뒤 남는 쇳소리
+  sfxTone(3100, 0.5, { type: 'sine', gain: 0.05, delay: 0.1, attack: 0.003 });
+  sfxTone(4680, 0.38, { type: 'sine', gain: 0.028, delay: 0.1, attack: 0.003 });
+}
+
 /** 🌧️ 비 — 저역대 백색소음을 rampUp/Down에 맞춰 길게 깐다. */
 function sfxRainAmbience(durMs, rampUpMs, rampDownMs) {
   const ctx = audioCtx();
@@ -1912,8 +1935,8 @@ function sfxRainAmbience(durMs, rampUpMs, rampDownMs) {
   const g = ctx.createGain();
   const t0 = ctx.currentTime, dur = durMs / 1000, up = rampUpMs / 1000, down = rampDownMs / 1000;
   g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(0.09, t0 + up);
-  g.gain.setValueAtTime(0.09, t0 + Math.max(up, dur - down));
+  g.gain.exponentialRampToValueAtTime(0.05, t0 + up);
+  g.gain.setValueAtTime(0.05, t0 + Math.max(up, dur - down));
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   src.connect(filter); filter.connect(g); g.connect(ctx.destination);
   src.start(t0); src.stop(t0 + dur + 0.05);
@@ -1926,13 +1949,15 @@ function launchFireworks() {
   if (!f) return;
   f.rocket();
   f.kick();
-  // 올라가는 휘슬(가느다란 소음) → 펑 하고 터지는 저음 → 타닥타닥 잔불.
-  // 잔불 크래클이 있어야 폭죽처럼 들린다.
+  // 올라가는 "피이잉~" 휘슬 → 펑 하고 터짐 → 타닥타닥 잔불.
   // boom 타이밍은 실제 로켓이 터지기까지 걸리는 시간(측정값 약 1.1~1.3초)에 맞췄다.
   const boom = 1.15;
-  sfxSweepNoise(boom, { gain: 0.05, from: 800, to: 2800, q: 16 });
-  sfxTone(130, 0.34, { type: 'sine', freqEnd: 42, gain: 0.2, delay: boom, attack: 0.004 });
-  sfxNoise(0.2, { gain: 0.18, filterFreq: 1500, filterType: 'lowpass', delay: boom });
+  // 휘슬은 소음만으로는 안 들려서 음정 있는 삼각파를 올린다 (바람 소음은 옅게 덧댄다).
+  sfxTone(620, boom, { type: 'triangle', freqEnd: 2600, gain: 0.055, attack: 0.06 });
+  sfxSweepNoise(boom, { gain: 0.022, from: 900, to: 3000, q: 14 });
+  // 터짐: 사인파 피치 드롭은 그대로 킥드럼 합성이라 북소리로 들렸다 → 전부 소음으로 낸다.
+  sfxSweepNoise(0.06, { gain: 0.3, from: 9000, to: 2500, q: 0.6, delay: boom });
+  sfxNoise(0.26, { gain: 0.2, filterFreq: 700, filterType: 'lowpass', delay: boom });
   for (let i = 0; i < 22; i++) {
     sfxClick({
       gain: 0.025 + Math.random() * 0.03,
@@ -2154,24 +2179,8 @@ function currentSeason() {
 
 function fx2Spawn(kind) {
   if (reducedMotion) return;
-  if (kind === 'petal') {
-    // 잎은 울리지 않는다 — 음정 없이 바스락거리는 소음만 흩뿌린다.
-    for (let i = 0; i < 10; i++) {
-      sfxSweepNoise(0.16 + Math.random() * 0.16, {
-        gain: 0.025 + Math.random() * 0.02,
-        from: 3200 + Math.random() * 2600, to: 1100, q: 1,
-        delay: Math.random() * 1.4,
-      });
-    }
-  } else {
-    // 음계를 순서대로 올리면 초인종처럼 들려서, 높은 음들을 무작위로 하나씩 켠다.
-    const notes = [1568, 1760, 2093, 2349, 2637, 3136];
-    for (let i = 0; i < 7; i++) {
-      sfxBell(notes[Math.floor(Math.random() * notes.length)], 0.5 + Math.random() * 0.3, {
-        gain: 0.026, delay: i * 0.16 + Math.random() * 0.07,
-      });
-    }
-  }
+  // 낙엽·꽃잎은 소리 없이 조용히 흩날린다.
+  if (kind !== 'petal') sfxCricket();
   const f = initFx2();
   const W = window.innerWidth, H = window.innerHeight;
   const rand = (a, b) => a + Math.random() * (b - a);
@@ -2260,10 +2269,7 @@ function meteorShower() {
 /** ✂️ 화면 컷편집 */
 function fxScreenCut() {
   if (reducedMotion) return;
-  // 가위가 두 번 스치듯 짧은 금속성 트랜지언트 두 방 + 옅은 여운
-  sfxClick({ gain: 0.2, freq: 5400, q: 11 });
-  sfxClick({ gain: 0.17, freq: 4300, q: 11, delay: 0.075 });
-  sfxTone(3200, 0.1, { type: 'triangle', freqEnd: 1700, gain: 0.045, delay: 0.075, attack: 0.003 });
+  sfxSlash();
   const page = document.querySelector('.page');
   const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
   if (line && line.animate) line.animate([
