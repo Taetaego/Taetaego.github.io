@@ -1,186 +1,193 @@
 {
-  "allCategories": [
+  "allCategories" : [
     {
-      "group": "컷 편집",
-      "name": "자막 추출",
-      "symbolName": "captions.bubble",
-      "weight": 1
+      "group" : "컷 편집",
+      "name" : "자막 추출",
+      "symbolName" : "captions.bubble",
+      "weight" : 1
     },
     {
-      "group": "컷 편집",
-      "name": "1차 컷편집",
-      "symbolName": "scissors",
-      "weight": 7
+      "group" : "컷 편집",
+      "name" : "1차 컷편집",
+      "symbolName" : "scissors",
+      "weight" : 7
     },
     {
-      "group": "컷 편집",
-      "name": "2차 세부 컷편집",
-      "symbolName": "scissors",
-      "weight": 2
+      "group" : "컷 편집",
+      "name" : "2차 세부 컷편집",
+      "symbolName" : "scissors",
+      "weight" : 2
     },
     {
-      "group": "중간 작업",
-      "name": "자막 입력",
-      "symbolName": "captions.bubble",
-      "weight": 5
+      "group" : "중간 작업",
+      "name" : "자막 입력",
+      "symbolName" : "captions.bubble",
+      "weight" : 5
     },
     {
-      "group": "중간 작업",
-      "name": "추가 영상 삽입",
-      "symbolName": "photo.on.rectangle",
-      "weight": 1
+      "group" : "중간 작업",
+      "name" : "추가 영상 삽입",
+      "symbolName" : "photo.on.rectangle",
+      "weight" : 1
     },
     {
-      "group": "중간 작업",
-      "name": "맞춤법 검사",
-      "symbolName": "text.badge.checkmark",
-      "weight": 1
+      "group" : "중간 작업",
+      "name" : "맞춤법 검사",
+      "symbolName" : "text.badge.checkmark",
+      "weight" : 1
     },
     {
-      "group": "중간 작업",
-      "name": "자막 색상 변경",
-      "symbolName": "paintpalette",
-      "weight": 1
+      "group" : "중간 작업",
+      "name" : "자막 색상 변경",
+      "symbolName" : "paintpalette",
+      "weight" : 1
     },
     {
-      "group": "중간 작업",
-      "name": "하이라이트 배치",
-      "symbolName": "star.bubble",
-      "weight": 1
+      "group" : "중간 작업",
+      "name" : "하이라이트 배치",
+      "symbolName" : "star.bubble",
+      "weight" : 1
     },
     {
-      "group": "후반 작업",
-      "name": "지도/위치 추가",
-      "symbolName": "map",
-      "weight": 1
+      "group" : "후반 작업",
+      "name" : "지도\/위치 추가",
+      "symbolName" : "map",
+      "weight" : 1
     },
     {
-      "group": "후반 작업",
-      "name": "배경음 & 검수",
-      "symbolName": "music.note",
-      "weight": 2
+      "group" : "후반 작업",
+      "name" : "배경음 & 검수",
+      "symbolName" : "music.note",
+      "weight" : 2
     },
     {
-      "group": "후반 작업",
-      "name": "최종 검수",
-      "symbolName": "checkmark.seal",
-      "weight": 1
+      "group" : "후반 작업",
+      "name" : "최종 검수",
+      "symbolName" : "checkmark.seal",
+      "weight" : 1
     },
     {
-      "group": "마무리 작업",
-      "name": "썸네일/제목 기획",
-      "symbolName": "text.below.photo",
-      "weight": 2
+      "group" : "마무리 작업",
+      "name" : "썸네일\/제목 기획",
+      "symbolName" : "text.below.photo",
+      "weight" : 2
     }
   ],
-  "createdAt": "2026-08-27T13:35:26Z",
-  "currentStage": "맞춤법 검사",
-  "detailCutLength": "24",
-  "detailCutRatio": 8.823529411764707,
-  "entries": [
+  "createdAt" : "2026-08-27T13:35:26Z",
+  "currentStage" : "맞춤법 검사",
+  "detailCutLength" : "24",
+  "detailCutRatio" : 8.823529411764707,
+  "entries" : [
     {
-      "category": "자막 추출",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "0분",
-      "timestamp": "2026-08-27T13:35:26Z",
-      "videoLength": ""
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "0분",
+      "timestamp" : "2026-08-27T13:35:26Z",
+      "videoLength" : ""
     },
     {
-      "category": "자막 추출",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "12시간 33분",
-      "timestamp": "2026-08-28T02:08:45Z",
-      "videoLength": ""
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "12시간 33분",
+      "timestamp" : "2026-08-28T02:08:45Z",
+      "videoLength" : ""
     },
     {
-      "category": "1차 컷편집",
-      "categorySymbol": "scissors",
-      "elapsed": "11시간 28분",
-      "timestamp": "2026-08-28T13:37:10Z",
-      "videoLength": "0"
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "11시간 28분",
+      "timestamp" : "2026-08-28T13:37:10Z",
+      "videoLength" : "0"
     },
     {
-      "category": "1차 컷편집",
-      "categorySymbol": "scissors",
-      "elapsed": "2일 20시간 29분",
-      "timestamp": "2026-08-31T10:06:24Z",
-      "videoLength": "11"
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "2일 20시간 29분",
+      "timestamp" : "2026-08-31T10:06:24Z",
+      "videoLength" : "11"
     },
     {
-      "category": "2차 세부 컷편집",
-      "categorySymbol": "scissors",
-      "elapsed": "2시간 14분",
-      "timestamp": "2026-08-31T12:20:56Z",
-      "videoLength": "0"
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "2시간 14분",
+      "timestamp" : "2026-08-31T12:20:56Z",
+      "videoLength" : "0"
     },
     {
-      "category": "2차 세부 컷편집",
-      "categorySymbol": "scissors",
-      "elapsed": "1시간 20분",
-      "timestamp": "2026-08-31T13:41:07Z",
-      "videoLength": "17"
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1시간 20분",
+      "timestamp" : "2026-08-31T13:41:07Z",
+      "videoLength" : "17"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "40분",
-      "timestamp": "2026-08-31T14:21:36Z",
-      "videoLength": "0"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "40분",
+      "timestamp" : "2026-08-31T14:21:36Z",
+      "videoLength" : "0"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "11시간 14분",
-      "timestamp": "2026-09-01T01:36:07Z",
-      "videoLength": "0"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "11시간 14분",
+      "timestamp" : "2026-09-01T01:36:07Z",
+      "videoLength" : "0"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "9시간 42분",
-      "timestamp": "2026-09-01T11:18:43Z",
-      "videoLength": "3"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "9시간 42분",
+      "timestamp" : "2026-09-01T11:18:43Z",
+      "videoLength" : "3"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "1시간 7분",
-      "timestamp": "2026-09-01T12:26:03Z",
-      "videoLength": "6"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 7분",
+      "timestamp" : "2026-09-01T12:26:03Z",
+      "videoLength" : "6"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "23시간 2분",
-      "timestamp": "2026-09-02T11:28:30Z",
-      "videoLength": "8"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "23시간 2분",
+      "timestamp" : "2026-09-02T11:28:30Z",
+      "videoLength" : "8"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "2시간 8분",
-      "timestamp": "2026-09-02T13:37:22Z",
-      "videoLength": "12"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "2시간 8분",
+      "timestamp" : "2026-09-02T13:37:22Z",
+      "videoLength" : "12"
     },
     {
-      "category": "자막 입력",
-      "categorySymbol": "captions.bubble",
-      "elapsed": "1시간 46분",
-      "memo": "프리미어 프로 뭔가 버벅거리는것같아서 오랜만에 업데이트 했는데, 업데이트하니까 자막 오류가 생겨서 다시 다운그레이드함",
-      "timestamp": "2026-09-02T15:24:15Z",
-      "videoLength": "13"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 46분",
+      "memo" : "프리미어 프로 뭔가 버벅거리는것같아서 오랜만에 업데이트 했는데, 업데이트하니까 자막 오류가 생겨서 다시 다운그레이드함",
+      "timestamp" : "2026-09-02T15:24:15Z",
+      "videoLength" : "13"
     },
     {
-      "category": "맞춤법 검사",
-      "categorySymbol": "text.badge.checkmark",
-      "elapsed": "1시간 55분",
-      "timestamp": "2026-09-02T17:20:05Z",
-      "videoLength": "0"
+      "category" : "추가 영상 삽입",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "1시간 55분",
+      "timestamp" : "2026-09-02T17:20:05Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "맞춤법 검사",
+      "categorySymbol" : "text.badge.checkmark",
+      "elapsed" : "10분",
+      "timestamp" : "2026-09-02T17:31:02Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount": 14,
-  "lastUpdate": "2026-09-02T17:20:11Z",
-  "originalLength": "4:32",
-  "projectTopic": "페루 나스카 경비행기 & 무덤",
-  "status": "in_progress"
+  "entryCount" : 15,
+  "lastUpdate" : "2026-09-02T17:31:06Z",
+  "originalLength" : "4:32",
+  "projectTopic" : "페루 나스카 경비행기 & 무덤",
+  "status" : "in_progress"
 }
