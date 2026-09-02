@@ -3,62 +3,74 @@
     {
       "group" : "컷 편집",
       "name" : "자막 추출",
-      "symbolName" : "captions.bubble"
+      "symbolName" : "captions.bubble",
+      "weight" : 1
     },
     {
       "group" : "컷 편집",
       "name" : "1차 컷편집",
-      "symbolName" : "scissors"
+      "symbolName" : "scissors",
+      "weight" : 3
     },
     {
       "group" : "컷 편집",
       "name" : "2차 세부 컷편집",
-      "symbolName" : "scissors"
+      "symbolName" : "scissors",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "자막 입력",
-      "symbolName" : "captions.bubble"
+      "symbolName" : "captions.bubble",
+      "weight" : 3
     },
     {
       "group" : "중간 작업",
       "name" : "추가 영상 삽입",
-      "symbolName" : "photo.on.rectangle"
+      "symbolName" : "photo.on.rectangle",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "맞춤법 검사",
-      "symbolName" : "text.badge.checkmark"
+      "symbolName" : "text.badge.checkmark",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "자막 색상 변경",
-      "symbolName" : "paintpalette"
+      "symbolName" : "paintpalette",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "하이라이트 배치",
-      "symbolName" : "star.bubble"
+      "symbolName" : "star.bubble",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "지도\/위치 추가",
-      "symbolName" : "map"
+      "symbolName" : "map",
+      "weight" : 1
     },
     {
       "group" : "중간 작업",
       "name" : "배경음 & 검수",
-      "symbolName" : "music.note"
+      "symbolName" : "music.note",
+      "weight" : 2
     },
     {
       "group" : "중간 작업",
       "name" : "최종 검수",
-      "symbolName" : "checkmark.seal"
+      "symbolName" : "checkmark.seal",
+      "weight" : 2
     },
     {
       "group" : "마무리 작업",
       "name" : "썸네일\/제목 기획",
-      "symbolName" : "text.below.photo"
+      "symbolName" : "text.below.photo",
+      "weight" : 2
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
@@ -152,7 +164,7 @@
     }
   ],
   "entryCount" : 12,
-  "lastUpdate" : "2026-09-02T13:37:24Z",
+  "lastUpdate" : "2026-09-02T14:27:47Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
