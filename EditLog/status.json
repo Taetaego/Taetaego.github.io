@@ -161,10 +161,18 @@
       "elapsed" : "2시간 8분",
       "timestamp" : "2026-09-02T13:37:22Z",
       "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 46분",
+      "memo" : "프리미어 프로 뭔가 버벅거리는것같아서 오랜만에 업데이트 했는데, 업데이트하니까 자막 오류가 생겨서 다시 다운그레이드함",
+      "timestamp" : "2026-09-02T15:24:15Z",
+      "videoLength" : "13"
     }
   ],
-  "entryCount" : 12,
-  "lastUpdate" : "2026-09-02T14:28:26Z",
+  "entryCount" : 13,
+  "lastUpdate" : "2026-09-02T15:24:52Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
