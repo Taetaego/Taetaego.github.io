@@ -1823,7 +1823,7 @@ function audioCtx() {
 function sfxTone(freq, dur, opts = {}) {
   const ctx = audioCtx();
   if (!ctx) return;
-  const { type = 'sine', gain = 0.16, freqEnd, delay = 0 } = opts;
+  const { type = 'sine', gain = 0.16, freqEnd, delay = 0, attack } = opts;
   const t0 = ctx.currentTime + delay;
   const osc = ctx.createOscillator();
   const g = ctx.createGain();
@@ -1831,10 +1831,48 @@ function sfxTone(freq, dur, opts = {}) {
   osc.frequency.setValueAtTime(Math.max(1, freq), t0);
   if (freqEnd != null) osc.frequency.exponentialRampToValueAtTime(Math.max(1, freqEnd), t0 + dur);
   g.gain.setValueAtTime(0.0001, t0);
-  g.gain.exponentialRampToValueAtTime(gain, t0 + Math.min(0.02, dur * 0.3));
+  g.gain.exponentialRampToValueAtTime(gain, t0 + (attack ?? Math.min(0.02, dur * 0.3)));
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
   osc.connect(g); g.connect(ctx.destination);
   osc.start(t0); osc.stop(t0 + dur + 0.03);
+}
+
+/** 필터가 쓸려 내려가는(또는 올라가는) 소음 — 휘슬·슝·바스락 같은 건 순음이 아니라 이쪽이다. */
+function sfxSweepNoise(dur, opts = {}) {
+  const ctx = audioCtx();
+  if (!ctx) return;
+  const { gain = 0.1, from = 3000, to = 700, q = 1.5, delay = 0, type = 'bandpass' } = opts;
+  const t0 = ctx.currentTime + delay;
+  const n = Math.max(1, Math.floor(ctx.sampleRate * dur));
+  const buffer = ctx.createBuffer(1, n, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < n; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = type;
+  filter.Q.value = q;
+  filter.frequency.setValueAtTime(Math.max(40, from), t0);
+  filter.frequency.exponentialRampToValueAtTime(Math.max(40, to), t0 + dur);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(gain, t0 + dur * 0.25);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+  src.start(t0); src.stop(t0 + dur + 0.03);
+}
+
+/** 딸깍 — 아주 짧은 소음 트랜지언트. 기계식 클릭은 순음보다 이게 훨씬 그럴듯하다. */
+function sfxClick(opts = {}) {
+  const { gain = 0.14, freq = 2800, q = 7, delay = 0, dur = 0.028 } = opts;
+  sfxSweepNoise(dur, { gain, from: freq, to: freq * 0.65, q, delay });
+}
+
+/** 종소리 — 빠른 어택 + 긴 감쇠에 배음을 살짝 얹는다. */
+function sfxBell(freq, dur, opts = {}) {
+  const { gain = 0.04, delay = 0 } = opts;
+  sfxTone(freq, dur, { type: 'sine', gain, delay, attack: 0.004 });
+  sfxTone(freq * 2.01, dur * 0.55, { type: 'sine', gain: gain * 0.3, delay, attack: 0.004 });
 }
 
 /** 백색소음 한 덩이(필터로 색을 입힌다) — 파열음·바람·비 소리에 쓴다. */
@@ -1888,9 +1926,21 @@ function launchFireworks() {
   if (!f) return;
   f.rocket();
   f.kick();
-  sfxTone(300, 0.5, { type: 'sine', freqEnd: 950, gain: 0.11 });
-  sfxNoise(0.3, { gain: 0.22, filterFreq: 2500, filterType: 'bandpass', delay: 0.42 });
-  sfxTone(160, 0.22, { type: 'triangle', freqEnd: 55, gain: 0.14, delay: 0.42 });
+  // 올라가는 휘슬(가느다란 소음) → 펑 하고 터지는 저음 → 타닥타닥 잔불.
+  // 잔불 크래클이 있어야 폭죽처럼 들린다.
+  // boom 타이밍은 실제 로켓이 터지기까지 걸리는 시간(측정값 약 1.1~1.3초)에 맞췄다.
+  const boom = 1.15;
+  sfxSweepNoise(boom, { gain: 0.05, from: 800, to: 2800, q: 16 });
+  sfxTone(130, 0.34, { type: 'sine', freqEnd: 42, gain: 0.2, delay: boom, attack: 0.004 });
+  sfxNoise(0.2, { gain: 0.18, filterFreq: 1500, filterType: 'lowpass', delay: boom });
+  for (let i = 0; i < 22; i++) {
+    sfxClick({
+      gain: 0.025 + Math.random() * 0.03,
+      freq: 2200 + Math.random() * 3200,
+      q: 9,
+      delay: boom + 0.08 + Math.random() * 0.95,
+    });
+  }
 }
 
 function celebrate(targetPct, isCompleted) {
@@ -2105,14 +2155,22 @@ function currentSeason() {
 function fx2Spawn(kind) {
   if (reducedMotion) return;
   if (kind === 'petal') {
-    // 잎이 흩날리는 바스락거림 + 부드러운 화음
-    sfxNoise(0.7, { gain: 0.05, filterFreq: 2600, filterType: 'bandpass' });
-    sfxTone(880, 0.5, { type: 'sine', gain: 0.05 });
-    sfxTone(1174, 0.6, { type: 'sine', gain: 0.04, delay: 0.12 });
+    // 잎은 울리지 않는다 — 음정 없이 바스락거리는 소음만 흩뿌린다.
+    for (let i = 0; i < 10; i++) {
+      sfxSweepNoise(0.16 + Math.random() * 0.16, {
+        gain: 0.025 + Math.random() * 0.02,
+        from: 3200 + Math.random() * 2600, to: 1100, q: 1,
+        delay: Math.random() * 1.4,
+      });
+    }
   } else {
-    // 반딧불이가 하나씩 켜지듯 높은 음이 차례로
-    [1760, 2093, 2637, 3136].forEach((hz, i) =>
-      sfxTone(hz, 0.28, { type: 'sine', gain: 0.045, delay: i * 0.13 }));
+    // 음계를 순서대로 올리면 초인종처럼 들려서, 높은 음들을 무작위로 하나씩 켠다.
+    const notes = [1568, 1760, 2093, 2349, 2637, 3136];
+    for (let i = 0; i < 7; i++) {
+      sfxBell(notes[Math.floor(Math.random() * notes.length)], 0.5 + Math.random() * 0.3, {
+        gain: 0.026, delay: i * 0.16 + Math.random() * 0.07,
+      });
+    }
   }
   const f = initFx2();
   const W = window.innerWidth, H = window.innerHeight;
@@ -2191,16 +2249,21 @@ function meteorShower() {
   for (let i = 0; i < 7; i++) {
     const d = i * 420 + Math.random() * 220;
     setTimeout(() => { f.meteor(); f.kick(); }, d);
-    sfxNoise(0.4, { gain: 0.05, filterFreq: 3200, filterType: 'highpass', delay: d / 1000 });
-    sfxTone(1400, 0.35, { type: 'sine', freqEnd: 350, gain: 0.035, delay: d / 1000 });
+    // 순음이 미끄러지면 만화 같아서, 공기가 스치는 소음을 쓸어내린다.
+    sfxSweepNoise(0.5 + Math.random() * 0.2, {
+      gain: 0.045, from: 6500, to: 800, q: 2.2, delay: d / 1000,
+    });
+    sfxBell(2400 + Math.random() * 900, 0.35, { gain: 0.012, delay: d / 1000 + 0.04 });
   }
 }
 
 /** ✂️ 화면 컷편집 */
 function fxScreenCut() {
   if (reducedMotion) return;
-  sfxNoise(0.05, { gain: 0.22, filterFreq: 4500, filterType: 'highpass' });
-  sfxTone(180, 0.05, { type: 'square', gain: 0.09 });
+  // 가위가 두 번 스치듯 짧은 금속성 트랜지언트 두 방 + 옅은 여운
+  sfxClick({ gain: 0.2, freq: 5400, q: 11 });
+  sfxClick({ gain: 0.17, freq: 4300, q: 11, delay: 0.075 });
+  sfxTone(3200, 0.1, { type: 'triangle', freqEnd: 1700, gain: 0.045, delay: 0.075, attack: 0.003 });
   const page = document.querySelector('.page');
   const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
   if (line && line.animate) line.animate([
@@ -2220,8 +2283,18 @@ function fxScreenCut() {
 /** 🎰 숫자 슬롯 — 화면의 숫자가 돌다 멈춘다 */
 function fxSlot() {
   if (reducedMotion) return;
-  for (let i = 0; i < 7; i++) sfxTone(680, 0.035, { type: 'square', gain: 0.06, delay: i * 0.09 });
-  sfxTone(520, 0.16, { type: 'triangle', freqEnd: 260, gain: 0.11, delay: 0.65 });
+  // 같은 높이의 삑삑 소리는 알람처럼 들린다 → 래칫이 점점 느려지는 기계식 딸깍으로.
+  let t = 0, gap = 0.04;
+  for (let i = 0; i < 14; i++) {
+    sfxClick({ gain: 0.085, freq: 3000, q: 8, delay: t });
+    t += gap;
+    gap *= 1.08;
+  }
+  // 릴이 하나씩 멈추는 '철컥'
+  [0, 0.16, 0.32].forEach((d) => {
+    sfxClick({ gain: 0.15, freq: 1700, q: 4, delay: t + d });
+    sfxTone(170, 0.11, { type: 'triangle', freqEnd: 85, gain: 0.09, delay: t + d, attack: 0.003 });
+  });
   const digits = '0123456789';
   // 날짜·경과 시간·비율까지, 화면에서 숫자가 들어간 잎 요소를 모두 돌린다.
   const targets = [...document.querySelectorAll('.page *')]
