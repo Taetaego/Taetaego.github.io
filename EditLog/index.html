@@ -96,7 +96,7 @@
   body {
     margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
     font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex; justify-content: center; padding: 16px 12px 60px;
+    display: flex; justify-content: center; padding: 10px 12px 60px;
     -webkit-font-smoothing: antialiased;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
@@ -299,7 +299,7 @@
     animation-delay: calc(var(--i, 0) * 45ms + 140ms);
   }
   @keyframes stepIn { from { opacity: 0; translate: -8px 0; } to { opacity: 1; translate: 0 0; } }
-  /* 단계를 잇는 세로선. 항목별 구간으로 나눠 그리고 완료 구간만 accent로 채운다.
+  /* 단계를 잇는 세로선. 항목별 구간으로 나눠 그리고 완료 구간만 그 단계의 그룹 색으로 채운다.
      첫/마지막 항목은 점 중심에서 끊어 선이 밖으로 삐져나오지 않게 한다 —
      그래서 .pipeList 안에는 .pipeItem 외의 요소를 넣으면 안 된다(:last-child가 깨짐). */
   .pipeItem::before {
@@ -309,13 +309,13 @@
   .pipeItem:first-child::before { top: 50%; }
   .pipeItem:last-child::before { bottom: 50%; }
   .pipeItem.done::before {
-    background: var(--accent);
+    background: var(--rowc, var(--accent));
     transform-origin: top;
     animation: lineFill .45s ease both;
     animation-delay: calc(var(--i, 0) * 70ms);
   }
   @keyframes lineFill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-  .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+  .pipeItem .dot { z-index: 1; flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--rowc, var(--accent)); color: var(--on-accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
   .pipeItem.todo .dot { background: var(--surface2); border: 1.5px solid var(--line2); color: transparent; }
   .pipeItem.current .dot {
     position: relative; background: var(--surface); border: 2px solid var(--warn); color: transparent;
@@ -570,7 +570,7 @@
   }
 
   @media (max-width: 420px) {
-    body { padding: 12px 10px 48px; }
+    body { padding: 8px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
     /* 좁은 화면에서도 카테고리 이름은 잘리지 않아야 한다. 나머지 열은 내용에 맞춰
        (실측: 시작 시간 56px · 이전 기록 71px · 메모 18px) 줄이고 남는 폭을 이름에 준다. */
@@ -579,7 +579,7 @@
 
   /* 웹(데스크톱) 버전: 모바일 카드 구성을 2열로 재배치 */
   @media (min-width: 900px) {
-    body { padding: 28px 32px 80px; align-items: flex-start; }
+    body { padding: 18px 32px 80px; align-items: flex-start; }
     .page {
       max-width: 980px;
       display: grid;
