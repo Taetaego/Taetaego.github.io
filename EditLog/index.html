@@ -286,8 +286,8 @@
   .cardHead { display: flex; align-items: baseline; justify-content: space-between; }
   .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
   .cardMeta { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
-  .pipeCard { display: flex; flex-direction: column; gap: 16px; }
-  #pipelineBody { display: flex; flex-direction: column; gap: 8px; }
+  .pipeCard { display: flex; flex-direction: column; gap: 12px; }
+  #pipelineBody { display: flex; flex-direction: column; gap: 10px; }
   .pipeGroup { display: flex; flex-direction: column; gap: 4px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
@@ -1991,7 +1991,13 @@ function initGaugeToggle() {
     ev.stopPropagation();   // 히어로 카드의 폭죽까지 터지지 않게
     const on = donut.classList.toggle('liquid');
     btn.textContent = on ? '◎ 도넛으로 보기' : '🌊 물결로 보기';
-    if (on) startLiquid(); else liquidRun++;
+    // 어느 쪽으로 바꾸든 0%에서 다시 차오르게 한다.
+    if (on) {
+      startLiquid();
+    } else {
+      liquidRun++;               // 물결 루프 정지
+      runGauge(heroPct, false);  // 도넛을 0%부터 다시 채운다
+    }
   });
 }
 
