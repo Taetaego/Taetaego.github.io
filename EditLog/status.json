@@ -74,7 +74,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "맞춤법 검사",
+  "currentStage" : "자막 색상 변경",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -183,10 +183,17 @@
       "elapsed" : "10분",
       "timestamp" : "2026-09-02T17:31:02Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "자막 색상 변경",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "10분",
+      "timestamp" : "2026-09-02T17:41:25Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 15,
-  "lastUpdate" : "2026-09-02T17:35:51Z",
+  "entryCount" : 16,
+  "lastUpdate" : "2026-09-02T17:41:27Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
