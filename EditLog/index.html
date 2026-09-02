@@ -96,7 +96,7 @@
   body {
     margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
     font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex; justify-content: center; padding: 24px 12px 60px;
+    display: flex; justify-content: center; padding: 16px 12px 60px;
     -webkit-font-smoothing: antialiased;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
@@ -327,6 +327,16 @@
     animation-delay: -0.45s;
   }
   .pipeItem .n { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  /* 카테고리 아이콘 — 칩·작업 기록과 같은 단색 선 아이콘, 그룹 색을 따른다.
+     이름과 한 덩어리로 보이도록 뒤쪽 간격만 좁힌다. */
+  .pipeItem .pipeIcon { flex: none; display: flex; width: 13px; height: 13px; margin-right: -4px; color: var(--rowc, var(--ink3)); }
+  .pipeItem .pipeIcon svg {
+    width: 100%; height: 100%;
+    fill: none; stroke: currentColor; stroke-width: 1.8;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  /* 아직 안 한 단계는 아이콘도 흐리게 (이름과 같은 정도로 물러나 보이게) */
+  .pipeItem.todo .pipeIcon { opacity: .45; }
   .pipeItem .name { font-size: 13px; font-weight: 500; color: var(--ink); }
   .pipeItem.todo .name { color: var(--ink3); }
   .pipeItem.current .name { color: var(--ink); display: inline-flex; align-items: center; }
@@ -560,7 +570,7 @@
   }
 
   @media (max-width: 420px) {
-    body { padding: 18px 10px 48px; }
+    body { padding: 12px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
     /* 좁은 화면에서도 카테고리 이름은 잘리지 않아야 한다. 나머지 열은 내용에 맞춰
        (실측: 시작 시간 56px · 이전 기록 71px · 메모 18px) 줄이고 남는 폭을 이름에 준다. */
@@ -569,7 +579,7 @@
 
   /* 웹(데스크톱) 버전: 모바일 카드 구성을 2열로 재배치 */
   @media (min-width: 900px) {
-    body { padding: 48px 32px 80px; align-items: flex-start; }
+    body { padding: 28px 32px 80px; align-items: flex-start; }
     .page {
       max-width: 980px;
       display: grid;
@@ -955,7 +965,10 @@ function renderPipeline(data) {
   const lastTouchedIndex = progress.lastTouchedIndex;
 
   const groups = {};
-  cats.forEach((c, i) => { (groups[c.group] = groups[c.group] || []).push({ name: c.name, index: i }); });
+  cats.forEach((c, i) => { (groups[c.group] = groups[c.group] || []).push({ name: c.name, symbolName: c.symbolName, index: i }); });
+
+  // 아이콘 색은 카테고리 칩·작업 기록과 같은 그룹 색을 따른다.
+  const iconColorVar = makeGroupColorVar(data);
 
   let html = '';
   for (const groupName of Object.keys(groups)) {
@@ -964,7 +977,7 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      return `<div class="pipeItem ${cls}" style="--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     html += `
       <div class="pipeGroup">
