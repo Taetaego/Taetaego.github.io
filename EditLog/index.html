@@ -34,6 +34,7 @@
     --grp-1: #34e0b0;
     --grp-2: #5ab8f0;
     --grp-3: #f2b84a;
+    --grp-4: #b39cf0;
   }
   html[data-theme="light"] {
     --bg: #f2f6f5;
@@ -56,6 +57,7 @@
     --grp-1: #0f9b78;
     --grp-2: #1a7fb8;
     --grp-3: #a3690c;
+    --grp-4: #6a4fbf;
   }
   @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
@@ -79,6 +81,7 @@
     --grp-1: #34e0b0;
       --grp-2: #5ab8f0;
       --grp-3: #f2b84a;
+      --grp-4: #b39cf0;
     }
   }
   * { box-sizing: border-box; }
@@ -284,7 +287,7 @@
   .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
   .cardMeta { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   .pipeCard { display: flex; flex-direction: column; gap: 16px; }
-  #pipelineBody { display: flex; flex-direction: column; gap: 22px; }
+  #pipelineBody { display: flex; flex-direction: column; gap: 14px; }
   .pipeGroup { display: flex; flex-direction: column; gap: 8px; }
   .pipeGroupTitle { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent2); }
   .pipeList { position: relative; display: flex; flex-direction: column; }
@@ -861,7 +864,7 @@ function makeGroupColorVar(data) {
   (data.allCategories || []).forEach(c => { groupByCat[c.name] = c.group; });
   return (catName) => {
     const gi = groupNames.indexOf(groupByCat[catName]);
-    return gi < 0 ? '' : `--rowc:var(--grp-${Math.min(gi, 2) + 1});`;
+    return gi < 0 ? '' : `--rowc:var(--grp-${Math.min(gi, 3) + 1});`;
   };
 }
 
