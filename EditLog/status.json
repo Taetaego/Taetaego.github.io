@@ -16,7 +16,7 @@
       "group" : "컷 편집",
       "name" : "2차 세부 컷편집",
       "symbolName" : "scissors",
-      "weight" : 1
+      "weight" : 2
     },
     {
       "group" : "중간 작업",
@@ -164,7 +164,7 @@
     }
   ],
   "entryCount" : 12,
-  "lastUpdate" : "2026-09-02T14:28:03Z",
+  "lastUpdate" : "2026-09-02T14:28:13Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
