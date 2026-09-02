@@ -1805,6 +1805,82 @@ function initNightMeteors() {
   schedule();
 }
 
+/* ==========================================================================
+   버튼 이펙트 효과음 — 외부 음원 없이 Web Audio API로 그때그때 합성한다.
+   AudioContext는 브라우저 자동재생 정책 때문에 사용자 클릭(제스처) 안에서
+   처음 만들어야 하므로, 버튼 클릭 함수 안에서만 부른다(자동/야간 효과에는 안 붙인다).
+   ========================================================================== */
+let actx = null;
+function audioCtx() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!actx) actx = new AC();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+/** 순음 하나. freqEnd를 주면 그 음까지 지수적으로 미끄러진다(휘파람·슝 소리). */
+function sfxTone(freq, dur, opts = {}) {
+  const ctx = audioCtx();
+  if (!ctx) return;
+  const { type = 'sine', gain = 0.16, freqEnd, delay = 0 } = opts;
+  const t0 = ctx.currentTime + delay;
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(Math.max(1, freq), t0);
+  if (freqEnd != null) osc.frequency.exponentialRampToValueAtTime(Math.max(1, freqEnd), t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(gain, t0 + Math.min(0.02, dur * 0.3));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(t0); osc.stop(t0 + dur + 0.03);
+}
+
+/** 백색소음 한 덩이(필터로 색을 입힌다) — 파열음·바람·비 소리에 쓴다. */
+function sfxNoise(dur, opts = {}) {
+  const ctx = audioCtx();
+  if (!ctx) return;
+  const { gain = 0.12, filterFreq = 1200, filterType = 'lowpass', delay = 0 } = opts;
+  const t0 = ctx.currentTime + delay;
+  const n = Math.max(1, Math.floor(ctx.sampleRate * dur));
+  const buffer = ctx.createBuffer(1, n, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < n; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = filterType; filter.frequency.value = filterFreq;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(gain, t0 + Math.min(0.05, dur * 0.2));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+  src.start(t0); src.stop(t0 + dur + 0.03);
+}
+
+/** 🌧️ 비 — 저역대 백색소음을 rampUp/Down에 맞춰 길게 깐다. */
+function sfxRainAmbience(durMs, rampUpMs, rampDownMs) {
+  const ctx = audioCtx();
+  if (!ctx) return;
+  const loopLen = ctx.sampleRate * 2;
+  const buffer = ctx.createBuffer(1, loopLen, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < loopLen; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buffer; src.loop = true;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 2000;
+  const g = ctx.createGain();
+  const t0 = ctx.currentTime, dur = durMs / 1000, up = rampUpMs / 1000, down = rampDownMs / 1000;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.09, t0 + up);
+  g.gain.setValueAtTime(0.09, t0 + Math.max(up, dur - down));
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+  src.start(t0); src.stop(t0 + dur + 0.05);
+}
+
 /** 누를 때마다 폭죽 하나씩 (프로젝트 완료 여부와 무관). */
 function launchFireworks() {
   if (reducedMotion) return;
@@ -1812,6 +1888,9 @@ function launchFireworks() {
   if (!f) return;
   f.rocket();
   f.kick();
+  sfxTone(300, 0.5, { type: 'sine', freqEnd: 950, gain: 0.11 });
+  sfxNoise(0.3, { gain: 0.22, filterFreq: 2500, filterType: 'bandpass', delay: 0.42 });
+  sfxTone(160, 0.22, { type: 'triangle', freqEnd: 55, gain: 0.14, delay: 0.42 });
 }
 
 function celebrate(targetPct, isCompleted) {
@@ -2025,6 +2104,16 @@ function currentSeason() {
 
 function fx2Spawn(kind) {
   if (reducedMotion) return;
+  if (kind === 'petal') {
+    // 잎이 흩날리는 바스락거림 + 부드러운 화음
+    sfxNoise(0.7, { gain: 0.05, filterFreq: 2600, filterType: 'bandpass' });
+    sfxTone(880, 0.5, { type: 'sine', gain: 0.05 });
+    sfxTone(1174, 0.6, { type: 'sine', gain: 0.04, delay: 0.12 });
+  } else {
+    // 반딧불이가 하나씩 켜지듯 높은 음이 차례로
+    [1760, 2093, 2637, 3136].forEach((hz, i) =>
+      sfxTone(hz, 0.28, { type: 'sine', gain: 0.045, delay: i * 0.13 }));
+  }
   const f = initFx2();
   const W = window.innerWidth, H = window.innerHeight;
   const rand = (a, b) => a + Math.random() * (b - a);
@@ -2099,12 +2188,19 @@ function meteorShower() {
   if (reducedMotion) return;
   const f = initFx();
   if (!f) return;
-  for (let i = 0; i < 7; i++) setTimeout(() => { f.meteor(); f.kick(); }, i * 420 + Math.random() * 220);
+  for (let i = 0; i < 7; i++) {
+    const d = i * 420 + Math.random() * 220;
+    setTimeout(() => { f.meteor(); f.kick(); }, d);
+    sfxNoise(0.4, { gain: 0.05, filterFreq: 3200, filterType: 'highpass', delay: d / 1000 });
+    sfxTone(1400, 0.35, { type: 'sine', freqEnd: 350, gain: 0.035, delay: d / 1000 });
+  }
 }
 
 /** ✂️ 화면 컷편집 */
 function fxScreenCut() {
   if (reducedMotion) return;
+  sfxNoise(0.05, { gain: 0.22, filterFreq: 4500, filterType: 'highpass' });
+  sfxTone(180, 0.05, { type: 'square', gain: 0.09 });
   const page = document.querySelector('.page');
   const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
   if (line && line.animate) line.animate([
@@ -2124,6 +2220,8 @@ function fxScreenCut() {
 /** 🎰 숫자 슬롯 — 화면의 숫자가 돌다 멈춘다 */
 function fxSlot() {
   if (reducedMotion) return;
+  for (let i = 0; i < 7; i++) sfxTone(680, 0.035, { type: 'square', gain: 0.06, delay: i * 0.09 });
+  sfxTone(520, 0.16, { type: 'triangle', freqEnd: 260, gain: 0.11, delay: 0.65 });
   const digits = '0123456789';
   // 날짜·경과 시간·비율까지, 화면에서 숫자가 들어간 잎 요소를 모두 돌린다.
   const targets = [...document.querySelectorAll('.page *')]
@@ -2216,6 +2314,7 @@ function fxRain() {
   const DUR = 8000, RAMP_UP = 900, RAMP_DOWN = 1500;
   let cv = document.getElementById('rainCanvas');
   if (cv) { cv._until = performance.now() + DUR; return; }
+  sfxRainAmbience(DUR, RAMP_UP, RAMP_DOWN);
   cv = document.createElement('canvas');
   cv.id = 'rainCanvas';
   cv.setAttribute('aria-hidden', 'true');
