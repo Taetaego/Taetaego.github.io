@@ -64,7 +64,7 @@
       "group" : "중간 작업",
       "name" : "최종 검수",
       "symbolName" : "checkmark.seal",
-      "weight" : 2
+      "weight" : 1
     },
     {
       "group" : "마무리 작업",
@@ -164,7 +164,7 @@
     }
   ],
   "entryCount" : 12,
-  "lastUpdate" : "2026-09-02T14:28:13Z",
+  "lastUpdate" : "2026-09-02T14:28:26Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
