@@ -216,11 +216,12 @@
   .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
   .hero:active { transform: scale(0.995); }
   .donut { position: relative; flex: none; width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  /* 단계 수만큼 링을 눈금으로 쪼개, 숫자를 읽지 않아도 몇 칸 왔는지 보이게 한다.
-     --seg(=360/전체단계)는 renderSummary에서 넣어준다. */
+  /* 링을 단계별로 쪼개, 숫자를 읽지 않아도 몇 칸 왔는지 보이게 한다. 단계마다 비중이
+     다르므로 눈금 간격도 비중에 비례한다 — 눈금 그라디언트는 renderSummary가 만들어
+     --ticks로 넣어준다 (비중이 다 같으면 예전처럼 균등하게 나뉜다). */
   .donut::after {
     content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
-    background: repeating-conic-gradient(from 0deg, var(--bg) 0deg 1.6deg, transparent 1.6deg var(--seg, 30deg));
+    background: var(--ticks, none);
   }
   /* 도넛 뒤에서 숨쉬는 발광. '진행중' 표시(labelFade)와 같은 1.8초 주기·같은 위상이라
      둘이 동시에 가장 밝아진다. */
@@ -402,7 +403,7 @@
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
-  .logHead { display: grid; grid-template-columns: 1fr 56px 60px 76px; gap: 6px; padding-bottom: 8px; padding-left: 10px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .logHead { display: grid; grid-template-columns: 1fr 56px 60px 76px var(--memoCol, 0px); gap: 6px; padding-bottom: 8px; padding-left: 10px; border-bottom: 1px solid var(--line2); font-size: 10px; font-weight: 600; color: var(--ink3); }
   .logHead .c { text-align: center; line-height: 1.25; }
   .logHead .lbl { position: relative; display: inline-block; }
   .logHead .infoBtn {
@@ -424,7 +425,7 @@
   /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
      .logHead에 같은 크기의 padding-left를 줘서 헤더와 열이 어긋나지 않게 맞춘다. */
   .logRow {
-    display: grid; grid-template-columns: 1fr 56px 60px 76px; gap: 6px; align-items: center;
+    display: grid; grid-template-columns: 1fr 56px 60px 76px var(--memoCol, 0px); gap: 6px; align-items: center;
     padding: 7px 0 7px 7px; border-top: 1px solid var(--line);
     border-left: 3px solid var(--rowc, transparent);
     transition: background-color .2s ease, box-shadow .2s ease;
@@ -462,6 +463,31 @@
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
   .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
   .logRow .gap { font-size: 10px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
+
+  /* 메모: 있는 행에만 아이콘이 뜨고, 누르면 말풍선으로 펼쳐진다. */
+  .logRow .memo { position: relative; display: flex; justify-content: center; }
+  .memoBtn {
+    display: flex; width: 15px; height: 15px; padding: 0; border: none; background: none;
+    cursor: pointer; color: var(--rowc, var(--ink3));
+  }
+  .memoBtn svg {
+    width: 100%; height: 100%;
+    fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  @media (hover: hover) {
+    .memoBtn:hover { color: var(--accent2); }
+  }
+  .memoPopover {
+    display: none; position: absolute; top: 20px; right: 0; z-index: 20;
+    width: max-content; max-width: 210px;
+    background: var(--surface); border: 1px solid var(--line2); border-radius: 12px; padding: 9px 11px;
+    font-size: 10.5px; line-height: 1.5; color: var(--ink2); text-align: left; font-weight: 400;
+    white-space: pre-wrap; word-break: keep-all;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+  }
+  .memoPopover.open { display: block; }
+
   .empty { text-align: center; color: var(--ink2); font-size: 14px; padding: 20px 0; }
 
   /* ===== 04 커서 스포트라이트 ===== */
@@ -528,6 +554,9 @@
   @media (max-width: 420px) {
     body { padding: 18px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
+    /* 좁은 화면에서도 카테고리 이름은 잘리지 않아야 한다. 나머지 열은 내용에 맞춰
+       (실측: 시작 시간 56px · 이전 기록 71px · 메모 18px) 줄이고 남는 폭을 이름에 준다. */
+    .logHead, .logRow { grid-template-columns: 1fr 50px 58px 64px var(--memoCol, 0px); }
   }
 
   /* 웹(데스크톱) 버전: 모바일 카드 구성을 2열로 재배치 */
@@ -558,7 +587,7 @@
     .donut .in { width: 98px; height: 98px; }
     .donut .pct { font-size: 28px; }
     /* 넓어진 폭을 카테고리 열이 독차지하지 않도록 재배분 (모바일은 고정폭 유지) */
-    .logHead, .logRow { grid-template-columns: minmax(110px, 1.5fr) 1fr 1.1fr 1.2fr; }
+    .logHead, .logRow { grid-template-columns: minmax(110px, 1.5fr) 1fr 1.1fr 1.2fr var(--memoCol, 0px); }
   }
 </style>
 </head>
@@ -840,7 +869,32 @@ function pipelineProgress(data) {
   // 마지막으로 손댄 단계는 지금 '진행 중'이라 아직 완료가 아니다.
   // 프로젝트가 완료 처리됐을 때만 그 단계까지 완료로 센다.
   const done = Math.max(data.status === 'completed' ? lastTouchedIndex + 1 : lastTouchedIndex, 0);
-  return { done, total: cats.length, pct: Math.round((done / cats.length) * 100), lastTouchedIndex };
+  // %는 단계 개수가 아니라 앱에서 정한 비중의 합으로 낸다 (비중이 없던 예전 데이터는 전부 1).
+  const totalWeight = cats.reduce((sum, c) => sum + catWeight(c), 0);
+  const doneWeight = cats.slice(0, done).reduce((sum, c) => sum + catWeight(c), 0);
+  const pct = totalWeight > 0 ? Math.round((doneWeight / totalWeight) * 100) : 0;
+  return { done, total: cats.length, pct, lastTouchedIndex, weights: cats.map(catWeight), totalWeight };
+}
+
+/** 카테고리 비중. 값이 없거나 이상하면 1로 본다. */
+function catWeight(c) {
+  const w = Number(c && c.weight);
+  return Number.isFinite(w) && w > 0 ? w : 1;
+}
+
+/** 도넛 링의 단계 구분 눈금. 각 칸의 폭이 그 단계의 비중에 비례한다. */
+function donutTicks(progress) {
+  if (!progress || !progress.totalWeight) return 'none';
+  const TICK = 1.6;   // 눈금 두께(도)
+  const stops = ['transparent 0deg'];
+  let acc = 0;
+  progress.weights.slice(0, -1).forEach((w) => {
+    acc += (w / progress.totalWeight) * 360;
+    const a = (acc - TICK / 2).toFixed(2), b = (acc + TICK / 2).toFixed(2);
+    stops.push(`transparent ${a}deg`, `var(--bg) ${a}deg`, `var(--bg) ${b}deg`, `transparent ${b}deg`);
+  });
+  stops.push('transparent 360deg');
+  return `conic-gradient(from 0deg, ${stops.join(',')})`;
 }
 
 function renderSummary(cardEl, data) {
@@ -862,7 +916,7 @@ function renderSummary(cardEl, data) {
 
   cardEl.style.display = '';
   cardEl.innerHTML = `
-    <div class="donut" id="donutGauge" style="--seg: ${progress && progress.total ? (360 / progress.total).toFixed(3) : 30}deg; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
+    <div class="donut" id="donutGauge" style="--ticks: ${donutTicks(progress)}; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
       <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
       <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
@@ -1406,12 +1460,16 @@ function renderLog(data) {
   }
   const sortedDayKeys = Array.from(byDay.keys()).sort((a, b) => new Date(a) - new Date(b));
 
+  // 메모가 하나도 없으면 열 자체를 접으므로 머리글도 같이 뺀다 (0폭에 글자만 남아 뭉개지지 않게).
+  const hasMemo = entries.some(e => (e.memo ?? '').trim());
+
   let html = `
     <div class="logHead">
       <span>카테고리</span>
       <span class="c"><span class="lbl">시작 시점<button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button><div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지<br>편집되어 있었는지 (영상 길이 기준)</div></span></span>
       <span class="c"><span class="lbl">시작 시간<button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button><div class="infoPopover">이 작업을 실제로 시작한 시각</div></span></span>
       <span class="c">이전 기록<br>으로부터</span>
+      ${hasMemo ? '<span class="c memoHead">메모</span>' : '<span></span>'}
     </div>
   `;
   let rowIndex = 0;
@@ -1431,6 +1489,11 @@ function renderLog(data) {
       const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
+      const memo = (e.memo ?? '').trim();
+      // 메모가 있을 때만 아이콘을 두고, 누르면 그 자리에 말풍선으로 펼친다.
+      const memoCell = memo
+        ? `<span class="memo"><button type="button" class="memoBtn" aria-label="메모 보기">${MEMO_SVG}</button><div class="memoPopover">${escapeHtml(memo)}</div></span>`
+        : '<span class="memo"></span>';
 
       html += `
         <div class="logRow" style="${rowColorVar(e.category)}--r:${rowIndex++}">
@@ -1438,14 +1501,42 @@ function renderLog(data) {
           <span class="at">${length || '—'}</span>
           <span class="time mono" data-ts="${escapeHtml(e.timestamp)}">${time}</span>
           <span class="gap">${elapsed || '—'}</span>
+          ${memoCell}
         </div>
       `;
     }
   }
-  document.getElementById('logBody').innerHTML = html;
+  const logBody = document.getElementById('logBody');
+  logBody.innerHTML = html;
+  // 메모가 하나도 없으면 열을 0으로 접는다 — 좁은 화면에서 카테고리 이름 자리를 뺏지 않게.
+  logBody.style.setProperty('--memoCol', hasMemo ? '20px' : '0px');
   document.getElementById('logCard').style.display = '';
   initInfoPopover();
+  initMemoPopover();
   paintTimes();
+}
+
+/** 메모 아이콘 (작업 기록 표의 카테고리 아이콘과 같은 선 스타일). */
+const MEMO_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5.5 3.6h13a1 1 0 0 1 1 1v11.2l-4.6 4.6H5.5a1 1 0 0 1-1-1V4.6a1 1 0 0 1 1-1z"/><path d="M19.4 15.7h-4.5v4.6"/><path d="M8 8.4h8M8 12h5.5"/></svg>';
+
+/** 메모 아이콘을 누르면 그 자리에 말풍선으로 펼친다 (한 번에 하나만 열린다). */
+function initMemoPopover() {
+  const body = document.getElementById('logBody');
+  if (!body) return;
+  body.addEventListener('click', (e) => {
+    const btn = e.target.closest('.memoBtn');
+    if (!btn) return;
+    e.stopPropagation();
+    const popover = btn.nextElementSibling;
+    const wasOpen = popover.classList.contains('open');
+    document.querySelectorAll('.memoPopover.open').forEach((p) => p.classList.remove('open'));
+    if (!wasOpen) popover.classList.add('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.memo')) {
+      document.querySelectorAll('.memoPopover.open').forEach((p) => p.classList.remove('open'));
+    }
+  });
 }
 
 function initInfoPopover() {
