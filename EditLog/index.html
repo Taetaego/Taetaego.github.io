@@ -1330,8 +1330,10 @@ function initTodoPoke() {
     dot.classList.add('rechecked');
   });
 
+  // 끝낸 단계에도 한마디 — 회고조 문구가 많아 완료 쪽에도 잘 맞는다.
+  // (진행중 단계는 이름 옆 '진행중' 표시와 겹쳐서 뺀다.)
   body.addEventListener('click', (ev) => {
-    const item = ev.target.closest('.pipeItem.todo');
+    const item = ev.target.closest('.pipeItem.todo, .pipeItem.done');
     if (!item) return;
 
     const name = item.querySelector('.name');
