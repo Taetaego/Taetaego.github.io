@@ -68,7 +68,7 @@
     },
     {
       "group" : "마무리 작업",
-      "name" : "썸네일\/제목 기획",
+      "name" : "썸네일 & 업로드",
       "symbolName" : "text.below.photo",
       "weight" : 2
     }
@@ -200,7 +200,7 @@
     }
   ],
   "entryCount" : 17,
-  "lastUpdate" : "2026-09-02T18:18:29Z",
+  "lastUpdate" : "2026-09-03T07:31:08Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
