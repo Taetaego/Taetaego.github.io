@@ -74,7 +74,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "지도\/위치 추가",
+  "currentStage" : "배경음 & 검수",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -211,10 +211,18 @@
       "elapsed" : "1시간 47분",
       "timestamp" : "2026-09-03T14:10:58Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "15분",
+      "memo" : "왜인지 모르겠는데 항상 배경음 선택할때만 되면 거부감이 듬, 뭐가 좋은 배경음인지 신경써야해서 그런듯",
+      "timestamp" : "2026-09-03T14:26:25Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 19,
-  "lastUpdate" : "2026-09-03T14:11:02Z",
+  "entryCount" : 20,
+  "lastUpdate" : "2026-09-03T14:27:09Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
