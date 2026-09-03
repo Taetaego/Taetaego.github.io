@@ -74,7 +74,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "하이라이트 배치",
+  "currentStage" : "지도\/위치 추가",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -197,10 +197,17 @@
       "elapsed" : "37분",
       "timestamp" : "2026-09-02T18:18:27Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "18시간 5분",
+      "timestamp" : "2026-09-03T12:23:51Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 17,
-  "lastUpdate" : "2026-09-03T07:31:08Z",
+  "entryCount" : 18,
+  "lastUpdate" : "2026-09-03T12:23:54Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
