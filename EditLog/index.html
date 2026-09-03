@@ -353,12 +353,12 @@
 
   /* 아직 안 한 단계를 누르면 흔들리며 한마디 한다 */
   .pipeItem.todo, .pipeItem.done { cursor: pointer; }
-  /* 완료 단계를 누르면 체크가 다시 찍히듯 튀고 초록 파문이 퍼진다 */
+  /* 완료 단계를 누르면 체크가 다시 찍히듯 튀고, 그 단계의 그룹 색으로 파문이 퍼진다 */
   .pipeItem.done .dot { position: relative; }
   .pipeItem.done .dot.rechecked { animation: checkPop .45s cubic-bezier(.2,1.5,.4,1); }
   .pipeItem.done .dot.rechecked::after {
     content: ""; position: absolute; inset: -2px; border-radius: 50%;
-    border: 2px solid var(--accent); animation: checkRing .55s ease-out forwards;
+    border: 2px solid var(--rowc, var(--accent)); animation: checkRing .55s ease-out forwards;
   }
   @keyframes checkPop {
     0% { transform: scale(1); } 35% { transform: scale(0.72); } 100% { transform: scale(1); }
