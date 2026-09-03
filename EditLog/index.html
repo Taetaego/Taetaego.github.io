@@ -382,7 +382,11 @@
     position: absolute; right: 0; top: 50%; z-index: 2;
     max-width: 62%; text-align: right; white-space: normal; word-break: keep-all;
     font-size: 10px; font-weight: 700; line-height: 1.45;
-    color: var(--warn); background: var(--warn-soft); padding: 3px 9px; border-radius: 11px;
+    /* 진행중(--warn)과 헷갈리지 않게, 그 단계의 카테고리 색을 옅게 깔고 글자는
+       본문 색으로 둔다 — 작은 글씨라 대비를 확보하는 쪽이 안전하다. */
+    color: var(--ink);
+    background: color-mix(in srgb, var(--rowc, var(--ink3)) 22%, var(--surface2));
+    padding: 3px 9px; border-radius: 11px;
     opacity: 0; pointer-events: none; transform: translateY(-50%);
   }
   .pipeItem .poke.show { animation: pokeIn 2.6s ease forwards; }
