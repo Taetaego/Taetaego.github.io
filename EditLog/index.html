@@ -89,10 +89,14 @@
      키보드 포커스 표시는 그대로 두려고 outline은 건드리지 않는다. */
   html { background: var(--bg); -webkit-tap-highlight-color: transparent; }
   /* 누르는 게 목적인 요소들은 드래그·길게 누르기로 글자가 선택돼 하이라이트가
-     남지 않게 한다. 작업 기록 표는 값을 복사할 수 있어야 하므로 제외. */
-  .catChip, .pipeItem, #dayCard, .fireBtn, .themeToggle {
+     남지 않게 한다. 작업 기록 표는 값을 복사할 수 있어야 하므로 제외.
+     단계 목록은 항목뿐 아니라 담는 상자까지 막아야 한다 — 항목만 막으면 살짝 끌린
+     클릭이 바깥 상자에서 선택을 시작해 점이 파랗게(OS 선택색) 번쩍인다. */
+  .catChip, .pipeItem, #pipelineBody, #dayCard, .fireBtn, .themeToggle {
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
+  /* 그래도 어딘가 선택이 생기면 OS 기본 파란색 대신 페이지 색으로 보이게 한다. */
+  ::selection { background: var(--soft); color: var(--ink); }
   body {
     margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink);
     font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
