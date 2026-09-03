@@ -1488,6 +1488,11 @@ function renderLog(data) {
   const entries = data.entries || [];
   if (entries.length === 0) return;
 
+  // 카테고리별 "시작 시점 기록" 여부. 예전 스냅샷엔 이 값이 없으므로 그때는 전부 기록으로 본다.
+  const tracksByCat = {};
+  (data.allCategories || []).forEach(c => { tracksByCat[c.name] = c.tracksLength !== false; });
+  const tracksLength = (name) => tracksByCat[name] !== false;
+
   const catOrder = {};
   (data.allCategories || []).forEach((c, i) => { catOrder[c.name] = i; });
   const noCategoryOrder = (data.allCategories || []).length;
@@ -1528,7 +1533,8 @@ function renderLog(data) {
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
       const catIcon = categorySvg(e.categorySymbol);
-      const length = escapeHtml(normalizeLength(e.videoLength) ?? '');
+      // 시작 시점을 안 쓰는 단계(앱 카테고리 설정에서 끔)는 값이 있어도 —로 둔다.
+      const length = tracksLength(e.category) ? escapeHtml(normalizeLength(e.videoLength) ?? '') : '';
       const time = formatTimeOnly(e.timestamp);
       const elapsed = escapeHtml(e.elapsed ?? '');
       const memo = (e.memo ?? '').trim();
