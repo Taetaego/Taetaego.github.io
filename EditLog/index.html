@@ -1028,11 +1028,11 @@ function counter(raw, fmt) {
 function renderStats(data) {
   let stats = '';
   stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength), null, counter(data.originalLength, 'duration'));
-  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '—', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null], counter(data.detailCutLength, 'duration'));
+  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '-', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null], counter(data.detailCutLength, 'duration'));
   const finalSubs = [];
   if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
   if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '—', finalSubs, counter(data.finalLength, 'duration'));
+  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '-', finalSubs, counter(data.finalLength, 'duration'));
   stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null, null, counter(data.entryCount, 'count'));
 
   document.getElementById('statsBody').innerHTML = stats;
@@ -1546,9 +1546,9 @@ function renderLog(data) {
       html += `
         <div class="logRow" style="${rowColorVar(e.category)}--r:${rowIndex++}">
           <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
-          <span class="at">${length || '—'}</span>
+          <span class="at">${length || '-'}</span>
           <span class="time mono" data-ts="${escapeHtml(e.timestamp)}">${time}</span>
-          <span class="gap">${elapsed || '—'}</span>
+          <span class="gap">${elapsed || '-'}</span>
           ${memoCell}
         </div>
       `;
