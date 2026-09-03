@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "배경음 & 검수",
+  "currentStage" : "최종 검수",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -238,10 +238,17 @@
       "elapsed" : "58분",
       "timestamp" : "2026-09-03T15:25:17Z",
       "videoLength" : "8"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "43분",
+      "timestamp" : "2026-09-03T16:08:41Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 21,
-  "lastUpdate" : "2026-09-03T15:25:24Z",
+  "entryCount" : 22,
+  "lastUpdate" : "2026-09-03T16:08:44Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
