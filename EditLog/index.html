@@ -133,7 +133,11 @@
      그 속성을 붙잡고 있어서 hover의 translateY(-2px)가 먹지 않는다. */
   @keyframes cardIn { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
-  @keyframes warnGlow { 0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 rgba(232,181,74,0.45); } 50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px rgba(232,181,74,0.75); } }
+  /* 발광도 --warn을 따라가야 한다 (앰버를 박아두면 진행중 색만 바뀌고 빛은 그대로 남는다) */
+  @keyframes warnGlow {
+    0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 color-mix(in srgb, var(--warn) 45%, transparent); }
+    50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px color-mix(in srgb, var(--warn) 75%, transparent); }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   }
@@ -1603,12 +1607,15 @@ function escapeHtml(str) {
 
 /* ===== 하이라이트 색 (LIGHT/DARK 옆에서 선택) =====
    테마별로 대비가 맞는 짝을 미리 정해두고 --accent / --accent2 / --soft만 덮어쓴다. */
+/* warn은 '진행중' 표식 색. 하이라이트 색과 겹치면 "지금 여기"가 묻히므로 짝을 따로 정한다.
+   카테고리 색(색상환 163·202·247·289°)과도 겹치지 않게 따뜻한 쪽에서 고른다.
+   앰버·코랄은 기본 앰버와 너무 가까워(0°·31°) 각각 분홍·라임으로 바꾼다. */
 const ACCENTS = {
-  mint:     { label: '민트',   dark: ['#34e0b0', '#8ff0d4'], light: ['#0f9b78', '#076b52'] },
-  blue:     { label: '블루',   dark: ['#5ab8f0', '#a9dcfb'], light: ['#1a7fb8', '#0d5580'] },
-  amber:    { label: '앰버',   dark: ['#f2b84a', '#ffd98a'], light: ['#a3690c', '#7a4d06'] },
-  coral:    { label: '코랄',   dark: ['#ff8f6b', '#ffbfa8'], light: ['#c8502a', '#93361a'] },
-  lavender: { label: '라벤더', dark: ['#b39cf0', '#d6c8ff'], light: ['#6a4fbf', '#4b3590'] },
+  mint:     { label: '민트',   dark: ['#34e0b0', '#8ff0d4'], light: ['#0f9b78', '#076b52'], warn: ['#f2b84a', '#a3690c'] },
+  blue:     { label: '블루',   dark: ['#5ab8f0', '#a9dcfb'], light: ['#1a7fb8', '#0d5580'], warn: ['#f2b84a', '#a3690c'] },
+  amber:    { label: '앰버',   dark: ['#f2b84a', '#ffd98a'], light: ['#a3690c', '#7a4d06'], warn: ['#ff7a94', '#c01e46'] },
+  coral:    { label: '코랄',   dark: ['#ff8f6b', '#ffbfa8'], light: ['#c8502a', '#93361a'], warn: ['#dfe84a', '#6f7a06'] },
+  lavender: { label: '라벤더', dark: ['#b39cf0', '#d6c8ff'], light: ['#6a4fbf', '#4b3590'], warn: ['#f2b84a', '#a3690c'] },
 };
 
 function accentSoft(hex, a) {
@@ -1630,6 +1637,10 @@ function applyAccent(key) {
   root.setProperty('--accent2', accent2);
   root.setProperty('--soft', accentSoft(accent, isLight ? 0.12 : 0.14));
   root.setProperty('--tg-on-ink', accent2);
+  // '진행중' 색은 하이라이트마다 짝지어 둔 값으로 (같은 색이 되어 묻히지 않게).
+  const warn = (ACCENTS[key].warn || ['#f2b84a', '#a3690c'])[isLight ? 1 : 0];
+  root.setProperty('--warn', warn);
+  root.setProperty('--warn-soft', accentSoft(warn, isLight ? 0.14 : 0.16));
   // 카테고리 그룹 색(--grp-1~4)은 건드리지 않는다 — 하이라이트 색을 바꿔도
   // 단계·칩·기록 행의 카테고리 색은 그대로 유지돼야 한다.
   // 캔버스 이펙트가 즉시 새 색을 쓰게 캐시를 버린다 (선언보다 먼저 불릴 수 있어 방어)
