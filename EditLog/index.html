@@ -949,31 +949,14 @@ function catWeight(c) {
   return Number.isFinite(w) && w > 0 ? w : 1;
 }
 
-/** 12시 방향에 남겨 둘 틈(도). 100%여도 링이 완전히 닫히지 않게 시작·끝을 떨어뜨린다. */
-const DONUT_GAP = 9;
-const DONUT_START = DONUT_GAP / 2;
-const DONUT_SPAN = 360 - DONUT_GAP;
-
-/** 진행률(%)을 12시의 틈을 비운 링 그라디언트로. */
-function donutRing(pct) {
-  const p = Math.max(0, Math.min(100, Number(pct) || 0));
-  const end = (DONUT_START + DONUT_SPAN * (p / 100)).toFixed(2);
-  const tail = (360 - DONUT_START).toFixed(2);
-  return `conic-gradient(transparent 0 ${DONUT_START}deg,`
-       + ` var(--accent) ${DONUT_START}deg ${end}deg,`
-       + ` var(--surface2) ${end}deg ${tail}deg,`
-       + ` transparent ${tail}deg 360deg)`;
-}
-
-/** 도넛 링의 단계 구분 눈금. 각 칸의 폭이 그 단계의 비중에 비례한다.
-    링과 같은 범위(12시 틈을 뺀 구간)에 놓아야 칸 경계가 어긋나지 않는다. */
+/** 도넛 링의 단계 구분 눈금. 각 칸의 폭이 그 단계의 비중에 비례한다. */
 function donutTicks(progress) {
   if (!progress || !progress.totalWeight) return 'none';
   const TICK = 1.6;   // 눈금 두께(도)
   const stops = ['transparent 0deg'];
-  let acc = DONUT_START;
+  let acc = 0;
   progress.weights.slice(0, -1).forEach((w) => {
-    acc += (w / progress.totalWeight) * DONUT_SPAN;
+    acc += (w / progress.totalWeight) * 360;
     const a = (acc - TICK / 2).toFixed(2), b = (acc + TICK / 2).toFixed(2);
     stops.push(`transparent ${a}deg`, `var(--bg) ${a}deg`, `var(--bg) ${b}deg`, `transparent ${b}deg`);
   });
@@ -1000,7 +983,7 @@ function renderSummary(cardEl, data) {
 
   cardEl.style.display = '';
   cardEl.innerHTML = `
-    <div class="donut" id="donutGauge" style="--ticks: ${donutTicks(progress)}; background: ${donutRing(0)}">
+    <div class="donut" id="donutGauge" style="--ticks: ${donutTicks(progress)}; background: conic-gradient(var(--accent) 0 0%, var(--surface2) 0% 100%)">
       <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
       <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
@@ -1907,7 +1890,7 @@ function startAmbientFireworks() {
 function setSparkAngle(pct) {
   const spark = document.getElementById('donutSpark');
   if (!spark) return;
-  spark.style.setProperty('--spark', (DONUT_START + DONUT_SPAN * (pct / 100)).toFixed(2) + 'deg');
+  spark.style.setProperty('--spark', (pct * 3.6).toFixed(2) + 'deg');
   spark.style.display = pct > 2 ? '' : 'none';
 }
 
@@ -1918,7 +1901,7 @@ function runGauge(target, fire, keepNumber = false) {
   if (!el || !dn) return;
   if (reducedMotion) {
     el.textContent = target + '%';
-    dn.style.background = donutRing(target);
+    dn.style.background = `conic-gradient(var(--accent) 0 ${target}%, var(--surface2) ${target}% 100%)`;
     setSparkAngle(target);
     return;
   }
@@ -1929,7 +1912,7 @@ function runGauge(target, fire, keepNumber = false) {
     const e = 1 - Math.pow(1 - k, 3);
     const p = e * target;
     if (!keepNumber) el.textContent = Math.round(p) + '%';
-    dn.style.background = donutRing(p);
+    dn.style.background = `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
     // 반짝이는 점을 게이지가 끝나는 각도에 붙여 같이 돌린다 (100% = 360도).
     setSparkAngle(p);
     if (k < 1) { requestAnimationFrame(tick); return; }
