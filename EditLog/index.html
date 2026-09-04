@@ -2113,7 +2113,10 @@ function startLiquid() {
     ctx.clearRect(0, 0, s, s);
     ctx.save();
     ctx.beginPath(); ctx.arc(s / 2, s / 2, s / 2 - 1, 0, 6.284); ctx.clip();
-    const level = s * (1 - fill);
+    // 파도가 수면 위아래로 AMP만큼 출렁이므로, 수위를 그만큼 넉넉한 범위에 매핑한다.
+    // 그러지 않으면 100%에서 꼭대기에 파도 골만큼 빈 틈이 남고, 0%에서도 마루가 비쳐 보인다.
+    const AMP = 9;
+    const level = (s + 2 * AMP) * (1 - fill) - AMP;
     const grad = ctx.createLinearGradient(0, level, 0, s);
     grad.addColorStop(0, acc);
     grad.addColorStop(1, hexAlpha(acc, 0.45));
