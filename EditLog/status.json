@@ -259,10 +259,17 @@
       "elapsed" : "13시간 3분",
       "timestamp" : "2026-09-04T05:40:10Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "4시간 35분",
+      "timestamp" : "2026-09-04T10:15:16Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 24,
-  "lastUpdate" : "2026-09-04T05:40:13Z",
+  "entryCount" : 25,
+  "lastUpdate" : "2026-09-04T10:15:18Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "in_progress"
