@@ -477,13 +477,17 @@
     animation-delay: calc(var(--r, 0) * 40ms);
   }
   @media (hover: hover) {
-    .logRow:hover { background: var(--soft); box-shadow: 0 2px 10px rgba(0,0,0,0.18); }
+    /* 하이라이트도 그 행의 카테고리 색으로 (테마 강조색이 아니라). */
+    .logRow:hover {
+      background: color-mix(in srgb, var(--rowc, var(--ink3)) 14%, transparent);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+    }
   }
   /* 마지막 "완료" 기록만 금색으로 — 다 끝났다는 게 표에서 바로 보이게.
      hover 규칙보다 뒤에 둬야 금색 배경(background-image)이 hover에 지워지지 않는다. */
   .logRow.done { background-image: linear-gradient(90deg, var(--gold-soft), transparent 68%); }
   @media (hover: hover) {
-    .logRow.done:hover { background-color: var(--soft); }
+    .logRow.done:hover { background-color: color-mix(in srgb, var(--gold) 18%, transparent); }
   }
   .logRow.done .catName {
     font-weight: 800;
@@ -1996,7 +2000,8 @@ function celebrate(targetPct, isCompleted) {
   const fire = !reducedMotion && isCompleted;
   if (fire) {
     const f = initFx();
-    if (f) [0, 250, 550, 900, 1250, 1650, 2100, 2550, 3050, 3600, 4200, 4800].forEach(d => setTimeout(() => { f.rocket(); f.kick(); }, d));
+    // 처음 축포는 너무 몰아치지 않게 — 12발에서 7발로 줄이고 간격도 살짝 넓혔다.
+    if (f) [0, 400, 900, 1500, 2200, 3000, 3900].forEach(d => setTimeout(() => { f.rocket(); f.kick(); }, d));
     startAmbientFireworks();
   }
   runGauge(targetPct, fire);
