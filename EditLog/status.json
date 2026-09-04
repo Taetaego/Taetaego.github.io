@@ -85,8 +85,9 @@
       "weight" : 2
     }
   ],
+  "completedAt" : "2026-09-04T11:03:38Z",
   "createdAt" : "2026-08-27T13:35:26Z",
-  "currentStage" : "썸네일 & 업로드",
+  "currentStage" : "완료",
   "detailCutLength" : "24",
   "detailCutRatio" : 8.823529411764707,
   "entries" : [
@@ -266,11 +267,21 @@
       "elapsed" : "4시간 35분",
       "timestamp" : "2026-09-04T10:15:16Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "48분",
+      "timestamp" : "2026-09-04T11:03:38Z",
+      "videoLength" : "22"
     }
   ],
-  "entryCount" : 25,
-  "lastUpdate" : "2026-09-04T10:15:18Z",
+  "entryCount" : 26,
+  "finalLength" : "22",
+  "finalRatioVsDetailCut" : 91.66666666666666,
+  "finalRatioVsOriginal" : 8.088235294117647,
+  "lastUpdate" : "2026-09-04T11:03:38Z",
   "originalLength" : "4:32",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
-  "status" : "in_progress"
+  "status" : "completed"
 }
