@@ -737,7 +737,6 @@
         <span class="fxRowLabel">🌤️ 날씨</span>
         <div class="fxRowBtns">
           <button type="button" class="fireBtn" id="btnPour">🌧️ 비</button>
-          <button type="button" class="fireBtn" id="btnRainbow">🌈 무지개</button>
           <button type="button" class="fireBtn" id="btnSnow">❄️ 눈</button>
           <button type="button" class="fireBtn" id="btnTornado">🌪️ 토네이도</button>
           <button type="button" class="fireBtn" id="btnWave">🌊 파도</button>
@@ -757,7 +756,6 @@
           <button type="button" class="fireBtn" id="btnPrGarden">🦋 나비</button>
           <button type="button" class="fireBtn" id="btnFly">✨ 반딧불이</button>
           <button type="button" class="fireBtn" id="btnPrGlitter">✨ 반짝이</button>
-          <button type="button" class="fireBtn" id="btnPhBubble">🫧 버블</button>
           <button type="button" class="fireBtn" id="btnPrHeart">💖 하트</button>
         </div>
       </div>
@@ -2732,7 +2730,7 @@ function fxRainbow() {
   natRun('rainbow', 5, () => (ctx, w, h, t, k) => {
     const ap = Math.min(1, k / 0.3) * Math.min(1, (1 - k) / 0.3);
     if (ap <= 0) return;
-    const cx = w * 0.5, cy = h * 1.06, R = Math.max(w, h) * 0.78;
+    const cx = w * 0.5, cy = h * 0.96, R = Math.max(w, h) * 0.78;
     const bw = Math.max(5, h * 0.017);
     ctx.lineWidth = bw;
     ['#ff5f6d', '#ff9f43', '#ffd93d', '#4cd964', '#34aadc', '#4a5bd8', '#a259d8'].forEach((c, i) => {
@@ -2786,16 +2784,14 @@ function fxWave() {
     const spray = [];
     return (ctx, w, h, t, k, f) => {
       const rise = k < 0.42 ? Math.pow(k / 0.42, 0.75) : Math.max(0, 1 - Math.pow((k - 0.42) / 0.58, 1.5));
-      // 가장 높이 차올라도 위쪽 30%는 남긴다 — 예전엔 화면 밖(-0.06h)까지 올라와
-      // 본문도 다른 이펙트도 통째로 가려져서 다 멈춘 것처럼 보였다.
-      const top = h * (1.04 - 0.74 * rise);
+      const top = h * (1.04 - 1.1 * rise);
       const surf = (x) => top
         + Math.sin((x / w) * 6.284 * 1.5 + t * 3.1) * h * 0.032
         + Math.sin((x / w) * 6.284 * 3.2 - t * 2.2) * h * 0.014;
       const grd = ctx.createLinearGradient(0, top, 0, h);
-      grd.addColorStop(0, 'rgba(74,168,196,0.42)');
-      grd.addColorStop(0.35, 'rgba(24,104,148,0.55)');
-      grd.addColorStop(1, 'rgba(8,48,78,0.66)');
+      grd.addColorStop(0, 'rgba(74,168,196,0.78)');
+      grd.addColorStop(0.35, 'rgba(24,104,148,0.88)');
+      grd.addColorStop(1, 'rgba(8,48,78,0.95)');
       ctx.fillStyle = grd;
       ctx.beginPath(); ctx.moveTo(0, h + 4);
       for (let x = 0; x <= w; x += 6) ctx.lineTo(x, surf(x));
@@ -3243,8 +3239,10 @@ function fxHaunting() {
   natRun('hrHaunt', 5, () => (ctx, w, h, t, k) => {
     const a = natFade(k, 0.24, 0.14);
     ctx.globalAlpha = a * 0.62; ctx.fillStyle = '#05040a'; ctx.fillRect(0, 0, w, h);
-    const lunge = Math.max(0, Math.min(1, (k - 0.55) / 0.32));
-    const S = Math.min(w, h) * (0.16 + Math.pow(lunge, 2.4) * 1.5);
+    // 덮쳐오는 구간을 짧게(0.32→0.22), 가속 곡선도 완만하게(2.4→1.7) 해서
+    // 마지막에 몰아서 커지는 대신 훨씬 빠르게 달려든다.
+    const lunge = Math.max(0, Math.min(1, (k - 0.55) / 0.22));
+    const S = Math.min(w, h) * (0.16 + Math.pow(lunge, 1.7) * 1.5);
     const cx = w * 0.5 + Math.sin(t * 1.4) * w * 0.03;
     const cy = h * 0.46;
     ctx.save(); ctx.translate(cx, cy);
@@ -3301,7 +3299,7 @@ function fxStarlight() {
     let P = null;
     return (ctx, w, h, t, k, f) => {
       if (!P) P = Array.from({ length: 90 }, () => ({
-        x: NR(0, w), y: NR(0, h), r: NR(4, 12), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
+        x: NR(0, w), y: NR(0, h), r: NR(9, 24), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
       }));
       const a = natFade(k, 0.3, 0.24);
       ctx.globalCompositeOperation = 'lighter';
@@ -3451,7 +3449,6 @@ function initFxButtons() {
   wire('btnSakura', fxSakura);
   wire('btnPour', fxDownpour);
   wire('btnTornado', fxTornado);
-  wire('btnRainbow', fxRainbow);
   wire('btnVolcano', fxVolcano);
   wire('btnWave', fxWave);
   wire('btnAurora', fxAurora);
@@ -3466,7 +3463,6 @@ function initFxButtons() {
   wire('btnSpUfo', fxUfo);
 
   // 🌀 물리 · 화면 전체
-  wire('btnPhBubble', fxBubbles);
 
   // 👻 공포
   wire('btnHrHaunt', fxHaunting);
