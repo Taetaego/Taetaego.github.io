@@ -738,11 +738,11 @@
         <div class="fxRowBtns">
           <button type="button" class="fireBtn" id="btnPour">🌧️ 비</button>
           <button type="button" class="fireBtn" id="btnSnow">❄️ 눈</button>
-          <button type="button" class="fireBtn" id="btnTornado">🌪️ 토네이도</button>
-          <button type="button" class="fireBtn" id="btnWave">🌊 파도</button>
-          <button type="button" class="fireBtn" id="btnVolcano">🌋 화산</button>
           <button type="button" class="fireBtn" id="btnAurora">🌌 오로라</button>
           <button type="button" class="fireBtn" id="btnPrStarlight">🌟 별빛</button>
+          <button type="button" class="fireBtn" id="btnWave">🌊 파도</button>
+          <button type="button" class="fireBtn" id="btnVolcano">🌋 화산</button>
+          <button type="button" class="fireBtn" id="btnTornado">🌪️ 토네이도</button>
         </div>
       </div>
 
@@ -3299,7 +3299,7 @@ function fxStarlight() {
     let P = null;
     return (ctx, w, h, t, k, f) => {
       if (!P) P = Array.from({ length: 90 }, () => ({
-        x: NR(0, w), y: NR(0, h), r: NR(9, 24), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
+        x: NR(0, w), y: NR(0, h), r: NR(7, 19), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
       }));
       const a = natFade(k, 0.3, 0.24);
       ctx.globalCompositeOperation = 'lighter';
