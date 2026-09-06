@@ -585,8 +585,8 @@
   .donut.liquid .pct { text-shadow: 0 1px 8px rgba(0,0,0,.45); }
   .donut.liquid .steps { color: var(--ink2); text-shadow: 0 1px 6px rgba(0,0,0,.4); }
 
-  #cometCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9998; }
-  #fx2Canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; }
+  #cometCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; }
+  #fx2Canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
   /* ===== 29 텔레타이프 현재 단계 ===== */
 
@@ -596,9 +596,11 @@
 
   /* 화면 전체에 잠깐 얹는 이펙트 레이어 (되감기 · 컷 · 색보정) */
   .fxLayer { position: fixed; pointer-events: none; z-index: 10001; }
-  #galaxyCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
-  /* 자연·날씨 이펙트 전용 레이어 (여러 장면이 한 캔버스를 같이 쓴다) */
-  #natCanvas { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10001; }
+  #galaxyCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  /* 자연·날씨 이펙트 전용 레이어 (여러 장면이 한 캔버스를 같이 쓴다).
+     크기는 100vw가 아니라 100%로 잡는다 — 100vw는 세로 스크롤바 폭까지 세어서
+     캔버스가 보이는 화면보다 넓어지고, 그만큼 한가운데(w/2)가 오른쪽으로 밀린다. */
+  #natCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10001; }
 
   /* 08 카드 유리 반사 — 반사광이 천천히 스친다 */
   /* 13 러닝 라이트 — 완료 카드 테두리를 빛이 한 바퀴 */
@@ -664,7 +666,7 @@
 </style>
 </head>
 <body>
-  <canvas id="fxCanvas" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999"></canvas>
+  <canvas id="fxCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
@@ -2407,16 +2409,37 @@ function initGalaxy(data) {
     { r: 1.5, depth: 1.0, spd: 0.014, share: 0.15 },
   ].map((L) => ({ ...L, stars: Array.from({ length: 130 }, () => ({ x: Math.random(), y: Math.random(), tw: Math.random() * 6.28 })) }));
 
-  let px = 0.5, py = 0.5;
+  let px = 0.5, py = 0.5;      // 커서 위치 (원본)
+  let sx = 0.5, sy = 0.5;      // 별이 실제로 따라가는, 부드럽게 뒤쫓는 값
   window.addEventListener('pointermove', (ev) => {
     px = ev.clientX / window.innerWidth; py = ev.clientY / window.innerHeight;
   }, { passive: true });
 
+  let last = 0;
   const draw = (now) => {
+    // 흐르는 속도를 '프레임당'이 아니라 '초당'으로 잡는다. 무거운 이펙트가 돌면
+    // 프레임이 듬성해지는데, 프레임당으로 재면 그때마다 별이 느려졌다 빨라졌다 하고
+    // 긴 멈춤 뒤엔 튀어 보인다. dt는 0.05초로 잘라 한 번에 확 건너뛰지도 않게 한다.
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 0.016;
+    last = now;
     const f = fitCanvas(cv);
     if (!f) { requestAnimationFrame(draw); return; }
     const { w, h, ctx } = f;
     ctx.clearRect(0, 0, w, h);
+
+    // 시차(parallax)도 커서를 바로 따라가면 마우스를 옮길 때마다 별이 툭 끊긴다.
+    const ease = Math.min(1, dt * 6);
+    sx += (px - sx) * ease; sy += (py - sy) * ease;
+
+    // 그려지든 말든 모든 별을 똑같이 흘려보낸다 — 그려지는 개수가 달라져도
+    // 뒤쪽 별이 옛날 자리에서 갑자기 나타나지 않게.
+    for (const L of layers) {
+      for (const st of L.stars) {
+        st.x += L.spd * dt;
+        if (st.x > 1.05) st.x = -0.05;
+      }
+    }
+
     // 낮에는 은하수를 접는다
     if (!document.hidden && isNightNow()) {
       const idleHours = Math.max(0, (Date.now() - lastTs) / 3600000);
@@ -2429,11 +2452,9 @@ function initGalaxy(data) {
       ctx.fillRect(0, 0, w, h);
       layers.forEach((L) => {
         const n = Math.round(L.stars.length * L.share * fill * 2.2);
-        const ox = (px - 0.5) * -30 * L.depth, oy = (py - 0.5) * -20 * L.depth;
+        const ox = (sx - 0.5) * -30 * L.depth, oy = (sy - 0.5) * -20 * L.depth;
         for (let i = 0; i < n && i < L.stars.length; i++) {
           const st = L.stars[i];
-          st.x += L.spd / 60;
-          if (st.x > 1.05) st.x = -0.05;
           ctx.globalAlpha = (0.25 + 0.55 * (0.5 + 0.5 * Math.sin(now / 900 + st.tw))) * (0.5 + L.depth * 0.5);
           ctx.fillStyle = '#eef5f2';
           ctx.beginPath(); ctx.arc(st.x * w + ox, st.y * h + oy, L.r, 0, 6.284); ctx.fill();
@@ -2890,11 +2911,11 @@ function fxMagicCircle() {
     // 눈금선(ticks)·보조 원(rings)·도형(shapes)은 각각 절반 가까이 덜어냈다.
     // [반지름, 글자 수, 방향, 속도, 글자 크기, 등장 시점]
     const bands = [
-      { r: 0.97, n: 40, dir: 1, sp: 0.22, size: 0.058, chars: pick(40), d: 0.16 },
-      { r: 0.85, n: 32, dir: -1, sp: 0.3, size: 0.05, chars: pick(32), d: 0.28 },
-      { r: 0.66, n: 24, dir: 1, sp: 0.42, size: 0.068, chars: pick(24), d: 0.4 },
-      { r: 0.48, n: 18, dir: -1, sp: 0.54, size: 0.056, chars: pick(18), d: 0.52 },
-      { r: 0.3, n: 12, dir: 1, sp: 0.66, size: 0.062, chars: pick(12), d: 0.64 },
+      { r: 0.97, n: 40, dir: 1, sp: 0.22, size: 0.079, chars: pick(40), d: 0.16 },
+      { r: 0.85, n: 32, dir: -1, sp: 0.3, size: 0.07, chars: pick(32), d: 0.28 },
+      { r: 0.66, n: 24, dir: 1, sp: 0.42, size: 0.092, chars: pick(24), d: 0.4 },
+      { r: 0.48, n: 18, dir: -1, sp: 0.54, size: 0.078, chars: pick(18), d: 0.52 },
+      { r: 0.3, n: 12, dir: 1, sp: 0.66, size: 0.086, chars: pick(12), d: 0.64 },
     ];
     const ticks = [
       { r: 0.92, n: 48, len: 0.028, dir: -1, sp: 0.16, wd: 0.8, d: 0.14 },
@@ -2996,7 +3017,7 @@ function fxMagicCircle() {
           // 안쪽 원·십자 선 대신 문자를 하나 새긴다.
           ctx.save();
           ctx.fillStyle = acc; ctx.globalAlpha = a * oN * 0.8;
-          ctx.font = `${(nr * 1.25).toFixed(1)}px "Noto Sans Symbols","Segoe UI Symbol",serif`;
+          ctx.font = `${(nr * 1.5).toFixed(1)}px "Noto Sans Symbols","Segoe UI Symbol",serif`;
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText(nodes.chars[j], 0, ny);
           ctx.restore();
