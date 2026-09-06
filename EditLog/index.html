@@ -3011,31 +3011,23 @@ function fxMagicCircle() {
         ctx.restore();
       }
 
+      // 가운데 빛 하나로 끝낸다 — 진이 완성되면 커졌다 작아졌다 숨을 쉬고,
+      // 마지막 1.1초에 그 빛이 그대로 화면을 삼킬 만큼 부풀어 오른다.
+      // (밖으로 퍼지는 흰 링은 없앴다 — 커지는 건 가운데 빛 하나뿐이어야 한다.)
       if (done > 0) {
-        const pulse = 0.75 + Math.sin(t * 4.5) * 0.25;
-        const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.24 * pulse + 1);
-        cg.addColorStop(0, hexAlpha('#ffffff', 0.55 * a * done));
-        cg.addColorStop(0.4, hexAlpha(acc, 0.32 * a * done));
+        const pulse = 1 + Math.sin(t * 3.2) * 0.45;
+        const eo = burst > 0 ? 1 - Math.pow(1 - burst, 3) : 0;
+        // 터질 땐 화면 대각선을 넘어설 때까지 키운다.
+        const CR = R * 0.24 * pulse + eo * Math.hypot(w, h) * 0.8 + 1;
+        // 커지는 동안에도 한동안 밝기를 유지하다 끝에서 빠르게 사그라든다.
+        const lv = done * (burst > 0 ? 1 - Math.pow(burst, 2.4) : a);
+        const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, CR);
+        cg.addColorStop(0, hexAlpha('#ffffff', (0.55 + 0.4 * eo) * lv));
+        cg.addColorStop(0.22, hexAlpha(acc, (0.32 + 0.22 * eo) * lv));
+        cg.addColorStop(0.6, hexAlpha(acc, (0.05 + 0.12 * eo) * lv));
         cg.addColorStop(1, hexAlpha(acc, 0));
         ctx.globalAlpha = 1; ctx.fillStyle = cg;
-        ctx.beginPath(); ctx.arc(cx, cy, R * 0.24 * pulse + 1, 0, 6.284); ctx.fill();
-      }
-
-      if (burst > 0) {
-        const eo = 1 - Math.pow(1 - burst, 2.6);
-        const fade = 1 - burst;
-        const BR = R * (0.24 + eo * 2.4);
-        const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, BR);
-        bg.addColorStop(0, hexAlpha('#ffffff', 0.9 * fade));
-        bg.addColorStop(0.22, hexAlpha(acc, 0.5 * fade));
-        bg.addColorStop(0.6, hexAlpha(acc, 0.14 * fade));
-        bg.addColorStop(1, hexAlpha(acc, 0));
-        ctx.globalAlpha = 1; ctx.fillStyle = bg;
-        ctx.fillRect(cx - BR, cy - BR, BR * 2, BR * 2);
-        ctx.globalAlpha = fade * 0.7;
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = Math.max(1, 16 * fade);
-        ctx.beginPath(); ctx.arc(cx, cy, R * (0.2 + eo * 2.9), 0, 6.284); ctx.stroke();
+        ctx.fillRect(cx - CR, cy - CR, CR * 2, CR * 2);
       }
     };
   });
