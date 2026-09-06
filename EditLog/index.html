@@ -429,7 +429,10 @@
   .statTile:has(.value[data-count]):active { transform: scale(0.985); }
   .statTile .label { font-size: 10px; font-weight: 600; color: var(--ink3); }
   .statTile .value { font-size: 17px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
-  .statTile .sub { font-size: 10px; line-height: 1.4; color: var(--ink2); }
+  .statTile .sub { font-size: 10px; line-height: 1.3; color: var(--ink2); }
+  /* '원본 대비'·'컷편집 대비'처럼 보조 줄이 연달아 올 때만 간격을 좁힌다
+     (라벨-값-첫 줄 사이 여백은 그대로 둔다). */
+  .statTile .sub + .sub { margin-top: -4px; }
 
   /* 카테고리별 기록 */
   .catCard { display: flex; flex-direction: column; gap: 12px; }
