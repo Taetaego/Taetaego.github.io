@@ -3224,23 +3224,31 @@ function fxHaunting() {
 
 /** 💖 하트 폭발 — 눌러준 자리에서 하트가 톡 터진다. */
 function fxHeartBurst() {
-  natRun('prHeart', 5, () => {
+  natRun('prHeart', 7, () => {
     const COLORS = ['#ff6b81', '#ff9fb5', '#ffd0dc', '#ff4f6d'];
     let P = null;
     return (ctx, w, h, t, k, f) => {
       const p0 = ptr();
       if (!P) P = Array.from({ length: 46 }, () => {
-        const ang = NR(-Math.PI * 0.95, -Math.PI * 0.05), sp = NR(3, 12);
+        // 옆으로 흩어지기보다 위로 솟구치게 — 바로 위(-90°)를 중심으로 한 삼각분포라
+        // 가운데일수록 많이 몰린다. 그래야 한참 올라갔다 하트로 다시 떨어진다.
+        const ang = -Math.PI / 2 + (Math.random() + Math.random() - 1) * Math.PI * 0.42;
+        const sp = NR(6, 13);
         return {
           x: p0.x, y: p0.y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-          r: NR(7, 18), rot: NR(-0.4, 0.4), spin: NR(-0.05, 0.05), life: 1, dec: NR(0.005, 0.011),
+          r: NR(7, 18), rot: NR(-0.4, 0.4), spin: NR(-0.05, 0.05), life: 1, dec: NR(0.0018, 0.0034),
+          ph: NR(0, 6.28), sw: NR(0.35, 1.0),
           c: COLORS[Math.floor(Math.random() * COLORS.length)],
         };
       });
-      const a = natFade(k, 0.12, 0.3);
+      const a = natFade(k, 0.08, 0.16);
       P = P.filter((p) => {
-        p.vy += 0.13 * f; p.vx *= 0.995;
-        p.x += p.vx * f; p.y += p.vy * f; p.rot += p.spin * f; p.life -= p.dec * f;
+        p.vy += 0.17 * f; p.vx *= 0.995;
+        // 떨어질 땐 종단속도를 낮게 둬서 곤두박질치지 않고 하늘거리며 내려온다.
+        if (p.vy > 3.2) p.vy = 3.2;
+        p.ph += 0.06 * f;
+        p.x += (p.vx + Math.sin(p.ph) * p.sw) * f;
+        p.y += p.vy * f; p.rot += p.spin * f; p.life -= p.dec * f;
         if (p.life <= 0) return false;
         ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
         ctx.globalAlpha = a * Math.min(1, p.life * 1.6);
