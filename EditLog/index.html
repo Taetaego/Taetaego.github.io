@@ -751,7 +751,7 @@
       <div class="fxRow">
         <span class="fxRowLabel">🌿 자연</span>
         <div class="fxRowBtns">
-          <button type="button" class="fireBtn" id="btnSakura">🌸 벚꽃</button>
+          <button type="button" class="fireBtn" id="btnSakura">🌸 꽃잎</button>
           <button type="button" class="fireBtn" id="btnPrPetalStorm">🌸 꽃잎 폭풍</button>
           <button type="button" class="fireBtn" id="btnLeaf">🍂 낙엽</button>
           <button type="button" class="fireBtn" id="btnPrBloom">🌺 꽃</button>
@@ -3258,7 +3258,7 @@ function fxStarlight() {
     let P = null;
     return (ctx, w, h, t, k, f) => {
       if (!P) P = Array.from({ length: 90 }, () => ({
-        x: NR(0, w), y: NR(0, h), r: NR(7, 19), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
+        x: NR(0, w), y: NR(0, h), r: NR(5, 14), ph: NR(0, 6.28), sp: NR(0.5, 1.6), d: Math.random() * 0.55,
       }));
       const a = natFade(k, 0.3, 0.24);
       ctx.globalCompositeOperation = 'lighter';
