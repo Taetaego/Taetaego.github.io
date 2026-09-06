@@ -435,25 +435,25 @@
   .statTile .sub + .sub { margin-top: -4px; }
 
   /* 카테고리별 기록 */
-  .catCard { display: flex; flex-direction: column; gap: 12px; }
-  .catChips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catCard { display: flex; flex-direction: column; gap: 10px; }
+  .catChips { display: flex; flex-wrap: wrap; gap: 5px; }
   /* 누르면 흔들린다 (파이프라인 단계와 같은 poke 키프레임 재사용) */
-  .catChip { display: flex; align-items: center; gap: 7px; padding: 6px 10px 6px 7px; border-radius: 99px; background: var(--surface2); font-size: 11.5px; font-weight: 500; cursor: pointer; }
+  .catChip { display: flex; align-items: center; gap: 5px; padding: 4px 8px 4px 5px; border-radius: 99px; background: var(--surface2); font-size: 10.5px; font-weight: 500; cursor: pointer; }
   .catChip.shook { animation: poke .4s ease; }
   /* 작업 기록 표와 같은 그룹 색을 쓰는 단색 아이콘 (배경은 그 색을 옅게 깐다). */
   .catChip .mk {
-    width: 18px; height: 18px; border-radius: 5px;
+    width: 15px; height: 15px; border-radius: 4px;
     display: flex; align-items: center; justify-content: center;
     color: var(--rowc, var(--ink3));
     background: var(--soft);
     background: color-mix(in srgb, currentColor 16%, transparent);
   }
   .catChip .mk svg {
-    width: 12px; height: 12px;
+    width: 10px; height: 10px;
     fill: none; stroke: currentColor; stroke-width: 1.9;
     stroke-linecap: round; stroke-linejoin: round;
   }
-  .catChip .cnt { font: 500 10px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  .catChip .cnt { font: 500 9px/1 'JetBrains Mono', monospace; color: var(--ink3); }
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
@@ -956,6 +956,12 @@ const SYMBOL_SVG = {
   'flag': '<path d="M5 21.2V3.6"/><path d="M5 4.6h11l-1.6 3.6L16 12H5z"/>',
   'trophy': '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.4H4.4v1.4a3.4 3.4 0 0 0 3 3.4"/><path d="M17 5.4h2.6v1.4a3.4 3.4 0 0 1-3 3.4"/><path d="M12 14v3.4"/><path d="M8.6 20.4h6.8l-.7-3H9.3z"/>',
 };
+
+/** 작업 기록 표와 카테고리별 기록 칩이 같은 아이콘을 쓰도록 한 곳에서 정한다.
+    "완료"는 카테고리 목록에 없어 앱이 flag를 보내지만, 끝을 알리는 기록이라 트로피로 바꾼다. */
+function entryIconName(category, symbolName) {
+  return category === '완료' ? 'trophy' : symbolName;
+}
 
 function categorySvg(symbolName) {
   const inner = SYMBOL_SVG[symbolName] || '<circle cx="12" cy="12" r="7.5"/>';
@@ -1466,7 +1472,7 @@ function renderCategoryChips(data) {
 
   const chipColorVar = makeGroupColorVar(data);
   const html = Array.from(counts.entries()).map(([name, count]) => {
-    const icon = categorySvg(symbolByName.get(name));
+    const icon = categorySvg(entryIconName(name, symbolByName.get(name)));
     return `<span class="catChip" style="${chipColorVar(name)}"><span class="mk">${icon}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
   }).join('');
 
@@ -1616,7 +1622,7 @@ function renderLog(data) {
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
       const isDone = e.category === '완료';
-      const catIcon = categorySvg(isDone ? 'trophy' : e.categorySymbol);
+      const catIcon = categorySvg(entryIconName(e.category, e.categorySymbol));
       // 시작 시점을 안 쓰는 단계(앱 카테고리 설정에서 끔)는 값이 있어도 —로 둔다.
       const length = tracksLength(e.category) ? escapeHtml(normalizeLength(e.videoLength) ?? '') : '';
       const time = formatTimeOnly(e.timestamp);
