@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-06T12:47:44Z",
-  "currentStage" : "자막 추출",
+  "currentStage" : "1차 컷편집",
   "entries" : [
     {
       "category" : "자막 추출",
@@ -94,10 +94,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-09-06T12:47:44Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "0분",
+      "timestamp" : "2026-09-06T12:47:52Z",
+      "videoLength" : "43"
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-09-06T12:47:44Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-09-06T12:48:00Z",
   "originalLength" : "5:00",
   "projectTopic" : "와카치나",
   "status" : "in_progress"
