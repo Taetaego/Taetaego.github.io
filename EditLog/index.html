@@ -788,7 +788,6 @@ async function main() {
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
   initFxButtons();
-  initNightMeteors();
   initAmbientLayers();
   initSkyTop();
   initComet();
@@ -1925,8 +1924,8 @@ function initFx() {
 
 function startAmbientFireworks() {
   if (fxTimer || reducedMotion) return;
-  // 완료 축하는 12초쯤 이어지다 스스로 멈춘다 (히어로 카드를 다시 누르면 또 12초).
-  const until = performance.now() + 12000;
+  // 완료 축하는 8초쯤 이어지다 스스로 멈춘다 (히어로 카드를 다시 누르면 또 8초).
+  const until = performance.now() + 8000;
   fxTimer = setInterval(() => {
     if (performance.now() >= until) { clearInterval(fxTimer); fxTimer = null; return; }
     if (document.hidden) return;
@@ -2022,21 +2021,6 @@ function isNightNow() {
   if (rise === null || set === null) return false;
   const t = now.getTime();
   return t < rise || t >= set;
-}
-
-/** 밤에만, 10~20초에 한 번씩 별똥별이 스쳐 간다. 낮이 되면 저절로 멈춘다. */
-function initNightMeteors() {
-  if (reducedMotion) return;
-  const schedule = () => {
-    setTimeout(() => {
-      if (!document.hidden && isNightNow()) {
-        const f = initFx();
-        if (f) { f.meteor(); f.kick(); }
-      }
-      schedule();
-    }, 10000 + Math.random() * 10000);
-  };
-  schedule();
 }
 
 /** 누를 때마다 폭죽 하나씩 (프로젝트 완료 여부와 무관). */
@@ -2435,7 +2419,7 @@ function initGalaxy(data) {
     if (!f) { requestAnimationFrame(draw); return; }
     const { w, h, ctx } = f;
     ctx.clearRect(0, 0, w, h);
-    // 낮에는 은하수를 접는다 (별똥별과 같은 규칙)
+    // 낮에는 은하수를 접는다
     if (!document.hidden && isNightNow()) {
       const idleHours = Math.max(0, (Date.now() - lastTs) / 3600000);
       const fill = Math.min(1, 0.12 + idleHours / 72);   // 3일 방치 = 가득
