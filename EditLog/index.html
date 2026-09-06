@@ -2487,7 +2487,11 @@ function natLayer() {
   cv.id = 'natCanvas';
   cv.setAttribute('aria-hidden', 'true');
   document.body.appendChild(cv);
-  nat = { cv, scenes: [], loop: null, last: 0 };
+  nat = { cv, scenes: [], loop: null, last: 0, beat: 0 };
+  // 다른 탭에 갔다 오면 rAF가 끊겨 있을 수 있다 — 돌아오는 즉시 루프를 되살린다.
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && nat && nat.scenes.length) natTick(nat);
+  });
   return nat;
 }
 
@@ -2499,9 +2503,20 @@ function natRun(kind, dur, make) {
   // 다만 버튼을 마구 눌렀을 때 한없이 많아지지 않게 장면 수는 상한을 둔다.
   if (f.scenes.length >= 24) f.scenes.shift();
   f.scenes.push({ kind, t0: performance.now(), dur, draw: make() });
-  if (f.loop) return;
-  f.last = performance.now();
+  natTick(f);
+}
+
+/** 루프가 진짜 돌고 있을 때만 그냥 두고, 멈춰 있으면 다시 살린다.
+    예전엔 loop에 id만 남고 콜백은 안 오는 상태(탭 전환으로 rAF가 끊기거나,
+    한 장면이 예외를 던져 step이 통째로 죽는 경우)가 되면 `if (f.loop) return`에
+    걸려 그 뒤로 어떤 버튼을 눌러도 아무것도 안 나왔다. */
+function natTick(f) {
+  // beat는 마지막으로 프레임이 실제로 돈 시각. 최근이 아니면 루프는 죽은 것으로 본다.
+  if (f.loop && performance.now() - f.beat < 400) return;
+  if (f.loop) cancelAnimationFrame(f.loop);
+  f.last = f.beat = performance.now();
   const step = (now) => {
+    f.beat = now;
     const fit = fitCanvas(f.cv);
     if (!fit) { f.loop = requestAnimationFrame(step); return; }
     const { w, h, ctx } = fit;
@@ -2509,12 +2524,18 @@ function natRun(kind, dur, make) {
     f.last = now;
     ctx.clearRect(0, 0, w, h);
     f.scenes = f.scenes.filter((s) => {
-      const t = (now - s.t0) / 1000;
+      // rAF가 주는 now는 '프레임이 시작된 시각'이라, 그 프레임 안에서 눌린 버튼의
+      // t0(performance.now())보다 조금 이전일 수 있다. 음수 t를 그대로 넘기면
+      // k가 음수가 되고, 파도처럼 Math.pow(k, 0.75)를 쓰는 장면에서 NaN이 나와
+      // createLinearGradient가 던지고 루프 전체가 멈춘다.
+      const t = Math.max(0, (now - s.t0) / 1000);
       if (t > s.dur) return false;
       ctx.save();
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
-      s.draw(ctx, w, h, t, t / s.dur, frame);
+      // 한 장면이 터져도 나머지 장면과 루프는 살아 있어야 한다.
+      try { s.draw(ctx, w, h, t, t / s.dur, frame); }
+      catch (err) { ctx.restore(); return false; }
       ctx.restore();
       return true;
     });
