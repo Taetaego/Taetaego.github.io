@@ -262,8 +262,8 @@
     box-shadow: 0 24px 60px rgba(0,0,0,0.45); overflow: hidden;
   }
   .modalHead { display: flex; align-items: center; gap: 10px; padding: 15px 18px 13px; border-bottom: 1px solid var(--line); }
-  .modalTitle { font-size: 14px; font-weight: 700; }
-  .modalMeta { font-size: 10px; color: var(--ink3); margin-right: auto; }
+  .modalTitle { font-size: 15.5px; font-weight: 700; }
+  .modalMeta { font-size: 11px; color: var(--ink3); margin-right: auto; }
   .modalClose { border: none; background: none; cursor: pointer; color: var(--ink3); font-size: 13px; padding: 2px 4px; }
   @media (hover: hover) { .modalClose:hover { color: var(--ink); } }
   .modalBody { overflow: auto; padding: 8px; }
@@ -272,16 +272,16 @@
   .pastRow {
     display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center;
     width: 100%; text-align: left; border: none; cursor: pointer;
-    padding: 11px 12px; border-radius: 12px; background: none; color: inherit;
+    padding: 13px 13px; border-radius: 12px; background: none; color: inherit;
     border-left: 3px solid transparent;
   }
   @media (hover: hover) { .pastRow:hover { background: var(--surface2); } }
   .pastRow.current { border-left-color: var(--accent); background: var(--soft); }
-  .pastRow .pastTopic { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pastRow .pastState { font-size: 9.5px; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+  .pastRow .pastTopic { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pastRow .pastState { font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 99px; white-space: nowrap; }
   .pastRow .pastState.done { background: var(--soft); color: var(--accent2); }
   .pastRow .pastState.wip { background: var(--warn-soft); color: var(--warn); }
-  .pastRow .pastFacts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 10.5px; color: var(--ink3); }
+  .pastRow .pastFacts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--ink3); }
   .pastRow .pastFacts b { font-weight: 600; color: var(--ink2); }
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
@@ -988,18 +988,11 @@ function renderPastList() {
   }
   body.innerHTML = list.map((p) => {
     const done = p.status === 'completed';
+    // 목록에는 소요 시간 · 완료 날짜 · 직전 완료 후 간격만. 나머지는 눌러서 들어가면 다 있다.
     const facts = [];
-    facts.push(`<span>시작 <b>${formatDateShort(p.createdAt)}</b></span>`);
-    if (p.completedAt) facts.push(`<span>완료 <b>${formatDateShort(p.completedAt)}</b></span>`);
     if (p.totalDuration != null) facts.push(`<span>소요 <b>${formatSpan(p.totalDuration)}</b></span>`);
+    if (p.completedAt) facts.push(`<span>완료 <b>${formatDateShort(p.completedAt)}</b></span>`);
     if (p.daysSincePreviousCompletion != null) facts.push(`<span>직전 완료 후 <b>${p.daysSincePreviousCompletion}일</b></span>`);
-    facts.push(`<span>기록 <b>${p.entryCount}개</b></span>`);
-    const lengths = [normalizeLength(p.originalLength), p.finalLength ? normalizeLength(p.finalLength) : null]
-      .filter(Boolean).join(' → ');
-    if (lengths) {
-      const pct = p.finalRatioVsOriginal != null ? ` (${Math.round(p.finalRatioVsOriginal)}%)` : '';
-      facts.push(`<span>${lengths}${pct}</span>`);
-    }
     return `
       <button type="button" class="pastRow${p.id === current ? ' current' : ''}" data-id="${escapeHtml(p.id)}">
         <span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span>
