@@ -233,7 +233,56 @@
 
   /* 상단 바 */
   .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
-  .brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+  .pastBtn {
+    border: 1px solid var(--line2); cursor: pointer; border-radius: 99px;
+    padding: 6px 11px; background: var(--surface2); color: var(--ink2);
+    font-size: 10.5px; font-weight: 600; letter-spacing: -0.01em;
+    transition: color .18s ease, border-color .18s ease, background-color .18s ease;
+  }
+  @media (hover: hover) {
+    .pastBtn:hover { color: var(--accent2); border-color: var(--accent); background: var(--soft); }
+  }
+  .pastBtn:active { transform: scale(0.97); }
+
+  /* 지난 프로젝트 목록 창 */
+  .modalBack {
+    position: fixed; inset: 0; z-index: 10050; display: flex;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+    animation: modalIn .18s ease;
+  }
+  /* 클래스의 display:flex가 브라우저 기본 [hidden] 규칙을 이겨서, 닫아둔 창이
+     처음부터 떠 있었다. 명시적으로 다시 접어준다. */
+  .modalBack[hidden] { display: none; }
+  @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    width: min(920px, 100%); max-height: min(80vh, 720px); display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line2); border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45); overflow: hidden;
+  }
+  .modalHead { display: flex; align-items: center; gap: 10px; padding: 15px 18px 13px; border-bottom: 1px solid var(--line); }
+  .modalTitle { font-size: 14px; font-weight: 700; }
+  .modalMeta { font-size: 10px; color: var(--ink3); margin-right: auto; }
+  .modalClose { border: none; background: none; cursor: pointer; color: var(--ink3); font-size: 13px; padding: 2px 4px; }
+  @media (hover: hover) { .modalClose:hover { color: var(--ink); } }
+  .modalBody { overflow: auto; padding: 8px; }
+
+  /* 목록 한 줄 */
+  .pastRow {
+    display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center;
+    width: 100%; text-align: left; border: none; cursor: pointer;
+    padding: 11px 12px; border-radius: 12px; background: none; color: inherit;
+    border-left: 3px solid transparent;
+  }
+  @media (hover: hover) { .pastRow:hover { background: var(--surface2); } }
+  .pastRow.current { border-left-color: var(--accent); background: var(--soft); }
+  .pastRow .pastTopic { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pastRow .pastState { font-size: 9.5px; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+  .pastRow .pastState.done { background: var(--soft); color: var(--accent2); }
+  .pastRow .pastState.wip { background: var(--warn-soft); color: var(--warn); }
+  .pastRow .pastFacts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 10.5px; color: var(--ink3); }
+  .pastRow .pastFacts b { font-weight: 600; color: var(--ink2); }
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
@@ -637,6 +686,14 @@
     .skyTop, #cometCanvas, .spotLayer { display: none !important; }
   }
 
+  /* 좁은 화면에선 상단 바에 자리가 모자라 제목과 버튼 글자가 줄바꿈으로 뭉갰다.
+     시계는 아래 '작업 시간대'와 겹치는 정보라 접고, 버튼은 아이콘만 남긴다. */
+  @media (max-width: 560px) {
+    .nowClock { display: none; }
+    .pastBtn { padding: 6px 9px; font-size: 12px; line-height: 1; }
+    .pastBtn .pastBtnText { display: none; }
+  }
+
   @media (max-width: 420px) {
     body { padding: 8px 10px 48px; }
     .card { padding: 16px 14px; border-radius: 20px; }
@@ -683,6 +740,7 @@
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
+        <button type="button" class="pastBtn" id="pastBtn" title="지난 프로젝트 보기" aria-label="지난 프로젝트">🗂<span class="pastBtnText"> 지난 프로젝트</span></button>
         <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">--:--</span>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
@@ -788,6 +846,18 @@
     <div class="madeBy" id="madeBy" style="display:none">Made by Taetaego</div>
   </div>
 
+  <!-- 지난 프로젝트 목록. 여기 쓰이는 projects/index.json은 이 창을 처음 열 때만 받아온다. -->
+  <div class="modalBack" id="pastModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-label="지난 프로젝트">
+      <div class="modalHead">
+        <span class="modalTitle">지난 프로젝트</span>
+        <span class="modalMeta mono" id="pastMeta"></span>
+        <button type="button" class="modalClose" id="pastClose" aria-label="닫기">✕</button>
+      </div>
+      <div class="modalBody" id="pastBody"></div>
+    </div>
+  </div>
+
 <script src="effects.js"></script>
 <script>
 let reducedMotion = false;
@@ -805,37 +875,26 @@ async function main() {
   initSkyTop();
   initComet();
 
+  initPastProjects();
+
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
     const data = await res.json();
-    // 앱에서 프로젝트를 전부 지우면 status가 "none"인 빈 상태가 올라온다.
-    // 이때는 지워진 프로젝트를 계속 보여주는 대신 안내만 남긴다.
-    if (data.status === 'none') {
-      summaryCard.style.display = '';
-      summaryCard.innerHTML = '<div class="empty">진행 중인 프로젝트가 없어요</div>';
-      document.title = '태태고 편집실';
-      return;
-    }
-    renderSummary(summaryCard, data);
-    renderCompletion(data);
-    renderPipeline(data);
-    renderStats(data);
-    renderCategoryChips(data);
+    // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initChipShake();
-    renderDayBand(data);
     initDayBandReplay();
     setInterval(updateDayNow, 60000);
-    renderLog(data);
     initRowPulse();
     initGaugeToggle();
     initGalaxy(data);
-    initRunningLight(data);
     initDonutSpin();
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
-    summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted));
-    setTimeout(() => celebrate(heroPct, heroCompleted), 150);
+    summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted, true));
+    // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
+    // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
+    renderProject(data, { fireworks: true });
   } catch (e) {
     summaryCard.style.display = '';
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
@@ -845,6 +904,143 @@ async function main() {
     document.getElementById('madeBy').style.display = '';
     initSpotlight();
   }
+}
+
+/** 한 프로젝트를 화면에 그린다. 프로젝트를 바꿀 때마다 다시 부르므로
+    여기에는 데이터를 그리는 일만 두고, 리스너·애니메이션 루프는 main()에서 한 번만 건다.
+    fireworks가 true일 때만, 그리고 완료 상태일 때만 축포가 터진다. */
+function renderProject(data, { fireworks = false } = {}) {
+  const summaryCard = document.getElementById('summaryCard');
+  if (data.status === 'none') {
+    for (const id of OPTIONAL_CARDS) hideCard(id);
+    summaryCard.style.display = '';
+    summaryCard.innerHTML = '<div class="empty">진행 중인 프로젝트가 없어요</div>';
+    document.title = '태태고 편집실';
+    return;
+  }
+  // 새 프로젝트에 없는 항목이 이전 프로젝트 화면 그대로 남지 않게 먼저 접는다.
+  for (const id of OPTIONAL_CARDS) hideCard(id);
+
+  renderSummary(summaryCard, data);
+  renderCompletion(data);
+  renderPipeline(data);
+  renderStats(data);
+  renderCategoryChips(data);
+  renderDayBand(data);
+  renderLog(data);
+  initRunningLight(data);
+  celebrate(heroPct, heroCompleted, fireworks);
+}
+
+const OPTIONAL_CARDS = ['doneCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard'];
+function hideCard(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+/* ===== 지난 프로젝트 목록 ===== */
+let pastIndex = null;      // projects/index.json — 창을 처음 열 때만 받아온다
+let pastCurrentId = null;  // 지금 화면에 떠 있는 프로젝트
+
+function initPastProjects() {
+  const btn = document.getElementById('pastBtn');
+  const back = document.getElementById('pastModal');
+  const close = document.getElementById('pastClose');
+  if (!btn || !back) return;
+
+  const open = async () => {
+    back.hidden = false;
+    if (!pastIndex) {
+      document.getElementById('pastBody').innerHTML = '<div class="empty">불러오는 중…</div>';
+      try {
+        const res = await fetch('projects/index.json', { cache: 'no-store' });
+        pastIndex = await res.json();
+      } catch (e) {
+        document.getElementById('pastBody').innerHTML = '<div class="empty">목록을 불러오지 못했어요</div>';
+        return;
+      }
+    }
+    renderPastList();
+  };
+  const shut = () => { back.hidden = true; };
+
+  btn.addEventListener('click', open);
+  close.addEventListener('click', shut);
+  back.addEventListener('click', (ev) => { if (ev.target === back) shut(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !back.hidden) shut(); });
+
+  document.getElementById('pastBody').addEventListener('click', async (ev) => {
+    const row = ev.target.closest('.pastRow');
+    if (!row) return;
+    shut();
+    await openProject(row.dataset.id);
+  });
+}
+
+function renderPastList() {
+  const body = document.getElementById('pastBody');
+  const list = (pastIndex && pastIndex.projects) || [];
+  const current = pastCurrentId || (pastIndex && pastIndex.currentId);
+  document.getElementById('pastMeta').textContent = `${list.length}개`;
+  if (list.length === 0) {
+    body.innerHTML = '<div class="empty">아직 프로젝트가 없어요</div>';
+    return;
+  }
+  body.innerHTML = list.map((p) => {
+    const done = p.status === 'completed';
+    const facts = [];
+    facts.push(`<span>시작 <b>${formatDateShort(p.createdAt)}</b></span>`);
+    if (p.completedAt) facts.push(`<span>완료 <b>${formatDateShort(p.completedAt)}</b></span>`);
+    if (p.totalDuration != null) facts.push(`<span>소요 <b>${formatSpan(p.totalDuration)}</b></span>`);
+    if (p.daysSincePreviousCompletion != null) facts.push(`<span>직전 완료 후 <b>${p.daysSincePreviousCompletion}일</b></span>`);
+    facts.push(`<span>기록 <b>${p.entryCount}개</b></span>`);
+    const lengths = [normalizeLength(p.originalLength), p.finalLength ? normalizeLength(p.finalLength) : null]
+      .filter(Boolean).join(' → ');
+    if (lengths) {
+      const pct = p.finalRatioVsOriginal != null ? ` (${Math.round(p.finalRatioVsOriginal)}%)` : '';
+      facts.push(`<span>${lengths}${pct}</span>`);
+    }
+    return `
+      <button type="button" class="pastRow${p.id === current ? ' current' : ''}" data-id="${escapeHtml(p.id)}">
+        <span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span>
+        <span class="pastState ${done ? 'done' : 'wip'}">${done ? '완료' : '진행중'}</span>
+        <span class="pastFacts">${facts.join('')}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+/** 고른 프로젝트의 전체 스냅샷을 그때 받아와서 화면을 다시 그린다. */
+async function openProject(id) {
+  if (!id) return;
+  try {
+    const res = await fetch(`projects/${encodeURIComponent(id)}.json`, { cache: 'no-store' });
+    const data = await res.json();
+    pastCurrentId = id;
+    renderProject(data, { fireworks: false });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    console.warn('프로젝트를 불러오지 못했습니다', e);
+  }
+}
+
+/** 목록용 짧은 날짜 (예: "8월 27일"). */
+function formatDateShort(iso) {
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+/** 초 단위 소요시간을 "7일 21시간"처럼. */
+function formatSpan(seconds) {
+  const totalMinutes = Math.max(0, Math.round(seconds)) / 60;
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = Math.floor(totalMinutes % 60);
+  const parts = [];
+  if (days) parts.push(`${days}일`);
+  if (hours) parts.push(`${hours}시간`);
+  if (!parts.length) parts.push(`${minutes}분`);
+  return parts.join(' ');
 }
 
 /** "4:32" -> 272, "24" -> 24. 숫자로 못 읽으면 null. */
@@ -912,10 +1108,12 @@ function relativeTime(iso) {
   const diffMin = Math.round((now - then) / 60000);
   if (diffMin < 1) return '방금 전';
   if (diffMin < 60) return diffMin + '분 전';
-  const diffHour = Math.round(diffMin / 60);
+  const diffHour = Math.floor(diffMin / 60);
   if (diffHour < 24) return diffHour + '시간 전';
-  const diffDay = Math.round(diffHour / 24);
-  return diffDay + '일 전';
+  // 하루가 넘으면 "3일 전"으로 뭉뚱그리지 않고 남는 시간까지 보여준다.
+  const days = Math.floor(diffHour / 24);
+  const hours = diffHour % 24;
+  return hours ? `${days}일 ${hours}시간 전` : `${days}일 전`;
 }
 
 const WEEKDAYS = ['일','월','화','수','목','금','토'];
@@ -1036,7 +1234,11 @@ function renderSummary(cardEl, data) {
 
   const entries = data.entries || [];
   const lastEntryTime = entries.length ? entries[entries.length - 1].timestamp : null;
-  const chipTime = isCompleted ? data.lastUpdate : (lastEntryTime ?? data.lastUpdate);
+  // 완료된 프로젝트는 '발행한 때'가 아니라 '끝낸 때'를 기준으로 세야 한다 —
+  // 지난 프로젝트를 열어보면 발행 시각은 방금이라 "완료 · 방금 전"이 돼버린다.
+  const chipTime = isCompleted
+    ? (data.completedAt ?? data.lastUpdate)
+    : (lastEntryTime ?? data.lastUpdate);
 
   cardEl.style.display = '';
   cardEl.innerHTML = `
@@ -2041,8 +2243,8 @@ function launchFireworks() {
   f.kick();
 }
 
-function celebrate(targetPct, isCompleted) {
-  const fire = !reducedMotion && isCompleted;
+function celebrate(targetPct, isCompleted, allowFireworks = true) {
+  const fire = !reducedMotion && isCompleted && allowFireworks;
   if (fire) {
     const f = initFx();
     // 처음 축포는 너무 몰아치지 않게 — 12발에서 7발로 줄이고 간격도 살짝 넓혔다.
@@ -2478,9 +2680,10 @@ function initGalaxy(data) {
 
 /* ===== 13 완료 카드 러닝 라이트 ===== */
 function initRunningLight(data) {
-  if (data.status !== 'completed' || reducedMotion) return;
   const card = document.getElementById('doneCard');
-  if (card) card.classList.add('running');
+  if (!card) return;
+  // 프로젝트를 바꿔가며 볼 수 있으니 켜기만 하지 말고 상태에 맞춰 끄기도 해야 한다.
+  card.classList.toggle('running', data.status === 'completed' && !reducedMotion);
 }
 
 function initFxButtons() {
