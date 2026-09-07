@@ -435,8 +435,12 @@
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
   /* 도넛 게이지: 잡고 돌릴 수 있다 (놓으면 튕겨 돌아옴) */
-  .donut { cursor: grab; touch-action: none; }
+  /* 돌려보기는 마우스 전용이다. 손가락에도 touch-action:none을 걸면 도넛 위에서
+     시작한 스크롤이 통째로 막히고, 대신 링이 끌려 돌아가 버린다. */
   .donut:active { cursor: grabbing; }
+  @media (hover: hover) and (pointer: fine) {
+    .donut { cursor: grab; touch-action: none; }
+  }
 
   /* 아직 안 한 단계를 누르면 흔들리며 한마디 한다 */
   .pipeItem.todo, .pipeItem.done { cursor: pointer; }
@@ -659,7 +663,7 @@
 
   /* 완성 영상 썸네일 — 완료 카드 안, 누르면 유튜브로 */
   .ytThumb {
-    position: relative; display: block; margin-top: 12px;
+    position: relative; display: block; margin-bottom: 13px;
     border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9;
     background: var(--surface2); border: 1px solid var(--line);
     transition: transform .18s ease, border-color .18s ease;
@@ -784,12 +788,12 @@
       <div class="card hero" id="summaryCard" style="display:none" title="클릭하면 폭죽 한 번 더"></div>
 
       <div class="card doneCard" id="doneCard" style="display:none">
-        <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
-        <div class="doneList" id="doneList"></div>
         <a class="ytThumb" id="ytThumb" hidden target="_blank" rel="noopener noreferrer">
           <img id="ytImg" alt="완성 영상 썸네일" loading="lazy" decoding="async">
           <span class="ytPlay" aria-hidden="true"></span>
         </a>
+        <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
+        <div class="doneList" id="doneList"></div>
       </div>
 
       <div class="card pipeCard" id="pipelineCard" style="display:none">
@@ -919,9 +923,7 @@ async function main() {
     initDayBandReplay();
     setInterval(updateDayNow, 60000);
     initRowPulse();
-    initGaugeToggle();
     initGalaxy(data);
-    initDonutSpin();
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
@@ -957,6 +959,11 @@ function renderProject(data, { fireworks = false } = {}) {
   renderYouTubeThumb(null);
 
   renderSummary(summaryCard, data);
+  // 도넛·물결 버튼은 renderSummary가 매번 새로 만드는 요소라, 여기서 다시 걸어야 한다.
+  // main()에서 한 번만 걸면 첫 렌더 전이라 붙을 대상이 없고, 프로젝트를 바꾸면
+  // 리스너를 달아둔 요소째 사라진다.
+  initGaugeToggle();
+  initDonutSpin();
   renderCompletion(data);
   renderPipeline(data);
   renderStats(data);
@@ -1142,7 +1149,12 @@ function renderYouTubeThumb(videoId) {
   const link = document.getElementById('ytThumb');
   const img = document.getElementById('ytImg');
   if (!link || !img) return;
-  if (!videoId) { link.hidden = true; img.removeAttribute('src'); return; }
+  if (!videoId) {
+    // 앞 영상의 onerror가 남아 있으면 src를 걷어낼 때 엉뚱한 요청이 한 번 더 나간다.
+    img.onerror = null; img.onload = null;
+    link.hidden = true; img.removeAttribute('src');
+    return;
+  }
 
   link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
   // maxres가 없는 영상이 있다. 보통은 404라 onerror로 잡히지만, 가끔 120x90짜리
@@ -1438,6 +1450,10 @@ function initDonutSpin() {
     return Math.atan2(ev.clientY - (r.top + r.height / 2), ev.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
   };
   donut.addEventListener('pointerdown', (ev) => {
+    // 손가락·펜은 스크롤이 우선이다. 예전엔 여기서 preventDefault를 해버려서
+    // 도넛에 손을 대고 화면을 내리면 링이 따라 돌고, 손을 뗀 자리가 도넛 밖이면
+    // pointerup을 못 받아 회전이 그대로 굳어 있었다.
+    if (ev.pointerType !== 'mouse') return;
     dragging = true; moved = false;
     base = angleAt(ev) - current;
     try { donut.setPointerCapture(ev.pointerId); } catch (e) { /* 포인터 캡처 실패해도 드래그는 계속 */ }
@@ -1460,6 +1476,10 @@ function initDonutSpin() {
   };
   donut.addEventListener('pointerup', release);
   donut.addEventListener('pointercancel', release);
+  // 캡처를 잃거나 창 밖에서 손을 떼도 회전이 남지 않게.
+  donut.addEventListener('lostpointercapture', release);
+  window.addEventListener('pointerup', release);
+  window.addEventListener('blur', release);
   donut.addEventListener('click', (ev) => {
     if (moved) { ev.stopPropagation(); moved = false; }
   }, true);
