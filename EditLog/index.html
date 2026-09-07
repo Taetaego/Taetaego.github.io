@@ -1157,18 +1157,29 @@ function renderYouTubeThumb(videoId) {
   }
 
   link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
+  const url = (name) => `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/${name}.jpg`;
+
+  // 폰에서는 maxres(1280x720)를 쓰지 않는다. 썸네일 자리가 340px 남짓이라 화질 차이는
+  // 거의 없는데, 큰 이미지를 디코딩하면 그만큼 GPU 메모리를 먹어 다른 레이어(도넛 링·
+  // 카드 배경)가 스크롤 뒤 다시 그려질 때 밀려나는 일이 생긴다. hq(480x360)면 충분하다.
+  const wide = matchMedia('(min-width: 900px)').matches;
+
   // maxres가 없는 영상이 있다. 보통은 404라 onerror로 잡히지만, 가끔 120x90짜리
   // 회색 자리표를 200으로 돌려주기도 해서 그때는 크기를 보고 걸러낸다.
-  // 어느 쪽이든 항상 존재하는 hqdefault로 딱 한 번만 떨어뜨린다.
   const fallback = () => {
     if (img.dataset.fallback === '1') return;
     img.dataset.fallback = '1';
-    img.src = `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+    img.src = url('hqdefault');
   };
   img.onerror = fallback;
   img.onload = () => { if (img.naturalWidth <= 121) fallback(); };
   delete img.dataset.fallback;
-  img.src = `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/maxresdefault.jpg`;
+  if (wide) {
+    img.src = url('maxresdefault');
+  } else {
+    img.dataset.fallback = '1';   // 이미 hq다 — 더 떨어질 곳이 없다
+    img.src = url('hqdefault');
+  }
   link.hidden = false;
 }
 
