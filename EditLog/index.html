@@ -282,6 +282,9 @@
   .pastRow .pastState.done { background: var(--soft); color: var(--accent2); }
   .pastRow .pastState.wip { background: var(--warn-soft); color: var(--warn); }
   .pastRow .pastFacts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 2px 11px; font-size: 12.5px; color: var(--ink3); }
+  /* 한 항목이 중간에서 끊기면 두 줄로 넘어가 보인다. */
+  .pastRow .pastFacts > span { white-space: nowrap; }
+  .pastRow .dShort { display: none; }
   .pastRow .pastFacts b { font-weight: 600; color: var(--ink2); }
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
@@ -690,6 +693,10 @@
   @media (max-width: 560px) {
     .pastBtn { padding: 6px 9px; font-size: 12px; line-height: 1; }
     .pastBtn .pastBtnText { display: none; }
+    /* 좁은 화면에서도 요약은 반드시 한 줄 — 글자를 조금 줄이고 날짜는 짧은 형식으로. */
+    .pastRow .pastFacts { font-size: 11.5px; gap: 2px 9px; }
+    .pastRow .dFull { display: none; }
+    .pastRow .dShort { display: inline; }
   }
 
   @media (max-width: 420px) {
@@ -988,7 +995,7 @@ function renderPastList() {
     // 목록에는 편집 시간 · 완료 날짜 · 전편 이후 간격만. 나머지는 눌러서 들어가면 다 있다.
     const facts = [];
     if (p.totalDuration != null) facts.push(`<span>편집 <b>${formatSpan(p.totalDuration)}</b></span>`);
-    if (p.completedAt) facts.push(`<span>완료 <b>${formatDateShort(p.completedAt)}</b></span>`);
+    if (p.completedAt) facts.push(`<span>완료 <b class="dFull">${formatDateShort(p.completedAt)}</b><b class="dShort">${formatDateCompact(p.completedAt)}</b></span>`);
     if (p.daysSincePreviousCompletion != null) facts.push(`<span>전편 이후 <b>${p.daysSincePreviousCompletion}일</b></span>`);
     return `
       <button type="button" class="pastRow${p.id === current ? ' current' : ''}" data-id="${escapeHtml(p.id)}">
@@ -1018,6 +1025,12 @@ async function openProject(id) {
 function formatDateShort(iso) {
   const d = new Date(iso);
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+/** 좁은 화면용 짧은 날짜 (예: "2026.9.4"). 연도는 그대로 두고 글자 수만 줄인다. */
+function formatDateCompact(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
 
 /** 초 단위 소요시간을 "7일 21시간"처럼. */
