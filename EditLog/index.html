@@ -289,7 +289,6 @@
 
   /* 브랜드·시계·테마·색 모두 한 줄에. */
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-  .nowClock { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--ink3); white-space: nowrap; }
   .accentPicker { display: flex; gap: 7px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .accentSwatch {
     position: relative; width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
@@ -687,9 +686,8 @@
   }
 
   /* 좁은 화면에선 상단 바에 자리가 모자라 제목과 버튼 글자가 줄바꿈으로 뭉갰다.
-     시계는 아래 '작업 시간대'와 겹치는 정보라 접고, 버튼은 아이콘만 남긴다. */
+     버튼은 아이콘만 남긴다. */
   @media (max-width: 560px) {
-    .nowClock { display: none; }
     .pastBtn { padding: 6px 9px; font-size: 12px; line-height: 1; }
     .pastBtn .pastBtnText { display: none; }
   }
@@ -748,7 +746,6 @@
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
         <button type="button" class="pastBtn" id="pastBtn" title="지난 프로젝트 보기" aria-label="지난 프로젝트">🗂<span class="pastBtnText"> 지난 프로젝트</span></button>
-        <span class="nowClock mono" id="nowClock" title="서울(KST) 기준 현재 시각">--:--</span>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
           <button type="button" data-mode="dark">DARK</button>
@@ -1701,6 +1698,9 @@ function renderDayBand(data) {
   band.style.background = `linear-gradient(90deg, ${stops.join(',')})`;
 
   const frac = (d) => (d.getHours() * 60 + d.getMinutes()) / 1440;
+  // 프로젝트를 바꾸면 이 함수가 다시 불린다 — 앞 프로젝트의 점을 먼저 치워야
+  // 새 점이 그 위에 얹혀 두 프로젝트가 섞인 채로 보이지 않는다.
+  band.querySelectorAll('.daySpot').forEach(el => el.remove());
   band.insertAdjacentHTML('beforeend', entries.map((e, i) => {
     const d = new Date(e.timestamp);
     const label = `${e.category || '체크포인트'} · ${formatTimeOnly(e.timestamp)}`;
@@ -1950,19 +1950,6 @@ function applyAccent(key) {
   try { localStorage.setItem('accent', key); } catch (e) {}
 }
 
-/** 오른쪽 위 시계 — 서울(KST) 기준 */
-function initSeoulClock() {
-  const el = document.getElementById('nowClock');
-  if (!el) return;
-  const tick = () => {
-    const t = new Date().toLocaleTimeString('ko-KR', {
-      timeZone: 'Asia/Seoul', hour12: false, hour: '2-digit', minute: '2-digit',
-    });
-    el.textContent = t;
-  };
-  tick();
-  setInterval(tick, 15000);
-}
 
 function initAccentPicker() {
   const host = document.getElementById('accentPicker');
@@ -1988,7 +1975,6 @@ function applyTheme(mode) {
   paintTimes();
 }
 initAccentPicker();
-initSeoulClock();
 (function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
