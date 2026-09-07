@@ -676,11 +676,21 @@
 
   /* 완성 영상 썸네일 — 완료 카드 안, 누르면 유튜브로 */
   .ytThumb {
-    position: relative; display: block; margin-bottom: 13px;
-    border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9;
+    position: relative; display: block; padding: 0;
+    border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
     background: var(--surface2); border: 1px solid var(--line);
     transition: transform .18s ease, border-color .18s ease;
   }
+  /* 아직 영상이 안 나온 캡처에는 누를 곳이 없다 — 재생 표시도 링크도 빼고 배지만 붙인다. */
+  .ytThumb.still { cursor: default; }
+  .ytThumb.still .ytPlay { display: none; }
+  .thumbTag {
+    position: absolute; left: 10px; bottom: 10px;
+    padding: 4px 9px; border-radius: 99px;
+    background: color-mix(in srgb, var(--warn) 88%, black); color: #10131a;
+    font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .thumbTag[hidden] { display: none; }
   .ytThumb[hidden] { display: none; }
   .ytThumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   /* 유튜브 재생 삼각형. 이미지가 늦게 와도 자리가 흔들리지 않게 비율로 잡아둔다. */
@@ -808,11 +818,14 @@
     <div class="colLeft">
       <div class="card hero" id="summaryCard" style="display:none" title="클릭하면 폭죽 한 번 더"></div>
 
+      <!-- 완성 영상 썸네일(완료) 또는 편집 중 캡처(진행중). 둘 중 하나만 뜬다. -->
+      <a class="ytThumb card" id="ytThumb" hidden target="_blank" rel="noopener noreferrer">
+        <img id="ytImg" alt="영상 미리보기" loading="lazy" decoding="async">
+        <span class="ytPlay" aria-hidden="true"></span>
+        <span class="thumbTag" id="thumbTag" hidden>편집 중</span>
+      </a>
+
       <div class="card doneCard" id="doneCard" style="display:none">
-        <a class="ytThumb" id="ytThumb" hidden target="_blank" rel="noopener noreferrer">
-          <img id="ytImg" alt="완성 영상 썸네일" loading="lazy" decoding="async">
-          <span class="ytPlay" aria-hidden="true"></span>
-        </a>
         <div class="doneTitle"><span class="doneIcon">✓</span>프로젝트 완료</div>
         <div class="doneList" id="doneList"></div>
       </div>
@@ -985,6 +998,7 @@ function renderProject(data, { fireworks = false } = {}) {
   renderYouTubeThumb(null);
 
   renderSummary(summaryCard, data);
+  renderThumb(data);
   // 도넛·물결 버튼은 renderSummary가 매번 새로 만드는 요소라, 여기서 다시 걸어야 한다.
   // main()에서 한 번만 걸면 첫 렌더 전이라 붙을 대상이 없고, 프로젝트를 바꾸면
   // 리스너를 달아둔 요소째 사라진다.
@@ -1166,21 +1180,52 @@ function renderCompletion(data) {
   document.getElementById('doneList').innerHTML = rows
     .map(r => `<div class="${r.strong ? 'strong' : ''}"${r.gap ? ' style="margin-top:8px"' : ''}>${escapeHtml(r.text)}</div>`)
     .join('');
-  renderYouTubeThumb(data.youtubeId);
   document.getElementById('doneCard').style.display = '';
+}
+
+/** 미리보기 한 칸. 완료된 프로젝트는 유튜브 썸네일(눌러서 영상으로),
+    아직 진행 중이면 앱에서 넣어둔 편집 캡처를 보여준다. 둘 다 없으면 자리째 접는다. */
+function renderThumb(data) {
+  if (data.youtubeId) { renderYouTubeThumb(data.youtubeId); return; }
+  renderStillThumb(data.previewImage);
+}
+
+/** 앱에서 넣어둔 편집 중 캡처. 누를 곳이 없으니 링크도 재생 표시도 없다. */
+function renderStillThumb(path) {
+  const link = document.getElementById('ytThumb');
+  const img = document.getElementById('ytImg');
+  const tag = document.getElementById('thumbTag');
+  if (!link || !img) return;
+  if (!path) { renderYouTubeThumb(null); return; }
+
+  img.onerror = () => { link.hidden = true; };
+  img.onload = null;
+  link.classList.add('still');
+  link.removeAttribute('href');
+  link.removeAttribute('target');
+  if (tag) tag.hidden = false;
+  img.alt = '편집 중 캡처';
+  img.src = path;
+  link.hidden = false;
 }
 
 /** 완성 영상 썸네일. 링크가 없으면 자리째 접는다 (프로젝트를 바꿔도 남지 않게). */
 function renderYouTubeThumb(videoId) {
   const link = document.getElementById('ytThumb');
   const img = document.getElementById('ytImg');
+  const tag = document.getElementById('thumbTag');
   if (!link || !img) return;
+  link.classList.remove('still');
+  if (tag) tag.hidden = true;
+  img.alt = '완성 영상 썸네일';
   if (!videoId) {
     // 앞 영상의 onerror가 남아 있으면 src를 걷어낼 때 엉뚱한 요청이 한 번 더 나간다.
     img.onerror = null; img.onload = null;
     link.hidden = true; img.removeAttribute('src');
+    link.removeAttribute('href');
     return;
   }
+  link.target = '_blank';
 
   link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`;
   const url = (name) => `https://img.youtube.com/vi/${encodeURIComponent(videoId)}/${name}.jpg`;
