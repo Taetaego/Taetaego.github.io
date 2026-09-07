@@ -806,6 +806,14 @@ async function main() {
   try {
     const res = await fetch('status.json', { cache: 'no-store' });
     const data = await res.json();
+    // 앱에서 프로젝트를 전부 지우면 status가 "none"인 빈 상태가 올라온다.
+    // 이때는 지워진 프로젝트를 계속 보여주는 대신 안내만 남긴다.
+    if (data.status === 'none') {
+      summaryCard.style.display = '';
+      summaryCard.innerHTML = '<div class="empty">진행 중인 프로젝트가 없어요</div>';
+      document.title = '태태고 편집실';
+      return;
+    }
     renderSummary(summaryCard, data);
     renderCompletion(data);
     renderPipeline(data);
