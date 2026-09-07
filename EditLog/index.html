@@ -722,6 +722,14 @@
   }
   #doneCard.running > * { position: relative; z-index: 1; }
   @keyframes runLight { to { rotate: 360deg; } }
+  /* 썸네일이 들어가면서 완료 카드가 훨씬 길어졌다. 이 빛은 카드보다 220% 큰
+     conic-gradient를 쉬지 않고 돌리는 거라, 길어진 만큼 매 프레임 칠하는 면적도 같이
+     커진다. 폰에서는 그 부담이 다른 레이어를 밀어내서 카드 배경·도넛·상단 바가
+     통째로 안 그려지는 일이 생겨 접어둔다. */
+  @media (max-width: 560px) {
+    #doneCard.running::before { animation: none; opacity: 0; }
+    #doneCard.running { border-color: var(--line); }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     #galaxyCanvas { display: none !important; }
@@ -940,7 +948,12 @@ async function main() {
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
-    summaryCard.addEventListener('click', () => celebrate(heroPct, heroCompleted, true));
+    summaryCard.addEventListener('click', (ev) => {
+      // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
+      // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
+      if (ev.target.closest('#donutGauge')) { runGauge(heroPct, false, true); return; }
+      celebrate(heroPct, heroCompleted, true);
+    });
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
     // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
     renderProject(data, { fireworks: true });
@@ -2119,7 +2132,7 @@ function initFx() {
   fx = { cv, ctx, ps: [], rs: [], ms: [], t: null, w: 0, h: 0 };
 
   fx.sizeFn = () => {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = canvasDPR();
     const w = window.innerWidth, h = window.innerHeight;
     cv.width = Math.max(1, w * dpr);
     cv.height = Math.max(1, h * dpr);
@@ -2352,10 +2365,18 @@ function celebrate(targetPct, isCompleted, allowFireworks = true) {
    ========================================================================== */
 
 /** 캔버스 실제 크기를 매 프레임 맞춘다 (레이아웃 전 0 측정·리사이즈 대응). */
+  // 전부 장식용 레이어라 화면 배율까지 따라갈 필요가 없다. 폰에서는 1로 고정해
+  // 백킹 스토어를 1/4로 줄인다 — 전체 화면 캔버스가 여러 장 겹쳐 있어서, 이게 쌓이면
+  // GPU가 다른 레이어(카드 배경·도넛·상단 바)를 버리고 안 그려버리는 일이 생긴다.
+  function canvasDPR() {
+    const cap = matchMedia('(max-width: 560px)').matches ? 1 : 2;
+    return Math.min(cap, window.devicePixelRatio || 1);
+  }
+
 function fitCanvas(cv) {
   const w = cv.clientWidth, h = cv.clientHeight;
   if (!w || !h) return null;
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const dpr = canvasDPR();
   const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
   if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
   const ctx = cv.getContext('2d');

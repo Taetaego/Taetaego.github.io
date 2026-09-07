@@ -77,7 +77,13 @@ function natTick(f) {
       return true;
     });
     if (f.scenes.length) { f.loop = requestAnimationFrame(step); }
-    else { ctx.clearRect(0, 0, w, h); f.loop = null; }
+    else {
+      ctx.clearRect(0, 0, w, h);
+      f.loop = null;
+      // 다 끝난 이펙트 캔버스가 전체 화면 크기로 메모리를 계속 잡고 있을 이유가 없다.
+      // 0으로 줄이면 버퍼가 풀리고, 다음 이펙트 때 fitCanvas가 다시 맞춰준다.
+      f.cv.width = 0; f.cv.height = 0;
+    }
   };
   f.loop = requestAnimationFrame(step);
 }
