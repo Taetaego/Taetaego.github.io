@@ -990,7 +990,7 @@ function renderPastList() {
     const done = p.status === 'completed';
     // 목록에는 소요 시간 · 완료 날짜 · 직전 완료 후 간격만. 나머지는 눌러서 들어가면 다 있다.
     const facts = [];
-    if (p.totalDuration != null) facts.push(`<span>소요 <b>${formatSpan(p.totalDuration)}</b></span>`);
+    if (p.totalDuration != null) facts.push(`<span>편집 <b>${formatSpan(p.totalDuration)}</b></span>`);
     if (p.completedAt) facts.push(`<span>완료 <b>${formatDateShort(p.completedAt)}</b></span>`);
     if (p.daysSincePreviousCompletion != null) facts.push(`<span>직전 완료 후 <b>${p.daysSincePreviousCompletion}일</b></span>`);
     return `
