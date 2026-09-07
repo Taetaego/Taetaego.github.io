@@ -1,6 +1,6 @@
 {
-  "currentId" : "A1713B4A-0B13-4DED-9B4C-87018F2E2726",
-  "lastUpdate" : "2026-09-07T14:37:35Z",
+  "currentId" : "CA054864-3CE4-4168-8D44-8F11BA9BAD73",
+  "lastUpdate" : "2026-09-07T14:51:07Z",
   "projects" : [
     {
       "completedAt" : "2026-09-04T11:03:38Z",
@@ -8,9 +8,9 @@
       "daysSincePreviousCompletion" : 17,
       "entryCount" : 26,
       "finalLength" : "22",
-      "finalRatioVsOriginal" : 8.088235294117647,
+      "finalRatioVsOriginal" : 8.058608058608058,
       "id" : "CA054864-3CE4-4168-8D44-8F11BA9BAD73",
-      "originalLength" : "4:32",
+      "originalLength" : "4:33",
       "status" : "completed",
       "topic" : "페루 나스카 경비행기 & 무덤",
       "totalDuration" : 682092.0483269691

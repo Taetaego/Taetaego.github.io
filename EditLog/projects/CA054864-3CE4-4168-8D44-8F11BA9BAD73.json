@@ -89,7 +89,7 @@
   "createdAt" : "2026-08-27T13:35:26Z",
   "currentStage" : "완료",
   "detailCutLength" : "24",
-  "detailCutRatio" : 8.823529411764707,
+  "detailCutRatio" : 8.791208791208792,
   "entries" : [
     {
       "category" : "자막 추출",
@@ -279,9 +279,9 @@
   "entryCount" : 26,
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
-  "finalRatioVsOriginal" : 8.088235294117647,
-  "lastUpdate" : "2026-09-07T14:37:35Z",
-  "originalLength" : "4:32",
+  "finalRatioVsOriginal" : 8.058608058608058,
+  "lastUpdate" : "2026-09-07T14:51:07Z",
+  "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
   "youtubeId" : "Qvd3KZfr5KI"
