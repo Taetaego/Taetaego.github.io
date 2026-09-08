@@ -448,8 +448,6 @@
     animation: labelFade 1.8s ease-in-out infinite;
   }
   @keyframes labelFade { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
-  /* 그 단계 안에서 얼마나 왔는지 (시작 시점 ÷ 기준 영상 길이) */
-  .pipeItem .pipePct { margin-left: 6px; font-size: 10px; font-weight: 700; color: var(--warn); opacity: .85; }
 
   /* 도넛 게이지: 잡고 돌릴 수 있다 (놓으면 튕겨 돌아옴) */
   /* 돌려보기는 마우스 전용이다. 손가락에도 touch-action:none을 걸면 도넛 위에서
@@ -1529,10 +1527,7 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      // 지금 단계는 '편집 중' 표시 옆에 그 단계 안에서 얼마나 왔는지도 붙인다.
-      const stagePct = isCurrent && progress.stage
-        ? `<span class="pipePct mono">${Math.round(progress.stage.frac * 100)}%</span>` : '';
-      return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span>${stagePct}</div>`;
+      return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
     }).join('');
     // 그룹 제목도 그 그룹의 카테고리 색을 쓰고, 등장 순서(--i)는 그 그룹 첫 단계에 맞춘다
     // (제목이 자기 그룹 항목들보다 살짝 먼저 올라오도록 CSS에서 딜레이를 조금 당긴다).
