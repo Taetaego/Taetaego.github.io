@@ -680,11 +680,11 @@
   /* .card와 같이 쓰는데, 모바일 미디어쿼리의 .card { padding } 이 뒤에 와서 이겼다.
      클래스를 둘 다 걸어 우선순위를 올려야 폰에서도 그림이 카드를 꽉 채운다. */
   .card.ytThumb { padding: 0; }
-  /* 도넛 · 썸네일 · 그 다음 카드는 한 덩어리로 읽히게 정확히 10px씩 띄운다.
+  /* 도넛 · 썸네일 · 그 다음 카드는 한 덩어리로 읽히게 정확히 8px씩 띄운다.
      기본 간격이 화면 폭마다 달라서(모바일 12 / 데스크톱 16) 뺄셈으로 맞춘다. */
   #summaryCard + .ytThumb,
   .ytThumb + #doneCard,
-  .ytThumb + #pipelineCard { margin-top: calc(10px - var(--cardGap)); }
+  .ytThumb + #pipelineCard { margin-top: calc(8px - var(--cardGap)); }
   .ytThumb {
     position: relative; display: block; padding: 0;
     border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
