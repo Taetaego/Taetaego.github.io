@@ -94,10 +94,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-09-07T22:51:20Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "11시간 56분",
+      "timestamp" : "2026-09-08T10:47:39Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-09-08T03:04:13Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-09-08T10:47:43Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
