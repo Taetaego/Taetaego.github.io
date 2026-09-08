@@ -700,37 +700,17 @@
     padding: 4px 9px 4px 8px; border-radius: 99px;
     background: color-mix(in srgb, var(--warn) 88%, black); color: #10131a;
     font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em;
-    /* 지금 돌아가는 중이라는 느낌: 배지 밖으로 파문이 한 번씩 퍼진다 */
-    animation: tagPulse 2.2s ease-out infinite;
+    /* 다른 '편집 중' 표시(상태 칩·현재 단계)와 같은 주기·같은 위상으로 깜빡인다.
+       썸네일이 뜨는 순간과 그 표시들이 그려지는 순간이 같은 프레임이라 박자가 맞는다. */
+    animation: labelFade 1.8s ease-in-out infinite;
   }
-  /* 녹화등처럼 깜빡이는 점 */
+  /* 녹화등처럼 보이는 점 (깜빡임은 배지 전체가 담당한다) */
   .thumbTag::before {
     content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
-    background: #10131a; animation: tagBlink 1.2s ease-in-out infinite;
-  }
-  @keyframes tagPulse {
-    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--warn) 60%, transparent); }
-    62%, 100% { box-shadow: 0 0 0 9px transparent; }
-  }
-  @keyframes tagBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
-  /* 캡처 위로 편집 중인 화면처럼 빛이 한 번씩 훑고 지나간다.
-     transform만 움직이므로 폰에서도 레이어 하나로 끝난다. */
-  .ytThumb.still::after {
-    content: ""; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(105deg,
-      transparent 38%,
-      color-mix(in srgb, var(--warn) 30%, transparent) 50%,
-      transparent 62%);
-    transform: translateX(-120%);
-    animation: thumbSweep 4.6s ease-in-out infinite;
-  }
-  @keyframes thumbSweep {
-    0%, 58% { transform: translateX(-120%); }
-    100% { transform: translateX(120%); }
+    background: #10131a;
   }
   @media (prefers-reduced-motion: reduce) {
-    .thumbTag, .thumbTag::before { animation: none; }
-    .ytThumb.still::after { animation: none; opacity: 0; }
+    .thumbTag { animation: none; }
   }
   .thumbTag[hidden] { display: none; }
   .ytThumb[hidden] { display: none; }
