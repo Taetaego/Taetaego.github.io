@@ -154,7 +154,7 @@
      그 속성을 붙잡고 있어서 hover의 translateY(-2px)가 먹지 않는다. */
   @keyframes cardIn { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: 0 0; } }
   @keyframes ringPing { 0% { transform: scale(0.7); opacity: 0.95; } 50%, 100% { transform: scale(2.2); opacity: 0; } }
-  /* 발광도 --warn을 따라가야 한다 (앰버를 박아두면 진행중 색만 바뀌고 빛은 그대로 남는다) */
+  /* 발광도 --warn을 따라가야 한다 (앰버를 박아두면 '편집 중' 색만 바뀌고 빛은 그대로 남는다) */
   @keyframes warnGlow {
     0%, 100% { box-shadow: 0 0 0 3px var(--warn-soft), 0 0 10px 0 color-mix(in srgb, var(--warn) 45%, transparent); }
     50% { box-shadow: 0 0 0 6px var(--warn-soft), 0 0 22px 4px color-mix(in srgb, var(--warn) 75%, transparent); }
@@ -323,7 +323,7 @@
     content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
     background: var(--ticks, none);
   }
-  /* 도넛 뒤에서 숨쉬는 발광. '진행중' 표시(labelFade)와 같은 1.8초 주기·같은 위상이라
+  /* 도넛 뒤에서 숨쉬는 발광. '편집 중' 표시(labelFade)와 같은 1.8초 주기·같은 위상이라
      둘이 동시에 가장 밝아진다. */
   .donutGlow {
     position: absolute; inset: -18px; border-radius: 50%; pointer-events: none; z-index: 0;
@@ -347,7 +347,7 @@
     margin: -3.5px 0 0 -3.5px; border-radius: 50%; background: #fff;
     box-shadow: 0 0 8px 3px color-mix(in srgb, var(--accent) 80%, white),
                 0 0 18px 6px color-mix(in srgb, var(--accent) 55%, transparent);
-    /* '진행중' 표시(labelFade)와 같은 1.8초 주기·같은 위상·같은 밝기 폭 */
+    /* '편집 중' 표시(labelFade)와 같은 1.8초 주기·같은 위상·같은 밝기 폭 */
     animation: sparkPulse 1.8s ease-in-out infinite;
   }
   @keyframes sparkPulse {
@@ -443,7 +443,7 @@
   .pipeItem.todo .name { color: var(--ink3); }
   .pipeItem.current .name { color: var(--ink); display: inline-flex; align-items: center; }
   .pipeItem.current .name::after {
-    content: "진행중"; display: inline-flex; align-items: center; margin-left: 8px; font-size: 10px; font-weight: 700; color: var(--warn);
+    content: "편집 중"; display: inline-flex; align-items: center; margin-left: 8px; font-size: 10px; font-weight: 700; color: var(--warn);
     background: var(--warn-soft); padding: 2px 8px; border-radius: 99px; line-height: 1.4;
     animation: labelFade 1.8s ease-in-out infinite;
   }
@@ -483,7 +483,7 @@
     position: absolute; right: 0; top: 50%; z-index: 2;
     max-width: 62%; text-align: right; white-space: normal; word-break: keep-all;
     font-size: 10px; font-weight: 700; line-height: 1.45;
-    /* 진행중(--warn)과 헷갈리지 않게, 그 단계의 카테고리 색을 옅게 깔고 글자는
+    /* '편집 중'(--warn)과 헷갈리지 않게, 그 단계의 카테고리 색을 옅게 깔고 글자는
        본문 색으로 둔다 — 작은 글씨라 대비를 확보하는 쪽이 안전하다. */
     color: var(--ink);
     background: color-mix(in srgb, var(--rowc, var(--ink3)) 22%, var(--surface2));
@@ -695,10 +695,42 @@
   .ytThumb.still { cursor: default; }
   .ytThumb.still .ytPlay { display: none; }
   .thumbTag {
-    position: absolute; left: 10px; bottom: 10px;
-    padding: 4px 9px; border-radius: 99px;
+    position: absolute; left: 10px; bottom: 10px; z-index: 1;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px 4px 8px; border-radius: 99px;
     background: color-mix(in srgb, var(--warn) 88%, black); color: #10131a;
     font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em;
+    /* 지금 돌아가는 중이라는 느낌: 배지 밖으로 파문이 한 번씩 퍼진다 */
+    animation: tagPulse 2.2s ease-out infinite;
+  }
+  /* 녹화등처럼 깜빡이는 점 */
+  .thumbTag::before {
+    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
+    background: #10131a; animation: tagBlink 1.2s ease-in-out infinite;
+  }
+  @keyframes tagPulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--warn) 60%, transparent); }
+    62%, 100% { box-shadow: 0 0 0 9px transparent; }
+  }
+  @keyframes tagBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  /* 캡처 위로 편집 중인 화면처럼 빛이 한 번씩 훑고 지나간다.
+     transform만 움직이므로 폰에서도 레이어 하나로 끝난다. */
+  .ytThumb.still::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg,
+      transparent 38%,
+      color-mix(in srgb, var(--warn) 30%, transparent) 50%,
+      transparent 62%);
+    transform: translateX(-120%);
+    animation: thumbSweep 4.6s ease-in-out infinite;
+  }
+  @keyframes thumbSweep {
+    0%, 58% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .thumbTag, .thumbTag::before { animation: none; }
+    .ytThumb.still::after { animation: none; opacity: 0; }
   }
   .thumbTag[hidden] { display: none; }
   .ytThumb[hidden] { display: none; }
@@ -829,7 +861,7 @@
     <div class="colLeft">
       <div class="card hero" id="summaryCard" style="display:none"></div>
 
-      <!-- 완성 영상 썸네일(완료) 또는 편집 중 캡처(진행중). 둘 중 하나만 뜬다. -->
+      <!-- 완성 영상 썸네일(완료) 또는 편집 중 캡처(편집 중). 둘 중 하나만 뜬다. -->
       <a class="ytThumb card" id="ytThumb" hidden target="_blank" rel="noopener noreferrer">
         <img id="ytImg" alt="영상 미리보기" loading="lazy" decoding="async">
         <span class="ytPlay" aria-hidden="true"></span>
@@ -1000,7 +1032,7 @@ function renderProject(data, { fireworks = false } = {}) {
   if (data.status === 'none') {
     for (const id of OPTIONAL_CARDS) hideCard(id);
     summaryCard.style.display = '';
-    summaryCard.innerHTML = '<div class="empty">진행 중인 프로젝트가 없어요</div>';
+    summaryCard.innerHTML = '<div class="empty">편집 중인 프로젝트가 없어요</div>';
     document.title = '태태고 편집실';
     return;
   }
@@ -1089,7 +1121,7 @@ function renderPastList() {
     return `
       <button type="button" class="pastRow${p.id === current ? ' current' : ''}" data-id="${escapeHtml(p.id)}">
         <span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span>
-        <span class="pastState ${done ? 'done' : 'wip'}">${done ? '완료' : '진행중'}</span>
+        <span class="pastState ${done ? 'done' : 'wip'}">${done ? '완료' : '편집 중'}</span>
         <span class="pastFacts">${facts.join('')}</span>
       </button>
     `;
@@ -1401,7 +1433,7 @@ function renderSummary(cardEl, data) {
   const isCompleted = data.status === 'completed';
   const progress = pipelineProgress(data);
   const pct = progress ? progress.pct : 0;
-  const statusLabel = isCompleted ? '완료' : '진행중';
+  const statusLabel = isCompleted ? '완료' : '편집 중';
   const stageText = isCompleted ? null : data.currentStage;
   const stageCat = stageText ? (data.allCategories || []).find(c => c.name === stageText) : null;
   const stageIcon = stageText ? categorySvg(stageCat ? stageCat.symbolName : null) : '';
@@ -1816,7 +1848,7 @@ function initTodoPoke() {
   });
 
   // 끝낸 단계에도 한마디 — 회고조 문구가 많아 완료 쪽에도 잘 맞는다.
-  // (진행중 단계는 이름 옆 '진행중' 표시와 겹쳐서 뺀다.)
+  // (진행 중인 단계는 이름 옆 '편집 중' 표시와 겹쳐서 뺀다.)
   body.addEventListener('click', (ev) => {
     const item = ev.target.closest('.pipeItem.todo, .pipeItem.done');
     if (!item) return;
@@ -2094,7 +2126,7 @@ function escapeHtml(str) {
 
 /* ===== 하이라이트 색 (LIGHT/DARK 옆에서 선택) =====
    테마별로 대비가 맞는 짝을 미리 정해두고 --accent / --accent2 / --soft만 덮어쓴다. */
-/* warn은 '진행중' 표식 색. 하이라이트 색과 겹치면 "지금 여기"가 묻히므로 짝을 따로 정한다.
+/* warn은 '편집 중' 표식 색. 하이라이트 색과 겹치면 "지금 여기"가 묻히므로 짝을 따로 정한다.
    카테고리 색(색상환 163·202·247·289°)과도 겹치지 않게 따뜻한 쪽에서 고른다.
    앰버·코랄은 기본 앰버와 너무 가까워(0°·31°) 각각 분홍·라임으로 바꾼다. */
 const ACCENTS = {
@@ -2124,7 +2156,7 @@ function applyAccent(key) {
   root.setProperty('--accent2', accent2);
   root.setProperty('--soft', accentSoft(accent, isLight ? 0.12 : 0.14));
   root.setProperty('--tg-on-ink', accent2);
-  // '진행중' 색은 하이라이트마다 짝지어 둔 값으로 (같은 색이 되어 묻히지 않게).
+  // '편집 중' 색은 하이라이트마다 짝지어 둔 값으로 (같은 색이 되어 묻히지 않게).
   const warn = (ACCENTS[key].warn || ['#f2b84a', '#a3690c'])[isLight ? 1 : 0];
   root.setProperty('--warn', warn);
   root.setProperty('--warn-soft', accentSoft(warn, isLight ? 0.14 : 0.16));
