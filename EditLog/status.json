@@ -87,6 +87,8 @@
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
   "currentStage" : "1차 컷편집",
+  "cutBaselineRatio" : 0.1,
+  "cuttingGroup" : "컷 편집",
   "entries" : [
     {
       "category" : "자막 추출",
@@ -118,7 +120,7 @@
     }
   ],
   "entryCount" : 4,
-  "lastUpdate" : "2026-09-08T12:08:59Z",
+  "lastUpdate" : "2026-09-08T12:28:42Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
