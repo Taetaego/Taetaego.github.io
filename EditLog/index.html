@@ -124,7 +124,7 @@
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
   /* position/z-index가 없으면 뒤에 붙는 반딧불이 레이어가 카드 위를 덮는다. */
-  .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; gap: 12px; }
+  .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; --cardGap: 12px; gap: var(--cardGap); }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
   #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #dayCard.card, #logCard.card {
@@ -680,9 +680,11 @@
   /* .card와 같이 쓰는데, 모바일 미디어쿼리의 .card { padding } 이 뒤에 와서 이겼다.
      클래스를 둘 다 걸어 우선순위를 올려야 폰에서도 그림이 카드를 꽉 채운다. */
   .card.ytThumb { padding: 0; }
-  /* 도넛 · 썸네일 · 완료 세 카드는 한 덩어리로 읽히게 서로 같은 간격으로 붙인다
-     (기본 카드 간격에서 6px씩 당긴다). */
-  #summaryCard + .ytThumb, .ytThumb + #doneCard { margin-top: -6px; }
+  /* 도넛 · 썸네일 · 그 다음 카드는 한 덩어리로 읽히게 정확히 10px씩 띄운다.
+     기본 간격이 화면 폭마다 달라서(모바일 12 / 데스크톱 16) 뺄셈으로 맞춘다. */
+  #summaryCard + .ytThumb,
+  .ytThumb + #doneCard,
+  .ytThumb + #pipelineCard { margin-top: calc(10px - var(--cardGap)); }
   .ytThumb {
     position: relative; display: block; padding: 0;
     border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
@@ -788,14 +790,15 @@
         "left   right"
         "fire   fire";
       align-items: stretch;
-      gap: 16px;
+      --cardGap: 16px;
+      gap: var(--cardGap);
     }
     /* 그리드에선 가로 정렬이 justify-self라, 이게 없으면 버튼이 두 칸 폭으로 늘어난다. */
     .fxBar { grid-area: fire; justify-self: center; }
     .madeBy { grid-column: 1 / -1; justify-self: center; }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
-    .colLeft { grid-area: left; display: flex; flex-direction: column; gap: 16px; }
-    .colRight { grid-area: right; display: flex; flex-direction: column; gap: 16px; }
+    .colLeft { grid-area: left; display: flex; flex-direction: column; gap: var(--cardGap); }
+    .colRight { grid-area: right; display: flex; flex-direction: column; gap: var(--cardGap); }
     /* 파이프라인(12단계)이 왼쪽을 길게 끌고 가서 오른쪽 아래가 비는 걸 막는다.
        작업 기록은 앞으로 계속 쌓이는 표라, 남는 높이를 이 카드가 흡수하는 게 자연스럽다. */
     #logCard { flex: 1; }
