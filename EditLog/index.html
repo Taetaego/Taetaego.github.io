@@ -678,6 +678,8 @@
   /* .card와 같이 쓰는데, 모바일 미디어쿼리의 .card { padding } 이 뒤에 와서 이겼다.
      클래스를 둘 다 걸어 우선순위를 올려야 폰에서도 그림이 카드를 꽉 채운다. */
   .card.ytThumb { padding: 0; }
+  /* 히어로(도넛) 바로 밑에 붙는 그림이라, 둘 사이만 기본 카드 간격보다 좁게 둔다. */
+  #summaryCard + .ytThumb { margin-top: -6px; }
   .ytThumb {
     position: relative; display: block; padding: 0;
     border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
@@ -1359,35 +1361,33 @@ function catWeight(c) {
   return Number.isFinite(w) && w > 0 ? w : 1;
 }
 
-/** 12시 방향에 남겨 둘 틈(도). 100%여도 링이 완전히 닫히지 않게 시작·끝을 떨어뜨린다. */
-const DONUT_GAP = 9;
-const DONUT_START = DONUT_GAP / 2;
-const DONUT_SPAN = 360 - DONUT_GAP;
+/** 단계 구분 눈금의 두께(도). 12시 표시도 같은 눈금을 쓴다. */
+const TICK = 1.6;
 
-/** 진행률(%)을 12시의 틈을 비운 링 그라디언트로. */
+/** 진행률(%)을 링 그라디언트로. 12시는 눈금이 끊어주므로 링 자체는 360도를 다 쓴다. */
 function donutRing(pct) {
   const p = Math.max(0, Math.min(100, Number(pct) || 0));
-  const end = (DONUT_START + DONUT_SPAN * (p / 100)).toFixed(2);
-  const tail = (360 - DONUT_START).toFixed(2);
-  return `conic-gradient(transparent 0 ${DONUT_START}deg,`
-       + ` var(--accent) ${DONUT_START}deg ${end}deg,`
-       + ` var(--surface2) ${end}deg ${tail}deg,`
-       + ` transparent ${tail}deg 360deg)`;
+  return `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
 }
 
-/** 도넛 링의 단계 구분 눈금. 각 칸의 폭이 그 단계의 비중에 비례한다.
-    링과 같은 범위(12시 틈을 뺀 구간)에 놓아야 칸 경계가 어긋나지 않는다. */
+/** 도넛 링을 끊어주는 눈금. 단계 경계마다 하나씩, 그리고 12시(시작점)에도 하나.
+    12시 눈금은 0도를 걸쳐 있어서 그라디언트의 맨 앞과 맨 뒤에 절반씩 나눠 넣는다. */
 function donutTicks(progress) {
-  if (!progress || !progress.totalWeight) return 'none';
-  const TICK = 1.6;   // 눈금 두께(도)
-  const stops = ['transparent 0deg'];
-  let acc = DONUT_START;
-  progress.weights.slice(0, -1).forEach((w) => {
-    acc += (w / progress.totalWeight) * DONUT_SPAN;
-    const a = (acc - TICK / 2).toFixed(2), b = (acc + TICK / 2).toFixed(2);
-    stops.push(`transparent ${a}deg`, `var(--bg) ${a}deg`, `var(--bg) ${b}deg`, `transparent ${b}deg`);
-  });
-  stops.push('transparent 360deg');
+  const half = TICK / 2;
+  const h = half.toFixed(2), tail = (360 - half).toFixed(2);
+  // 시작점 표시 — 다른 눈금과 두께도 색도 같다.
+  const stops = [`var(--bg) 0deg`, `var(--bg) ${h}deg`, `transparent ${h}deg`];
+
+  if (progress && progress.totalWeight) {
+    let acc = 0;
+    progress.weights.slice(0, -1).forEach((w) => {
+      acc += (w / progress.totalWeight) * 360;
+      const a = (acc - half).toFixed(2), b = (acc + half).toFixed(2);
+      stops.push(`transparent ${a}deg`, `var(--bg) ${a}deg`, `var(--bg) ${b}deg`, `transparent ${b}deg`);
+    });
+  }
+
+  stops.push(`transparent ${tail}deg`, `var(--bg) ${tail}deg`, `var(--bg) 360deg`);
   return `conic-gradient(from 0deg, ${stops.join(',')})`;
 }
 
@@ -2321,8 +2321,10 @@ function startAmbientFireworks() {
 function setSparkAngle(pct) {
   const spark = document.getElementById('donutSpark');
   if (!spark) return;
-  spark.style.setProperty('--spark', (DONUT_START + DONUT_SPAN * (pct / 100)).toFixed(2) + 'deg');
-  spark.style.display = pct > 2 ? '' : 'none';
+  spark.style.setProperty('--spark', (pct * 3.6).toFixed(2) + 'deg');
+  // 다 채워지면 점이 12시 틈의 왼쪽 절반에 얹혀 틈이 오른쪽으로 밀린 것처럼 보인다.
+  // 어차피 '지금 어디까지 왔는지' 표시라 100%에서는 할 일이 없다.
+  spark.style.display = (pct > 2 && pct < 99.5) ? '' : 'none';
 }
 
 /** keepNumber를 주면 링만 0%에서 다시 채우고 가운데 숫자는 최종값 그대로 둔다. */
