@@ -686,14 +686,50 @@
   .ytThumb + #doneCard,
   .ytThumb + #pipelineCard { margin-top: calc(8px - var(--cardGap)); }
   .ytThumb {
-    position: relative; display: block; padding: 0;
+    position: relative; display: block; padding: 0; cursor: pointer;
     border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
     background: var(--surface2); border: 1px solid var(--line);
     transition: transform .18s ease, border-color .18s ease;
   }
-  /* 아직 영상이 안 나온 캡처에는 누를 곳이 없다 — 재생 표시도 링크도 빼고 배지만 붙인다. */
-  .ytThumb.still { cursor: default; }
+  /* 아직 영상이 안 나온 캡처에는 갈 곳이 없다 — 재생 표시도 링크도 빼고 배지만 붙인다.
+     그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
   .ytThumb.still .ytPlay { display: none; }
+
+  /* 눌렀을 때 카메라 셔터처럼 한 번 찰칵 — 위아래 막이 닫혔다 열리고, 흰 빛이
+     번쩍인 뒤 누른 자리에서 파문이 퍼진다. 한 번만 도는 짧은 애니메이션이라
+     폰에서도 레이어를 계속 붙잡고 있지 않는다. */
+  .ytThumb.snapping { animation: snapPress .42s cubic-bezier(.3,1.4,.4,1); }
+  @keyframes snapPress {
+    0% { transform: scale(1); } 26% { transform: scale(.972); } 100% { transform: scale(1); }
+  }
+  .snapFx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
+  .snapFx .bar { position: absolute; left: 0; right: 0; height: 52%; background: #05070b; }
+  .snapFx .bar.t { top: 0; animation: snapShutTop .52s cubic-bezier(.4,0,.2,1) both; }
+  .snapFx .bar.b { bottom: 0; animation: snapShutBot .52s cubic-bezier(.4,0,.2,1) both; }
+  @keyframes snapShutTop {
+    0% { transform: translateY(-100%); }
+    40%, 52% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+  }
+  @keyframes snapShutBot {
+    0% { transform: translateY(100%); }
+    40%, 52% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+  }
+  /* 막보다 아래에 깔아 둔다 — 완전히 닫히기 직전, 남은 틈으로 빛이 새는 그림이 된다. */
+  .snapFx .flash { position: absolute; inset: 0; background: #fff; animation: snapFlash .52s ease-out both; }
+  @keyframes snapFlash { 0% { opacity: 0; } 30% { opacity: .8; } 60%, 100% { opacity: 0; } }
+  .snapFx .ring {
+    position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.92); animation: snapRing .62s ease-out both;
+  }
+  @keyframes snapRing {
+    0% { transform: scale(.2); opacity: .95; }
+    100% { transform: scale(8); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ytThumb.snapping { animation: none; }
+  }
   .thumbTag {
     position: absolute; left: 10px; bottom: 10px; z-index: 1;
     display: inline-flex; align-items: center; gap: 5px;
@@ -984,6 +1020,7 @@ async function main() {
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
+    initThumbSnap();
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
@@ -2421,6 +2458,35 @@ function initAmbientLayers() {
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
+/** 썸네일을 누르면 카메라 셔터가 한 번 '찰칵' 한다. 완성 영상 썸네일은 그대로
+    유튜브로 넘어가고(새 탭이라 이펙트는 이 페이지에 남는다), 편집 중 캡처는
+    갈 곳이 없으니 이 반응이 전부다. */
+function initThumbSnap() {
+  const link = document.getElementById('ytThumb');
+  if (!link) return;
+
+  link.addEventListener('click', (ev) => {
+    if (reducedMotion) return;
+    // 연달아 누르면 앞 것을 걷어내고 처음부터 다시 — 겹쳐 쌓이면 막이 안 열린 채로 남는다.
+    link.querySelectorAll('.snapFx').forEach(el => el.remove());
+    link.classList.remove('snapping');
+    void link.offsetWidth;
+    link.classList.add('snapping');
+
+    const box = link.getBoundingClientRect();
+    const x = ev.clientX ? ev.clientX - box.left : box.width / 2;
+    const y = ev.clientY ? ev.clientY - box.top : box.height / 2;
+
+    const fx = document.createElement('div');
+    fx.className = 'snapFx';
+    fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML = `<span class="flash"></span><span class="bar t"></span><span class="bar b"></span>`
+      + `<span class="ring" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px"></span>`;
+    link.appendChild(fx);
+    setTimeout(() => { fx.remove(); link.classList.remove('snapping'); }, 680);
+  });
+}
+
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
   const cards = [
