@@ -695,19 +695,6 @@
      그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
   .ytThumb.still .ytPlay { display: none; }
 
-  /* 눌렀을 때 화면이 한 번 '지지직' — 영상이 가로로 몇 줄 찢겨 어긋나고, 색 번짐 띠와
-     주사선이 번쩍인 뒤 제자리로 돌아온다. 한 번만 도는 0.5초짜리라 끝나면 통째로 걷어낸다. */
-  .glitchFx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
-  .glitchFx .gs { position: absolute; inset: 0; }
-  /* 어긋난 줄 하나는 원본과 '차이'로 겹쳐 색이 뒤집힌 노이즈가 된다 */
-  .glitchFx .gs.dif { mix-blend-mode: difference; }
-  .glitchFx .gb { position: absolute; left: 0; right: 0; top: 0; height: 4%; mix-blend-mode: screen; }
-  .glitchFx::after {
-    content: ""; position: absolute; inset: 0;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 1px, transparent 1px 3px);
-    animation: glitchScan .52s steps(5, end) forwards;
-  }
-  @keyframes glitchScan { 0% { opacity: .95; } 60% { opacity: .55; } 100% { opacity: 0; } }
   .thumbTag {
     position: absolute; left: 10px; bottom: 10px; z-index: 1;
     display: inline-flex; align-items: center; gap: 5px;
@@ -998,7 +985,7 @@ async function main() {
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
-    initThumbGlitch();
+    initThumbFilmBurst();
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
@@ -2436,74 +2423,99 @@ function initAmbientLayers() {
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
-/** 썸네일을 누르면 화면이 한 번 '지지직' 한다. 완성 영상 썸네일은 그대로
+/** 썸네일을 누르면 그 영상에서 잘라낸 필름 조각들이 누른 자리에서 솟구쳐
+    팔랑팔랑 떨어진다 (금빛 반짝이도 몇 개 섞어서). 조각마다 영상의 다른 부분이
+    담기고, 뒤집히는 순간엔 필름 뒷면만 보인다. 완성 영상 썸네일은 그대로
     유튜브로 넘어가고(새 탭이라 이펙트는 이 페이지에 남는다), 편집 중 캡처는
-    갈 곳이 없으니 이 반응이 전부다. */
-function initThumbGlitch() {
+    갈 곳이 없으니 이 반응이 전부다. 그림은 다른 이펙트와 같은 캔버스에 그린다. */
+function initThumbFilmBurst() {
   const link = document.getElementById('ytThumb');
   const img = document.getElementById('ytImg');
   if (!link || !img) return;
-  const DUR = 520;
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  let layer = null, timer = 0;
 
-  link.addEventListener('click', () => {
-    const src = img.currentSrc || img.src;
-    if (reducedMotion || !src) return;
-    // 연달아 누르면 앞 것을 걷어내고 처음부터 — 겹쳐 쌓이면 어긋난 줄이 남는다.
-    if (layer) { layer.remove(); clearTimeout(timer); }
+  link.addEventListener('click', (ev) => {
+    if (reducedMotion || !img.complete || !img.naturalWidth) return;
+    const box = link.getBoundingClientRect();
+    // 키보드로 눌렀으면 좌표가 0이라 카드 가운데서 터뜨린다.
+    const ox = ev.clientX || box.left + box.width / 2;
+    const oy = ev.clientY || box.top + box.height / 2;
 
-    const fx = document.createElement('div');
-    fx.className = 'glitchFx';
-    fx.setAttribute('aria-hidden', 'true');
+    // 카드에 실제로 보이는 부분(object-fit: cover로 잘린 16:9 영역)에서만 조각을 뜬다.
+    // 유튜브 hq 썸네일은 4:3에 위아래 검은 띠가 있어서 이걸 안 하면 검은 조각이 나온다.
+    const nw = img.naturalWidth, nh = img.naturalHeight;
+    const vw = Math.min(nw, nh * 16 / 9), vh = vw * 9 / 16;
+    const vx = (nw - vw) / 2, vy = (nh - vh) / 2;
 
-    // 찢어진 가로 줄: 원본을 같은 자리에 겹쳐 놓고 띠만 남긴 채 옆으로 툭툭 민다.
-    // 각 프레임을 steps(1)로 끊어야 미끄러지지 않고 '튀는' 느낌이 난다.
-    let y = rnd(3, 12), n = 0;
-    while (y < 92) {
-      const h = rnd(4, 12);
-      const strip = document.createElement('img');
-      strip.className = 'gs' + (n === 1 ? ' dif' : '');
-      strip.src = src;
-      strip.alt = '';
-      strip.style.clipPath = `inset(${y.toFixed(1)}% 0 ${Math.max(0, 100 - y - h).toFixed(1)}% 0)`;
-      fx.appendChild(strip);
-      const amp = rnd(10, 28);
-      const frames = [];
-      for (let i = 0; i < 5; i++) frames.push({ transform: `translateX(${rnd(-amp, amp).toFixed(1)}px)`, easing: 'steps(1, end)' });
-      frames.push({ transform: 'translateX(0)' });
-      strip.animate(frames, { duration: DUR * rnd(.55, .9), fill: 'forwards' });
-      y += h + rnd(7, 18);
-      n++;
-    }
-
-    // 색 번짐 띠: 자홍·청록·흰 줄이 몇 번 자리를 옮기며 번쩍이다 사라진다.
-    for (const color of ['rgba(255,0,110,.62)', 'rgba(0,230,255,.62)', 'rgba(255,255,255,.4)']) {
-      const bar = document.createElement('span');
-      bar.className = 'gb';
-      bar.style.background = color;
-      fx.appendChild(bar);
-      const frames = [];
-      for (let i = 0; i < 5; i++) {
-        frames.push({ top: `${rnd(0, 94).toFixed(1)}%`, height: `${rnd(1.5, 7).toFixed(1)}%`, opacity: 1, easing: 'steps(1, end)' });
-      }
-      const last = frames[frames.length - 1];
-      frames.push({ top: last.top, height: last.height, opacity: 0 });
-      bar.animate(frames, { duration: DUR * .8, fill: 'forwards' });
-    }
-
-    link.appendChild(fx);
-    // 카드도 같이 한 번 흔들린다 (살짝, 옆으로만).
+    // 카드가 살짝 튀어 올랐다 내려앉는다.
     link.animate([
-      { transform: 'translateX(0)' },
-      { transform: 'translateX(-3px) skewX(1.2deg)', easing: 'steps(1, end)' },
-      { transform: 'translateX(3px) skewX(-1deg)', easing: 'steps(1, end)' },
-      { transform: 'translateX(-1px)', easing: 'steps(1, end)' },
-      { transform: 'translateX(0)' },
-    ], { duration: DUR * .6 });
+      { transform: 'scale(1)' }, { transform: 'scale(1.025)', offset: 0.35 }, { transform: 'scale(1)' },
+    ], { duration: 380, easing: 'cubic-bezier(.3,1.4,.4,1)' });
 
-    layer = fx;
-    timer = setTimeout(() => { fx.remove(); if (layer === fx) layer = null; }, DUR + 60);
+    natRun('thumbFilm', 3.6, () => {
+      const R = (a, b) => a + Math.random() * (b - a);
+      // 위로 솟구치게 — 바로 위(-90°) 중심의 삼각분포 (하트 터짐과 같은 방식).
+      const launch = (sp) => {
+        const ang = -Math.PI / 2 + (Math.random() + Math.random() - 1) * Math.PI * 0.46;
+        return { vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp };
+      };
+      const tiles = Array.from({ length: 16 }, () => {
+        const cw = vw * R(0.26, 0.42), ch = cw * 9 / 16;
+        return {
+          x: ox, y: oy, ...launch(R(7, 14)),
+          w: R(30, 52), sx: vx + R(0, vw - cw), sy: vy + R(0, vh - ch), sw: cw, sh: ch,
+          rot: R(-0.5, 0.5), spin: R(-0.06, 0.06),
+          flip: R(0, 6.28), flipV: R(0.06, 0.14), ph: R(0, 6.28), sway: R(0.4, 1.1),
+          life: 1, dec: R(0.0045, 0.0065),
+        };
+      });
+      const sparks = Array.from({ length: 22 }, () => ({
+        x: ox, y: oy, ...launch(R(4, 12)), r: R(3, 7), rot: R(0, 6.28), spin: R(-0.15, 0.15),
+        life: 1, dec: R(0.012, 0.02), hue: R(38, 54),
+      }));
+
+      return (ctx, w, h, t, k, f) => {
+        const a = natFade(k, 0.02, 0.18);
+        for (const p of tiles) {
+          if (p.life <= 0) continue;
+          p.vy = Math.min(p.vy + 0.2 * f, 3.4);   // 떨어질 땐 팔랑이듯 천천히
+          p.vx *= 0.99;
+          p.ph += 0.07 * f; p.flip += p.flipV * f; p.rot += p.spin * f;
+          p.x += (p.vx + Math.sin(p.ph) * p.sway) * f;
+          p.y += p.vy * f;
+          p.life -= p.dec * f;
+          if (p.life <= 0) continue;
+
+          const fw = p.w, fh = fw * 9 / 16, band = fh * 0.24;
+          const face = Math.cos(p.flip);               // 종이처럼 뒤집히는 느낌
+          ctx.save();
+          ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(face, 1);
+          ctx.globalAlpha = a * Math.min(1, p.life * 1.8);
+          // 필름 한 칸: 검은 테두리 + 위아래 스프로킷 구멍
+          ctx.fillStyle = '#0c0f15';
+          ctx.fillRect(-fw / 2 - 2, -fh / 2 - band, fw + 4, fh + band * 2);
+          ctx.fillStyle = 'rgba(255,255,255,.75)';
+          const holes = 4, hw = fw / (holes * 2.2), hh = band * 0.42;
+          for (let i = 0; i < holes; i++) {
+            const hx = -fw / 2 + (i + 0.5) * (fw / holes) - hw / 2;
+            ctx.fillRect(hx, -fh / 2 - band + (band - hh) / 2, hw, hh);
+            ctx.fillRect(hx, fh / 2 + (band - hh) / 2, hw, hh);
+          }
+          if (face > 0) ctx.drawImage(img, p.sx, p.sy, p.sw, p.sh, -fw / 2, -fh / 2, fw, fh);
+          ctx.restore();
+        }
+        ctx.globalCompositeOperation = 'lighter';
+        for (const s of sparks) {
+          if (s.life <= 0) continue;
+          s.vx *= 0.985; s.vy = s.vy * 0.985 + 0.09 * f;
+          s.x += s.vx * f; s.y += s.vy * f; s.rot += s.spin * f; s.life -= s.dec * f;
+          if (s.life <= 0) continue;
+          ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot);
+          ctx.globalAlpha = a * s.life;
+          drawSpark(ctx, s.r * (0.4 + s.life * 0.7), `hsl(${s.hue.toFixed(0)},100%,${(72 + s.life * 20).toFixed(0)}%)`);
+          ctx.restore();
+        }
+      };
+    });
   });
 }
 
