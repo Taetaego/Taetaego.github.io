@@ -117,10 +117,17 @@
       "elapsed" : "1시간 18분",
       "timestamp" : "2026-09-08T12:08:51Z",
       "videoLength" : "7"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "3일 39분",
+      "timestamp" : "2026-09-11T12:48:22Z",
+      "videoLength" : "10"
     }
   ],
-  "entryCount" : 4,
-  "lastUpdate" : "2026-09-08T12:32:30Z",
+  "entryCount" : 5,
+  "lastUpdate" : "2026-09-11T12:48:24Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
