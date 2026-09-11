@@ -695,6 +695,53 @@
      그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
   .ytThumb.still .ytPlay { display: none; }
 
+  /* 누르면 유튜브 좋아요 버튼을 누른 것처럼 — 가운데 '👍 좋아요' 알약이 뜨고, 엄지가
+     꾹 눌렸다가 채워지며 위로 까딱, 그 자리에서 링과 색 점들이 터진다. */
+  .likeFx { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 2; }
+  .likePill {
+    display: inline-flex; align-items: center; gap: 12px; padding: 11px 20px 11px 16px; border-radius: 99px;
+    background: rgba(15,15,15,.8); color: #fff; font-size: 15px; font-weight: 700; letter-spacing: -0.01em;
+    box-shadow: 0 6px 22px rgba(0,0,0,.35);
+    animation: likePill 1.35s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  @keyframes likePill {
+    0% { opacity: 0; transform: scale(.82); } 12% { opacity: 1; transform: scale(1); }
+    78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.95); }
+  }
+  .likeBtn { position: relative; width: 26px; height: 26px; flex: none; }
+  .likeThumb {
+    position: absolute; inset: 0; transform-origin: 50% 80%;
+    animation: likeThumb .52s .16s cubic-bezier(.3,1.5,.5,1) both;
+  }
+  .likeThumb svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: #fff; }
+  .likeThumb .off { animation: likeHide 0s .31s forwards; }
+  .likeThumb .on { opacity: 0; animation: likeShow 0s .31s forwards; }
+  @keyframes likeThumb {
+    0% { transform: scale(1) rotate(0); } 30% { transform: scale(.74) rotate(6deg); }
+    66% { transform: scale(1.2) rotate(-16deg); } 100% { transform: scale(1) rotate(0); }
+  }
+  @keyframes likeHide { to { opacity: 0; } }
+  @keyframes likeShow { to { opacity: 1; } }
+  .likeRing {
+    position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px 0 0 -13px;
+    border-radius: 50%; border: 2px solid #fff; opacity: 0;
+    animation: likeRing .5s .31s ease-out forwards;
+  }
+  @keyframes likeRing { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(2.5); opacity: 0; } }
+  .likeDot {
+    position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%; background: var(--c); opacity: 0;
+    animation: likeDot .55s .31s ease-out forwards;
+  }
+  .likeDot.dash { width: 2.5px; height: 8px; margin: -4px 0 0 -1.25px; border-radius: 2px; }
+  @keyframes likeDot {
+    0% { transform: rotate(var(--a)) translateY(-10px) scale(1); opacity: 1; }
+    100% { transform: rotate(var(--a)) translateY(-30px) scale(.3); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .likePill, .likeThumb, .likeRing, .likeDot { animation-duration: 0s; animation-delay: 0s; }
+  }
+
   .thumbTag {
     position: absolute; left: 10px; bottom: 10px; z-index: 1;
     display: inline-flex; align-items: center; gap: 5px;
@@ -2423,45 +2470,34 @@ function initAmbientLayers() {
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
-/** 썸네일을 누르면 인스타 라이브 좋아요처럼 누른 자리에서 하트가 하나씩 피어올라
-    흔들리며 올라간다. 완성 영상 썸네일은 그대로 유튜브로 넘어가고(새 탭이라 하트는
-    이 페이지에 남는다), 편집 중 캡처는 갈 곳이 없으니 이 반응이 전부다.
-    그림은 다른 이펙트와 같은 캔버스에 그린다. */
+/** 썸네일을 누르면 유튜브 좋아요 버튼을 누른 것처럼 한 번 반응한다.
+    (진짜로 좋아요가 눌리는 건 아니다 — 그건 유튜브 로그인이 있어야 한다.)
+    완성 영상 썸네일은 그대로 유튜브로 넘어가고(새 탭이라 이 반응은 이 페이지에 남는다),
+    편집 중 캡처는 갈 곳이 없으니 이 반응이 전부다. */
+const LIKE_OFF = '<svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.58 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2zM9 9l4.34-4.34L12 10h9v2l-3 7H9V9zM1 9h4v12H1z"/></svg>';
+const LIKE_ON = '<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
+
 function initThumbLike() {
   const link = document.getElementById('ytThumb');
   if (!link) return;
-  const COLORS = ['#ff4f6d', '#ff6b81', '#ff9fb5', '#ffd0dc'];
-  const DUR = 2.4;
+  const COLORS = ['#3ea6ff', '#ff4f6d', '#ffd166', '#5ef38c'];
+  // 점과 짧은 선을 번갈아 8방향으로 — 조금씩 비틀어 너무 반듯하지 않게.
+  const dots = Array.from({ length: 8 }, (_, i) =>
+    `<i class="likeDot${i % 2 ? ' dash' : ''}" style="--a:${i * 45 + 12}deg;--c:${COLORS[i % COLORS.length]}"></i>`).join('');
+  let timer = 0;
 
-  link.addEventListener('click', (ev) => {
-    const box = link.getBoundingClientRect();
-    // 키보드로 눌렀으면 좌표가 0이라 카드 가운데서 피운다.
-    const x = ev.clientX || box.left + box.width / 2;
-    const y = ev.clientY || box.top + box.height / 2;
+  link.addEventListener('click', () => {
+    // 연달아 누르면 앞 것을 걷어내고 처음부터 다시 누른다.
+    link.querySelectorAll('.likeFx').forEach(el => el.remove());
+    clearTimeout(timer);
 
-    natRun('thumbLike', DUR, () => {
-      const R = (a, b) => a + Math.random() * (b - a);
-      const P = Array.from({ length: 14 }, (_, i) => ({
-        x: x + R(-10, 10), y, vy: R(-3.6, -2.4), ph: R(0, 6.28), sw: R(0.6, 1.4),
-        r: R(8, 15), delay: i * 0.05 + R(0, 0.12), c: COLORS[i % COLORS.length],
-      }));
-      return (ctx, w, h, t, k, f) => {
-        for (const p of P) {
-          const lt = t - p.delay;
-          if (lt < 0) continue;
-          p.y += p.vy * f; p.vy *= 0.992; p.ph += 0.08 * f;
-          const life = 1 - lt / (DUR - p.delay);
-          if (life <= 0) continue;
-          const pop = Math.min(1, lt * 7);   // 톡 하고 커지며 나타난다
-          ctx.save();
-          ctx.translate(p.x + Math.sin(p.ph) * 12 * p.sw, p.y);
-          ctx.scale(pop, pop);
-          ctx.globalAlpha = Math.min(1, life * 1.5);
-          drawHeart(ctx, p.r, p.c);
-          ctx.restore();
-        }
-      };
-    });
+    const fx = document.createElement('div');
+    fx.className = 'likeFx';
+    fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML = `<div class="likePill"><span class="likeBtn"><span class="likeRing"></span>${dots}`
+      + `<span class="likeThumb">${LIKE_OFF}${LIKE_ON}</span></span>좋아요</div>`;
+    link.appendChild(fx);
+    timer = setTimeout(() => fx.remove(), reducedMotion ? 900 : 1400);
   });
 }
 
