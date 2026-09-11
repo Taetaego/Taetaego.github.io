@@ -695,6 +695,60 @@
      그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
   .ytThumb.still .ytPlay { display: none; }
 
+  /* 썸네일 클릭 이펙트 고르기 (임시) — 누를 때마다 다음 후보로 넘어가고,
+     오른쪽 위에 지금 본 게 몇 번인지 잠깐 띄운다. 하나로 정해지면 나머지는 지운다. */
+  .tfx { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; overflow: hidden; }
+  .tfxLabel {
+    position: absolute; top: 10px; right: 10px; z-index: 3; pointer-events: none;
+    padding: 4px 10px; border-radius: 99px; background: rgba(8,10,14,.74); color: #fff;
+    font-size: 11px; font-weight: 700; letter-spacing: -0.01em;
+    animation: tfxLabel 1.8s ease forwards;
+  }
+  @keyframes tfxLabel {
+    0% { opacity: 0; transform: translateY(-4px); } 10%, 78% { opacity: 1; transform: none; } 100% { opacity: 0; }
+  }
+  /* ① 재생 팝 */
+  .tfx .pbtn, .tfx .pring {
+    position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
+  }
+  .tfx .pbtn { background: rgba(0,0,0,.5); animation: tfxPlay .7s cubic-bezier(.2,.9,.3,1) forwards; }
+  .tfx .pbtn::after {
+    content: ""; position: absolute; inset: 0; margin: auto; width: 0; height: 0;
+    border-left: 20px solid #fff; border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+    transform: translateX(3px);
+  }
+  .tfx .pring { border: 2px solid rgba(255,255,255,.9); animation: tfxPring .7s ease-out forwards; }
+  @keyframes tfxPlay {
+    0% { transform: scale(.5); opacity: 0; } 22% { transform: scale(1.05); opacity: 1; }
+    45% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.7); opacity: 0; }
+  }
+  @keyframes tfxPring { 0% { transform: scale(1); opacity: 0; } 20% { opacity: .9; } 100% { transform: scale(2.6); opacity: 0; } }
+  /* ③ 무지개 테두리 — 테두리 선만 남기고 속은 파낸 뒤, 그 안에서 무지개가 한 바퀴 돈다 */
+  .tfx.rainbow {
+    padding: 3px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: tfxFadeOut 1.1s ease-in forwards;
+  }
+  .tfx.rainbow .spin {
+    position: absolute; left: 50%; top: 50%; width: 200%; aspect-ratio: 1; margin: -100% 0 0 -100%;
+    background: conic-gradient(#ff4f6d, #ffb347, #ffe66d, #5ef38c, #4fd8ff, #7b7bff, #e46bff, #ff4f6d);
+    animation: tfxSpin 1.1s cubic-bezier(.3,.1,.3,1) forwards;
+  }
+  @keyframes tfxSpin { to { transform: rotate(1turn); } }
+  @keyframes tfxFadeOut { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
+  /* ④ 물결 파문 */
+  .tfx .ripple {
+    position: absolute; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.85); box-shadow: 0 0 14px rgba(255,255,255,.35);
+    animation: tfxRipple .9s ease-out both;
+  }
+  @keyframes tfxRipple { 0% { transform: scale(.3); opacity: .95; } 100% { transform: scale(10); opacity: 0; } }
+  /* ⑤ 줌 펀치 — 가운데서 번쩍 */
+  .tfx.flash { background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.8), rgba(255,255,255,0) 62%); animation: tfxFlash .5s ease-out forwards; }
+  @keyframes tfxFlash { 0% { opacity: .95; } 100% { opacity: 0; } }
+
   .thumbTag {
     position: absolute; left: 10px; bottom: 10px; z-index: 1;
     display: inline-flex; align-items: center; gap: 5px;
@@ -985,7 +1039,7 @@ async function main() {
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
-    initThumbFilmBurst();
+    initThumbTrial();
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
@@ -2423,99 +2477,84 @@ function initAmbientLayers() {
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
-/** 썸네일을 누르면 그 영상에서 잘라낸 필름 조각들이 누른 자리에서 솟구쳐
-    팔랑팔랑 떨어진다 (금빛 반짝이도 몇 개 섞어서). 조각마다 영상의 다른 부분이
-    담기고, 뒤집히는 순간엔 필름 뒷면만 보인다. 완성 영상 썸네일은 그대로
-    유튜브로 넘어가고(새 탭이라 이펙트는 이 페이지에 남는다), 편집 중 캡처는
-    갈 곳이 없으니 이 반응이 전부다. 그림은 다른 이펙트와 같은 캔버스에 그린다. */
-function initThumbFilmBurst() {
+/** 썸네일 클릭 이펙트 고르기 (임시). 누를 때마다 다음 후보를 보여주고 번호를 띄운다.
+    완성 영상 썸네일은 그대로 유튜브로 넘어가고(새 탭), 이펙트는 이 페이지에 남는다. */
+function initThumbTrial() {
   const link = document.getElementById('ytThumb');
   const img = document.getElementById('ytImg');
   if (!link || !img) return;
 
-  link.addEventListener('click', (ev) => {
-    if (reducedMotion || !img.complete || !img.naturalWidth) return;
-    const box = link.getBoundingClientRect();
-    // 키보드로 눌렀으면 좌표가 0이라 카드 가운데서 터뜨린다.
-    const ox = ev.clientX || box.left + box.width / 2;
-    const oy = ev.clientY || box.top + box.height / 2;
+  const layer = (cls, html, ms) => {
+    const el = document.createElement('div');
+    el.className = 'tfx ' + cls;
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = html;
+    link.appendChild(el);
+    setTimeout(() => el.remove(), ms);
+    return el;
+  };
 
-    // 카드에 실제로 보이는 부분(object-fit: cover로 잘린 16:9 영역)에서만 조각을 뜬다.
-    // 유튜브 hq 썸네일은 4:3에 위아래 검은 띠가 있어서 이걸 안 하면 검은 조각이 나온다.
-    const nw = img.naturalWidth, nh = img.naturalHeight;
-    const vw = Math.min(nw, nh * 16 / 9), vh = vw * 9 / 16;
-    const vx = (nw - vw) / 2, vy = (nh - vh) / 2;
-
-    // 카드가 살짝 튀어 올랐다 내려앉는다.
-    link.animate([
-      { transform: 'scale(1)' }, { transform: 'scale(1.025)', offset: 0.35 }, { transform: 'scale(1)' },
-    ], { duration: 380, easing: 'cubic-bezier(.3,1.4,.4,1)' });
-
-    natRun('thumbFilm', 3.6, () => {
+  const EFFECTS = [
+    ['① 재생 팝', () => layer('play', '<span class="pring"></span><span class="pbtn"></span>', 800)],
+    ['② 좋아요 하트', (x, y) => natRun('thumbLike', 2.4, () => {
       const R = (a, b) => a + Math.random() * (b - a);
-      // 위로 솟구치게 — 바로 위(-90°) 중심의 삼각분포 (하트 터짐과 같은 방식).
-      const launch = (sp) => {
-        const ang = -Math.PI / 2 + (Math.random() + Math.random() - 1) * Math.PI * 0.46;
-        return { vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp };
-      };
-      const tiles = Array.from({ length: 16 }, () => {
-        const cw = vw * R(0.26, 0.42), ch = cw * 9 / 16;
-        return {
-          x: ox, y: oy, ...launch(R(7, 14)),
-          w: R(30, 52), sx: vx + R(0, vw - cw), sy: vy + R(0, vh - ch), sw: cw, sh: ch,
-          rot: R(-0.5, 0.5), spin: R(-0.06, 0.06),
-          flip: R(0, 6.28), flipV: R(0.06, 0.14), ph: R(0, 6.28), sway: R(0.4, 1.1),
-          life: 1, dec: R(0.0045, 0.0065),
-        };
-      });
-      const sparks = Array.from({ length: 22 }, () => ({
-        x: ox, y: oy, ...launch(R(4, 12)), r: R(3, 7), rot: R(0, 6.28), spin: R(-0.15, 0.15),
-        life: 1, dec: R(0.012, 0.02), hue: R(38, 54),
+      const COLORS = ['#ff4f6d', '#ff6b81', '#ff9fb5', '#ffd0dc'];
+      // 인스타 라이브 좋아요처럼 누른 자리에서 하나씩 피어올라 흔들리며 사라진다.
+      const P = Array.from({ length: 14 }, (_, i) => ({
+        x: x + R(-10, 10), y, vy: R(-3.6, -2.4), ph: R(0, 6.28), sw: R(0.6, 1.4),
+        r: R(8, 15), delay: i * 0.05 + R(0, 0.12), c: COLORS[i % COLORS.length],
       }));
-
       return (ctx, w, h, t, k, f) => {
-        const a = natFade(k, 0.02, 0.18);
-        for (const p of tiles) {
-          if (p.life <= 0) continue;
-          p.vy = Math.min(p.vy + 0.2 * f, 3.4);   // 떨어질 땐 팔랑이듯 천천히
-          p.vx *= 0.99;
-          p.ph += 0.07 * f; p.flip += p.flipV * f; p.rot += p.spin * f;
-          p.x += (p.vx + Math.sin(p.ph) * p.sway) * f;
-          p.y += p.vy * f;
-          p.life -= p.dec * f;
-          if (p.life <= 0) continue;
-
-          const fw = p.w, fh = fw * 9 / 16, band = fh * 0.24;
-          const face = Math.cos(p.flip);               // 종이처럼 뒤집히는 느낌
+        for (const p of P) {
+          const lt = t - p.delay;
+          if (lt < 0) continue;
+          p.y += p.vy * f; p.vy *= 0.992; p.ph += 0.08 * f;
+          const life = 1 - lt / (2.4 - p.delay);
+          if (life <= 0) continue;
           ctx.save();
-          ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(face, 1);
-          ctx.globalAlpha = a * Math.min(1, p.life * 1.8);
-          // 필름 한 칸: 검은 테두리 + 위아래 스프로킷 구멍
-          ctx.fillStyle = '#0c0f15';
-          ctx.fillRect(-fw / 2 - 2, -fh / 2 - band, fw + 4, fh + band * 2);
-          ctx.fillStyle = 'rgba(255,255,255,.75)';
-          const holes = 4, hw = fw / (holes * 2.2), hh = band * 0.42;
-          for (let i = 0; i < holes; i++) {
-            const hx = -fw / 2 + (i + 0.5) * (fw / holes) - hw / 2;
-            ctx.fillRect(hx, -fh / 2 - band + (band - hh) / 2, hw, hh);
-            ctx.fillRect(hx, fh / 2 + (band - hh) / 2, hw, hh);
-          }
-          if (face > 0) ctx.drawImage(img, p.sx, p.sy, p.sw, p.sh, -fw / 2, -fh / 2, fw, fh);
-          ctx.restore();
-        }
-        ctx.globalCompositeOperation = 'lighter';
-        for (const s of sparks) {
-          if (s.life <= 0) continue;
-          s.vx *= 0.985; s.vy = s.vy * 0.985 + 0.09 * f;
-          s.x += s.vx * f; s.y += s.vy * f; s.rot += s.spin * f; s.life -= s.dec * f;
-          if (s.life <= 0) continue;
-          ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot);
-          ctx.globalAlpha = a * s.life;
-          drawSpark(ctx, s.r * (0.4 + s.life * 0.7), `hsl(${s.hue.toFixed(0)},100%,${(72 + s.life * 20).toFixed(0)}%)`);
+          ctx.translate(p.x + Math.sin(p.ph) * 12 * p.sw, p.y);
+          ctx.scale(Math.min(1, lt * 7), Math.min(1, lt * 7));   // 톡 하고 커지며 나타난다
+          ctx.globalAlpha = Math.min(1, life * 1.5);
+          drawHeart(ctx, p.r, p.c);
           ctx.restore();
         }
       };
-    });
+    })],
+    ['③ 무지개 테두리', () => layer('rainbow', '<span class="spin"></span>', 1200)],
+    ['④ 물결 파문', (x, y, box) => {
+      const lx = x - box.left, ly = y - box.top;
+      layer('', [0, 140, 280].map(d =>
+        `<span class="ripple" style="left:${lx.toFixed(0)}px;top:${ly.toFixed(0)}px;animation-delay:${d}ms"></span>`).join(''), 1300);
+      img.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.03)', offset: 0.3 }, { transform: 'scale(1)' }],
+        { duration: 900, easing: 'ease-out' });
+    }],
+    ['⑤ 줌 펀치', () => {
+      layer('flash', '', 560);
+      img.animate([
+        { transform: 'scale(1)' },
+        { transform: 'scale(1.12)', offset: 0.24, easing: 'cubic-bezier(.2,1.6,.4,1)' },
+        { transform: 'scale(1)' },
+      ], { duration: 520 });
+    }],
+  ];
+  let next = 0;
+
+  link.addEventListener('click', (ev) => {
+    if (reducedMotion) return;
+    const box = link.getBoundingClientRect();
+    const x = ev.clientX || box.left + box.width / 2;
+    const y = ev.clientY || box.top + box.height / 2;
+    const [name, run] = EFFECTS[next];
+    next = (next + 1) % EFFECTS.length;
+
+    link.querySelectorAll('.tfxLabel').forEach(el => el.remove());
+    const label = document.createElement('span');
+    label.className = 'tfxLabel';
+    label.textContent = name;
+    link.appendChild(label);
+    setTimeout(() => label.remove(), 1900);
+
+    run(x, y, box);
   });
 }
 
