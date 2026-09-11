@@ -695,41 +695,19 @@
      그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
   .ytThumb.still .ytPlay { display: none; }
 
-  /* 눌렀을 때 카메라 셔터처럼 한 번 찰칵 — 위아래 막이 닫혔다 열리고, 흰 빛이
-     번쩍인 뒤 누른 자리에서 파문이 퍼진다. 한 번만 도는 짧은 애니메이션이라
-     폰에서도 레이어를 계속 붙잡고 있지 않는다. */
-  .ytThumb.snapping { animation: snapPress .42s cubic-bezier(.3,1.4,.4,1); }
-  @keyframes snapPress {
-    0% { transform: scale(1); } 26% { transform: scale(.972); } 100% { transform: scale(1); }
+  /* 눌렀을 때 화면이 한 번 '지지직' — 영상이 가로로 몇 줄 찢겨 어긋나고, 색 번짐 띠와
+     주사선이 번쩍인 뒤 제자리로 돌아온다. 한 번만 도는 0.5초짜리라 끝나면 통째로 걷어낸다. */
+  .glitchFx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
+  .glitchFx .gs { position: absolute; inset: 0; }
+  /* 어긋난 줄 하나는 원본과 '차이'로 겹쳐 색이 뒤집힌 노이즈가 된다 */
+  .glitchFx .gs.dif { mix-blend-mode: difference; }
+  .glitchFx .gb { position: absolute; left: 0; right: 0; top: 0; height: 4%; mix-blend-mode: screen; }
+  .glitchFx::after {
+    content: ""; position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 1px, transparent 1px 3px);
+    animation: glitchScan .52s steps(5, end) forwards;
   }
-  .snapFx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
-  .snapFx .bar { position: absolute; left: 0; right: 0; height: 52%; background: #05070b; }
-  .snapFx .bar.t { top: 0; animation: snapShutTop .52s cubic-bezier(.4,0,.2,1) both; }
-  .snapFx .bar.b { bottom: 0; animation: snapShutBot .52s cubic-bezier(.4,0,.2,1) both; }
-  @keyframes snapShutTop {
-    0% { transform: translateY(-100%); }
-    40%, 52% { transform: translateY(0); }
-    100% { transform: translateY(-100%); }
-  }
-  @keyframes snapShutBot {
-    0% { transform: translateY(100%); }
-    40%, 52% { transform: translateY(0); }
-    100% { transform: translateY(100%); }
-  }
-  /* 막보다 아래에 깔아 둔다 — 완전히 닫히기 직전, 남은 틈으로 빛이 새는 그림이 된다. */
-  .snapFx .flash { position: absolute; inset: 0; background: #fff; animation: snapFlash .52s ease-out both; }
-  @keyframes snapFlash { 0% { opacity: 0; } 30% { opacity: .8; } 60%, 100% { opacity: 0; } }
-  .snapFx .ring {
-    position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,.92); animation: snapRing .62s ease-out both;
-  }
-  @keyframes snapRing {
-    0% { transform: scale(.2); opacity: .95; }
-    100% { transform: scale(8); opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .ytThumb.snapping { animation: none; }
-  }
+  @keyframes glitchScan { 0% { opacity: .95; } 60% { opacity: .55; } 100% { opacity: 0; } }
   .thumbTag {
     position: absolute; left: 10px; bottom: 10px; z-index: 1;
     display: inline-flex; align-items: center; gap: 5px;
@@ -1020,7 +998,7 @@ async function main() {
     initTodoPoke();
     initCounterReplay();
     initCardTilt();
-    initThumbSnap();
+    initThumbGlitch();
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
@@ -2458,32 +2436,74 @@ function initAmbientLayers() {
 }
 
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
-/** 썸네일을 누르면 카메라 셔터가 한 번 '찰칵' 한다. 완성 영상 썸네일은 그대로
+/** 썸네일을 누르면 화면이 한 번 '지지직' 한다. 완성 영상 썸네일은 그대로
     유튜브로 넘어가고(새 탭이라 이펙트는 이 페이지에 남는다), 편집 중 캡처는
     갈 곳이 없으니 이 반응이 전부다. */
-function initThumbSnap() {
+function initThumbGlitch() {
   const link = document.getElementById('ytThumb');
-  if (!link) return;
+  const img = document.getElementById('ytImg');
+  if (!link || !img) return;
+  const DUR = 520;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  let layer = null, timer = 0;
 
-  link.addEventListener('click', (ev) => {
-    if (reducedMotion) return;
-    // 연달아 누르면 앞 것을 걷어내고 처음부터 다시 — 겹쳐 쌓이면 막이 안 열린 채로 남는다.
-    link.querySelectorAll('.snapFx').forEach(el => el.remove());
-    link.classList.remove('snapping');
-    void link.offsetWidth;
-    link.classList.add('snapping');
-
-    const box = link.getBoundingClientRect();
-    const x = ev.clientX ? ev.clientX - box.left : box.width / 2;
-    const y = ev.clientY ? ev.clientY - box.top : box.height / 2;
+  link.addEventListener('click', () => {
+    const src = img.currentSrc || img.src;
+    if (reducedMotion || !src) return;
+    // 연달아 누르면 앞 것을 걷어내고 처음부터 — 겹쳐 쌓이면 어긋난 줄이 남는다.
+    if (layer) { layer.remove(); clearTimeout(timer); }
 
     const fx = document.createElement('div');
-    fx.className = 'snapFx';
+    fx.className = 'glitchFx';
     fx.setAttribute('aria-hidden', 'true');
-    fx.innerHTML = `<span class="flash"></span><span class="bar t"></span><span class="bar b"></span>`
-      + `<span class="ring" style="left:${x.toFixed(0)}px;top:${y.toFixed(0)}px"></span>`;
+
+    // 찢어진 가로 줄: 원본을 같은 자리에 겹쳐 놓고 띠만 남긴 채 옆으로 툭툭 민다.
+    // 각 프레임을 steps(1)로 끊어야 미끄러지지 않고 '튀는' 느낌이 난다.
+    let y = rnd(3, 12), n = 0;
+    while (y < 92) {
+      const h = rnd(4, 12);
+      const strip = document.createElement('img');
+      strip.className = 'gs' + (n === 1 ? ' dif' : '');
+      strip.src = src;
+      strip.alt = '';
+      strip.style.clipPath = `inset(${y.toFixed(1)}% 0 ${Math.max(0, 100 - y - h).toFixed(1)}% 0)`;
+      fx.appendChild(strip);
+      const amp = rnd(10, 28);
+      const frames = [];
+      for (let i = 0; i < 5; i++) frames.push({ transform: `translateX(${rnd(-amp, amp).toFixed(1)}px)`, easing: 'steps(1, end)' });
+      frames.push({ transform: 'translateX(0)' });
+      strip.animate(frames, { duration: DUR * rnd(.55, .9), fill: 'forwards' });
+      y += h + rnd(7, 18);
+      n++;
+    }
+
+    // 색 번짐 띠: 자홍·청록·흰 줄이 몇 번 자리를 옮기며 번쩍이다 사라진다.
+    for (const color of ['rgba(255,0,110,.62)', 'rgba(0,230,255,.62)', 'rgba(255,255,255,.4)']) {
+      const bar = document.createElement('span');
+      bar.className = 'gb';
+      bar.style.background = color;
+      fx.appendChild(bar);
+      const frames = [];
+      for (let i = 0; i < 5; i++) {
+        frames.push({ top: `${rnd(0, 94).toFixed(1)}%`, height: `${rnd(1.5, 7).toFixed(1)}%`, opacity: 1, easing: 'steps(1, end)' });
+      }
+      const last = frames[frames.length - 1];
+      frames.push({ top: last.top, height: last.height, opacity: 0 });
+      bar.animate(frames, { duration: DUR * .8, fill: 'forwards' });
+    }
+
     link.appendChild(fx);
-    setTimeout(() => { fx.remove(); link.classList.remove('snapping'); }, 680);
+    // 카드도 같이 한 번 흔들린다 (살짝, 옆으로만).
+    link.animate([
+      { transform: 'translateX(0)' },
+      { transform: 'translateX(-3px) skewX(1.2deg)', easing: 'steps(1, end)' },
+      { transform: 'translateX(3px) skewX(-1deg)', easing: 'steps(1, end)' },
+      { transform: 'translateX(-1px)', easing: 'steps(1, end)' },
+      { transform: 'translateX(0)' },
+    ], { duration: DUR * .6 });
+
+    layer = fx;
+    timer = setTimeout(() => { fx.remove(); if (layer === fx) layer = null; }, DUR + 60);
   });
 }
 
