@@ -702,11 +702,16 @@
     display: inline-flex; align-items: center; gap: 12px; padding: 11px 20px 11px 16px; border-radius: 99px;
     background: rgba(15,15,15,.8); color: #fff; font-size: 15px; font-weight: 700; letter-spacing: -0.01em;
     box-shadow: 0 6px 22px rgba(0,0,0,.35);
+    /* 겹쳐 떠도 서로 뭉쳐 보이지 않게 자리를 흩어 두고(--dx·--dy·--rot), 살며시 떠오르며 사라진다.
+       연달아 누르면 --dy가 위·가운데·아래로 돌아가며 층을 이룬다. */
+    --dx: 0px; --dy: 0px; --rot: 0deg;
     animation: likePill 1.35s cubic-bezier(.2,.9,.3,1) forwards;
   }
   @keyframes likePill {
-    0% { opacity: 0; transform: scale(.82); } 12% { opacity: 1; transform: scale(1); }
-    78% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.95); }
+    0% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 8px)) scale(.82) rotate(var(--rot)); }
+    12% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); }
+    78% { opacity: 1; transform: translate(var(--dx), calc(var(--dy) - 12px)) scale(1) rotate(var(--rot)); }
+    100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 24px)) scale(.95) rotate(var(--rot)); }
   }
   .likeBtn { position: relative; width: 26px; height: 26px; flex: none; }
   .likeThumb {
@@ -2484,20 +2489,28 @@ function initThumbLike() {
   // 점과 짧은 선을 번갈아 8방향으로 — 조금씩 비틀어 너무 반듯하지 않게.
   const dots = Array.from({ length: 8 }, (_, i) =>
     `<i class="likeDot${i % 2 ? ' dash' : ''}" style="--a:${i * 45 + 12}deg;--c:${COLORS[i % COLORS.length]}"></i>`).join('');
-  let timer = 0;
+  // 연달아 누른 알약이 같은 높이에 포개지지 않게, 누를 때마다 층을 옮긴다.
+  const SLOTS = [0, -38, 38, -19, 19];
+  let pressed = 0;
 
   link.addEventListener('click', () => {
-    // 연달아 누르면 앞 것을 걷어내고 처음부터 다시 누른다.
-    link.querySelectorAll('.likeFx').forEach(el => el.remove());
-    clearTimeout(timer);
+    // 연달아 누르면 앞 것을 건드리지 않고 그 위에 하나 더 쌓는다 (다른 이펙트들과 같은 방식).
+    // 다만 마구 눌렀을 때 한없이 쌓이지 않게 개수는 상한을 둔다.
+    const live = link.querySelectorAll('.likeFx');
+    if (live.length >= 10) live[0].remove();
 
     const fx = document.createElement('div');
     fx.className = 'likeFx';
     fx.setAttribute('aria-hidden', 'true');
-    fx.innerHTML = `<div class="likePill"><span class="likeBtn"><span class="likeRing"></span>${dots}`
+    // 겹친 알약이 정확히 한자리에 포개지면 하나처럼 보인다 — 층을 옮기고 좌우로도 흩어 놓는다.
+    const dy = SLOTS[pressed % SLOTS.length];
+    pressed++;
+    const dx = (Math.random() * 2 - 1) * 14, rot = (Math.random() * 2 - 1) * 3;
+    fx.innerHTML = `<div class="likePill" style="--dx:${dx.toFixed(1)}px;--dy:${dy}px;--rot:${rot.toFixed(1)}deg">`
+      + `<span class="likeBtn"><span class="likeRing"></span>${dots}`
       + `<span class="likeThumb">${LIKE_OFF}${LIKE_ON}</span></span>좋아요</div>`;
     link.appendChild(fx);
-    timer = setTimeout(() => fx.remove(), reducedMotion ? 900 : 1400);
+    setTimeout(() => fx.remove(), reducedMotion ? 900 : 1400);
   });
 }
 
