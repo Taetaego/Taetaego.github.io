@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "1차 컷편집",
+  "currentStage" : "2차 세부 컷편집",
   "cutBaselineRatio" : 0.12,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -138,10 +138,17 @@
       "elapsed" : "1일 14분",
       "timestamp" : "2026-09-12T14:33:03Z",
       "videoLength" : "34"
+    },
+    {
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "11분",
+      "timestamp" : "2026-09-12T14:44:56Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 7,
-  "lastUpdate" : "2026-09-12T14:33:04Z",
+  "entryCount" : 8,
+  "lastUpdate" : "2026-09-12T14:44:58Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
