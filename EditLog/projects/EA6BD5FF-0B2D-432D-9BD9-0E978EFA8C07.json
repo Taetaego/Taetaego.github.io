@@ -87,8 +87,10 @@
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
   "currentStage" : "2차 세부 컷편집",
-  "cutBaselineRatio" : 0.12,
+  "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
+  "detailCutLength" : "24",
+  "detailCutRatio" : 6.539509536784741,
   "entries" : [
     {
       "category" : "자막 추출",
@@ -148,7 +150,7 @@
     }
   ],
   "entryCount" : 8,
-  "lastUpdate" : "2026-09-12T14:44:58Z",
+  "lastUpdate" : "2026-09-12T16:00:00Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
