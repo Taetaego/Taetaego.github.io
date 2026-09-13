@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "지도\/위치 추가",
+  "currentStage" : "배경음 & 검수",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "24",
@@ -236,10 +236,17 @@
       "memo" : "후.. 버전 다운그레이드해서 인트로 다시만듬 근데 더 업그레이드된듯 ㅋ",
       "timestamp" : "2026-09-13T17:28:06Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "0분",
+      "timestamp" : "2026-09-13T17:28:48Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 20,
-  "lastUpdate" : "2026-09-13T17:28:23Z",
+  "entryCount" : 21,
+  "lastUpdate" : "2026-09-13T17:28:50Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
