@@ -176,10 +176,18 @@
       "memo" : "확실히 비디오에 한국어 비중이 많으면 편집이 편함",
       "timestamp" : "2026-09-13T09:14:01Z",
       "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "54분",
+      "memo" : "30분보다 끝나는 시간이 20분대이면 마음이 뭔가 평화로움 편집할 맛이 난다 해야하나",
+      "timestamp" : "2026-09-13T10:08:59Z",
+      "videoLength" : "17"
     }
   ],
-  "entryCount" : 12,
-  "lastUpdate" : "2026-09-13T09:14:19Z",
+  "entryCount" : 13,
+  "lastUpdate" : "2026-09-13T10:09:29Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
