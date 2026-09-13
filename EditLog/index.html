@@ -1026,8 +1026,7 @@ async function main() {
   initPastProjects();
 
   try {
-    const res = await fetch('status.json', { cache: 'no-store' });
-    const data = await res.json();
+    const data = await fetchData('status.json');
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initChipShake();
     initDayBandReplay();
@@ -1046,7 +1045,9 @@ async function main() {
     });
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
     // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
+    shownSignature = snapshotSignature(data);
     renderProject(data, { fireworks: true });
+    initAutoRefresh();
   } catch (e) {
     summaryCard.style.display = '';
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
@@ -1097,6 +1098,60 @@ function hideCard(id) {
   if (el) el.style.display = 'none';
 }
 
+/** 데이터 파일은 앱이 발행할 때마다 바뀐다. GitHub Pages가 max-age=600을 붙여 두어서
+    중간 CDN이 발행 직후 10분까지 옛 사본을 줄 수 있다 — 주소에 시각을 붙여 늘 새로 받는다. */
+function fetchData(path) {
+  const sep = path.includes('?') ? '&' : '?';
+  return fetch(`${path}${sep}t=${Date.now()}`, { cache: 'no-store' }).then((res) => {
+    if (!res.ok) throw new Error(`${path} ${res.status}`);
+    return res.json();
+  });
+}
+
+/* ===== 자리를 비웠다 돌아오면 최신 기록으로 =====
+   폰은 다른 앱으로 넘어가면 탭을 얼려 두었다가, 돌아올 때 다시 불러오지 않고 그 화면을
+   그대로 녹여서 보여준다 (뒤로가기 캐시도 마찬가지). status.json은 페이지를 열 때 한 번만
+   받으니, 그 사이 앱에서 기록을 남겼어도 새로고침 전까지 옛 화면이 남아 있었다.
+   그래서 다시 보이게 되는 순간과, 켜 둔 채로 있을 땐 1분마다 새 기록이 있는지 본다. */
+let shownSignature = '';   // 지금 화면에 그려진 스냅샷
+let refreshing = false;
+
+/** 발행 시각(lastUpdate)은 내용이 같아도 발행할 때마다 바뀌니 비교에서 뺀다. */
+function snapshotSignature(data) {
+  const { lastUpdate, ...rest } = data || {};
+  return JSON.stringify(rest);
+}
+
+async function refreshCurrentProject() {
+  // 목록에서 지난 프로젝트를 골라 보고 있으면 그 화면을 뺏지 않는다.
+  if (pastCurrentId || refreshing || document.hidden) return;
+  refreshing = true;
+  try {
+    const data = await fetchData('status.json');
+    const sig = snapshotSignature(data);
+    // 받아오는 사이에 지난 프로젝트를 열었을 수도 있다.
+    if (sig === shownSignature || pastCurrentId) return;
+    // 폭죽은 첫 방문과 '완료되는 순간'에만. 자리를 비운 사이 완료됐다면 지금이 그 순간이다.
+    const justCompleted = data.status === 'completed' && !heroCompleted;
+    shownSignature = sig;
+    pastIndex = null;   // 프로젝트가 늘었을 수 있으니 목록도 다음에 열 때 새로 받는다
+    renderProject(data, { fireworks: justCompleted });
+  } catch (e) {
+    // 오프라인이거나 잠깐 실패한 거면 다음 기회에 다시 본다.
+  } finally {
+    refreshing = false;
+  }
+}
+
+function initAutoRefresh() {
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshCurrentProject(); });
+  // 뒤로가기 캐시에서 되살아난 경우엔 visibilitychange가 오지 않을 때가 있다.
+  window.addEventListener('pageshow', (ev) => { if (ev.persisted) refreshCurrentProject(); });
+  // 데스크톱은 다른 창에 갔다 와도 탭이 계속 '보이는' 상태라 창 포커스로도 확인한다.
+  window.addEventListener('focus', refreshCurrentProject);
+  setInterval(refreshCurrentProject, 60000);
+}
+
 /* ===== 지난 프로젝트 목록 ===== */
 let pastIndex = null;      // projects/index.json — 창을 처음 열 때만 받아온다
 let pastCurrentId = null;  // 지금 화면에 떠 있는 프로젝트
@@ -1112,8 +1167,7 @@ function initPastProjects() {
     if (!pastIndex) {
       document.getElementById('pastBody').innerHTML = '<div class="empty">불러오는 중…</div>';
       try {
-        const res = await fetch('projects/index.json', { cache: 'no-store' });
-        pastIndex = await res.json();
+        pastIndex = await fetchData('projects/index.json');
       } catch (e) {
         document.getElementById('pastBody').innerHTML = '<div class="empty">목록을 불러오지 못했어요</div>';
         return;
@@ -1166,9 +1220,11 @@ function renderPastList() {
 async function openProject(id) {
   if (!id) return;
   try {
-    const res = await fetch(`projects/${encodeURIComponent(id)}.json`, { cache: 'no-store' });
-    const data = await res.json();
-    pastCurrentId = id;
+    const data = await fetchData(`projects/${encodeURIComponent(id)}.json`);
+    // 목록에서 지금 프로젝트를 다시 고른 거면 첫 화면으로 돌아온 것 — 자동 갱신을 계속 받는다.
+    const isCurrent = pastIndex && id === pastIndex.currentId;
+    pastCurrentId = isCurrent ? null : id;
+    if (isCurrent) shownSignature = snapshotSignature(data);
     renderProject(data, { fireworks: false });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {
