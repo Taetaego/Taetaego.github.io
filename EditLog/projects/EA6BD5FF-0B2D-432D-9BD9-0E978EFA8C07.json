@@ -197,12 +197,13 @@
       "category" : "맞춤법 검사",
       "categorySymbol" : "text.badge.checkmark",
       "elapsed" : "24분",
+      "memo" : "프리미어 프로 버전을 낮췄더니 유튜브 템플릿이 작동을 안해서 다시 옛날 auto save 불러와서 고침",
       "timestamp" : "2026-09-13T10:49:14Z",
       "videoLength" : ""
     }
   ],
   "entryCount" : 15,
-  "lastUpdate" : "2026-09-13T10:49:16Z",
+  "lastUpdate" : "2026-09-13T10:49:34Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
