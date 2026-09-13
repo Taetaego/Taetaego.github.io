@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "하이라이트 배치",
+  "currentStage" : "지도\/위치 추가",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "24",
@@ -216,15 +216,15 @@
       "videoLength" : ""
     },
     {
-      "category" : "하이라이트 배치",
-      "categorySymbol" : "star.bubble",
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
       "elapsed" : "3시간 22분",
-      "timestamp" : "2026-09-13T14:29:24Z",
+      "timestamp" : "2026-09-13T14:29:47Z",
       "videoLength" : ""
     }
   ],
   "entryCount" : 18,
-  "lastUpdate" : "2026-09-13T14:29:30Z",
+  "lastUpdate" : "2026-09-13T14:29:49Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
