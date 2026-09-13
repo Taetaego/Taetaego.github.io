@@ -168,10 +168,18 @@
       "elapsed" : "2시간 3분",
       "timestamp" : "2026-09-13T07:38:46Z",
       "videoLength" : "4"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 35분",
+      "memo" : "확실히 비디오에 한국어 비중이 많으면 편집이 편함",
+      "timestamp" : "2026-09-13T09:14:01Z",
+      "videoLength" : "12"
     }
   ],
-  "entryCount" : 11,
-  "lastUpdate" : "2026-09-13T07:38:48Z",
+  "entryCount" : 12,
+  "lastUpdate" : "2026-09-13T09:14:19Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
