@@ -500,6 +500,8 @@
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  /* 두 칸을 다 쓰는 타일 (지금은 '시작 후' 하나) */
+  .statTile.wide { grid-column: 1 / -1; }
   .statTile { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--accent); }
   /* 숫자가 있는 타일은 눌러서 카운트업을 다시 볼 수 있다 */
   .statTile:has(.value[data-count]) { cursor: pointer; }
@@ -1030,7 +1032,7 @@ async function main() {
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initChipShake();
     initDayBandReplay();
-    setInterval(updateDayNow, 60000);
+    setInterval(() => { updateDayNow(); updateSinceStart(); }, 60000);
     initRowPulse();
     initGalaxy(data);
     initTodoPoke();
@@ -1635,11 +1637,23 @@ function renderPipeline(data) {
 }
 
 /** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
-function statTile(label, value, subs, count) {
+function statTile(label, value, subs, count, cls) {
   if (value === null || value === undefined) return '';
   const subHtml = (subs || []).filter(Boolean).map(s => `<span class="sub">${s}</span>`).join('');
   const attrs = count ? ` data-count="${count.n}" data-fmt="${count.fmt}"` : '';
-  return `<div class="statTile"><span class="label">${label}</span><span class="value"${attrs}>${value}</span>${subHtml}</div>`;
+  return `<div class="statTile${cls ? ' ' + cls : ''}"><span class="label">${label}</span>`
+    + `<span class="value"${attrs}>${value}</span>${subHtml}</div>`;
+}
+
+/** 그 시각부터 지금까지 — "3일 5시간"처럼. */
+function elapsedText(iso) {
+  return formatSpan(Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000));
+}
+
+/** '시작 후' 타일은 가만히 둬도 시간이 흐르니 1분마다 다시 쓴다. */
+function updateSinceStart() {
+  const el = document.getElementById('sinceStart');
+  if (el && el.dataset.since) el.textContent = elapsedText(el.dataset.since);
 }
 
 /** 숫자 값이면 카운트업용 정보를, 아니면 null (— 같은 빈 값은 애니메이션 없음). */
@@ -1657,6 +1671,13 @@ function renderStats(data) {
   if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
   stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '-', finalSubs, counter(data.finalLength, 'duration'));
   stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null, null, counter(data.entryCount, 'count'));
+  // 시작하고 얼마나 지났는지. 완료된 프로젝트는 완료 카드에 총 소요시간이 이미 있으니 빼둔다.
+  if (data.status !== 'completed' && data.createdAt) {
+    stats += statTile(
+      '시작 후',
+      `<span id="sinceStart" data-since="${escapeHtml(data.createdAt)}">${elapsedText(data.createdAt)}</span>`,
+      [`${formatDateTime(data.createdAt)} 시작`], null, 'wide');
+  }
 
   document.getElementById('statsBody').innerHTML = stats;
   runCounters();
