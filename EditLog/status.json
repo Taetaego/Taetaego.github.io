@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "최종 검수",
+  "currentStage" : "썸네일 & 업로드",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "24",
@@ -272,10 +272,17 @@
       "elapsed" : "57분",
       "timestamp" : "2026-09-14T17:20:05Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "1시간 12분",
+      "timestamp" : "2026-09-14T18:32:24Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 25,
-  "lastUpdate" : "2026-09-14T17:20:08Z",
+  "entryCount" : 26,
+  "lastUpdate" : "2026-09-14T18:32:26Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
