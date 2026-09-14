@@ -258,10 +258,17 @@
       "memo" : "농떙이",
       "timestamp" : "2026-09-14T14:17:13Z",
       "videoLength" : "5"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "2시간 4분",
+      "timestamp" : "2026-09-14T16:22:11Z",
+      "videoLength" : "12"
     }
   ],
-  "entryCount" : 23,
-  "lastUpdate" : "2026-09-14T14:17:19Z",
+  "entryCount" : 24,
+  "lastUpdate" : "2026-09-14T16:22:12Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
