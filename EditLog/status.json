@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "배경음 & 검수",
+  "currentStage" : "최종 검수",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "24",
@@ -265,10 +265,17 @@
       "elapsed" : "2시간 4분",
       "timestamp" : "2026-09-14T16:22:11Z",
       "videoLength" : "12"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "57분",
+      "timestamp" : "2026-09-14T17:20:05Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 24,
-  "lastUpdate" : "2026-09-14T16:41:52Z",
+  "entryCount" : 25,
+  "lastUpdate" : "2026-09-14T17:20:08Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
