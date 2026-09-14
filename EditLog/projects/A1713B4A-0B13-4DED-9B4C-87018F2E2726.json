@@ -68,7 +68,7 @@
       "name" : "배경음 & 검수",
       "symbolName" : "music.note",
       "tracksLength" : true,
-      "weight" : 2
+      "weight" : 3
     },
     {
       "group" : "후반 작업",
@@ -210,7 +210,7 @@
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-09-14T16:22:12Z",
+  "lastUpdate" : "2026-09-14T16:41:43Z",
   "originalLength" : "14:05",
   "projectTopic" : "(테스트) 쿠스코 인티라이미 축제 마지막",
   "status" : "completed",

@@ -68,7 +68,7 @@
       "name" : "배경음 & 검수",
       "symbolName" : "music.note",
       "tracksLength" : true,
-      "weight" : 2
+      "weight" : 3
     },
     {
       "group" : "후반 작업",
@@ -268,7 +268,7 @@
     }
   ],
   "entryCount" : 24,
-  "lastUpdate" : "2026-09-14T16:22:12Z",
+  "lastUpdate" : "2026-09-14T16:41:43Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",

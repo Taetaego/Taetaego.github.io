@@ -68,7 +68,7 @@
       "name" : "배경음 & 검수",
       "symbolName" : "music.note",
       "tracksLength" : true,
-      "weight" : 2
+      "weight" : 3
     },
     {
       "group" : "후반 작업",
@@ -282,7 +282,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-14T16:22:12Z",
+  "lastUpdate" : "2026-09-14T16:41:43Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
