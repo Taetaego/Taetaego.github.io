@@ -513,6 +513,14 @@
   /* '원본 대비'·'컷편집 대비'처럼 보조 줄이 연달아 올 때만 간격을 좁힌다
      (라벨-값-첫 줄 사이 여백은 그대로 둔다). */
   .statTile .sub + .sub { margin-top: -4px; }
+  /* 영상 길이 카드: 두 칸짜리 격자를 통째로 쓰고, 안에서 세 칸으로 나눈다 */
+  .statTile.lenTile { grid-column: 1 / -1; gap: 11px; padding: 14px 16px; }
+  .lenCols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lenCol { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .lenCol + .lenCol { border-left: 1px solid var(--line); padding-left: 12px; }
+  .lenCol:not(:last-child) { padding-right: 8px; }
+  .lenCol .value { line-height: 1.15; word-break: keep-all; }
+  @media (max-width: 420px) { .lenCol .value { font-size: 15px; } }
 
   /* 카테고리별 기록 */
   .catCard { display: flex; flex-direction: column; gap: 10px; }
@@ -941,6 +949,10 @@
       </div>
 
       <div class="card logCard" id="logCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">작업 기록</span>
+          <span class="cardMeta mono" id="logMeta"></span>
+        </div>
         <div id="logBody"></div>
       </div>
     </div>
@@ -1647,11 +1659,13 @@ function renderPipeline(data) {
 }
 
 /** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
-function statTile(label, value, subs, count) {
-  if (value === null || value === undefined) return '';
-  const subHtml = (subs || []).filter(Boolean).map(s => `<span class="sub">${s}</span>`).join('');
+/** 영상 길이 카드의 한 칸. 값이 없으면 '-'로 자리만 지킨다. */
+function lengthCol(label, raw, subs) {
+  const count = counter(raw, 'duration');
   const attrs = count ? ` data-count="${count.n}" data-fmt="${count.fmt}"` : '';
-  return `<div class="statTile"><span class="label">${label}</span><span class="value"${attrs}>${value}</span>${subHtml}</div>`;
+  const subHtml = (subs || []).filter(Boolean).map(t => `<span class="sub">${t}</span>`).join('');
+  return `<div class="lenCol"><span class="label">${label}</span>`
+    + `<span class="value"${attrs}>${normalizeLength(raw) ?? '-'}</span>${subHtml}</div>`;
 }
 
 /** 그 시각부터 지금까지 — "3일 5시간"처럼. */
@@ -1680,16 +1694,18 @@ function counter(raw, fmt) {
 }
 
 function renderStats(data) {
-  let stats = '';
-  stats += statTile('촬영 원본 길이', normalizeLength(data.originalLength), null, counter(data.originalLength, 'duration'));
-  stats += statTile('컷편집 후 영상 길이', normalizeLength(data.detailCutLength) ?? '-', [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null], counter(data.detailCutLength, 'duration'));
+  // 촬영 원본 → 컷편집 후 → 완성, 영상이 줄어드는 순서대로 한 카드에 나란히 둔다.
+  // (작업 기록 개수는 작업 기록 표 머리글로 옮겼다.)
   const finalSubs = [];
   if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
   if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
-  stats += statTile('완성 영상 길이', normalizeLength(data.finalLength) ?? '-', finalSubs, counter(data.finalLength, 'duration'));
-  stats += statTile('작업 기록', data.entryCount != null ? `${data.entryCount}개` : null, null, counter(data.entryCount, 'count'));
-
-  document.getElementById('statsBody').innerHTML = stats;
+  const cols = [
+    lengthCol('촬영 원본', data.originalLength, null),
+    lengthCol('컷편집 후', data.detailCutLength, [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null]),
+    lengthCol('완성', data.finalLength, finalSubs),
+  ].join('');
+  document.getElementById('statsBody').innerHTML =
+    `<div class="statTile lenTile"><span class="cardTitle">영상 길이</span><div class="lenCols">${cols}</div></div>`;
   runCounters();
 }
 
@@ -1728,8 +1744,8 @@ function initCounterReplay() {
   const body = document.getElementById('statsBody');
   if (!body) return;
   body.addEventListener('click', (ev) => {
-    const value = ev.target.closest('.statTile')?.querySelector('.value[data-count]');
-    if (value) animateCounter(value);
+    const tile = ev.target.closest('.statTile');
+    if (tile) tile.querySelectorAll('.value[data-count]').forEach(animateCounter);
   });
 }
 
@@ -2226,6 +2242,7 @@ function renderLog(data) {
   logBody.innerHTML = html;
   // 메모가 하나도 없으면 열을 0으로 접는다 — 좁은 화면에서 카테고리 이름 자리를 뺏지 않게.
   logBody.style.setProperty('--memoCol', hasMemo ? '20px' : '0px');
+  document.getElementById('logMeta').textContent = `${entries.length}개`;
   document.getElementById('logCard').style.display = '';
   initInfoPopover();
   initMemoPopover();
