@@ -12,7 +12,7 @@
       "name" : "1차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
-      "weight" : 7
+      "weight" : 8
     },
     {
       "group" : "컷 편집",
@@ -210,7 +210,7 @@
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-09-14T16:41:43Z",
+  "lastUpdate" : "2026-09-14T16:41:52Z",
   "originalLength" : "14:05",
   "projectTopic" : "(테스트) 쿠스코 인티라이미 축제 마지막",
   "status" : "completed",
