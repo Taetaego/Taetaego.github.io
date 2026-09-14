@@ -243,10 +243,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-09-13T17:28:48Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "19시간 36분",
+      "timestamp" : "2026-09-14T13:04:49Z",
+      "videoLength" : "5"
     }
   ],
-  "entryCount" : 21,
-  "lastUpdate" : "2026-09-13T17:28:50Z",
+  "entryCount" : 22,
+  "lastUpdate" : "2026-09-14T13:04:56Z",
   "originalLength" : "6:07",
   "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
