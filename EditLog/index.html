@@ -871,7 +871,7 @@
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
-        <button type="button" class="pastBtn" id="pastBtn" title="지난 프로젝트 보기" aria-label="지난 프로젝트">🗂<span class="pastBtnText"> 지난 프로젝트</span></button>
+        <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드">🗂<span class="pastBtnText"> 지난 에피소드</span></button>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
           <button type="button" data-mode="dark">DARK</button>
@@ -981,9 +981,9 @@
 
   <!-- 지난 프로젝트 목록. 여기 쓰이는 projects/index.json은 이 창을 처음 열 때만 받아온다. -->
   <div class="modalBack" id="pastModal" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-label="지난 프로젝트">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="지난 에피소드">
       <div class="modalHead">
-        <span class="modalTitle">지난 프로젝트</span>
+        <span class="modalTitle">지난 에피소드</span>
         <span class="modalMeta mono" id="pastMeta"></span>
         <button type="button" class="modalClose" id="pastClose" aria-label="닫기">✕</button>
       </div>
@@ -1580,7 +1580,7 @@ function renderSummary(cardEl, data) {
         </div>` : ''}
       ${sinceIso ? `
         <div class="sinceBlock" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
-          <span class="stageLabel">시작 후</span>
+          <span class="stageLabel">에피소드 편집 시작 후</span>
           <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
