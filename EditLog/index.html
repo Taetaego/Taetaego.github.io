@@ -111,7 +111,7 @@
      남지 않게 한다. 작업 기록 표는 값을 복사할 수 있어야 하므로 제외.
      단계 목록은 항목뿐 아니라 담는 상자까지 막아야 한다 — 항목만 막으면 살짝 끌린
      클릭이 바깥 상자에서 선택을 시작해 점이 파랗게(OS 선택색) 번쩍인다. */
-  .catChip, .pipeItem, #pipelineBody, #dayCard, .fireBtn, .themeToggle {
+  .pipeItem, #pipelineBody, #dayCard, .fireBtn, .themeToggle {
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
   /* 그래도 어딘가 선택이 생기면 OS 기본 파란색 대신 페이지 색으로 보이게 한다. */
@@ -127,7 +127,7 @@
   .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; --cardGap: 12px; gap: var(--cardGap); }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #catCard.card, #dayCard.card, #logCard.card {
+  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #dayCard.card, #logCard.card {
     /* both가 아니라 backwards여야 등장이 끝난 뒤 transform이 풀려서 hover로 카드를
        띄울 수 있다. 지연 동안의 opacity:0은 backwards가 알아서 처리한다. */
     animation: cardIn .5s ease backwards;
@@ -138,12 +138,11 @@
   #doneCard.card { animation-delay: .08s; }
   #pipelineCard.card { animation-delay: .12s; }
   #statsWrap { animation-delay: .16s; }
-  #catCard.card { animation-delay: .2s; }
-  #dayCard.card { animation-delay: .24s; }
-  #logCard.card { animation-delay: .28s; }
+  #dayCard.card { animation-delay: .2s; }
+  #logCard.card { animation-delay: .24s; }
   /* 카드들이 display:none으로 시작하므로, 버튼도 렌더가 끝난 뒤 같이 나타나야
      위에 잠깐 붙었다가 아래로 튀는 일이 없다. */
-  #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .32s; }
+  #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .28s; }
   #madeBy { opacity: 0; animation: cardIn .5s ease both; animation-delay: .36s; }
   /* 등장 애니메이션 중에는 카드의 opacity가 1보다 작아 카드가 쌓임 맥락을 만든다.
      그러면 그 안의 메모 말풍선(z-index:20)이 카드 안에 갇혀, 뒤에 오는 버튼 바에
@@ -199,10 +198,10 @@
   @media (hover: hover) {
     .fireBtn:hover { background: var(--soft); color: var(--accent2); }
     /* 마우스를 올리면 카드가 2px 떠오른다 (터치 기기에선 hover가 남아 적용하지 않는다) */
-    #summaryCard, #pipelineCard, #catCard, #dayCard, #logCard, .statTile {
+    #summaryCard, #pipelineCard, #dayCard, #logCard, .statTile {
       transition: transform .18s ease, box-shadow .18s ease;
     }
-    #summaryCard:hover, #pipelineCard:hover, #catCard:hover, #dayCard:hover, #logCard:hover, .statTile:hover {
+    #summaryCard:hover, #pipelineCard:hover, #dayCard:hover, #logCard:hover, .statTile:hover {
       transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.26);
     }
   }
@@ -521,27 +520,6 @@
   .lenCol:not(:last-child) { padding-right: 8px; }
   .lenCol .value { line-height: 1.15; word-break: keep-all; }
   @media (max-width: 420px) { .lenCol .value { font-size: 15px; } }
-
-  /* 카테고리별 기록 */
-  .catCard { display: flex; flex-direction: column; gap: 10px; }
-  .catChips { display: flex; flex-wrap: wrap; gap: 5px; }
-  /* 누르면 흔들린다 (파이프라인 단계와 같은 poke 키프레임 재사용) */
-  .catChip { display: flex; align-items: center; gap: 5px; padding: 4px 8px 4px 5px; border-radius: 99px; background: var(--surface2); font-size: 10.5px; font-weight: 500; cursor: pointer; }
-  .catChip.shook { animation: poke .4s ease; }
-  /* 작업 기록 표와 같은 그룹 색을 쓰는 단색 아이콘 (배경은 그 색을 옅게 깐다). */
-  .catChip .mk {
-    width: 15px; height: 15px; border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--rowc, var(--ink3));
-    background: var(--soft);
-    background: color-mix(in srgb, currentColor 16%, transparent);
-  }
-  .catChip .mk svg {
-    width: 10px; height: 10px;
-    fill: none; stroke: currentColor; stroke-width: 1.9;
-    stroke-linecap: round; stroke-linejoin: round;
-  }
-  .catChip .cnt { font: 500 9px/1 'JetBrains Mono', monospace; color: var(--ink3); }
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
@@ -931,14 +909,6 @@
         <div class="stats" id="statsBody"></div>
       </div>
 
-      <div class="card catCard" id="catCard" style="display:none">
-        <div class="cardHead">
-          <span class="cardTitle">카테고리별 기록</span>
-          <span class="cardMeta mono" id="catMeta"></span>
-        </div>
-        <div class="catChips" id="catBody"></div>
-      </div>
-
       <div class="card dayCard" id="dayCard" style="display:none">
         <div class="cardHead">
           <span class="cardTitle">작업 시간대</span>
@@ -1043,7 +1013,6 @@ async function main() {
   try {
     const data = await fetchData('status.json');
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
-    initChipShake();
     initDayBandReplay();
     setInterval(() => { updateDayNow(); updateSinceStart(); }, 60000);
     initRowPulse();
@@ -1102,14 +1071,13 @@ function renderProject(data, { fireworks = false } = {}) {
   renderCompletion(data);
   renderPipeline(data);
   renderStats(data);
-  renderCategoryChips(data);
   renderDayBand(data);
   renderLog(data);
   initRunningLight(data);
   celebrate(heroPct, heroCompleted, fireworks);
 }
 
-const OPTIONAL_CARDS = ['doneCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard'];
+const OPTIONAL_CARDS = ['doneCard', 'pipelineCard', 'dayCard', 'logCard'];
 function hideCard(id) {
   const el = document.getElementById(id);
   if (el) el.style.display = 'none';
@@ -1457,7 +1425,7 @@ const SYMBOL_SVG = {
   'trophy': '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5.4H4.4v1.4a3.4 3.4 0 0 0 3 3.4"/><path d="M17 5.4h2.6v1.4a3.4 3.4 0 0 1-3 3.4"/><path d="M12 14v3.4"/><path d="M8.6 20.4h6.8l-.7-3H9.3z"/>',
 };
 
-/** 작업 기록 표와 카테고리별 기록 칩이 같은 아이콘을 쓰도록 한 곳에서 정한다.
+/** 작업 기록 표 아이콘 이름을 정한다.
     "완료"는 카테고리 목록에 없어 앱이 flag를 보내지만, 끝을 알리는 기록이라 트로피로 바꾼다. */
 function entryIconName(category, symbolName) {
   return category === '완료' ? 'trophy' : symbolName;
@@ -1469,7 +1437,7 @@ function categorySvg(symbolName) {
 }
 
 /** 카테고리 이름 -> "--rowc:<그룹색>;" 인라인 스타일 조각을 만드는 함수를 돌려준다.
-    작업 기록 표와 카테고리별 기록 칩이 같은 색을 쓰도록 한 곳에서 정의한다.
+    작업 기록 표와 전체 진행 단계가 같은 색을 쓰도록 한 곳에서 정의한다.
     그룹 이름이 바뀌어도 깨지지 않게 이름이 아닌 '등장 순서'로 토큰을 고르고,
     목록에 없는 카테고리("완료" 등)는 아예 정의하지 않아 기본 회색으로 떨어지게 한다. */
 function makeGroupColorVar(data) {
@@ -2049,29 +2017,6 @@ function initTodoPoke() {
   });
 }
 
-function renderCategoryChips(data) {
-  const entries = data.entries || [];
-  if (entries.length === 0) return;
-
-  const counts = new Map();
-  const symbolByName = new Map();
-  for (const e of entries) {
-    const name = e.category || '체크포인트';
-    counts.set(name, (counts.get(name) || 0) + 1);
-    if (!symbolByName.has(name)) symbolByName.set(name, e.categorySymbol);
-  }
-
-  const chipColorVar = makeGroupColorVar(data);
-  const html = Array.from(counts.entries()).map(([name, count]) => {
-    const icon = categorySvg(entryIconName(name, symbolByName.get(name)));
-    return `<span class="catChip" style="${chipColorVar(name)}"><span class="mk">${icon}</span>${escapeHtml(name)}<span class="cnt mono">${count}건</span></span>`;
-  }).join('');
-
-  document.getElementById('catBody').innerHTML = html;
-  document.getElementById('catMeta').textContent = String(entries.length);
-  document.getElementById('catCard').style.display = '';
-}
-
 /** 0시~24시 하늘 그라데이션 위에 세션 시각을 점으로 찍는다.
     여러 날의 기록이 한 축에 겹치므로 "몇 시에 일하는 사람인지"가 드러난다. */
 function renderDayBand(data) {
@@ -2124,20 +2069,6 @@ function initRowPulse() {
     row.classList.remove('pulsed');
     void row.offsetWidth;
     row.classList.add('pulsed');
-  });
-}
-
-/** 카테고리 칩을 누르면 흔들린다. */
-function initChipShake() {
-  const body = document.getElementById('catBody');
-  if (!body) return;
-  body.addEventListener('click', (ev) => {
-    const chip = ev.target.closest('.catChip');
-    if (!chip || reducedMotion) return;
-    // 연타해도 처음부터 다시 흔들리도록 클래스를 뗐다 붙이며 리플로우를 강제한다.
-    chip.classList.remove('shook');
-    void chip.offsetWidth;
-    chip.classList.add('shook');
   });
 }
 
@@ -2623,7 +2554,7 @@ function initThumbLike() {
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
   const cards = [
-    ...['summaryCard', 'pipelineCard', 'catCard', 'dayCard', 'logCard']
+    ...['summaryCard', 'pipelineCard', 'dayCard', 'logCard']
       .map(id => document.getElementById(id)).filter(Boolean),
     ...document.querySelectorAll('.statTile'),   // 통계 타일도 같이 기울어지게
   ];
