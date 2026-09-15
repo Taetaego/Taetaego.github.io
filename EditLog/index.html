@@ -375,12 +375,8 @@
   }
 
   /* 프로젝트 완료 요약 */
-  /* 끝난 프로젝트는 작업 기록의 완료 줄 · 앱과 같은 금색으로 알린다 */
-  .doneCard {
-    display: flex; flex-direction: column; gap: 12px;
-    background: linear-gradient(var(--gold-soft), var(--gold-soft)), var(--surface);
-    border-color: color-mix(in srgb, var(--gold) 38%, transparent);
-  }
+  /* 카드 자체는 다른 카드와 같은 색 — 금색은 제목·아이콘에만 둔다 */
+  .doneCard { display: flex; flex-direction: column; gap: 12px; }
   .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--gold); }
   .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
   .doneList { display: flex; flex-direction: column; gap: 6px; }
@@ -798,7 +794,7 @@
   }
   #doneCard.running::after {
     content: ""; position: absolute; inset: 1.5px; z-index: 0;
-    border-radius: 22.5px; background: linear-gradient(var(--gold-soft), var(--gold-soft)), var(--surface);
+    border-radius: 22.5px; background: var(--surface);
   }
   #doneCard.running > * { position: relative; z-index: 1; }
   @keyframes runLight { to { rotate: 360deg; } }
@@ -808,7 +804,7 @@
      통째로 안 그려지는 일이 생겨 접어둔다. */
   @media (max-width: 560px) {
     #doneCard.running::before { animation: none; opacity: 0; }
-    #doneCard.running { border-color: color-mix(in srgb, var(--gold) 38%, transparent); }
+    #doneCard.running { border-color: var(--line); }
   }
 
   @media (prefers-reduced-motion: reduce) {
