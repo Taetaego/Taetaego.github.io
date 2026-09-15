@@ -1820,7 +1820,10 @@ function renderStats(data) {
       + `<span class="label">${r.label}</span>`
       + `<span class="lenBar"><span class="lenFill" style="width:${pct.toFixed(1)}%;animation-delay:${delayMs}ms"></span></span>`
       + `<span class="lenVal"><span class="value"${attrs}>${normalizeLength(r.raw) ?? '-'}</span>`
-      + (r.ratio != null ? `<span class="ratio mono">${Math.round(r.ratio)}%</span>` : '')
+      // 비율도 같은 시간·같은 지연으로 0%부터 같이 오른다.
+      + (r.ratio != null
+        ? `<span class="ratio mono" data-count="${Math.round(r.ratio)}" data-fmt="pct" data-dur="${LEN_FILL_MS}" data-delay="${delayMs}">${Math.round(r.ratio)}%</span>`
+        : '')
       + `</span></div>`;
   }).join('');
   document.getElementById('statsBody').innerHTML =
@@ -1835,6 +1838,7 @@ function animateCounter(el) {
   if (!Number.isFinite(target) || target <= 0) return;
   const render = (n) => {
     el.textContent = el.dataset.fmt === 'count' ? `${n}개`
+      : el.dataset.fmt === 'pct' ? `${n}%`
       : el.dataset.fmt === 'span' ? formatSpan(n * 60)
       : formatMinutes(n);
   };
@@ -1858,7 +1862,7 @@ function animateCounter(el) {
 }
 
 function runCounters() {
-  document.querySelectorAll('.statTile .value[data-count], .sinceVal[data-count]').forEach(animateCounter);
+  document.querySelectorAll('.statTile [data-count], .sinceVal[data-count]').forEach(animateCounter);
 }
 
 /** 통계 타일을 누르면 카운트업을 다시 재생한다. */
@@ -1868,7 +1872,7 @@ function initCounterReplay() {
   body.addEventListener('click', (ev) => {
     const tile = ev.target.closest('.statTile');
     if (!tile) return;
-    tile.querySelectorAll('.value[data-count]').forEach(animateCounter);
+    tile.querySelectorAll('[data-count]').forEach(animateCounter);
     if (reducedMotion) return;
     // animation 전체가 아니라 이름만 껐다 켠다 — 전체를 덮으면 인라인 animation-delay까지
     // 지워져서, 다시 볼 때 줄마다 밀리던 시작이 사라지고 옆 숫자와 박자가 어긋난다.
