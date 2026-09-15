@@ -1,14 +1,19 @@
 {
   "currentId" : "EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07",
-  "lastUpdate" : "2026-09-14T18:32:26Z",
+  "lastUpdate" : "2026-09-15T04:55:59Z",
   "projects" : [
     {
+      "completedAt" : "2026-09-15T04:55:56Z",
       "createdAt" : "2026-09-07T22:51:20Z",
-      "entryCount" : 26,
+      "daysSincePreviousCompletion" : 11,
+      "entryCount" : 29,
+      "finalLength" : "20",
+      "finalRatioVsOriginal" : 5.449591280653951,
       "id" : "EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07",
       "originalLength" : "6:07",
-      "status" : "in_progress",
-      "topic" : "와카치나"
+      "status" : "completed",
+      "topic" : "와카치나",
+      "totalDuration" : 626676.3728899956
     },
     {
       "completedAt" : "2026-09-04T11:03:38Z",

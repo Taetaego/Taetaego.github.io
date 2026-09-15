@@ -85,8 +85,9 @@
       "weight" : 2
     }
   ],
+  "completedAt" : "2026-09-15T04:55:56Z",
   "createdAt" : "2026-09-07T22:51:20Z",
-  "currentStage" : "썸네일 & 업로드",
+  "currentStage" : "완료",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "24",
@@ -279,12 +280,36 @@
       "elapsed" : "1시간 12분",
       "timestamp" : "2026-09-14T18:32:24Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "7시간 10분",
+      "timestamp" : "2026-09-15T01:43:16Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "2시간 15분",
+      "timestamp" : "2026-09-15T03:58:35Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "57분",
+      "timestamp" : "2026-09-15T04:55:56Z",
+      "videoLength" : "20"
     }
   ],
-  "entryCount" : 26,
-  "lastUpdate" : "2026-09-14T18:32:26Z",
+  "entryCount" : 29,
+  "finalLength" : "20",
+  "finalRatioVsDetailCut" : 83.33333333333334,
+  "finalRatioVsOriginal" : 5.449591280653951,
+  "lastUpdate" : "2026-09-15T04:55:59Z",
   "originalLength" : "6:07",
-  "previewImage" : "previews\/EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07.jpg",
   "projectTopic" : "와카치나",
-  "status" : "in_progress"
+  "status" : "completed",
+  "youtubeId" : "pc3E3EFiSXA"
 }
