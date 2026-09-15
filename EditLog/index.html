@@ -785,17 +785,33 @@
   #natCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10001; }
 
   /* 08 카드 유리 반사 — 반사광이 천천히 스친다 */
-  /* 13 완료 카드 금빛 — 카드 둘레에 은은한 금빛이 켜졌다 줄었다 숨쉰다.
-     그림자는 한 번만 그려 두고 그 층의 투명도·크기만 움직여서, 매 프레임 다시 칠하지
-     않고 합성만 한다. 예전 러닝 라이트(카드보다 훨씬 큰 판을 돌리던 것)와 달리
-     폰에서도 부담이 거의 없어 화면 크기와 상관없이 똑같이 켠다. */
+  /* 13 완료 카드 금빛 — 넓은 화면은 테두리를 빛이 한 바퀴 돌고, 폰은 카드 둘레가 숨쉰다.
+     폰에서 테두리 빛을 안 쓰는 이유: 카드보다 훨씬 큰 판을 쉬지 않고 돌리는 방식이라
+     그 부담이 도넛·카드 레이어를 밀어내 스크롤 뒤 통째로 안 그려지는 일이 있었다. */
   #doneCard.glowing { position: relative; }
-  #doneCard.glowing::before {
-    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    box-shadow: 0 0 24px 3px color-mix(in srgb, var(--gold) 42%, transparent);
-    opacity: .2;
-    animation: doneGlow 3.2s ease-in-out infinite;
-    will-change: opacity, transform;
+  @keyframes runLight { to { rotate: 360deg; } }
+  @media (min-width: 561px) {
+    #doneCard.glowing { overflow: hidden; border-color: transparent; }
+    #doneCard.glowing::before {
+      content: ""; position: absolute; inset: -60%; z-index: 0;
+      background: conic-gradient(from 0deg, transparent 0deg 300deg, var(--gold) 348deg, var(--gold2) 356deg, transparent 360deg);
+      animation: runLight 3.6s linear infinite;
+    }
+    #doneCard.glowing::after {
+      content: ""; position: absolute; inset: 1.5px; z-index: 0;
+      border-radius: 22.5px; background: var(--surface);
+    }
+    #doneCard.glowing > * { position: relative; z-index: 1; }
+  }
+  /* 폰: 그림자는 한 번만 그려 두고 그 층의 투명도·크기만 움직여 합성만 한다. */
+  @media (max-width: 560px) {
+    #doneCard.glowing::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      box-shadow: 0 0 24px 3px color-mix(in srgb, var(--gold) 42%, transparent);
+      opacity: .2;
+      animation: doneGlow 3.2s ease-in-out infinite;
+      will-change: opacity, transform;
+    }
   }
   @keyframes doneGlow {
     0%, 100% { opacity: .2; transform: scale(.994); }
@@ -804,7 +820,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     #galaxyCanvas { display: none !important; }
-    #doneCard.glowing::before { animation: none !important; opacity: .45; }
+    /* 테두리 빛은 멈춘 자리에 짧은 금빛 호로, 폰의 금빛은 은은하게 켜진 채로 선다. */
+    #doneCard.glowing::before { animation: none !important; }
   }
   @media (prefers-reduced-motion: reduce) {
     .skyTop, #cometCanvas, .spotLayer { display: none !important; }
