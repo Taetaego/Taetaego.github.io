@@ -383,6 +383,48 @@
   .doneList div { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
   .doneList div.strong { font-weight: 700; }
 
+  /* 시작 → 완료 구간 그래픽 */
+  .spanViz { display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
+  .doneList .spanViz div { line-height: 1.2; }
+  .spanTotal { display: flex; flex-direction: column; gap: 3px; }
+  .spanTotal .lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+  .spanTotal .val { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); line-height: 1.15; }
+  .spanTotal .days { font-size: 10px; color: var(--ink3); }
+  .spanTrack { position: relative; height: 10px; margin: 4px 6px 0; border-radius: 99px; background: var(--surface2); }
+  .spanFill {
+    position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    transform-origin: left center;
+    animation: spanFill 1.1s cubic-bezier(.3,.8,.3,1) both;
+  }
+  @keyframes spanFill { from { transform: scaleX(0); } }
+  /* 자정 눈금: 막대를 날짜별로 끊는다 */
+  .spanTick { position: absolute; top: -1px; bottom: -1px; width: 2px; margin-left: -1px; background: var(--surface); }
+  /* 작업을 기록한 순간 */
+  .spanDot {
+    position: absolute; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%;
+    background: rgba(255,255,255,.9); box-shadow: 0 0 0 1px rgba(0,0,0,.18);
+    animation: spanDot .35s ease-out both;
+  }
+  @keyframes spanDot { from { opacity: 0; transform: scale(0); } }
+  .spanEnd { position: absolute; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; }
+  .spanEnd.start { left: 0; background: var(--surface); border: 3px solid var(--accent); }
+  .spanEnd.finish {
+    left: 100%; background: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft), 0 0 12px color-mix(in srgb, var(--gold) 60%, transparent);
+    animation: spanPop .45s cubic-bezier(.3,1.6,.5,1) both;
+  }
+  @keyframes spanPop { from { transform: scale(0); } }
+  .spanEnds { display: flex; justify-content: space-between; gap: 12px; }
+  .spanEnds > div { display: flex; flex-direction: column; gap: 3px; }
+  .spanEnds .r { align-items: flex-end; text-align: right; }
+  .spanEnds .k { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+  .spanEnds .r .k { color: var(--gold); }
+  .spanEnds .d { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .spanEnds .t { font-size: 11px; color: var(--ink2); }
+  @media (prefers-reduced-motion: reduce) {
+    .spanFill, .spanDot, .spanEnd.finish { animation: none; }
+  }
+
   /* 전체 진행 단계 */
   .cardHead { display: flex; align-items: baseline; justify-content: space-between; }
   .cardTitle { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--ink3); }
@@ -1035,6 +1077,14 @@ async function main() {
     initCounterReplay();
     initCardTilt();
     initThumbLike();
+    document.getElementById('doneList').addEventListener('click', (ev) => {
+      const viz = ev.target.closest('.spanViz');
+      if (!viz || reducedMotion) return;
+      viz.classList.remove('replay'); void viz.offsetWidth; viz.classList.add('replay');
+      viz.querySelectorAll('.spanFill, .spanDot, .spanEnd.finish').forEach(el => {
+        el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+      });
+    });
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
@@ -1083,6 +1133,7 @@ function renderProject(data, { fireworks = false } = {}) {
   initGaugeToggle();
   initDonutSpin();
   renderCompletion(data);
+  placeStatsCard(data);
   renderPipeline(data);
   renderStats(data);
   renderDayBand(data);
@@ -1295,24 +1346,66 @@ function formatDuration(ms) {
 
 function renderCompletion(data) {
   if (data.status !== 'completed') return;
-
-  const rows = [];
-  rows.push({ text: `시작 시각: ${formatDateTime(data.createdAt)}` });
-  if (data.completedAt) rows.push({ text: `완료 시각: ${formatDateTime(data.completedAt)}` });
-  if (data.completedAt) {
-    const dur = new Date(data.completedAt).getTime() - new Date(data.createdAt).getTime();
-    rows.push({ text: `총 소요시간: ${formatDuration(dur)}`, strong: true });
-  }
-  const origLen = normalizeLength(data.originalLength);
-  if (origLen != null) rows.push({ text: `촬영 원본 길이: ${origLen}`, gap: true });
-  const finalLen = normalizeLength(data.finalLength);
-  if (finalLen != null) rows.push({ text: `완성 영상 길이: ${finalLen}` });
-  if (data.finalRatioVsOriginal != null) rows.push({ text: `원본 대비 완성 영상: ${Math.round(data.finalRatioVsOriginal)}%` });
-
-  document.getElementById('doneList').innerHTML = rows
-    .map(r => `<div class="${r.strong ? 'strong' : ''}"${r.gap ? ' style="margin-top:8px"' : ''}>${escapeHtml(r.text)}</div>`)
-    .join('');
+  const body = document.getElementById('doneList');
+  // 완료 시각이 없는 옛 기록이면 그릴 구간이 없으니 시작 시각만 적는다.
+  body.innerHTML = data.completedAt
+    ? completionSpanHtml(data)
+    : `<div>시작 시각: ${escapeHtml(formatDateTime(data.createdAt))}</div>`;
   document.getElementById('doneCard').style.display = '';
+}
+
+/** 시작 → 완료 구간을 막대 하나로. 막대는 하루마다 눈금으로 끊고, 그 위에 실제로 작업을
+    기록한 순간을 점으로 찍어 "며칠에 걸쳐 언제 몰아서 했는지"가 한눈에 보이게 한다.
+    막대가 왼쪽에서 차오르고, 점은 막대가 지나가는 순서대로 켜진다. */
+function completionSpanHtml(data) {
+  const t0 = new Date(data.createdAt).getTime();
+  const t1 = new Date(data.completedAt).getTime();
+  const span = Math.max(1, t1 - t0);
+  const at = (t) => Math.max(0, Math.min(100, ((t - t0) / span) * 100));
+  const FILL_S = 1.1;   // 막대가 다 차는 시간 (CSS spanFill과 같게)
+
+  // 자정마다 눈금
+  const ticks = [];
+  const mid = new Date(t0); mid.setHours(24, 0, 0, 0);
+  for (let t = mid.getTime(); t < t1; t += 86400000) ticks.push(at(t));
+
+  const dots = (data.entries || [])
+    .map(e => new Date(e.timestamp).getTime())
+    .filter(t => Number.isFinite(t) && t >= t0 && t <= t1)
+    .map(t => at(t));
+
+  return `
+    <div class="spanViz" role="img" aria-label="${escapeHtml(`${formatDateTime(data.createdAt)} 시작, ${formatDateTime(data.completedAt)} 완료, 총 ${formatDuration(span)}`)}">
+      <div class="spanTotal">
+        <span class="lbl">총 소요시간</span>
+        <span class="val">${escapeHtml(formatDuration(span))}</span>
+        <span class="days mono">작업 기록 ${dots.length}개</span>
+      </div>
+      <div class="spanTrack">
+        <span class="spanFill"></span>
+        ${ticks.map(x => `<i class="spanTick" style="left:${x.toFixed(2)}%"></i>`).join('')}
+        ${dots.map(x => `<i class="spanDot" style="left:${x.toFixed(2)}%;animation-delay:${(x / 100 * FILL_S).toFixed(2)}s"></i>`).join('')}
+        <span class="spanEnd start"></span>
+        <span class="spanEnd finish" style="animation-delay:${FILL_S}s"></span>
+      </div>
+      <div class="spanEnds">
+        <div><span class="k">시작</span><span class="d">${escapeHtml(formatDayLabel(data.createdAt))}</span><span class="t mono">${escapeHtml(formatTimeOnly(data.createdAt))}</span></div>
+        <div class="r"><span class="k">완료</span><span class="d">${escapeHtml(formatDayLabel(data.completedAt))}</span><span class="t mono">${escapeHtml(formatTimeOnly(data.completedAt))}</span></div>
+      </div>
+    </div>`;
+}
+
+/** 영상 길이 카드는 끝난 프로젝트에선 완료 카드 바로 밑으로, 아니면 오른쪽 열 맨 위로. */
+function placeStatsCard(data) {
+  const stats = document.getElementById('statsWrap');
+  const done = document.getElementById('doneCard');
+  const right = document.querySelector('.colRight');
+  if (!stats || !done || !right) return;
+  if (data.status === 'completed') {
+    if (done.nextElementSibling !== stats) done.after(stats);
+  } else if (right.firstElementChild !== stats) {
+    right.prepend(stats);
+  }
 }
 
 /** 미리보기 한 칸. 완료된 프로젝트는 유튜브 썸네일(눌러서 영상으로),
@@ -1691,7 +1784,6 @@ function renderStats(data) {
   // (작업 기록 개수는 작업 기록 표 머리글로 옮겼다.)
   const finalSubs = [];
   if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
-  if (data.finalRatioVsDetailCut != null) finalSubs.push(`컷편집 대비 ${Math.round(data.finalRatioVsDetailCut)}%`);
   const cols = [
     lengthCol('촬영 원본', data.originalLength, null),
     lengthCol('컷편집 후', data.detailCutLength, [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null]),
