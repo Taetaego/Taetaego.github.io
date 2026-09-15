@@ -785,40 +785,26 @@
   #natCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10001; }
 
   /* 08 카드 유리 반사 — 반사광이 천천히 스친다 */
-  /* 13 러닝 라이트 — 완료 카드 테두리를 빛이 한 바퀴 */
-  #doneCard.running { position: relative; overflow: hidden; border-color: transparent; }
-  #doneCard.running::before {
-    content: ""; position: absolute; inset: -60%; z-index: 0;
-    background: conic-gradient(from 0deg, transparent 0deg 300deg, var(--gold) 348deg, var(--gold2) 356deg, transparent 360deg);
-    animation: runLight 3.6s linear infinite;
+  /* 13 완료 카드 금빛 — 카드 둘레에 은은한 금빛이 켜졌다 줄었다 숨쉰다.
+     그림자는 한 번만 그려 두고 그 층의 투명도·크기만 움직여서, 매 프레임 다시 칠하지
+     않고 합성만 한다. 예전 러닝 라이트(카드보다 훨씬 큰 판을 돌리던 것)와 달리
+     폰에서도 부담이 거의 없어 화면 크기와 상관없이 똑같이 켠다. */
+  #doneCard.glowing { position: relative; }
+  #doneCard.glowing::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    box-shadow: 0 0 24px 3px color-mix(in srgb, var(--gold) 42%, transparent);
+    opacity: .2;
+    animation: doneGlow 3.2s ease-in-out infinite;
+    will-change: opacity, transform;
   }
-  #doneCard.running::after {
-    content: ""; position: absolute; inset: 1.5px; z-index: 0;
-    border-radius: 22.5px; background: var(--surface);
-  }
-  /* 폰용 빛(.runStroke)은 빼야 한다 — 이 규칙이 id 선택자라 .runStroke의 absolute를 이겨서
-     SVG가 흐름에 끼면, 카드가 커지고 → SVG를 카드 크기로 다시 맞추고 → 또 커지는 고리가 생긴다. */
-  #doneCard.running > :not(.runStroke) { position: relative; z-index: 1; }
-  @keyframes runLight { to { rotate: 360deg; } }
-  /* 썸네일이 들어가면서 완료 카드가 훨씬 길어졌다. 이 빛은 카드보다 220% 큰
-     conic-gradient를 쉬지 않고 돌리는 거라, 길어진 만큼 매 프레임 칠하는 면적도 같이
-     커진다. 폰에서는 그 부담이 다른 레이어를 밀어내서 카드 배경·도넛·상단 바가
-     통째로 안 그려지는 일이 생겨 접어둔다. */
-  /* 폰에서는 그 큰 판을 아예 없애고, 대신 테두리 선 위로 짧은 금빛 조각만 돌린다
-     (.runStroke). 칠하는 면적이 선 두께뿐이라 도넛·카드 레이어를 밀어낼 일이 없다. */
-  .runStroke { display: none; position: absolute; left: -1px; top: -1px; pointer-events: none; z-index: 2; overflow: visible; }
-  .runStroke rect { fill: none; stroke-linecap: round; }
-  .runStroke .tail { stroke: var(--gold); stroke-width: 1.6; opacity: .6; }
-  .runStroke .head { stroke: var(--gold2); stroke-width: 2; }
-  @media (max-width: 560px) {
-    #doneCard.running { overflow: visible; border-color: var(--line); }
-    #doneCard.running::before, #doneCard.running::after { content: none; }
-    #doneCard.running .runStroke { display: block; }
+  @keyframes doneGlow {
+    0%, 100% { opacity: .2; transform: scale(.994); }
+    50% { opacity: 1; transform: scale(1.012); }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #galaxyCanvas { display: none !important; }
-    #doneCard.running::before { animation: none !important; opacity: 0; }
+    #doneCard.glowing::before { animation: none !important; opacity: .45; }
   }
   @media (prefers-reduced-motion: reduce) {
     .skyTop, #cometCanvas, .spotLayer { display: none !important; }
@@ -1084,7 +1070,7 @@ function renderProject(data, { fireworks = false } = {}) {
   renderStats(data);
   renderDayBand(data);
   renderLog(data);
-  initRunningLight(data);
+  initDoneGlow(data);
   celebrate(heroPct, heroCompleted, fireworks);
 }
 
@@ -3060,77 +3046,11 @@ function initGalaxy(data) {
 }
 
 /* ===== 13 완료 카드 러닝 라이트 ===== */
-function initRunningLight(data) {
+/** 완료된 프로젝트일 때만 카드 둘레 금빛을 켠다. 프로젝트를 바꿔가며 볼 수 있으니
+    켜기만 하지 말고 상태에 맞춰 끄기도 해야 한다. (움직임 줄이기 설정이면 CSS가 멈춘 채로 둔다.) */
+function initDoneGlow(data) {
   const card = document.getElementById('doneCard');
-  if (!card) return;
-  // 프로젝트를 바꿔가며 볼 수 있으니 켜기만 하지 말고 상태에 맞춰 끄기도 해야 한다.
-  const on = data.status === 'completed' && !reducedMotion;
-  card.classList.toggle('running', on);
-  if (on) mountRunStroke(card); else unmountRunStroke(card);
-}
-
-/** 폰용 러닝 라이트. 카드 테두리와 똑같은 둥근 사각형을 SVG로 그리고, 점선 한 조각
-    (꼬리 + 밝은 머리)을 테두리 둘레만큼 계속 밀어 한 바퀴씩 돌린다. 데스크톱의
-    conic-gradient와 같은 3.6초·시계 방향. 화면에 보이는지는 CSS(@media)가 정한다. */
-function mountRunStroke(card) {
-  if (card._runStroke) return;
-  const NS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('class', 'runStroke');
-  svg.setAttribute('aria-hidden', 'true');
-  const tail = document.createElementNS(NS, 'rect');
-  const head = document.createElementNS(NS, 'rect');
-  tail.setAttribute('class', 'tail');
-  head.setAttribute('class', 'head');
-  svg.append(tail, head);
-  card.appendChild(svg);
-
-  const state = { svg, anims: [], ro: null };
-  const lay = () => {
-    const w = card.offsetWidth, h = card.offsetHeight;   // 테두리까지 포함한 크기
-    if (!w || !h) return;
-    const radius = parseFloat(getComputedStyle(card).borderTopLeftRadius) || 24;
-    const inset = 0.75, rr = Math.max(0, radius - inset);
-    const rw = w - inset * 2, rh = h - inset * 2;
-    svg.setAttribute('width', w);
-    svg.setAttribute('height', h);
-    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-    for (const r of [tail, head]) {
-      r.setAttribute('x', inset); r.setAttribute('y', inset);
-      r.setAttribute('width', rw); r.setAttribute('height', rh);
-      r.setAttribute('rx', rr); r.setAttribute('ry', rr);
-    }
-    // 둥근 사각형 둘레 — 곧은 변 네 개 + 모서리 네 개를 합치면 원 하나.
-    const per = 2 * (rw + rh) - 8 * rr + 2 * Math.PI * rr;
-    const tailLen = per * 0.14, headLen = per * 0.035;
-    tail.style.strokeDasharray = `${tailLen} ${per}`;
-    head.style.strokeDasharray = `${headLen} ${per}`;
-    // 크기가 바뀌어 다시 잡을 때 빛이 처음 자리로 튀지 않게 진행 위치를 이어받는다.
-    const phase = state.anims[0] ? state.anims[0].currentTime : 0;
-    state.anims.forEach(a => a.cancel());
-    const lead = tailLen - headLen;   // 머리는 꼬리의 맨 앞에 붙는다
-    const opts = { duration: 3600, iterations: Infinity };
-    state.anims = [
-      tail.animate([{ strokeDashoffset: 0 }, { strokeDashoffset: -per }], opts),
-      head.animate([{ strokeDashoffset: -lead }, { strokeDashoffset: -lead - per }], opts),
-    ];
-    state.anims.forEach(a => { a.currentTime = phase || 0; });
-  };
-  lay();
-  if ('ResizeObserver' in window) {
-    state.ro = new ResizeObserver(lay);
-    state.ro.observe(card);
-  }
-  card._runStroke = state;
-}
-
-function unmountRunStroke(card) {
-  const state = card._runStroke;
-  if (!state) return;
-  state.anims.forEach(a => a.cancel());
-  if (state.ro) state.ro.disconnect();
-  state.svg.remove();
-  card._runStroke = null;
+  if (card) card.classList.toggle('glowing', data.status === 'completed');
 }
 
 function initFxButtons() {
