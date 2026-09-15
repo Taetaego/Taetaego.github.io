@@ -395,8 +395,10 @@
     position: absolute; inset: 0; border-radius: inherit;
     background: linear-gradient(90deg, var(--accent), var(--gold));
     transform-origin: left center;
-    /* 일정한 속도로 차야 점이 켜지는 시각(위치 × 시간)과 막대 끝이 딱 맞는다 */
-    animation: spanFill 2.4s linear both;
+    /* 처음엔 느리게, 완료로 갈수록 가속 (위치 = 진행^2.4). linear()를 모르는 옛 브라우저는
+       비슷한 가속 곡선으로 대신한다. 점 켜지는 시각은 completionSpanHtml이 같은 식으로 계산한다. */
+    animation: spanFill 2.6s cubic-bezier(.6,0,.95,.6) both;
+    animation: spanFill 2.6s linear(0, 0.0008 5%, 0.0040 10%, 0.0105 15%, 0.0210 20%, 0.0359 25%, 0.0556 30%, 0.0805 35%, 0.1109 40%, 0.1471 45%, 0.1895 50%, 0.2382 55%, 0.2935 60%, 0.3556 65%, 0.4248 70%, 0.5014 75%, 0.5854 80%, 0.6770 85%, 0.7766 90%, 0.8842 95%, 1) both;
   }
   @keyframes spanFill { from { transform: scaleX(0); } }
   /* 자정 눈금: 막대를 날짜별로 끊는다 */
@@ -1374,7 +1376,11 @@ function completionSpanHtml(data) {
   const t1 = new Date(data.completedAt).getTime();
   const span = Math.max(1, t1 - t0);
   const at = (t) => Math.max(0, Math.min(100, ((t - t0) / span) * 100));
-  const FILL_S = 2.4;   // 막대가 다 차는 시간 (CSS spanFill과 같게)
+  const FILL_S = 2.6;   // 막대가 다 차는 시간 (CSS spanFill과 같게)
+  // 막대는 완료로 갈수록 가속한다 — 위치 = 진행^2.4 (CSS의 linear() 곡선과 같은 식).
+  // 그래서 점이 켜지는 시각도 거꾸로 풀어 위치^(1/2.4) × 시간으로 잡아야 막대 끝과 맞는다.
+  const FILL_EXP = 2.4;
+  const reachAt = (x) => Math.pow(x / 100, 1 / FILL_EXP) * FILL_S;
 
   // 자정마다 눈금
   const ticks = [];
@@ -1396,7 +1402,7 @@ function completionSpanHtml(data) {
       <div class="spanTrack">
         <span class="spanFill"></span>
         ${ticks.map(x => `<i class="spanTick" style="left:${x.toFixed(2)}%"></i>`).join('')}
-        ${dots.map(x => `<i class="spanDot" style="left:${x.toFixed(2)}%;animation-delay:${(x / 100 * FILL_S).toFixed(2)}s"></i>`).join('')}
+        ${dots.map(x => `<i class="spanDot" style="left:${x.toFixed(2)}%;animation-delay:${reachAt(x).toFixed(2)}s"></i>`).join('')}
         <span class="spanEnd start"></span>
         <span class="spanEnd finish" style="animation-delay:${FILL_S}s"></span>
       </div>
