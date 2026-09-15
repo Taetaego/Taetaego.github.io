@@ -395,7 +395,8 @@
     position: absolute; inset: 0; border-radius: inherit;
     background: linear-gradient(90deg, var(--accent), var(--gold));
     transform-origin: left center;
-    animation: spanFill 1.1s cubic-bezier(.3,.8,.3,1) both;
+    /* 일정한 속도로 차야 점이 켜지는 시각(위치 × 시간)과 막대 끝이 딱 맞는다 */
+    animation: spanFill 2.4s linear both;
   }
   @keyframes spanFill { from { transform: scaleX(0); } }
   /* 자정 눈금: 막대를 날짜별로 끊는다 */
@@ -558,12 +559,23 @@
   .statTile .sub + .sub { margin-top: -4px; }
   /* 영상 길이 카드: 두 칸짜리 격자를 통째로 쓰고, 안에서 세 칸으로 나눈다 */
   .statTile.lenTile { grid-column: 1 / -1; gap: 11px; padding: 14px 16px; }
-  .lenCols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .lenCol { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-  .lenCol + .lenCol { border-left: 1px solid var(--line); padding-left: 12px; }
-  .lenCol:not(:last-child) { padding-right: 8px; }
-  .lenCol .value { line-height: 1.15; word-break: keep-all; }
-  @media (max-width: 420px) { .lenCol .value { font-size: 15px; } }
+  .lenRows { display: flex; flex-direction: column; gap: 10px; }
+  .lenRow { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+  .lenRow .label { white-space: nowrap; }
+  .lenBar { position: relative; height: 12px; border-radius: 99px; background: var(--surface2); overflow: hidden; }
+  .lenFill {
+    display: block; height: 100%; border-radius: inherit; transform-origin: left center;
+    animation: lenFill .9s cubic-bezier(.3,.8,.3,1) both;
+  }
+  @keyframes lenFill { from { transform: scaleX(0); } }
+  .lenRow.orig .lenFill { background: color-mix(in srgb, var(--ink3) 70%, transparent); }
+  .lenRow.cut .lenFill { background: var(--accent); }
+  .lenRow.final .lenFill { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+  .lenVal { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; min-width: 76px; }
+  .lenRow .value { font-size: 14px; line-height: 1; white-space: nowrap; }
+  .lenRow .ratio { font-size: 10px; color: var(--ink3); }
+  .lenRow.final .ratio { color: var(--gold); }
+  @media (prefers-reduced-motion: reduce) { .lenFill { animation: none; } }
 
   /* 작업 기록 */
   .logCard { display: flex; flex-direction: column; gap: 10px; }
@@ -1362,7 +1374,7 @@ function completionSpanHtml(data) {
   const t1 = new Date(data.completedAt).getTime();
   const span = Math.max(1, t1 - t0);
   const at = (t) => Math.max(0, Math.min(100, ((t - t0) / span) * 100));
-  const FILL_S = 1.1;   // 막대가 다 차는 시간 (CSS spanFill과 같게)
+  const FILL_S = 2.4;   // 막대가 다 차는 시간 (CSS spanFill과 같게)
 
   // 자정마다 눈금
   const ticks = [];
@@ -1745,15 +1757,6 @@ function renderPipeline(data) {
 }
 
 /** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
-/** 영상 길이 카드의 한 칸. 값이 없으면 '-'로 자리만 지킨다. */
-function lengthCol(label, raw, subs) {
-  const count = counter(raw, 'duration');
-  const attrs = count ? ` data-count="${count.n}" data-fmt="${count.fmt}"` : '';
-  const subHtml = (subs || []).filter(Boolean).map(t => `<span class="sub">${t}</span>`).join('');
-  return `<div class="lenCol"><span class="label">${label}</span>`
-    + `<span class="value"${attrs}>${normalizeLength(raw) ?? '-'}</span>${subHtml}</div>`;
-}
-
 /** 그 시각부터 지금까지 — "3일 5시간"처럼. */
 function elapsedText(iso) {
   return formatSpan(Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000));
@@ -1780,17 +1783,32 @@ function counter(raw, fmt) {
 }
 
 function renderStats(data) {
-  // 촬영 원본 → 컷편집 후 → 완성, 영상이 줄어드는 순서대로 한 카드에 나란히 둔다.
-  // (작업 기록 개수는 작업 기록 표 머리글로 옮겼다.)
-  const finalSubs = [];
-  if (data.finalRatioVsOriginal != null) finalSubs.push(`원본 대비 ${Math.round(data.finalRatioVsOriginal)}%`);
-  const cols = [
-    lengthCol('촬영 원본', data.originalLength, null),
-    lengthCol('컷편집 후', data.detailCutLength, [data.detailCutRatio != null ? `원본 대비 ${Math.round(data.detailCutRatio)}%` : null]),
-    lengthCol('완성', data.finalLength, finalSubs),
-  ].join('');
+  // 촬영 원본 → 컷편집 후 → 완성. 원본을 가득 찬 막대로 두고 나머지는 그 대비 길이로
+  // 그려서, 몇 시간짜리가 몇 분으로 줄었는지 숫자를 안 읽어도 보이게 한다.
+  const original = parseMinutes(data.originalLength);
+  const rows = [
+    { label: '촬영 원본', raw: data.originalLength, ratio: null, kind: 'orig' },
+    { label: '컷편집 후', raw: data.detailCutLength, ratio: data.detailCutRatio, kind: 'cut' },
+    { label: '완성', raw: data.finalLength, ratio: data.finalRatioVsOriginal, kind: 'final' },
+  ];
+  const mins = rows.map(r => parseMinutes(r.raw));
+  // 원본을 안 적었으면 셋 중 가장 긴 걸 가득 찬 막대로 삼는다.
+  const base = original || Math.max(0, ...mins.filter(m => m != null));
+  const html = rows.map((r, i) => {
+    const m = mins[i];
+    // 아주 짧아도 막대가 보이게 최소 폭은 남긴다.
+    const pct = m != null && base > 0 ? Math.max(2, Math.min(100, (m / base) * 100)) : 0;
+    const count = counter(r.raw, 'duration');
+    const attrs = count ? ` data-count="${count.n}" data-fmt="${count.fmt}"` : '';
+    return `<div class="lenRow ${r.kind}">`
+      + `<span class="label">${r.label}</span>`
+      + `<span class="lenBar"><span class="lenFill" style="width:${pct.toFixed(1)}%;animation-delay:${(i * 0.14).toFixed(2)}s"></span></span>`
+      + `<span class="lenVal"><span class="value"${attrs}>${normalizeLength(r.raw) ?? '-'}</span>`
+      + (r.ratio != null ? `<span class="ratio mono">${Math.round(r.ratio)}%</span>` : '')
+      + `</span></div>`;
+  }).join('');
   document.getElementById('statsBody').innerHTML =
-    `<div class="statTile lenTile"><span class="cardTitle">영상 길이</span><div class="lenCols">${cols}</div></div>`;
+    `<div class="statTile lenTile"><span class="cardTitle">영상 길이</span><div class="lenRows">${html}</div></div>`;
   runCounters();
 }
 
@@ -1830,7 +1848,12 @@ function initCounterReplay() {
   if (!body) return;
   body.addEventListener('click', (ev) => {
     const tile = ev.target.closest('.statTile');
-    if (tile) tile.querySelectorAll('.value[data-count]').forEach(animateCounter);
+    if (!tile) return;
+    tile.querySelectorAll('.value[data-count]').forEach(animateCounter);
+    if (reducedMotion) return;
+    tile.querySelectorAll('.lenFill').forEach(el => {
+      el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    });
   });
 }
 
