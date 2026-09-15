@@ -1108,7 +1108,9 @@ async function main() {
       if (ev.target.closest('#donutGauge')) { runGauge(heroPct, false, true); return; }
       const since = ev.target.closest('.sinceBlock');
       if (since) { animateCounter(since.querySelector('.sinceVal')); return; }
-      celebrate(heroPct, heroCompleted, true);
+      // 카드를 누르면 게이지만 다시 채우고, 완료된 프로젝트면 다 찼을 때 도넛 안에서만 한 발 터진다.
+      // 화면 전체로 쏘아 올리는 축포·잔잔한 불꽃은 처음 열었을 때만 (celebrate).
+      runGauge(heroPct, heroCompleted && !reducedMotion);
     });
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
     // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
