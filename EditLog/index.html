@@ -317,11 +317,12 @@
   }
   /* 링을 단계별로 쪼개, 숫자를 읽지 않아도 몇 칸 왔는지 보이게 한다. 단계마다 비중이
      다르므로 눈금 간격도 비중에 비례한다 — 눈금 그라디언트는 renderSummary가 만들어
-     --ticks로 넣어준다 (비중이 다 같으면 예전처럼 균등하게 나뉜다). */
-  .donut::after {
-    content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
-    background: var(--ticks, none);
+     SVG로 링 위에 얹는다 (비중이 다 같으면 예전처럼 균등하게 나뉜다). */
+  .donutTicks {
+    position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+    shape-rendering: geometricPrecision;
   }
+  .donutTicks path { fill: var(--bg); }
   /* 도넛 뒤에서 숨쉬는 발광. '편집 중' 표시(labelFade)와 같은 1.8초 주기·같은 위상이라
      둘이 동시에 가장 밝아진다. */
   .donutGlow {
@@ -374,9 +375,14 @@
   }
 
   /* 프로젝트 완료 요약 */
-  .doneCard { display: flex; flex-direction: column; gap: 12px; }
-  .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--accent2); }
-  .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  /* 끝난 프로젝트는 작업 기록의 완료 줄 · 앱과 같은 금색으로 알린다 */
+  .doneCard {
+    display: flex; flex-direction: column; gap: 12px;
+    background: linear-gradient(var(--gold-soft), var(--gold-soft)), var(--surface);
+    border-color: color-mix(in srgb, var(--gold) 38%, transparent);
+  }
+  .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--gold); }
+  .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
   .doneList { display: flex; flex-direction: column; gap: 6px; }
   .doneList div { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
   .doneList div.strong { font-weight: 700; }
@@ -648,7 +654,7 @@
   .gaugeSwap:active { transform: scale(0.96); }
   #liquidCanvas { display: none; position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; z-index: 0; }
   .donut.liquid { background: var(--surface2) !important; }
-  .donut.liquid::after { display: none; }
+  .donut.liquid .donutTicks { display: none; }
   .donut.liquid #liquidCanvas { display: block; }
   .donut.liquid .donutGlow, .donut.liquid .donutSpark { display: none; }
   .donut.liquid { box-shadow: inset 0 0 0 2px var(--line2), 0 6px 20px rgba(0,0,0,.28); }
@@ -787,12 +793,12 @@
   #doneCard.running { position: relative; overflow: hidden; border-color: transparent; }
   #doneCard.running::before {
     content: ""; position: absolute; inset: -60%; z-index: 0;
-    background: conic-gradient(from 0deg, transparent 0deg 300deg, var(--accent) 348deg, var(--accent2) 356deg, transparent 360deg);
+    background: conic-gradient(from 0deg, transparent 0deg 300deg, var(--gold) 348deg, var(--gold2) 356deg, transparent 360deg);
     animation: runLight 3.6s linear infinite;
   }
   #doneCard.running::after {
     content: ""; position: absolute; inset: 1.5px; z-index: 0;
-    border-radius: 22.5px; background: var(--surface);
+    border-radius: 22.5px; background: linear-gradient(var(--gold-soft), var(--gold-soft)), var(--surface);
   }
   #doneCard.running > * { position: relative; z-index: 1; }
   @keyframes runLight { to { rotate: 360deg; } }
@@ -802,7 +808,7 @@
      통째로 안 그려지는 일이 생겨 접어둔다. */
   @media (max-width: 560px) {
     #doneCard.running::before { animation: none; opacity: 0; }
-    #doneCard.running { border-color: var(--line); }
+    #doneCard.running { border-color: color-mix(in srgb, var(--gold) 38%, transparent); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1509,31 +1515,41 @@ function catWeight(c) {
 /** 단계 구분 눈금의 두께(도). 12시 표시도 같은 눈금을 쓴다. */
 const TICK = 1.6;
 
-/** 진행률(%)을 링 그라디언트로. 12시는 눈금이 끊어주므로 링 자체는 360도를 다 쓴다. */
+/** 진행률(%)을 링 그라디언트로. 12시는 눈금이 끊어주므로 링 자체는 360도를 다 쓴다.
+    conic-gradient의 딱 떨어지는 색 경계는 브라우저가 계단 현상을 풀어주지 않아서
+    지글지글해 보인다 — 경계 앞뒤로 0.35도씩 섞어 매끈하게 만든다. (0%·100%에서 생기는
+    아주 가는 번짐은 12시 눈금이 덮는다.) */
+const RING_FEATHER = 0.35;
 function donutRing(pct) {
   const p = Math.max(0, Math.min(100, Number(pct) || 0));
-  return `conic-gradient(var(--accent) 0 ${p}%, var(--surface2) ${p}% 100%)`;
+  const deg = p * 3.6;
+  const a = (deg - RING_FEATHER).toFixed(2), b = (deg + RING_FEATHER).toFixed(2);
+  return `conic-gradient(var(--accent) 0deg ${a}deg, var(--surface2) ${b}deg 360deg)`;
 }
 
 /** 도넛 링을 끊어주는 눈금. 단계 경계마다 하나씩, 그리고 12시(시작점)에도 하나.
-    12시 눈금은 0도를 걸쳐 있어서 그라디언트의 맨 앞과 맨 뒤에 절반씩 나눠 넣는다. */
+    예전엔 conic-gradient의 딱 떨어지는 색 경계로 그렸는데, 브라우저가 그 경계를
+    부드럽게 풀어주지 않아 가는 눈금이 계단처럼 깨져 보였다. 이제는 링 위에 SVG 조각을
+    얹는다 — 벡터라 어느 크기·어느 화면 배율에서도 가장자리가 매끈하다.
+    조각 모양은 예전과 같다: 가운데서 퍼지는 부채꼴이라 바깥쪽이 조금 더 두껍다. */
 function donutTicks(progress) {
-  const half = TICK / 2;
-  const h = half.toFixed(2), tail = (360 - half).toFixed(2);
-  // 시작점 표시 — 다른 눈금과 두께도 색도 같다.
-  const stops = [`var(--bg) 0deg`, `var(--bg) ${h}deg`, `transparent ${h}deg`];
-
+  const angles = [0];   // 12시 시작점
   if (progress && progress.totalWeight) {
     let acc = 0;
     progress.weights.slice(0, -1).forEach((w) => {
       acc += (w / progress.totalWeight) * 360;
-      const a = (acc - half).toFixed(2), b = (acc + half).toFixed(2);
-      stops.push(`transparent ${a}deg`, `var(--bg) ${a}deg`, `var(--bg) ${b}deg`, `transparent ${b}deg`);
+      angles.push(acc);
     });
   }
-
-  stops.push(`transparent ${tail}deg`, `var(--bg) ${tail}deg`, `var(--bg) 360deg`);
-  return `conic-gradient(from 0deg, ${stops.join(',')})`;
+  // viewBox 100 기준. 안쪽 원(.in)이 반지름 약 38이라 그보다 조금 안에서 시작하면
+  // 링 폭 전체를 빈틈 없이 끊고, 남는 부분은 안쪽 원이 덮는다.
+  const R_OUT = 50, R_IN = 34, half = (TICK / 2) * Math.PI / 180;
+  const pt = (r, t) => `${(50 + r * Math.sin(t)).toFixed(3)} ${(50 - r * Math.cos(t)).toFixed(3)}`;
+  const d = angles.map((deg) => {
+    const t = deg * Math.PI / 180;
+    return `M${pt(R_IN, t - half)}L${pt(R_OUT, t - half)}L${pt(R_OUT, t + half)}L${pt(R_IN, t + half)}Z`;
+  }).join('');
+  return `<svg class="donutTicks" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
 }
 
 function renderSummary(cardEl, data) {
@@ -1561,7 +1577,7 @@ function renderSummary(cardEl, data) {
 
   cardEl.style.display = '';
   cardEl.innerHTML = `
-    <div class="donut" id="donutGauge" style="--ticks: ${donutTicks(progress)}; background: ${donutRing(0)}">
+    <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
       <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
       <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
@@ -1569,6 +1585,7 @@ function renderSummary(cardEl, data) {
         <span class="pct mono" id="donutPct">0%</span>
         <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
       </div>
+      ${donutTicks(progress)}
     </div>
     <div class="heroRight">
       <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
