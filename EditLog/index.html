@@ -2648,6 +2648,7 @@ function runGauge(target, fire, keepNumber = false) {
   }
   if (keepNumber) el.textContent = target + '%';
   const t0 = performance.now(), dur = 1500;
+  let fired = false;
   const tick = now => {
     const k = Math.min(1, (now - t0) / dur);
     const e = 1 - Math.pow(1 - k, 3);
@@ -2656,8 +2657,11 @@ function runGauge(target, fire, keepNumber = false) {
     dn.style.background = donutRing(p);
     // 반짝이는 점을 게이지가 끝나는 각도에 붙여 같이 돌린다 (100% = 360도).
     setSparkAngle(p);
-    if (k < 1) { requestAnimationFrame(tick); return; }
-    if (fire) {
+    // 끝으로 갈수록 느려지는 곡선이라, 마지막 0.5%를 기어가는 데 0.25초가 더 걸린다.
+    // 애니메이션이 완전히 끝날 때까지 기다리면 눈에는 이미 꽉 찬 뒤에 한 박자 늦게 터지니,
+    // 숫자가 끝값(100%)을 찍는 바로 그 프레임에 터뜨린다.
+    if (fire && !fired && Math.round(p) >= target) {
+      fired = true;
       const f = initFx();
       if (f) {
         const r = dn.getBoundingClientRect();
@@ -2665,6 +2669,7 @@ function runGauge(target, fire, keepNumber = false) {
         f.kick();
       }
     }
+    if (k < 1) requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 }
