@@ -2657,17 +2657,17 @@ function runGauge(target, fire, keepNumber = false) {
     dn.style.background = donutRing(p);
     // 반짝이는 점을 게이지가 끝나는 각도에 붙여 같이 돌린다 (100% = 360도).
     setSparkAngle(p);
-    // 끝으로 갈수록 느려지는 곡선이라, 마지막 0.5%를 기어가는 데 0.25초가 더 걸린다.
-    // 애니메이션이 완전히 끝날 때까지 기다리면 눈에는 이미 꽉 찬 뒤에 한 박자 늦게 터지니,
-    // 숫자가 끝값(100%)을 찍는 바로 그 프레임에 터뜨린다.
+    // 숫자가 끝값(100%)을 찍은 뒤 한 박자(0.28초) 두고 터뜨린다 — 애니메이션이 완전히
+    // 끝날 때까지(0.25초 더 기어간다) 기다리면 늦고, 찍는 순간 바로면 너무 붙는다.
     if (fire && !fired && Math.round(p) >= target) {
       fired = true;
-      const f = initFx();
-      if (f) {
+      setTimeout(() => {
+        const f = initFx();
+        if (!f) return;
         const r = dn.getBoundingClientRect();
         f.boom(r.left + r.width / 2, r.top + r.height / 2, true);
         f.kick();
-      }
+      }, 280);
     }
     if (k < 1) requestAnimationFrame(tick);
   };
