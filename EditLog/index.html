@@ -549,7 +549,7 @@
 
   /* 통계 타일 */
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .statTile { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); border-left: 2px solid var(--accent); }
+  .statTile { display: flex; flex-direction: column; gap: 5px; padding: 13px 14px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
   /* 숫자가 있는 타일은 눌러서 카운트업을 다시 볼 수 있다 */
   .statTile:has(.value[data-count]) { cursor: pointer; }
   .statTile:has(.value[data-count]):active { transform: scale(0.985); }
@@ -577,8 +577,12 @@
   .lenRow.final .lenFill { background: linear-gradient(90deg, var(--accent), var(--gold)); }
   .lenVal { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; min-width: 76px; }
   .lenRow .value { font-size: 14px; line-height: 1; white-space: nowrap; }
-  .lenRow .ratio { font-size: 10px; color: var(--ink3); }
+  .lenRow .ratio { font-size: 10px; color: var(--ink3); white-space: nowrap; }
+  .lenRow .ratio .of { opacity: .75; }
   .lenRow.final .ratio { color: var(--gold); }
+  /* 머리글 요약: 6시간 7분 → 20분 */
+  .lenSummary { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--ink2); }
+  .lenSummary i { font-style: normal; color: var(--ink3); }
   @media (prefers-reduced-motion: reduce) { .lenFill { animation: none; } }
 
   /* 작업 기록 */
@@ -1824,12 +1828,18 @@ function renderStats(data) {
       + `<span class="lenVal"><span class="value"${attrs}>${normalizeLength(r.raw) ?? '-'}</span>`
       // 비율도 같은 시간·같은 지연으로 0%부터 같이 오른다.
       + (r.ratio != null
-        ? `<span class="ratio mono" data-count="${Math.round(r.ratio)}" data-fmt="pct" data-dur="${LEN_FILL_MS}" data-delay="${delayMs}">${Math.round(r.ratio)}%</span>`
+        ? `<span class="ratio"><span class="of">원본의</span> <span class="mono" data-count="${Math.round(r.ratio)}" data-fmt="pct" data-dur="${LEN_FILL_MS}" data-delay="${delayMs}">${Math.round(r.ratio)}%</span></span>`
         : '')
       + `</span></div>`;
   }).join('');
+  // 머리글에 '원본 → 완성'을 한 줄로 박아 둔다 — 막대를 읽기 전에 결론이 먼저 보이게.
+  const from = normalizeLength(data.originalLength);
+  const to = normalizeLength(data.finalLength) ?? normalizeLength(data.detailCutLength);
+  const summary = from && to && from !== to
+    ? `<span class="lenSummary">${from}<i>→</i>${to}</span>` : '';
   document.getElementById('statsBody').innerHTML =
-    `<div class="statTile lenTile"><span class="cardTitle">영상 길이</span><div class="lenRows">${html}</div></div>`;
+    `<div class="statTile lenTile"><div class="cardHead"><span class="cardTitle">영상 길이</span>${summary}</div>`
+    + `<div class="lenRows">${html}</div></div>`;
   runCounters();
 }
 
