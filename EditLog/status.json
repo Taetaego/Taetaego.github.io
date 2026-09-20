@@ -96,10 +96,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-09-20T12:29:35Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 추출",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "3시간 22분",
+      "timestamp" : "2026-09-20T15:52:34Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-09-20T12:29:35Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-09-20T15:52:36Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3000미터 1박 2일 캠핑",
   "status" : "in_progress"
