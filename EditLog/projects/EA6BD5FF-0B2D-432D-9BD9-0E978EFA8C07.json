@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "자막 추출 & AI 요약",
+      "name" : "자막 추출 & AI",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -94,14 +94,14 @@
   "detailCutRatio" : 6.539509536784741,
   "entries" : [
     {
-      "category" : "자막 추출 & AI 요약",
+      "category" : "자막 추출 & AI",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
       "timestamp" : "2026-09-07T22:51:20Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출 & AI 요약",
+      "category" : "자막 추출 & AI",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "11시간 56분",
       "timestamp" : "2026-09-08T10:47:39Z",
@@ -307,7 +307,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-20T15:53:20Z",
+  "lastUpdate" : "2026-09-20T15:53:38Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "자막 추출 & AI 요약",
+      "name" : "자막 추출 & AI",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -210,7 +210,7 @@
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-09-20T15:53:20Z",
+  "lastUpdate" : "2026-09-20T15:53:38Z",
   "originalLength" : "14:05",
   "projectTopic" : "(테스트) 쿠스코 인티라이미 축제 마지막",
   "status" : "completed",
