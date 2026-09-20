@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "자막 추출",
+      "name" : "자막 추출 & AI 요약",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -86,19 +86,19 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "자막 추출",
+  "currentStage" : "자막 추출 & AI 요약",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "entries" : [
     {
-      "category" : "자막 추출",
+      "category" : "자막 추출 & AI 요약",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
       "timestamp" : "2026-09-20T12:29:35Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출",
+      "category" : "자막 추출 & AI 요약",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "3시간 22분",
       "timestamp" : "2026-09-20T15:52:34Z",
@@ -106,7 +106,7 @@
     }
   ],
   "entryCount" : 2,
-  "lastUpdate" : "2026-09-20T15:52:36Z",
+  "lastUpdate" : "2026-09-20T15:53:20Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3000미터 1박 2일 캠핑",
   "status" : "in_progress"
