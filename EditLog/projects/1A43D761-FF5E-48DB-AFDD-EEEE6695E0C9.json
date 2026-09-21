@@ -87,7 +87,7 @@
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
   "currentStage" : "1차 컷편집",
-  "cutBaselineRatio" : 0.11,
+  "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
     {
@@ -148,7 +148,7 @@
     }
   ],
   "entryCount" : 8,
-  "lastUpdate" : "2026-09-21T16:29:24Z",
+  "lastUpdate" : "2026-09-21T16:30:14Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3000미터 1박 2일 캠핑",
   "status" : "in_progress"
