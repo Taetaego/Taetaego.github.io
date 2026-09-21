@@ -86,7 +86,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "자막 추출 & AI",
+  "currentStage" : "1차 컷편집",
   "cutBaselineRatio" : 0.11,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -110,10 +110,17 @@
       "elapsed" : "19시간 29분",
       "timestamp" : "2026-09-21T11:21:39Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "11분",
+      "timestamp" : "2026-09-21T11:33:23Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 3,
-  "lastUpdate" : "2026-09-21T11:21:42Z",
+  "entryCount" : 4,
+  "lastUpdate" : "2026-09-21T11:33:26Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3000미터 1박 2일 캠핑",
   "status" : "in_progress"
