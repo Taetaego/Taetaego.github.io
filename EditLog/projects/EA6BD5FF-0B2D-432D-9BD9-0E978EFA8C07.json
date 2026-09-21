@@ -2,6 +2,13 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
+      "name" : "자막 추출",
+      "symbolName" : "captions.bubble",
+      "tracksLength" : true,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
       "name" : "자막 추출 & AI",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
@@ -307,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-20T15:53:38Z",
+  "lastUpdate" : "2026-09-21T11:21:28Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
