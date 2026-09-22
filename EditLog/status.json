@@ -159,10 +159,17 @@
       "elapsed" : "8시간 52분",
       "timestamp" : "2026-09-22T01:22:18Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "7시간 58분",
+      "timestamp" : "2026-09-22T09:20:23Z",
+      "videoLength" : "10"
     }
   ],
-  "entryCount" : 9,
-  "lastUpdate" : "2026-09-22T01:25:00Z",
+  "entryCount" : 10,
+  "lastUpdate" : "2026-09-22T09:20:28Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "in_progress"
