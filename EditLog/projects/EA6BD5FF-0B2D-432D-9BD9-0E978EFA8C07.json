@@ -51,7 +51,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "자막 강조 & 색상",
+      "name" : "자막 디자인",
       "symbolName" : "paintpalette",
       "tracksLength" : false,
       "weight" : 1
@@ -210,7 +210,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "자막 강조 & 색상",
+      "category" : "자막 디자인",
       "categorySymbol" : "paintpalette",
       "elapsed" : "13분",
       "timestamp" : "2026-09-13T11:03:10Z",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-22T14:41:04Z",
+  "lastUpdate" : "2026-09-22T14:41:37Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

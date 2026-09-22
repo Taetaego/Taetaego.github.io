@@ -51,7 +51,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "자막 강조 & 색상",
+      "name" : "자막 디자인",
       "symbolName" : "paintpalette",
       "tracksLength" : false,
       "weight" : 1
@@ -217,7 +217,7 @@
   "finalLength" : "38",
   "finalRatioVsDetailCut" : 57.57575757575758,
   "finalRatioVsOriginal" : 4.497041420118343,
-  "lastUpdate" : "2026-09-22T14:41:04Z",
+  "lastUpdate" : "2026-09-22T14:41:37Z",
   "originalLength" : "14:05",
   "projectTopic" : "(테스트) 쿠스코 인티라이미 축제 마지막",
   "status" : "completed",
