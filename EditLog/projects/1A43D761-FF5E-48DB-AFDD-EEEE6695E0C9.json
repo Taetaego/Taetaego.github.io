@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "2차 세부 컷편집",
+  "currentStage" : "자막 입력",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -168,10 +168,17 @@
       "elapsed" : "7시간 58분",
       "timestamp" : "2026-09-22T09:20:23Z",
       "videoLength" : "10"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "2시간 56분",
+      "timestamp" : "2026-09-22T12:17:01Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 10,
-  "lastUpdate" : "2026-09-22T09:44:20Z",
+  "entryCount" : 11,
+  "lastUpdate" : "2026-09-22T12:50:12Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
