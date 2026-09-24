@@ -198,10 +198,17 @@
       "memo" : "고도에 대한 데이터를 디자인적으로 시각화하는데 집중. 사실 이 영상에서는 별로 중요하지 않지만, 추후 히말라야 등산에 유의미하게 쓰일걸로 추정",
       "timestamp" : "2026-09-23T16:34:05Z",
       "videoLength" : "4"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "23시간 8분",
+      "timestamp" : "2026-09-24T15:42:30Z",
+      "videoLength" : "19"
     }
   ],
-  "entryCount" : 14,
-  "lastUpdate" : "2026-09-23T16:34:40Z",
+  "entryCount" : 15,
+  "lastUpdate" : "2026-09-24T15:42:33Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
