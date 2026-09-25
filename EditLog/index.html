@@ -1693,16 +1693,12 @@ const Sfx = (() => {
     aurora: () => [262, 330, 392, 494].forEach((f, i) => tone({ f, d: 2.6, type: 'triangle', v: 0.05, a: 0.9, at: i * 0.12, wet: true })),
     meteor: () => {
       for (let i = 0; i < 9; i++) noise({ d: 0.6, f: NR(3000, 5000), to: 600, q: 2, v: 0.09, a: 0.04, at: i * 0.45 + Math.random() * 0.2 });
-      [0.8, 2.1, 3.3].forEach((at, i) => { noise({ d: 1.1, type: 'lowpass', f: 1500, to: 200, v: 0.18, a: 0.1, at }); bell([1568, 2093, 1760][i], at + 0.7, 0.04); });
     },
     starlight: () => [1046, 1318, 1568, 2093, 2637].forEach((f, i) => bell(f, i * 0.11, 0.045)),
+    // 잔잔한 파도 — 크게 부서지는 소리 없이 물결이 밀려왔다 빠지는 소리만.
     wave: () => {
-      noise({ d: 2.3, type: 'lowpass', f: 180, to: 1500, v: 0.3, a: 2.0, q: 0.5 });               // 밀려오는 물
-      noise({ d: 2.2, type: 'bandpass', f: 500, to: 2500, q: 0.6, v: 0.12, a: 1.9 });
-      noise({ d: 0.9, type: 'lowpass', f: 2600, to: 700, v: 0.55, at: 2.0, a: 0.05, wet: true });  // 부서지는 순간
-      tone({ f: 70, to: 40, d: 0.6, v: 0.25, at: 2.0 });
-      noise({ d: 3.0, type: 'highpass', f: 2500, to: 6000, v: 0.14, at: 2.1, a: 0.15, lfo: [0.7, 800] });  // 거품이 쓸려 나감
-      noise({ d: 2.9, type: 'lowpass', f: 1200, to: 200, v: 0.18, at: 2.2, a: 0.2 });
+      noise({ d: 5, type: 'lowpass', f: 700, v: 0.14, a: 1.4, lfo: [0.45, 350] });
+      noise({ d: 4, type: 'highpass', f: 3500, v: 0.04, a: 1.8, at: 1.0, lfo: [0.5, 900] });
     },
     volcano: () => {
       noise({ d: 0.08, type: 'highpass', f: 1500, v: 0.4 });                                       // 터지는 첫 순간
@@ -4527,58 +4523,23 @@ function fxLayer(css, ms) {
   return el;
 }
 
-/** ✂️ 화면 컷편집 — 빛나는 칼선이 화면을 사선으로 긋고, 화면이 그 선을 따라 두 조각으로
-    갈라져 어긋났다가 다시 붙는다. 칼선을 따라 불똥이 튄다. */
+/** ✂️ 화면 컷편집 */
 function fxScreenCut() {
   if (reducedMotion) return;
   const page = document.querySelector('.page');
-  const W = innerWidth, H = innerHeight, ANG = -9 * Math.PI / 180;
-  const y0 = H * NR(0.35, 0.55);
-  const cutY = (x) => y0 + Math.tan(ANG) * (x - W / 2);   // 화면 좌표에서 칼선의 높이
-  const line = fxLayer(`left:-20%;right:-20%;top:${y0}px;height:3px;background:#fff;box-shadow:0 0 18px 5px rgba(255,255,255,.8),0 0 40px 10px rgba(120,220,255,.45);transform:rotate(${ANG}rad)`, 900);
-  line.animate([
-    { opacity: 1, transform: `rotate(${ANG}rad) scaleX(0)`, transformOrigin: 'left center' },
-    { opacity: 1, transform: `rotate(${ANG}rad) scaleX(1)`, transformOrigin: 'left center', offset: 0.3 },
-    { opacity: 0, transform: `rotate(${ANG}rad) scaleX(1) scaleY(3)`, transformOrigin: 'left center' },
-  ], { duration: 880, easing: 'ease-out', fill: 'forwards' });
-  // 칼선을 따라 튀는 불똥
-  natRun('cutSparks', 1.2, () => {
-    const P = Array.from({ length: 70 }, (_, i) => {
-      const x = (i / 70) * W;
-      return { x, y: cutY(x), vx: NR(-1, 3), vy: NR(-4, 2), life: 1, d: (i / 70) * 0.25 };
-    });
-    return (ctx, w, h, t, k, f) => {
-      ctx.globalCompositeOperation = 'lighter';
-      for (const p of P) {
-        if (t < p.d) continue;
-        p.x += p.vx * f; p.y += p.vy * f; p.vy += 0.2 * f; p.life -= 0.03 * f;
-        if (p.life <= 0) continue;
-        ctx.globalAlpha = p.life; ctx.fillStyle = '#fff6d0';
-        ctx.fillRect(p.x, p.y, 2, 2);
-      }
-    };
-  });
+  const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
+  if (line && line.animate) line.animate([
+    { opacity: 0, transform: 'rotate(-8deg) scaleX(0)' },
+    { opacity: 1, transform: 'rotate(-8deg) scaleX(1)', offset: 0.45 },
+    { opacity: 0, transform: 'rotate(-8deg) scaleX(1)' },
+  ], { duration: 650, easing: 'ease-out' });
   if (!page) return;
-  // 화면을 두 장으로 — 원본은 칼선 아래, 복제본은 칼선 위만 남겨 서로 반대로 민다.
   setTimeout(() => {
-    const r = page.getBoundingClientRect();
-    const clone = page.cloneNode(true);
-    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-    clone.removeAttribute('id');
-    clone.setAttribute('aria-hidden', 'true');
-    Object.assign(clone.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, margin: '0',
-      pointerEvents: 'none', zIndex: '9990', background: 'var(--bg)' });
-    const y1 = cutY(r.left) - r.top, y2 = cutY(r.right) - r.top;
-    clone.style.clipPath = `polygon(0 0, 100% 0, 100% ${y2}px, 0 ${y1}px)`;
-    page.style.clipPath = `polygon(0 ${y1}px, 100% ${y2}px, 100% 100%, 0 100%)`;
-    document.body.appendChild(clone);
-    const move = (el, dx, dy, rot) => el.animate([
-      { transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.35 },
-      { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.6 }, { transform: 'none' },
-    ], { duration: 700, easing: 'cubic-bezier(.2,.9,.3,1)' });
-    move(clone, -16, -12, -0.8);
-    move(page, 16, 12, 0.8).onfinish = () => { clone.remove(); page.style.clipPath = ''; };
-  }, 180);
+    page.style.transition = 'transform .45s cubic-bezier(.2,1.5,.4,1)';
+    page.style.transform = 'translateX(14px) skewX(-1.5deg)';
+    setTimeout(() => { page.style.transform = ''; }, 220);
+    setTimeout(() => { page.style.transition = ''; }, 720);
+  }, 300);
 }
 
 /** 🎰 슬롯 — 화면 가운데 슬롯머신이 내려와 릴 세 개가 돌다 차례로 멈춘다. 셋이 맞으면 잭팟
