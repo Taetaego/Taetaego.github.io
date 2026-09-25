@@ -445,7 +445,6 @@
   .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .heroStat { display: flex; flex-direction: column; gap: 2px; }
   .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .paceIn { color: var(--ink3); font-weight: 500; }
   .paceChip { align-self: flex-start; margin-top: 3px; font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 99px;
               background: var(--line); color: var(--ink2); white-space: nowrap; }
   .paceChip.fast { background: var(--soft); color: var(--accent2); }
@@ -2381,7 +2380,7 @@ function renderSummary(cardEl, data) {
   renderPace();
 }
 
-/* ===== 예상 완료 · 페이스 — 지난 회차들이 같은 단계에서 끝나기까지 걸린 시간으로 어림한다 ===== */
+/* ===== 페이스 — 지금 단계에 닿기까지 걸린 시간을 지난 회차들과 비교한다 ===== */
 let paceData = null;   // 지금 히어로에 떠 있는 편집 중 회차 (완료 회차면 null)
 
 function paceEstimate(data, act) {
@@ -2415,16 +2414,11 @@ function paceEstimate(data, act) {
     const s0 = Math.min(...rs.map(r => r[0]));
     const reach = firstAt(rs, stageIdx), end = firstAt(rs, doneIdx);
     if (reach === null || end === null) continue;
-    past.push({ toStage: reach - s0, total: end - s0 });
+    past.push({ toStage: reach - s0 });
   }
   if (!past.length) return null;
   const avg = k => past.reduce((a, p) => a + p[k], 0) / past.length;
-  // 진행률이 어느 정도 쌓이면 지금 속도로 남은 %를 채우는 시간을, 초반엔 지난 회차 평균 소요를 쓴다.
-  const nowS = Date.now() / 1000, elapsed = nowS - curStart;
-  const pct = heroPct;
-  const eta = pct >= 10 && pct < 100 ? nowS + elapsed * (100 - pct) / pct : curStart + avg('total');
   return {
-    eta: eta * 1000, byPct: pct >= 10,
     diff: avg('toStage') - (curReach - curStart),   // +면 지난 평균보다 빠르다
     n: past.length,
   };
@@ -2435,19 +2429,13 @@ function renderPace() {
   if (!el) return;
   const p = paceEstimate(paceData, heatData);
   if (!p) { el.hidden = true; return; }
-  const now = Date.now();
-  const d = new Date(Math.max(p.eta, now));
-  const days = Math.round((new Date(d).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) / 86400000);
-  const when = days <= 0 ? '오늘 중' : days === 1 ? '내일' : `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
   const fast = p.diff >= 0;
   const gap = Math.abs(p.diff);
   const paceText = gap < 3 * 3600 ? '지난 평균과 비슷한 페이스' : `지난 평균보다 ${formatSpan(gap)} ${fast ? '빨라요' : '늦어요'}`;
   el.hidden = false;
-  el.title = (p.byPct ? `지금까지의 속도(${heroPct}%)로 남은 단계를 채운다고 어림한 날짜예요.` : `지난 에피소드 ${p.n}개의 평균 편집 기간으로 어림한 날짜예요.`) +
-    `\n페이스: '${paceData.currentStage}' 단계에 닿기까지 걸린 시간을 지난 에피소드 평균과 비교해요.`;
+  el.title = `'${paceData.currentStage}' 단계에 닿기까지 걸린 시간을 지난 에피소드 ${p.n}개 평균과 비교해요`;
   el.innerHTML = `
-    <span class="stageLabel">예상 완료</span>
-    <b>${escapeHtml(when)}${days > 1 ? `<span class="paceIn"> · D-${days}</span>` : ''}</b>
+    <span class="stageLabel">페이스</span>
     <span class="paceChip ${gap < 3 * 3600 ? '' : fast ? 'fast' : 'slow'}">${fast && gap >= 3 * 3600 ? '⚡ ' : ''}${escapeHtml(paceText)}</span>`;
 }
 
