@@ -263,10 +263,18 @@
       "elapsed" : "52분",
       "timestamp" : "2026-09-25T18:17:05Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "1시간 39분",
+      "memo" : "인트로 개편중..",
+      "timestamp" : "2026-09-25T19:57:05Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 23,
-  "lastUpdate" : "2026-09-25T18:17:11Z",
+  "entryCount" : 24,
+  "lastUpdate" : "2026-09-25T19:57:13Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
