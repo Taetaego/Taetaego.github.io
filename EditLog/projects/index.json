@@ -1,6 +1,6 @@
 {
-  "currentId" : "1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9",
-  "lastUpdate" : "2026-09-24T15:42:33Z",
+  "currentId" : "EA6BD5FF-0B2D-432D-9BD9-0E978EFA8C07",
+  "lastUpdate" : "2026-09-25T13:08:38Z",
   "projects" : [
     {
       "createdAt" : "2026-09-20T12:29:35Z",
@@ -26,7 +26,6 @@
     {
       "completedAt" : "2026-09-04T11:03:38Z",
       "createdAt" : "2026-08-27T13:35:26Z",
-      "daysSincePreviousCompletion" : 17,
       "entryCount" : 26,
       "finalLength" : "22",
       "finalRatioVsOriginal" : 8.058608058608058,
@@ -35,18 +34,6 @@
       "status" : "completed",
       "topic" : "페루 나스카 경비행기 & 무덤",
       "totalDuration" : 682092.0483269691
-    },
-    {
-      "completedAt" : "2026-08-18T11:37:40Z",
-      "createdAt" : "2026-08-16T13:19:50Z",
-      "entryCount" : 16,
-      "finalLength" : "38",
-      "finalRatioVsOriginal" : 4.497041420118343,
-      "id" : "A1713B4A-0B13-4DED-9B4C-87018F2E2726",
-      "originalLength" : "14:05",
-      "status" : "completed",
-      "topic" : "(테스트) 쿠스코 인티라이미 축제 마지막",
-      "totalDuration" : 166670
     }
   ]
 }
