@@ -945,20 +945,20 @@ function fxHeartBurst() {
   });
 }
 
-/** 🌟 별빛 — 밤하늘이 내려앉고, 별이 하나씩 켜지며 선으로 이어져 별자리가 그려진다 (6초). */
+/** 🌟 별빛 — 밤하늘이 내려앉고, 화면 가운데에서 별이 하나씩 켜지며 선으로 이어져 별자리 하나가 그려진다 (6초). */
 function fxStarlight() {
   natRun('prStar', 6, () => {
     let C = null, dust = null;
     return (ctx, w, h, t, k, f) => {
       const a = natFade(k, 0.12, 0.16);
       if (!C) {
-        // 화면을 네 구역으로 나눠 구역마다 별자리 하나 — 별 5~7개를 한 붓으로 잇는다.
-        C = [[0.05, 0.05], [0.52, 0.08], [0.06, 0.52], [0.5, 0.55]].map(([ox, oy], ci) => {
-          const n = 5 + Math.floor(Math.random() * 3);
-          const stars = Array.from({ length: n }, () => ({ x: (ox + NR(0.03, 0.4)) * w, y: (oy + NR(0.03, 0.38)) * h, r: NR(5, 11) }));
-          stars.sort((p, q) => p.x - q.x);
-          return { stars, d: 0.2 + ci * 0.7 };
+        // 화면 가운데에 별자리 하나 — 별 7개를 원을 따라 흩어 놓고 한 붓으로 잇는다.
+        const S = Math.min(w, h) * 0.34;
+        const stars = Array.from({ length: 7 }, (_, i) => {
+          const ang = (i / 7) * 6.284 + NR(-0.35, 0.35), rr = S * NR(0.45, 1);
+          return { x: w / 2 + Math.cos(ang) * rr, y: h * 0.45 + Math.sin(ang) * rr * 0.9, r: NR(7, 13) };
         });
+        C = [{ stars, d: 0.3 }];
         dust = Array.from({ length: 160 }, () => ({ x: NR(0, w), y: NR(0, h), r: NR(0.4, 1.4), ph: NR(0, 6.28) }));
       }
       ctx.globalAlpha = a * 0.55; ctx.fillStyle = '#050a1c'; ctx.fillRect(0, 0, w, h);
@@ -1067,16 +1067,18 @@ function fxGlitterBurst() {
     const COLS = [[48, 95], [42, 90], [330, 90], [190, 85], [280, 80], [0, 0]];
     const burst = (x, y, n, power) => {
       for (let i = 0; i < n; i++) {
-        const ang = Math.random() * 6.284, sp = NR(1.5, power);
+        // 위쪽 반원으로 분수처럼 — 아래로 쏘면 화면 밑에 막힌 것처럼 뭉쳐 보인다.
+        const ang = -Math.PI / 2 + NR(-1.35, 1.35), sp = NR(power * 0.35, power);
         const [hue, sat] = COLS[Math.floor(Math.random() * COLS.length)];
-        P.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp - 2, w: NR(3, 7), h: NR(2, 4.5), rot: NR(0, 6.28), spin: NR(-0.2, 0.2),
+        P.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, w: NR(3, 7), h: NR(2, 4.5), rot: NR(0, 6.28), spin: NR(-0.2, 0.2),
                  flip: NR(0, 6.28), fsp: NR(0.1, 0.35), life: 1, dec: NR(0.0035, 0.007), hue, sat, star: Math.random() < 0.12 });
       }
     };
     return (ctx, w, h, t, k, f) => {
       if (!shots) {
+        // 버튼은 화면 아래쪽이라, 터지는 자리는 화면 60% 높이보다 위로 끌어올린다.
         const p0 = ptr();
-        shots = [[0, p0.x, p0.y, 230, 16], [0.35, w * NR(0.15, 0.4), h * NR(0.2, 0.45), 150, 13], [0.7, w * NR(0.6, 0.85), h * NR(0.2, 0.45), 150, 13]];
+        shots = [[0, p0.x, Math.min(p0.y, h * 0.6), 230, 19], [0.35, w * NR(0.15, 0.4), h * NR(0.2, 0.45), 150, 13], [0.7, w * NR(0.6, 0.85), h * NR(0.2, 0.45), 150, 13]];
       }
       shots = shots.filter(([d, x, y, n, pw]) => (t >= d ? (burst(x, y, n, pw), false) : true));
       // 뒤늦게 위에서 흩날리는 반짝이 비
@@ -1087,8 +1089,8 @@ function fxGlitterBurst() {
       }
       const a = natFade(k, 0.02, 0.2);
       P = P.filter((p) => {
-        p.vx *= 0.97; p.vy = p.vy * 0.97 + 0.09 * f;
-        if (p.vy > 2.4) p.vy = 2.4;
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.12 * f;
+        if (p.vy > 3.2) p.vy = 3.2;
         p.x += (p.vx + Math.sin(p.flip) * 0.4) * f; p.y += p.vy * f; p.rot += p.spin * f; p.flip += p.fsp * f; p.life -= p.dec * f;
         if (p.life <= 0 || p.y > h + 20) return false;
         const face = Math.cos(p.flip), glint = Math.pow(Math.abs(face), 12);
@@ -1138,15 +1140,14 @@ function fxPetalStorm() {
   });
 }
 
-/** 🌠 별똥별 소나기 — 하늘이 어두워지고 별똥별 수십 개가 쏟아진다. 가끔 큰 불덩이가
-    불똥을 흘리며 지나가고, 지나간 자리에 잠깐 빛이 번진다 (5.5초). */
+/** 🌠 별똥별 소나기 — 하늘이 어두워지고 푸른 별똥별 수십 개가 쏟아진다 (5.5초). */
 function fxMeteorStorm() {
   natRun('meteor', 5.5, () => {
-    let M = [], sparks = [], stars = null, due = 0;
-    const spawn = (w, h, big) => {
-      const ang = NR(28, 42) * Math.PI / 180, sp = big ? NR(9, 12) : NR(13, 22);
+    let M = [], stars = null, due = 0;
+    const spawn = (w, h) => {
+      const ang = NR(28, 42) * Math.PI / 180, sp = NR(13, 22);
       M.push({ x: NR(-0.7, 0.85) * w, y: NR(-0.45, -0.02) * h, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-               tail: big ? NR(26, 34) : NR(14, 24), r: big ? NR(3.5, 5) : NR(1.2, 2.2), big, hue: big ? NR(20, 45) : NR(190, 230) });
+               tail: NR(14, 24), r: NR(1.2, 2.2), hue: NR(190, 230) });
     };
     return (ctx, w, h, t, k, f) => {
       const a = natFade(k, 0.1, 0.18);
@@ -1158,7 +1159,7 @@ function fxMeteorStorm() {
       ctx.fillStyle = '#dde6ff';
       for (const s of stars) { s.ph += 0.05 * f; ctx.globalAlpha = a * (0.3 + 0.3 * Math.sin(s.ph)); ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.284); ctx.fill(); }
       // 프레임 수가 아니라 시간으로 — 느린 기기에서도 초당 12개꼴로 쏟아진다.
-      if (k < 0.8) { due += 12 * f / 60; while (due >= 1) { due -= 1; spawn(w, h, Math.random() < 0.12); } }
+      if (k < 0.8) { due += 12 * f / 60; while (due >= 1) { due -= 1; spawn(w, h); } }
       M = M.filter((m) => {
         m.x += m.vx * f; m.y += m.vy * f;
         const tx = m.x - m.vx * m.tail, ty = m.y - m.vy * m.tail;
@@ -1167,17 +1168,9 @@ function fxMeteorStorm() {
         g.addColorStop(0, `hsla(${m.hue},100%,90%,${a})`); g.addColorStop(0.2, `hsla(${m.hue},90%,65%,${0.6 * a})`); g.addColorStop(1, `hsla(${m.hue},90%,60%,0)`);
         ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = m.r * 1.6; ctx.lineCap = 'round';
         ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
-        const hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * (m.big ? 7 : 4));
+        const hg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 4);
         hg.addColorStop(0, `rgba(255,255,255,${a})`); hg.addColorStop(1, `hsla(${m.hue},100%,70%,0)`);
-        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * (m.big ? 7 : 4), 0, 6.284); ctx.fill();
-        if (m.big && Math.random() < 0.8) sparks.push({ x: m.x, y: m.y, vx: NR(-1, 1) + m.vx * 0.1, vy: NR(-0.5, 1.5), life: 1, hue: m.hue });
-        return true;
-      });
-      sparks = sparks.filter((p) => {
-        p.x += p.vx * f; p.y += p.vy * f; p.vy += 0.05 * f; p.life -= 0.03 * f;
-        if (p.life <= 0) return false;
-        ctx.globalAlpha = a * p.life; ctx.fillStyle = `hsl(${p.hue},100%,70%)`;
-        ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, 6.284); ctx.fill();
+        ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * 4, 0, 6.284); ctx.fill();
         return true;
       });
     };
