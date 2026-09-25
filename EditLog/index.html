@@ -281,18 +281,9 @@
   }
 
   /* 맨 아래 이펙트 버튼들 */
-  .fxBar { align-self: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
-  .fireBtn {
-    cursor: pointer;
-    border: 1px solid var(--line2); border-radius: 99px;
-    background: var(--surface); color: var(--ink2);
-    font-family: inherit; font-size: 12px; font-weight: 600;
-    padding: 9px 18px; transition: transform .15s ease, background-color .15s ease, color .15s ease;
-  }
   /* 모바일은 진짜 hover가 없어서 탭한 뒤 :hover가 그대로 남는다(초록 배경이 안 지워짐).
      그래서 hover 스타일은 hover가 되는 기기에서만 적용한다. */
   @media (hover: hover) {
-    .fireBtn:hover { background: var(--soft); color: var(--accent2); }
     /* 마우스를 올리면 카드가 2px 떠오른다 (터치 기기에선 hover가 남아 적용하지 않는다) */
     #summaryCard, #pipelineCard, #dayCard, #heatCard, #logCard, .statTile {
       transition: transform .18s ease, box-shadow .18s ease;
@@ -301,29 +292,57 @@
       transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.26);
     }
   }
-  .fireBtn:active { transform: scale(0.96); }
-
-  /* 버튼이 많아 카테고리로 묶는다. 구분선 없이 옅은 라벨만 둬 가볍게 유지. */
-  .fxRow { flex: 0 0 100%; display: flex; flex-direction: column; align-items: center; gap: 7px; }
-  .fxRowLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
-  .fxRowBtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-  /* 폰에선 줄바꿈하지 않고 종류별 한 줄을 옆으로 넘긴다 (외톨이 버튼이 안 생기게) */
-  @media (max-width: 560px) {
-    .fxBar { align-self: stretch; min-width: 0; }
-    .fxRow { align-items: stretch; min-width: 0; }
-    .fxRowLabel { text-align: center; }
-    .fxRowBtns {
-      flex-wrap: nowrap; justify-content: flex-start; min-width: 0;
-      overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: 12px; scrollbar-width: none;
-      margin: 0 -12px; padding: 2px 12px 6px;
-    }
-    .fxRowBtns::-webkit-scrollbar { display: none; }
-    .fireBtn { flex: none; scroll-snap-align: start; }
-    /* 다 들어가는 줄은 가운데, 넘치는 줄은 왼쪽부터 — 넘칠 때 가운데 정렬을 하면 왼쪽 버튼이
-       화면 밖으로 밀려 스크롤로도 닿지 않는다. 양 끝 자동 여백은 넘치면 0이 된다. */
-    .fxRowBtns > .fireBtn:first-child { margin-left: auto; }
-    .fxRowBtns > .fireBtn:last-child { margin-right: auto; }
+  /* ===== 이펙트 — 종류 탭 + 큼직한 이모지 타일 ===== */
+  .fxBar { display: flex; flex-direction: column; gap: 12px; }
+  .fxTabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface2); }
+  .fxTab {
+    border: 0; background: transparent; color: var(--ink3); cursor: pointer; font-family: inherit;
+    font-size: 11.5px; font-weight: 600; padding: 7px 4px 6px; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
   }
+  .fxTab .e { font-size: 17px; line-height: 1.1; filter: grayscale(.7) opacity(.7); transition: filter .2s ease, transform .3s cubic-bezier(.34,1.56,.64,1); }
+  .fxTab.active {
+    color: var(--ink); background: color-mix(in srgb, var(--fc) 16%, var(--surface));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fc) 45%, transparent), 0 4px 14px color-mix(in srgb, var(--fc) 22%, transparent);
+  }
+  .fxTab.active .e { filter: none; transform: scale(1.12); }
+  .fxRow[hidden] { display: none; }
+  /* 줄이 덜 차도 가운데로 모이게 flex로 — 폰은 한 줄 4칸, 넓은 화면은 고정 폭 타일. */
+  .fxRowBtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .fxRowBtns .fireBtn { flex: 0 0 calc((100% - 24px) / 4); }
+  @media (min-width: 561px) { .fxRowBtns .fireBtn { flex-basis: 92px; } }
+  .fireBtn {
+    position: relative; overflow: hidden; cursor: pointer; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    min-height: 78px; padding: 10px 4px 9px; border-radius: 16px;
+    border: 1px solid color-mix(in srgb, var(--fc) 26%, var(--line));
+    background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--fc) 15%, var(--surface2)), var(--surface2) 72%);
+    color: var(--ink2); font-size: 11.5px; font-weight: 600; line-height: 1.2;
+    transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
+    animation: fxTileIn .35s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--k, 0) * 35ms);
+  }
+  .fireBtn .e { font-size: 25px; line-height: 1; filter: drop-shadow(0 3px 7px color-mix(in srgb, var(--fc) 55%, transparent));
+                transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .fireBtn .t { white-space: nowrap; }
+  @media (hover: hover) {
+    .fireBtn:hover { color: var(--ink); border-color: color-mix(in srgb, var(--fc) 60%, transparent);
+                     box-shadow: 0 6px 18px color-mix(in srgb, var(--fc) 24%, transparent); }
+    .fireBtn:hover .e { transform: translateY(-2px) scale(1.12); }
+    .fxTab:not(.active):hover { color: var(--ink2); }
+  }
+  .fireBtn:active { transform: scale(0.94); }
+  /* 누른 자리에서 제 색 빛이 번지고 이모지가 튄다 */
+  .fireBtn.hit::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(circle at var(--hx, 50%) var(--hy, 50%), color-mix(in srgb, var(--fc) 60%, transparent), transparent 62%);
+    animation: fxHit .55s ease-out forwards;
+  }
+  .fireBtn.hit .e { animation: fxEmoji .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes fxHit { from { opacity: 1; transform: scale(.5); } to { opacity: 0; transform: scale(1.5); } }
+  @keyframes fxEmoji { 40% { transform: scale(1.4) rotate(-10deg); } }
+  @keyframes fxTileIn { from { opacity: 0; transform: translateY(8px) scale(.95); } }
+  @media (prefers-reduced-motion: reduce) { .fireBtn, .fireBtn.hit::after, .fireBtn.hit .e { animation: none; } }
 
   /* 화면 전체에 얇게 깔리는 필름 그레인 (아날로그 질감) */
   .grain {
@@ -374,35 +393,81 @@
   .modalBack[hidden] { display: none; }
   @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
   .modal {
-    width: min(560px, 100%); max-height: min(80vh, 720px); display: flex; flex-direction: column;
-    background: var(--surface); border: 1px solid var(--line2); border-radius: 20px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.45); overflow: hidden;
+    width: min(620px, 100%); max-height: min(84vh, 760px); display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line2); border-radius: 24px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5); overflow: hidden; position: relative;
+    animation: sheetIn .38s cubic-bezier(.2,.9,.3,1.05);
   }
-  .modalHead { display: flex; align-items: center; gap: 8px; padding: 12px 14px 10px; border-bottom: 1px solid var(--line); }
-  .modalTitle { font-size: 15.5px; font-weight: 700; }
+  .modal::before { content: ''; position: absolute; inset: 0 0 auto; height: 140px; pointer-events: none;
+                   background: radial-gradient(90% 100% at 20% 0%, color-mix(in srgb, var(--grp-2) 18%, transparent), transparent 70%),
+                               radial-gradient(70% 100% at 90% 0%, color-mix(in srgb, var(--grp-4) 14%, transparent), transparent 70%); }
+  @keyframes sheetIn { from { opacity: 0; transform: translateY(24px) scale(.97); } }
+  .modalHead { position: relative; display: flex; align-items: center; gap: 8px; padding: 16px 18px 6px; }
+  .modalTitle { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
   .modalMeta { font-size: 11px; color: var(--ink3); margin-right: auto; }
-  .modalClose { border: none; background: none; cursor: pointer; color: var(--ink3); font-size: 13px; padding: 2px 4px; }
-  @media (hover: hover) { .modalClose:hover { color: var(--ink); } }
-  .modalBody { overflow: auto; padding: 6px; }
+  .modalClose { border: 1px solid var(--line2); background: var(--surface2); cursor: pointer; color: var(--ink2);
+                width: 30px; height: 30px; border-radius: 50%; font-size: 12px; display: grid; place-items: center; }
+  @media (hover: hover) { .modalClose:hover { color: var(--ink); border-color: var(--ink3); } }
+  .modalBody { position: relative; overflow: auto; padding: 8px 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  /* 목록 위 요약 */
+  .pastSum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 2px; }
+  .pastSum div { padding: 9px 11px; border-radius: 13px; background: var(--surface2); display: flex; flex-direction: column; gap: 3px; }
+  .pastSum span { font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .pastSum b { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
 
-  /* 목록 한 줄 */
+  /* 에피소드 카드 — 썸네일 + 제목 + 원본→완성 막대 */
   .pastRow {
-    display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: center;
-    width: 100%; text-align: left; border: none; cursor: pointer;
-    padding: 9px 11px; border-radius: 11px; background: none; color: inherit;
-    border-left: 3px solid transparent;
+    position: relative; display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 12px; align-items: stretch;
+    width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit;
+    padding: 8px; border-radius: 18px; background: var(--surface2); border: 1px solid var(--line);
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    animation: pastIn .45s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--k, 0) * 60ms + 80ms);
   }
-  @media (hover: hover) { .pastRow:hover { background: var(--surface2); } }
-  .pastRow.current { border-left-color: var(--accent); background: var(--soft); }
-  .pastRow .pastTopic { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pastRow .pastState { font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 99px; white-space: nowrap; }
-  .pastRow .pastState.done { background: var(--soft); color: var(--accent2); }
+  @keyframes pastIn { from { opacity: 0; transform: translateY(12px); } }
+  @media (hover: hover) {
+    .pastRow:hover { transform: translateY(-2px); border-color: var(--line2); box-shadow: 0 10px 26px rgba(0,0,0,.25); }
+    .pastRow:hover .pastCover img { transform: scale(1.07); }
+  }
+  .pastRow:active { transform: scale(.985); }
+  .pastRow.current { border-color: transparent;
+    background: linear-gradient(var(--surface2), var(--surface2)) padding-box, var(--grad) border-box; }
+  .pastCover { position: relative; display: block; width: 100%; align-self: start; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden;
+               background: linear-gradient(135deg, color-mix(in srgb, var(--grp-2) 30%, var(--surface)), color-mix(in srgb, var(--grp-3) 30%, var(--surface))); }
+  .pastCover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease, opacity .4s ease; opacity: 0; }
+  .pastCover img.ok { opacity: 1; }
+  .pastCover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.55), transparent 55%); }
+  .pastEp { position: absolute; z-index: 1; left: 8px; bottom: 6px; font: 700 12px/1 'JetBrains Mono', monospace; color: #fff; letter-spacing: .06em; }
+  .pastPlay { position: absolute; z-index: 1; right: 7px; top: 7px; font-size: 10px; font-weight: 700; color: #fff;
+              background: rgba(0,0,0,.55); padding: 3px 7px; border-radius: 99px; backdrop-filter: blur(4px); }
+  .pastMain { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 3px 4px 3px 0; }
+  .pastTop { display: flex; align-items: flex-start; gap: 8px; }
+  .pastRow .pastTopic { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em;
+                        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; }
+  .pastRow .pastState { flex: none; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+  .pastRow .pastState.done { background: var(--gold-soft); color: var(--gold); }
   .pastRow .pastState.wip { background: var(--warn-soft); color: var(--warn); }
-  .pastRow .pastFacts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 2px 11px; font-size: 12.5px; color: var(--ink3); }
-  /* 한 항목이 중간에서 끊기면 두 줄로 넘어가 보인다. */
+  .pastLen { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 7px; font-size: 11px; color: var(--ink3); }
+  .pastLen b { color: var(--ink2); font-weight: 600; }
+  .pastBar { position: relative; height: 5px; border-radius: 99px; background: var(--line2); overflow: hidden; }
+  .pastBar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, var(--grp-1), var(--grp-3), var(--gold));
+               animation: pastBar 1s cubic-bezier(.2,.8,.3,1) backwards; animation-delay: calc(var(--k, 0) * 60ms + 300ms); transform-origin: left; }
+  @keyframes pastBar { from { transform: scaleX(0); } }
+  .pastRow .pastFacts { margin-top: auto; display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 11.5px; color: var(--ink3); }
   .pastRow .pastFacts > span { white-space: nowrap; }
-  .pastRow .dShort { display: none; }
   .pastRow .pastFacts b { font-weight: 600; color: var(--ink2); }
+  /* 폰에선 아래에서 올라오는 시트로 */
+  @media (max-width: 560px) {
+    .modalBack { align-items: flex-end; padding: 0; }
+    .modal { width: 100%; max-height: 88vh; border-radius: 24px 24px 0 0; border-bottom: 0;
+             padding-bottom: env(safe-area-inset-bottom); animation-name: sheetUp; }
+    .modal::after { content: ''; position: absolute; top: 7px; left: 50%; width: 38px; height: 4px; border-radius: 99px;
+                    background: var(--line2); transform: translateX(-50%); }
+    @keyframes sheetUp { from { transform: translateY(100%); } }
+    .modalHead { padding-top: 20px; }
+    .pastRow { grid-template-columns: 108px minmax(0, 1fr); gap: 10px; }
+    .pastRow .pastTopic { font-size: 13.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .modal, .pastRow, .pastBar i { animation: none; } }
   .themeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
@@ -1090,10 +1155,6 @@
   @media (max-width: 560px) {
     .pastBtn { padding: 6px 9px; font-size: 12px; line-height: 1; }
     .pastBtn .pastBtnText { display: none; }
-    /* 좁은 화면에서도 요약은 반드시 한 줄 — 글자를 조금 줄이고 날짜는 짧은 형식으로. */
-    .pastRow .pastFacts { font-size: 11.5px; gap: 2px 9px; }
-    .pastRow .dFull { display: none; }
-    .pastRow .dShort { display: inline; }
   }
 
   @media (max-width: 420px) {
@@ -1120,7 +1181,7 @@
       gap: var(--cardGap);
     }
     /* 그리드에선 가로 정렬이 justify-self라, 이게 없으면 버튼이 두 칸 폭으로 늘어난다. */
-    .fxBar { grid-area: fire; justify-self: center; }
+    .fxBar { grid-area: fire; justify-self: center; width: min(560px, 100%); }
     .madeBy { grid-column: 1 / -1; justify-self: center; }
     .topbar { grid-area: topbar; padding: 0 4px 4px; }
     .colLeft { grid-area: left; display: flex; flex-direction: column; gap: var(--cardGap); }
@@ -1383,51 +1444,51 @@
       </div>
     </div>
 
-    <div class="fxBar" id="fxBar" style="display:none">
-      <div class="fxRow">
-        <span class="fxRowLabel">🎬 편집실</span>
+    <div class="fxBar card" id="fxBar" style="display:none">
+      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">23개</span></div>
+      <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
+        <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
+        <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
+        <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="2" style="--fc:#4fd18b"><span class="e">🌿</span>자연</button>
+        <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="3" style="--fc:var(--grp-4)"><span class="e">🔮</span>판타지</button>
+      </div>
+      <div class="fxRow" data-fx="0" role="tabpanel" style="--fc:var(--grp-1)">
         <div class="fxRowBtns">
-          <button type="button" class="fireBtn" id="fireBtn">🎆 폭죽</button>
-          <button type="button" class="fireBtn" id="btnSlot">🎰 슬롯</button>
-          <button type="button" class="fireBtn" id="btnCut">✂️ 컷편집</button>
-          <button type="button" class="fireBtn" id="btnPrGlitter">✨ 반짝이</button>
-          <button type="button" class="fireBtn" id="btnPrHeart">💖 하트</button>
+          <button type="button" class="fireBtn" id="fireBtn" style="--k:0"><span class="e">🎆</span><span class="t">폭죽</span></button>
+          <button type="button" class="fireBtn" id="btnSlot" style="--k:1"><span class="e">🎰</span><span class="t">슬롯</span></button>
+          <button type="button" class="fireBtn" id="btnCut" style="--k:2"><span class="e">✂️</span><span class="t">컷편집</span></button>
+          <button type="button" class="fireBtn" id="btnPrGlitter" style="--k:3"><span class="e">✨</span><span class="t">반짝이</span></button>
+          <button type="button" class="fireBtn" id="btnPrHeart" style="--k:4"><span class="e">💖</span><span class="t">하트</span></button>
         </div>
       </div>
-
-      <div class="fxRow">
-        <span class="fxRowLabel">🌤️ 날씨</span>
+      <div class="fxRow" data-fx="1" role="tabpanel" style="--fc:var(--grp-2)" hidden>
         <div class="fxRowBtns">
-          <button type="button" class="fireBtn" id="btnPour">🌧️ 비</button>
-          <button type="button" class="fireBtn" id="btnSnow">❄️ 눈</button>
-          <button type="button" class="fireBtn" id="btnAurora">🌌 오로라</button>
-          <button type="button" class="fireBtn" id="btnMeteor">🌠 별똥별</button>
-          <button type="button" class="fireBtn" id="btnPrStarlight">🌟 별빛</button>
-          <button type="button" class="fireBtn" id="btnWave">🌊 파도</button>
-          <button type="button" class="fireBtn" id="btnVolcano">🌋 화산</button>
-          <button type="button" class="fireBtn" id="btnTornado">🌪️ 토네이도</button>
+          <button type="button" class="fireBtn" id="btnPour" style="--k:0"><span class="e">🌧️</span><span class="t">비</span></button>
+          <button type="button" class="fireBtn" id="btnSnow" style="--k:1"><span class="e">❄️</span><span class="t">눈</span></button>
+          <button type="button" class="fireBtn" id="btnAurora" style="--k:2"><span class="e">🌌</span><span class="t">오로라</span></button>
+          <button type="button" class="fireBtn" id="btnMeteor" style="--k:3"><span class="e">🌠</span><span class="t">별똥별</span></button>
+          <button type="button" class="fireBtn" id="btnPrStarlight" style="--k:4"><span class="e">🌟</span><span class="t">별빛</span></button>
+          <button type="button" class="fireBtn" id="btnWave" style="--k:5"><span class="e">🌊</span><span class="t">파도</span></button>
+          <button type="button" class="fireBtn" id="btnVolcano" style="--k:6"><span class="e">🌋</span><span class="t">화산</span></button>
+          <button type="button" class="fireBtn" id="btnTornado" style="--k:7"><span class="e">🌪️</span><span class="t">토네이도</span></button>
         </div>
       </div>
-
-      <div class="fxRow">
-        <span class="fxRowLabel">🌿 자연</span>
+      <div class="fxRow" data-fx="2" role="tabpanel" style="--fc:#4fd18b" hidden>
         <div class="fxRowBtns">
-          <button type="button" class="fireBtn" id="btnSakura">🌸 꽃잎</button>
-          <button type="button" class="fireBtn" id="btnPrPetalStorm">🌸 꽃잎 폭풍</button>
-          <button type="button" class="fireBtn" id="btnLeaf">🍂 낙엽</button>
-          <button type="button" class="fireBtn" id="btnPrBloom">🌺 꽃</button>
-          <button type="button" class="fireBtn" id="btnPrGarden">🦋 나비</button>
-          <button type="button" class="fireBtn" id="btnFly">✨ 반딧불이</button>
+          <button type="button" class="fireBtn" id="btnSakura" style="--k:0"><span class="e">🌸</span><span class="t">꽃잎</span></button>
+          <button type="button" class="fireBtn" id="btnPrPetalStorm" style="--k:1"><span class="e">🌸</span><span class="t">꽃잎 폭풍</span></button>
+          <button type="button" class="fireBtn" id="btnLeaf" style="--k:2"><span class="e">🍂</span><span class="t">낙엽</span></button>
+          <button type="button" class="fireBtn" id="btnPrBloom" style="--k:3"><span class="e">🌺</span><span class="t">꽃</span></button>
+          <button type="button" class="fireBtn" id="btnPrGarden" style="--k:4"><span class="e">🦋</span><span class="t">나비</span></button>
+          <button type="button" class="fireBtn" id="btnFly" style="--k:5"><span class="e">✨</span><span class="t">반딧불이</span></button>
         </div>
       </div>
-
-      <div class="fxRow">
-        <span class="fxRowLabel">🔮 판타지</span>
+      <div class="fxRow" data-fx="3" role="tabpanel" style="--fc:var(--grp-4)" hidden>
         <div class="fxRowBtns">
-          <button type="button" class="fireBtn" id="btnMgCircle">🔮 마법진</button>
-          <button type="button" class="fireBtn" id="btnMgDark">🌑 암흑</button>
-          <button type="button" class="fireBtn" id="btnHrHaunt">👻 유령</button>
-          <button type="button" class="fireBtn" id="btnSpUfo">👽 UFO</button>
+          <button type="button" class="fireBtn" id="btnMgCircle" style="--k:0"><span class="e">🔮</span><span class="t">마법진</span></button>
+          <button type="button" class="fireBtn" id="btnMgDark" style="--k:1"><span class="e">🌑</span><span class="t">암흑</span></button>
+          <button type="button" class="fireBtn" id="btnHrHaunt" style="--k:2"><span class="e">👻</span><span class="t">유령</span></button>
+          <button type="button" class="fireBtn" id="btnSpUfo" style="--k:3"><span class="e">👽</span><span class="t">UFO</span></button>
         </div>
       </div>
     </div>
@@ -1455,7 +1516,7 @@ let heroCompleted = false;
 
 /* ===== 효과음 — 음원 파일 없이 Web Audio로 그때그때 합성한다. 기본은 꺼져 있고 🔇 버튼으로 켠다. ===== */
 const Sfx = (() => {
-  let on = false, ctx = null, master = null, noiseBuf = null;
+  let on = false, ctx = null, master = null, echo = null, noiseBuf = null;
   try { on = localStorage.getItem('sfx') === 'on'; } catch (e) {}
   function ensure() {
     if (!ctx) {
@@ -1463,24 +1524,37 @@ const Sfx = (() => {
       if (!AC) return null;
       ctx = new AC();
       master = ctx.createGain(); master.gain.value = 0.55; master.connect(ctx.destination);
+      // 은은한 잔향 — 짧은 딜레이를 몇 번 되먹여 종소리가 공간에 퍼지는 느낌을 낸다.
+      echo = ctx.createGain();
+      const dl = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter(), wet = ctx.createGain();
+      dl.delayTime.value = 0.19; fb.gain.value = 0.32; lp.type = 'lowpass'; lp.frequency.value = 3200; wet.gain.value = 0.45;
+      echo.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(wet); wet.connect(master);
     }
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
   // 음 하나 — f에서 to로 미끄러지며, 짧게 올라갔다가 d초 동안 사그라든다.
-  function tone({ f = 440, to = null, d = 0.1, type = 'sine', v = 0.2, at = 0, a = 0.005 }) {
+  // wet: 잔향으로도 보낸다. vib: [빠르기(Hz), 깊이(Hz)] 로 음을 떨게 한다 (유령·UFO).
+  function tone({ f = 440, to = null, d = 0.1, type = 'sine', v = 0.2, at = 0, a = 0.005, wet = false, vib = null }) {
     const t = ctx.currentTime + at;
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.type = type; o.frequency.setValueAtTime(f, t);
     if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
+    if (vib) {
+      const lfo = ctx.createOscillator(), lg = ctx.createGain();
+      lfo.frequency.value = vib[0]; lg.gain.value = vib[1];
+      lfo.connect(lg).connect(o.frequency); lfo.start(t); lfo.stop(t + d + 0.03);
+    }
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(v, t + a);
     g.gain.exponentialRampToValueAtTime(0.0001, t + d);
     o.connect(g).connect(master);
+    if (wet) g.connect(echo);
     o.start(t); o.stop(t + d + 0.03);
   }
   // 잡음 한 줌 — 필터로 깎아 가위·박수·바람 소리를 만든다.
-  function noise({ d = 0.1, v = 0.2, at = 0, type = 'bandpass', f = 2000, to = null, q = 1, a = 0.002 }) {
+  // lfo: [빠르기, 깊이] 로 필터를 흔든다 (바람·토네이도).
+  function noise({ d = 0.1, v = 0.2, at = 0, type = 'bandpass', f = 2000, to = null, q = 1, a = 0.002, lfo = null, wet = false }) {
     if (!noiseBuf) {
       noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
       const ch = noiseBuf.getChannelData(0);
@@ -1491,25 +1565,45 @@ const Sfx = (() => {
     src.buffer = noiseBuf; src.loop = true;
     bf.type = type; bf.Q.value = q; bf.frequency.setValueAtTime(f, t);
     if (to) bf.frequency.exponentialRampToValueAtTime(to, t + d);
+    if (lfo) {
+      const o = ctx.createOscillator(), lg = ctx.createGain();
+      o.frequency.value = lfo[0]; lg.gain.value = lfo[1];
+      o.connect(lg).connect(bf.frequency); o.start(t); o.stop(t + d + 0.03);
+    }
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(v, t + a);
     g.gain.exponentialRampToValueAtTime(0.0001, t + d);
     src.connect(bf).connect(g).connect(master);
+    if (wet) g.connect(echo);
     src.start(t, Math.random() * 0.5); src.stop(t + d + 0.03);
   }
+  // 맑은 종 — 기음 + 살짝 어긋난 배음, 잔향으로 퍼진다.
+  function bell(f, at, v) {
+    tone({ f, d: 1.1, v, at, wet: true });
+    tone({ f: f * 2.01, d: 0.45, v: v * 0.35, at, wet: true });
+    tone({ f: f * 3.02, d: 0.2, v: v * 0.15, at });
+  }
+  function blade(at, k) {
+    noise({ d: 0.075, f: 7000, to: 2600, q: 1.1, v: 0.32 * k, at, a: 0.004 });
+    tone({ f: 3100, to: 2300, d: 0.018, type: 'square', v: 0.06 * k, at: at + 0.06 });
+  }
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const SOUNDS = {
     tap: () => tone({ f: 900, to: 620, d: 0.05, type: 'triangle', v: 0.12 }),
     tick: () => { tone({ f: 1500, d: 0.03, type: 'square', v: 0.05 }); tone({ f: 2200, d: 0.08, v: 0.1, at: 0.03 }); },
     boing: () => { tone({ f: 200, to: 460, d: 0.12, v: 0.2 }); tone({ f: 460, to: 300, d: 0.18, v: 0.14, at: 0.1 }); },
     like: () => { tone({ f: 520, to: 1150, d: 0.08, v: 0.25 }); tone({ f: 1400, d: 0.14, type: 'triangle', v: 0.08, at: 0.06 }); },
-    fill: () => { tone({ f: 220, to: 880, d: 0.7, type: 'triangle', v: 0.1, a: 0.05 }); tone({ f: 1320, d: 0.35, v: 0.08, at: 0.62 }); },
-    count: () => { for (let i = 0; i < 6; i++) tone({ f: 620 + i * 110, d: 0.05, type: 'square', v: 0.045, at: i * 0.075 }); },
-    snip: () => { for (let i = 0; i < 3; i++) noise({ d: 0.035, type: 'highpass', f: 5200 + i * 400, v: 0.22, at: i * 0.15 }); },
-    cut: () => {
-      noise({ d: 0.1, f: 3400, q: 2, v: 0.35 });
-      tone({ f: 150, to: 55, d: 0.3, v: 0.3, at: 0.28 });
-      noise({ d: 0.12, type: 'lowpass', f: 500, v: 0.2, at: 0.28 });
+    // 진행률만큼 올라가는 종소리 아르페지오 — %가 높을수록 음이 많고 높다. 100%면 화음으로 맺는다.
+    fill: (pct = 50) => {
+      const SCALE = [523, 587, 659, 784, 880, 1046, 1175, 1318, 1568];
+      const n = 3 + Math.round(Math.max(0, Math.min(100, pct)) / 100 * 6);
+      for (let i = 0; i < n; i++) bell(SCALE[i], i * 0.085, 0.06);
+      if (pct >= 100) [1046, 1318, 1568].forEach(f => bell(f, n * 0.085 + 0.05, 0.05));
     },
+    count: () => { for (let i = 0; i < 6; i++) tone({ f: 620 + i * 110, d: 0.05, type: 'square', v: 0.045, at: i * 0.075 }); },
+    // 가위 — 날이 스치는 '샥'(높은 잡음이 아래로 미끄러짐) + 날이 맞물리는 '칙'(짧은 금속음).
+    snip: () => { for (let i = 0; i < 3; i++) blade(i * 0.17, 0.55); },
+    cut: () => { blade(0, 1); noise({ d: 0.07, type: 'lowpass', f: 1400, v: 0.22, at: 0.075 }); },
     whoosh: () => noise({ d: 1.1, f: 350, to: 2600, q: 1.2, v: 0.16, a: 0.35 }),
     chime: () => [1046, 1318, 1568].forEach((f, i) => tone({ f, d: 0.6, v: 0.09, at: i * 0.07 })),
     drop: () => { tone({ f: 1300, to: 320, d: 0.16, v: 0.22 }); tone({ f: 600, to: 900, d: 0.1, v: 0.06, at: 0.12 }); },
@@ -1528,6 +1622,48 @@ const Sfx = (() => {
       tone({ f: 2093, d: 0.5, v: 0.05, at: 0.26 });
     },
     pop: () => tone({ f: 420, to: 950, d: 0.07, v: 0.18 }),
+    // ── 아래 이펙트 버튼마다 제 소리 ──
+    slot: () => {
+      for (let i = 0; i < 14; i++) tone({ f: 900 + (i % 3) * 120, d: 0.03, type: 'square', v: 0.04, at: i * 0.07 });
+      [784, 988, 1175, 1568].forEach((f, i) => tone({ f, d: 0.25, type: 'square', v: 0.05, at: 1.05 + i * 0.07 }));
+    },
+    screenCut: () => { blade(0, 1); noise({ d: 0.35, f: 600, to: 3000, q: 1, v: 0.12, at: 0.08 }); },
+    glitter: () => { for (let i = 0; i < 10; i++) tone({ f: 2200 + Math.random() * 2400, d: 0.12, v: 0.04, at: i * 0.06, wet: true }); },
+    heart: () => {
+      tone({ f: 90, to: 60, d: 0.12, v: 0.35 }); tone({ f: 90, to: 60, d: 0.14, v: 0.28, at: 0.18 });
+      [659, 880].forEach((f, i) => bell(f, 0.35 + i * 0.14, 0.06));
+    },
+    rain: () => {
+      noise({ d: 2.6, type: 'lowpass', f: 2600, v: 0.1, a: 0.5 });
+      for (let i = 0; i < 18; i++) tone({ f: 1500 + Math.random() * 1500, to: 600, d: 0.04, v: 0.04, at: Math.random() * 2.2 });
+    },
+    snow: () => { for (let i = 0; i < 7; i++) bell(pick([1568, 1760, 2093, 2349, 2637]), i * 0.26 + Math.random() * 0.1, 0.035); },
+    aurora: () => [262, 330, 392, 494].forEach((f, i) => tone({ f, d: 2.6, type: 'triangle', v: 0.05, a: 0.9, at: i * 0.12, wet: true })),
+    meteor: () => { noise({ d: 0.9, f: 4000, to: 500, q: 2, v: 0.18, a: 0.05 }); bell(1568, 0.75, 0.05); bell(2093, 0.9, 0.04); },
+    starlight: () => [1046, 1318, 1568, 2093, 2637].forEach((f, i) => bell(f, i * 0.11, 0.045)),
+    wave: () => { noise({ d: 2.2, type: 'lowpass', f: 300, to: 1800, v: 0.22, a: 0.9 }); noise({ d: 1.2, type: 'highpass', f: 3000, v: 0.06, a: 0.2, at: 1.0 }); },
+    volcano: () => {
+      noise({ d: 1.6, type: 'lowpass', f: 180, v: 0.4, a: 0.4 });
+      tone({ f: 70, to: 35, d: 1.4, v: 0.3, a: 0.3 });
+      noise({ d: 0.9, type: 'lowpass', f: 900, to: 150, v: 0.5, at: 0.9 });
+    },
+    tornado: () => noise({ d: 2.4, f: 700, q: 6, v: 0.2, a: 0.6, lfo: [3.5, 450] }),
+    sakura: () => [880, 988, 1175, 1318, 1568].forEach((f, i) => bell(f, i * 0.16 + Math.random() * 0.05, 0.04)),
+    petalStorm: () => {
+      noise({ d: 2.0, f: 1200, q: 2, v: 0.12, a: 0.5, lfo: [1.5, 500] });
+      for (let i = 0; i < 6; i++) bell(pick([988, 1175, 1318, 1568]), 0.3 + i * 0.2, 0.035);
+    },
+    leaf: () => { for (let i = 0; i < 7; i++) noise({ d: 0.12, f: 3500 + Math.random() * 2000, q: 1.5, v: 0.12, at: i * 0.13 + Math.random() * 0.05 }); },
+    bloom: () => { tone({ f: 300, to: 700, d: 0.1, v: 0.2 }); [784, 988, 1175].forEach((f, i) => bell(f, 0.1 + i * 0.07, 0.05)); },
+    butterfly: () => { for (let i = 0; i < 3; i++) noise({ d: 0.35, f: 1500, q: 1, v: 0.1, a: 0.02, at: i * 0.45, lfo: [22, 900] }); },
+    firefly: () => { for (let i = 0; i < 6; i++) tone({ f: 1800 + Math.random() * 900, d: 0.18, v: 0.035, a: 0.06, at: i * 0.22 + Math.random() * 0.1, wet: true }); },
+    magic: () => {
+      noise({ d: 1.0, f: 800, to: 6000, q: 3, v: 0.08, a: 0.4 });
+      [523, 659, 784, 1046].forEach((f, i) => bell(f, 0.5 + i * 0.05, 0.05));
+    },
+    dark: () => { tone({ f: 110, to: 55, d: 2.0, type: 'sawtooth', v: 0.05, a: 0.4 }); tone({ f: 116, to: 58, d: 2.0, type: 'sawtooth', v: 0.04, a: 0.4 }); },
+    ghost: () => { tone({ f: 420, to: 260, d: 1.6, v: 0.12, a: 0.3, vib: [5, 18], wet: true }); tone({ f: 560, to: 330, d: 1.3, v: 0.05, a: 0.3, at: 0.4, vib: [6, 22], wet: true }); },
+    ufo: () => { tone({ f: 600, to: 900, d: 1.8, v: 0.1, a: 0.2, vib: [9, 160] }); tone({ f: 1200, d: 1.6, type: 'triangle', v: 0.03, a: 0.2, vib: [9, 300] }); },
     fireworks: () => {
       tone({ f: 700, to: 2200, d: 0.55, v: 0.05, a: 0.05 });
       noise({ d: 0.9, type: 'lowpass', f: 700, to: 120, v: 0.55, at: 0.55 });
@@ -1604,12 +1740,12 @@ async function main() {
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
-      if (ev.target.closest('#donutGauge')) { sfx('fill'); runGauge(heroPct, false, true); return; }
+      if (ev.target.closest('#donutGauge')) { sfx('fill', heroPct); runGauge(heroPct, false, true); return; }
       const since = ev.target.closest('.sinceBlock');
       if (since) { sfx('count'); animateCounter(since.querySelector('.sinceVal')); return; }
       // 카드를 누르면 게이지만 다시 채우고, 완료된 프로젝트면 다 찼을 때 도넛 안에서만 한 발 터진다.
       // 화면 전체로 쏘아 올리는 축포·잔잔한 불꽃은 처음 열었을 때만 (celebrate).
-      sfx('fill');
+      sfx('fill', heroPct);
       runGauge(heroPct, heroCompleted && !reducedMotion);
     });
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
@@ -2110,30 +2246,72 @@ function initPastProjects() {
   });
 }
 
+const pastCovers = new Map();   // 프로젝트 id → 썸네일 주소 (각 회차 파일에서 한 번만 알아낸다)
+
 function renderPastList() {
   const body = document.getElementById('pastBody');
   const list = (pastIndex && pastIndex.projects) || [];
   const current = pastCurrentId || (pastIndex && pastIndex.currentId);
-  document.getElementById('pastMeta').textContent = `${list.length}개`;
+  document.getElementById('pastMeta').textContent = `${list.length}편`;
   if (list.length === 0) {
     body.innerHTML = '<div class="empty">아직 프로젝트가 없어요</div>';
     return;
   }
-  body.innerHTML = list.map((p) => {
-    const done = p.status === 'completed';
-    // 목록에는 편집 시간 · 완료 날짜 · 전편 이후 간격만. 나머지는 눌러서 들어가면 다 있다.
+  // 에피소드 번호는 시작한 순서대로.
+  const order = [...list].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).map(p => p.id);
+  const done = list.filter(p => p.status === 'completed');
+  const durs = done.map(p => p.totalDuration).filter(d => d != null);
+  const finals = done.map(p => parseMinutes(p.finalLength)).filter(m => m != null);
+  const sum = `
+    <div class="pastSum">
+      <div><span>완료</span><b>${done.length}편</b></div>
+      <div><span>평균 편집 기간</span><b>${durs.length ? formatSpan(durs.reduce((a, b) => a + b, 0) / durs.length) : '—'}</b></div>
+      <div><span>완성 영상 합계</span><b>${finals.length ? formatMinutes(finals.reduce((a, b) => a + b, 0)) : '—'}</b></div>
+    </div>`;
+  body.innerHTML = sum + list.map((p, k) => {
+    const isDone = p.status === 'completed';
+    const viewing = p.id === current;
+    const ep = String(order.indexOf(p.id) + 1).padStart(2, '0');
+    const orig = parseMinutes(p.originalLength), fin = parseMinutes(p.finalLength);
+    const len = orig && fin
+      ? `<div class="pastLen"><b>${escapeHtml(formatMinutes(orig))}</b><span class="pastBar"><i style="width:${Math.max(3, Math.min(100, fin / orig * 100)).toFixed(1)}%"></i></span><b>${escapeHtml(formatMinutes(fin))}</b></div>`
+      : orig ? `<div class="pastLen"><span>촬영 원본</span><span></span><b>${escapeHtml(formatMinutes(orig))}</b></div>` : '';
     const facts = [];
-    if (p.totalDuration != null) facts.push(`<span>편집 <b>${formatSpan(p.totalDuration)}</b></span>`);
-    if (p.completedAt) facts.push(`<span>완료 <b class="dFull">${formatDateShort(p.completedAt)}</b><b class="dShort">${formatDateCompact(p.completedAt)}</b></span>`);
-    if (p.daysSincePreviousCompletion != null) facts.push(`<span>전편 이후 <b>${p.daysSincePreviousCompletion}일</b></span>`);
+    if (isDone && p.totalDuration != null) facts.push(`<span>편집 <b>${formatSpan(p.totalDuration)}</b></span>`);
+    if (!isDone) facts.push(`<span>시작 후 <b>${elapsedText(p.createdAt)}</b></span>`);
+    if (p.completedAt) facts.push(`<span>완료 <b>${formatDateCompact(p.completedAt)}</b></span>`);
+    if (!isDone && p.entryCount != null) facts.push(`<span>기록 <b>${p.entryCount}개</b></span>`);
+    const cover = pastCovers.get(p.id);
     return `
-      <button type="button" class="pastRow${p.id === current ? ' current' : ''}" data-id="${escapeHtml(p.id)}">
-        <span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span>
-        <span class="pastState ${done ? 'done' : 'wip'}">${done ? '완료' : '편집 중'}</span>
-        <span class="pastFacts">${facts.join('')}</span>
+      <button type="button" class="pastRow${viewing ? ' current' : ''}" data-id="${escapeHtml(p.id)}" style="--k:${k}">
+        <span class="pastCover">${cover ? `<img class="ok" src="${escapeHtml(cover)}" alt="" loading="lazy">` : ''}<span class="pastEp">EP.${ep}</span>${viewing ? '<span class="pastPlay">▶ 보는 중</span>' : ''}</span>
+        <span class="pastMain">
+          <span class="pastTop"><span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span><span class="pastState ${isDone ? 'done' : 'wip'}">${isDone ? '완료' : '편집 중'}</span></span>
+          ${len}
+          <span class="pastFacts">${facts.join('')}</span>
+        </span>
       </button>
     `;
   }).join('');
+  loadPastCovers(list);
+}
+
+/** 목록 썸네일 — 완성본은 유튜브 썸네일, 편집 중이면 앱이 올린 캡처. 회차 파일을 한 번씩만 받는다. */
+async function loadPastCovers(list) {
+  await Promise.all(list.filter(p => !pastCovers.has(p.id)).map(async (p) => {
+    try {
+      const d = await fetchData(`projects/${encodeURIComponent(p.id)}.json`);
+      const src = d.youtubeId ? `https://img.youtube.com/vi/${encodeURIComponent(d.youtubeId)}/mqdefault.jpg`
+                : d.previewImage || null;
+      pastCovers.set(p.id, src);
+      const box = document.querySelector(`.pastRow[data-id="${CSS.escape(p.id)}"] .pastCover`);
+      if (!box || !src) return;
+      const img = new Image();
+      img.alt = ''; img.src = src;
+      img.onload = () => img.classList.add('ok');
+      box.prepend(img);
+    } catch (e) { pastCovers.set(p.id, null); }
+  }));
 }
 
 /** 고른 프로젝트의 전체 스냅샷을 그때 받아와서 화면을 다시 그린다. */
@@ -2150,12 +2328,6 @@ async function openProject(id) {
   } catch (e) {
     console.warn('프로젝트를 불러오지 못했습니다', e);
   }
-}
-
-/** 목록용 날짜 (예: "2026년 9월 4일"). 지난 프로젝트는 해를 넘겨 쌓이므로 연도까지 적는다. */
-function formatDateShort(iso) {
-  const d = new Date(iso);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
 }
 
 /** 좁은 화면용 짧은 날짜 (예: "2026.9.4"). 연도는 그대로 두고 글자 수만 줄인다. */
@@ -4464,10 +4636,55 @@ function initDoneGlow(data) {
   if (card) card.classList.toggle('glowing', data.status === 'completed');
 }
 
+/** 이펙트 종류 탭 — 고른 탭은 이 기기에 기억해 둔다. 타일을 누르면 누른 자리에서 빛이 번진다. */
+function initFxTabs() {
+  const bar = document.getElementById('fxBar');
+  const tabs = document.getElementById('fxTabs');
+  if (!bar || !tabs) return;
+  const show = (k, animate) => {
+    tabs.querySelectorAll('.fxTab').forEach(t => {
+      const on = t.dataset.fx === String(k);
+      t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on));
+    });
+    bar.querySelectorAll('.fxRow').forEach(r => {
+      r.hidden = r.dataset.fx !== String(k);
+      if (!r.hidden && animate) r.querySelectorAll('.fireBtn').forEach(b => { b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; });
+    });
+  };
+  let saved = 0;
+  try { saved = Number(localStorage.getItem('fxTab')) || 0; } catch (e) {}
+  if (tabs.querySelector(`[data-fx="${saved}"]`)) show(saved, false);
+  tabs.addEventListener('click', (ev) => {
+    const t = ev.target.closest('.fxTab');
+    if (!t || t.classList.contains('active')) return;
+    sfx('tap');
+    show(t.dataset.fx, !reducedMotion);
+    try { localStorage.setItem('fxTab', t.dataset.fx); } catch (e) {}
+  });
+  bar.addEventListener('click', (ev) => {
+    const b = ev.target.closest('.fireBtn');
+    if (!b) return;
+    const r = b.getBoundingClientRect();
+    b.style.setProperty('--hx', `${ev.clientX ? ev.clientX - r.left : r.width / 2}px`);
+    b.style.setProperty('--hy', `${ev.clientY ? ev.clientY - r.top : r.height / 2}px`);
+    b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
+  });
+}
+
 function initFxButtons() {
   const wire = (id, fn) => {
     const b = document.getElementById(id);
-    if (b) b.addEventListener('click', (ev) => { sfx('pop'); fn(ev); });
+    if (b) b.addEventListener('click', (ev) => { sfx(FX_SOUND[id] || 'pop'); fn(ev); });
+  };
+  initFxTabs();
+  // 버튼마다 제 소리 (효과음 켜져 있을 때).
+  const FX_SOUND = {
+    btnSlot: 'slot', btnCut: 'screenCut', btnPrGlitter: 'glitter', btnPrHeart: 'heart',
+    btnPour: 'rain', btnSnow: 'snow', btnAurora: 'aurora', btnMeteor: 'meteor', btnPrStarlight: 'starlight',
+    btnWave: 'wave', btnVolcano: 'volcano', btnTornado: 'tornado',
+    btnSakura: 'sakura', btnPrPetalStorm: 'petalStorm', btnLeaf: 'leaf', btnPrBloom: 'bloom',
+    btnPrGarden: 'butterfly', btnFly: 'firefly',
+    btnMgCircle: 'magic', btnMgDark: 'dark', btnHrHaunt: 'ghost', btnSpUfo: 'ufo',
   };
   wire('btnMeteor', meteorShower);
   wire('btnFly', () => fx2Spawn('firefly'));
@@ -4607,7 +4824,17 @@ function showTravelQuote() {
   setTimeout(() => { el.classList.add('show'); sfx('achieve'); }, 30);
   setTimeout(close, 4500);
 }
-setTimeout(showTravelQuote, 900);
+// 브라우저는 한 번도 누르지 않은 페이지에선 소리를 못 내게 막는다. 효과음을 켜 둔 사람에겐
+// 첫 터치 때 명언을 띄워 소리와 같이 나오게 하고, 꺼 둔 사람에겐 원래대로 열자마자 띄운다.
+if (Sfx.on && navigator.userActivation && !navigator.userActivation.hasBeenActive) {
+  const first = () => {
+    ['pointerup', 'keydown', 'touchend'].forEach(t => removeEventListener(t, first, true));
+    setTimeout(showTravelQuote, 120);
+  };
+  ['pointerup', 'keydown', 'touchend'].forEach(t => addEventListener(t, first, true));
+} else {
+  setTimeout(showTravelQuote, 900);
+}
 </script>
 </body>
 </html>
