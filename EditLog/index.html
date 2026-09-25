@@ -380,6 +380,9 @@
     }
   }
   .pastBtn:active { transform: scale(0.97); }
+  /* 명언 버튼은 눈에 띄게 — 무지개 테두리 */
+  .pastBtn.quoteBtn { border-color: transparent; color: var(--ink);
+    background: linear-gradient(var(--surface2), var(--surface2)) padding-box, var(--grad) border-box; }
 
   /* 지난 프로젝트 목록 창 */
   .modalBack {
@@ -1360,6 +1363,7 @@
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false">🔇</button>
+        <button type="button" class="pastBtn quoteBtn" id="quoteBtn" title="태태고 편집실 명언 보기" aria-label="명언 보기">💬<span class="pastBtnText"> 명언</span></button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드">🗂<span class="pastBtnText"> 지난 에피소드</span></button>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
@@ -1441,7 +1445,7 @@
     </div>
 
     <div class="fxBar card" id="fxBar" style="display:none">
-      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">22개</span></div>
+      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">21개</span></div>
       <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
         <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
         <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
@@ -1455,7 +1459,6 @@
           <button type="button" class="fireBtn" id="btnCut" style="--k:2"><span class="e">✂️</span><span class="t">컷편집</span></button>
           <button type="button" class="fireBtn" id="btnPrGlitter" style="--k:3"><span class="e">✨</span><span class="t">반짝이</span></button>
           <button type="button" class="fireBtn" id="btnPrHeart" style="--k:4"><span class="e">💖</span><span class="t">하트</span></button>
-          <button type="button" class="fireBtn" id="btnQuote" style="--k:5"><span class="e">💬</span><span class="t">명언</span></button>
         </div>
       </div>
       <div class="fxRow" data-fx="1" role="tabpanel" style="--fc:var(--grp-2)" hidden>
@@ -1771,6 +1774,11 @@ async function main() {
   document.getElementById('fireBtn').addEventListener('click', launchFireworks);
   initFxButtons();
   initSfxBtn();
+  // 상단 명언 버튼 — 이미 떠 있는 카드가 있으면 치우고 새로 한 장 띄운다.
+  document.getElementById('quoteBtn').addEventListener('click', () => {
+    document.querySelectorAll('.quoteToast').forEach(el => el.remove());
+    showTravelQuote();
+  });
   initAmbientLayers();
   initSkyTop();
   initComet();
@@ -4693,12 +4701,12 @@ function initFxTabs() {
 function initFxButtons() {
   const wire = (id, fn) => {
     const b = document.getElementById(id);
-    if (b) b.addEventListener('click', (ev) => { if (FX_SOUND[id] !== null) sfx(FX_SOUND[id] || 'pop'); fn(ev); });
+    if (b) b.addEventListener('click', (ev) => { sfx(FX_SOUND[id] || 'pop'); fn(ev); });
   };
   initFxTabs();
   // 버튼마다 제 소리 (효과음 켜져 있을 때).
   const FX_SOUND = {
-    btnSlot: 'slot', btnCut: 'screenCut', btnQuote: null, btnPrGlitter: 'glitter', btnPrHeart: 'heart',
+    btnSlot: 'slot', btnCut: 'screenCut', btnPrGlitter: 'glitter', btnPrHeart: 'heart',
     btnPour: 'rain', btnSnow: 'snow', btnAurora: 'aurora', btnMeteor: 'meteor', btnPrStarlight: 'starlight',
     btnWave: 'wave',
     btnSakura: 'sakura', btnPrPetalStorm: 'petalStorm', btnLeaf: 'leaf', btnPrBloom: 'bloom',
@@ -4709,8 +4717,6 @@ function initFxButtons() {
   wire('btnFly', fxFireflies);
   wire('btnCut', fxScreenCut);
   wire('btnSlot', fxSlot);
-  // 명언 버튼 — 이미 떠 있는 카드가 있으면 치우고 새로 한 장 띄운다.
-  wire('btnQuote', () => { document.querySelectorAll('.quoteToast').forEach(el => el.remove()); showTravelQuote(); });
 
   // 🌤️ 날씨
   wire('btnLeaf', fxLeaves);
