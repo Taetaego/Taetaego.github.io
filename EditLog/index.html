@@ -1087,12 +1087,75 @@
     background: var(--grad); color: var(--on-accent);
     box-shadow: 0 0 12px color-mix(in srgb, var(--grp-2) 45%, transparent);
   }
-  /* 히어로 테두리에 그라데이션 한 줄 */
+  /* 히어로 테두리 — 옅은 그라데이션 한 줄 위로 밝은 빛이 한 바퀴씩 돈다 (앱 히어로와 같은 연출).
+     폰에선 가볍게, 빛은 돌리지 않고 옅은 그라데이션만. */
+  @property --orbit { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
   #summaryCard.card::before {
-    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.2px; z-index: 2;
-    background: var(--grad); pointer-events: none; opacity: .85;
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 2;
+    pointer-events: none;
+    background:
+      conic-gradient(from var(--orbit), transparent 0 52%, var(--grp-1) 64%, var(--grp-2) 74%, var(--grp-3) 84%, var(--grp-4) 93%, transparent 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--grp-1) 45%, transparent), color-mix(in srgb, var(--grp-3) 40%, transparent), color-mix(in srgb, var(--grp-4) 35%, transparent));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: heroOrbit 6s linear infinite;
+  }
+  @keyframes heroOrbit { to { --orbit: 360deg; } }
+  @media (max-width: 899px), (prefers-reduced-motion: reduce) {
+    #summaryCard.card::before {
+      animation: none;
+      background: linear-gradient(120deg, var(--grp-1), var(--grp-2), var(--grp-3), var(--grp-4));
+      opacity: .7;
+    }
+  }
+  /* 편집 파형 — 이번 회차 기록을 시간축에 펼친 오디오 파형 */
+  .heroWave {
+    position: absolute; left: 16px; right: 16px; bottom: 10px; height: 26px; z-index: 0;
+    pointer-events: none; opacity: .5; transform-origin: center;
+    animation: waveIn 1.2s cubic-bezier(.34,1.56,.64,1) .3s both;
+    -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+            mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .heroWave svg { width: 100%; height: 100%; display: block; }
+  @keyframes waveIn { from { transform: scaleY(0); } }
+  .hero.hasWave { padding-bottom: 44px; }
+  @media (prefers-reduced-motion: reduce) { .heroWave { animation: none; } }
+  /* LIVE 옆 REC 타임코드 — 이번 작업 세션이 시작된 뒤로 흐른 시간 */
+  .liveBadge .rec { font-weight: 600; letter-spacing: .04em; opacity: .92; font-variant-numeric: tabular-nums; }
+  /* 편집 잔디 숫자 타일 — 타일마다 제 색으로 */
+  .heatTile {
+    position: relative; overflow: hidden;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--tc) 14%, var(--surface2)), var(--surface2) 70%);
+    border: 1px solid color-mix(in srgb, var(--tc) 30%, transparent);
+  }
+  .heatTile .k { display: flex; align-items: center; gap: 5px; }
+  .heatTile .k::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--tc);
+    box-shadow: 0 0 6px var(--tc); flex: none;
+  }
+  .heatTile .v {
+    background: linear-gradient(180deg, var(--ink) 30%, var(--tc));
+    -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  }
+  /* 작업 기록 — 편집 중인 회차의 마지막 기록에 맥박 */
+  .logRow.latest { background-image: linear-gradient(90deg, color-mix(in srgb, var(--rowc, var(--grp-1)) 16%, transparent), transparent 70%); }
+  .logRow.latest .catName { font-weight: 700; }
+  .logRow.latest .cat::after {
+    content: ''; flex: none; width: 7px; height: 7px; border-radius: 50%; margin-left: 2px;
+    background: var(--rowc, var(--grp-1)); box-shadow: 0 0 8px var(--rowc, var(--grp-1));
+    animation: latestPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes latestPulse { 50% { transform: scale(1.4); opacity: .55; } }
+  /* 막대 위로 흐르는 광택 — 다 차고 난 뒤부터 */
+  .lenFill { position: relative; overflow: hidden; }
+  .lenRow:not(.orig) .lenFill::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
+    transform: translateX(-100%); animation: barShine 3.6s ease-in-out 2.2s infinite;
+  }
+  @keyframes barShine { 40%, 100% { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .logRow.latest .cat::after, .lenRow .lenFill::after { animation: none; }
   }
   /* 도넛 가운데 % 도 그라데이션 (물결 보기에선 배경 위라 흰 글자 유지) */
   .donut:not(.liquid) .pct {
@@ -1508,16 +1571,17 @@ function renderHeat({ animate = true } = {}) {
   const { current, longest } = heatStreaks(perDay, today, since);
   // 0시·12시는 '오전 12시'처럼 헷갈리게 읽히니 밤/낮으로.
   const hourLabel = (h) => h === null ? '—' : h === 0 ? '밤 12시' : h === 12 ? '낮 12시' : `${h < 12 ? '오전' : '오후'} ${h % 12}시`;
+  // 타일마다 제 색 — 앱 편집 잔디 타일과 같은 짝.
   const tiles = [
-    ['에피소드', `${eps.size}개`],
-    ['작업 기록', `${inRange.length}개`],
-    ['활성 일수', `${activeDays.size}일`],
-    ['최다 작업 시간', hourLabel(peakHour)],
-    ['최다 단계', topCat ? topCat[0] : '—'],
-    ['연속 작업', current >= 2 ? `🔥 ${current}일` : `최장 ${longest}일`],
+    ['에피소드', `${eps.size}개`, 'var(--grp-1)'],
+    ['작업 기록', `${inRange.length}개`, 'var(--grp-2)'],
+    ['활성 일수', `${activeDays.size}일`, 'var(--grp-3)'],
+    ['최다 작업 시간', hourLabel(peakHour), 'var(--grp-4)'],
+    ['최다 단계', topCat ? topCat[0] : '—', 'var(--gold)'],
+    ['연속 작업', current >= 2 ? `🔥 ${current}일` : `최장 ${longest}일`, '#ff8a3d'],
   ];
   document.getElementById('heatTiles').innerHTML = tiles
-    .map(([k, v]) => `<div class="heatTile"><span class="k">${k}</span><span class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</span></div>`)
+    .map(([k, v, c]) => `<div class="heatTile" style="--tc:${c}"><span class="k">${k}</span><span class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</span></div>`)
     .join('');
 
   // ── 칸: 일~토 7줄, 가장 오른쪽 줄이 이번 주 ──
@@ -2161,7 +2225,7 @@ function renderSummary(cardEl, data) {
     <div class="heroRight">
       <div class="chipRow">
         <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
-        <span class="liveBadge" data-since="${escapeHtml(liveSince)}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE</span>
+        <span class="liveBadge" data-since="${escapeHtml(liveSince)}" data-session="${escapeHtml(sessionStart(entries))}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE <span class="rec">${recCode(sessionStart(entries))}</span></span>
       </div>
       <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
       ${stageText ? `
@@ -2180,7 +2244,9 @@ function renderSummary(cardEl, data) {
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
     </div>
+    ${entries.length >= 2 ? `<span class="heroWave" aria-hidden="true">${waveSvg(entries.map(e => e.timestamp), data.createdAt, isCompleted ? (data.completedAt ?? lastEntryTime) : new Date().toISOString())}</span>` : ''}
   `;
+  cardEl.classList.toggle('hasWave', entries.length >= 2);
   setHeroBackdrop(cardEl, data);
 }
 
@@ -2210,6 +2276,59 @@ function setHeroBackdrop(card, data) {
   };
   img.src = src;
 }
+
+/** 편집 파형 SVG — 기록을 시간축 칸에 모아 좌우로 번지게 한 뒤 막대 높이로 (앱과 같은 식). */
+function waveSvg(timestamps, startIso, endIso) {
+  const bars = matchMedia('(max-width: 560px)').matches ? 56 : 96;
+  const start = new Date(startIso).getTime();
+  const span = Math.max(new Date(endIso).getTime() - start, 60000);
+  const raw = new Array(bars).fill(0);
+  for (const t of timestamps) {
+    const i = Math.min(bars - 1, Math.max(0, Math.floor((new Date(t).getTime() - start) / span * bars)));
+    raw[i] += 1;
+  }
+  const k = [0.08, 0.2, 0.44, 1, 0.44, 0.2, 0.08];
+  const smooth = raw.map((_, i) => k.reduce((acc, w, j) => acc + (raw[i + j - 3] || 0) * w, 0));
+  const peak = Math.max(...smooth, 0.001);
+  const W = bars * 10, H = 40;
+  let rects = '';
+  smooth.forEach((v, i) => {
+    const ripple = 0.06 + 0.05 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.63));
+    const h = Math.max(2, Math.min(1, v / peak * 0.94 + ripple) * H);
+    rects += `<rect x="${i * 10 + 2}" y="${((H - h) / 2).toFixed(1)}" width="6" height="${h.toFixed(1)}" rx="3"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="waveGrad" x1="0" x2="1">` +
+    `<stop offset="0" style="stop-color:var(--grp-1)"/><stop offset=".35" style="stop-color:var(--grp-2)"/>` +
+    `<stop offset=".7" style="stop-color:var(--grp-3)"/><stop offset="1" style="stop-color:var(--grp-4)"/>` +
+    `</linearGradient></defs><g fill="url(#waveGrad)">${rects}</g></svg>`;
+}
+
+/** 이번 작업 세션의 시작 — 마지막 기록에서 거꾸로, 간격이 90분 넘게 벌어지기 전까지. */
+function sessionStart(entries) {
+  const ts = entries.map(e => new Date(e.timestamp).getTime()).sort((a, b) => a - b);
+  if (!ts.length) return '';
+  let start = ts[ts.length - 1];
+  for (let i = ts.length - 2; i >= 0; i--) {
+    if (start - ts[i] > 90 * 60 * 1000) break;
+    start = ts[i];
+  }
+  return new Date(start).toISOString();
+}
+
+/** 카메라식 타임코드 HH:MM:SS. */
+function recCode(sinceIso) {
+  if (!sinceIso) return '';
+  const sec = Math.max(0, Math.floor((Date.now() - new Date(sinceIso).getTime()) / 1000));
+  const p = (n) => String(n).padStart(2, '0');
+  return `${p(Math.floor(sec / 3600))}:${p(Math.floor(sec % 3600 / 60))}:${p(sec % 60)}`;
+}
+
+/** LIVE가 떠 있는 동안만 초 단위로 타임코드를 돌린다. */
+setInterval(() => {
+  document.querySelectorAll('.liveBadge:not([hidden]) .rec').forEach(el => {
+    el.textContent = recCode(el.parentElement.dataset.session);
+  });
+}, 1000);
 
 /** ② 마지막 기록이 30분 안인가. */
 function isLive(since) {
@@ -2799,6 +2918,9 @@ function renderLog(data) {
     </div>
   `;
   let rowIndex = 0;
+  // 편집 중인 회차의 가장 최근 기록 — '지금 여기'라고 맥박이 뛴다.
+  const latestTs = data.status === 'completed' ? null
+    : entries.reduce((m, e) => (m === null || new Date(e.timestamp) > new Date(m) ? e.timestamp : m), null);
   for (const dayKey of sortedDayKeys) {
     const dayEntries = byDay.get(dayKey).slice();
     dayEntries.sort((a, b) => {
@@ -2824,7 +2946,7 @@ function renderLog(data) {
         : '<span class="memo"></span>';
 
       html += `
-        <div class="logRow${isDone ? ' done' : ''}" style="${rowColorVar(e.category)}--r:${rowIndex++}">
+        <div class="logRow${isDone ? ' done' : ''}${e.timestamp === latestTs ? ' latest' : ''}" style="${rowColorVar(e.category)}--r:${rowIndex++}">
           <span class="cat"><span class="catIcon">${catIcon}</span><span class="catName">${catLabel}</span></span>
           <span class="at">${length || '-'}</span>
           <span class="time mono" data-ts="${escapeHtml(e.timestamp)}">${time}</span>
