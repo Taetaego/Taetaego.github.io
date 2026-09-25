@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "자막 디자인",
+  "currentStage" : "하이라이트 배치",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -248,10 +248,18 @@
       "elapsed" : "9분",
       "timestamp" : "2026-09-25T16:36:43Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "하이라이트 배치",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "48분",
+      "memo" : "웹페이지 대개편 ㅋㅋ",
+      "timestamp" : "2026-09-25T17:24:56Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 21,
-  "lastUpdate" : "2026-09-25T17:18:31Z",
+  "entryCount" : 22,
+  "lastUpdate" : "2026-09-25T17:25:06Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
