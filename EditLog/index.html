@@ -522,6 +522,8 @@
   .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .heroStat { display: flex; flex-direction: column; gap: 2px; }
   .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .paceBlock { transition: opacity .35s ease; }
+  .paceBlock.pending { opacity: 0; }
   .paceChip { align-self: flex-start; margin-top: 3px; font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 99px;
               background: var(--line); color: var(--ink2); white-space: nowrap; }
   .paceChip.fast { background: var(--soft); color: var(--accent2); }
@@ -1266,7 +1268,7 @@
   /* 편집 파형 — 이번 회차 기록을 시간축에 펼친 오디오 파형 */
   .heroWave {
     position: absolute; left: 16px; right: 16px; bottom: 10px; height: 26px; z-index: 0;
-    opacity: .5; transform-origin: center; cursor: help;
+    opacity: .5; transform-origin: center; cursor: inherit;
     animation: waveIn 1.2s cubic-bezier(.34,1.56,.64,1) .3s both;
     -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
             mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
@@ -1726,11 +1728,14 @@ const Sfx = (() => {
         tone({ f: 73.4, d: 1.2, v: 0.12, at });
       });
       for (let i = 0; i < 16; i++) tone({ f: 1400 + i * 110, d: 0.3, v: 0.018, at: 4.2 + i * 0.22, wet: true });
-      // 7.9초 — 터지기 직전 빨아들이는 소리가 차오르다가, 종소리가 폭포처럼 위로 쏟아진다.
-      noise({ d: 0.9, f: 400, to: 5000, q: 2, v: 0.12, a: 0.85, at: 7.0 });
-      [1046.5, 1174.7, 1318.5, 1568, 1760, 2093, 2349.3, 2637, 3136, 3520].forEach((f, i) => bell(f, 7.9 + i * 0.045, 0.05));
-      noise({ d: 1.6, type: 'highpass', f: 5000, v: 0.08, at: 7.9, a: 0.02, wet: true });
-      pad({ fs: [587.3, 740, 880, 1174.7], at: 7.9, d: 2.2, v: 0.02, a: 0.05, rel: 1.8, cut0: 5000, cut1: 2000, type: 'triangle' });
+      // 7.9초 — 1초 동안 거꾸로 감기는 심벌처럼 차오르다가, 영화 예고편 같은 묵직한 '브라암!'.
+      noise({ d: 1.0, f: 300, to: 7000, q: 1.5, v: 0.16, a: 0.97, at: 6.9 });
+      tone({ f: 110, to: 440, d: 1.0, type: 'sawtooth', v: 0.035, a: 0.95, at: 6.9 });
+      pad({ fs: [36.7, 73.4, 110, 146.8, 220], at: 7.9, d: 3.4, v: 0.1, a: 0.03, rel: 2.6, cut0: 4200, cut1: 500 });   // 브라암
+      tone({ f: 58, to: 30, d: 2.6, v: 0.5, at: 7.9 });                                            // 땅이 꺼지는 저음
+      noise({ d: 1.4, type: 'lowpass', f: 6000, to: 180, v: 0.55, at: 7.9, wet: true });           // 폭풍 같은 충격파
+      noise({ d: 0.06, type: 'highpass', f: 3000, v: 0.3, at: 7.9 });
+      [1568, 2093, 2637, 3136].forEach((f, i) => bell(f, 8.05 + i * 0.09, 0.035));                 // 흩날리는 빛가루
     },
     // 블랙홀(6초) — 빨려 드는 저음, 닫힐 때 '훕' 하고 빛을 뱉는다.
     dark: () => {
@@ -1950,6 +1955,7 @@ function initAutoRefresh() {
 
 /* ===== 편집 잔디 (채널 전체) ===== */
 let heatData = null;        // projects/activity.json
+let activityLoaded = false; // 한 번이라도 받아보려 했는지 (실패도 포함) — 페이스 자리를 비워둘지 정하는 데 쓴다
 let heatRange = 'all';
 const HEAT_CELL = 15, HEAT_GAP = 3;
 
@@ -1959,6 +1965,7 @@ async function loadActivity() {
   } catch (e) {
     heatData = null;   // 예전 앱이 올린 사이트라 파일이 없으면 카드를 숨긴다
   }
+  activityLoaded = true;
   renderHeat();
   renderPace();
 }
@@ -2853,7 +2860,11 @@ function renderSummary(cardEl, data) {
               <span class="stageLabel">에피소드 편집 시작 후</span>
               <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
             </div>
-            <div class="heroStat paceBlock" id="paceBlock" hidden></div>` : ''}
+            ${data.currentStage
+              // 페이스는 잔디 데이터가 도착한 뒤에 채워진다. 자리를 미리 잡아 두지 않으면 폰에서
+              // 카드가 한 박자 늦게 한 줄만큼 쑥 커진다 — 같은 모양의 빈 자리를 투명하게 깔아 둔다.
+              ? `<div class="heroStat paceBlock pending" id="paceBlock"><span class="stageLabel">페이스</span><span class="paceChip">지난 평균과 비교 중</span></div>`
+              : '<div class="heroStat paceBlock" id="paceBlock" hidden></div>'}` : ''}
           ${doneStats}
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
@@ -2914,7 +2925,12 @@ function renderPace() {
   const el = document.getElementById('paceBlock');
   if (!el) return;
   const p = paceEstimate(paceData, heatData);
-  if (!p) { el.hidden = true; return; }
+  if (!p) {
+    // 아직 잔디 데이터를 기다리는 중이면 비워 둔 자리를 그대로 둔다.
+    if (!(paceData && !activityLoaded)) el.hidden = true;
+    return;
+  }
+  el.classList.remove('pending');
   const fast = p.diff >= 0;
   const gap = Math.abs(p.diff);
   const paceText = gap < 3 * 3600 ? '지난 평균과 비슷한 페이스' : `지난 평균보다 ${formatSpan(gap)} ${fast ? '빨라요' : '늦어요'}`;
