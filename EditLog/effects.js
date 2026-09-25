@@ -239,43 +239,6 @@ function fxDownpour() {
   });
 }
 
-/** 🌋 화산 — 밑에서 용암과 불꽃이 솟아오른다. */
-function fxVolcano() {
-  natRun('volcano', 5, () => {
-    let P = [];
-    return (ctx, w, h, t, k, f) => {
-      const a = natFade(k, 0.04, 0.16);
-      const rate = Math.max(0, Math.min(1, (0.86 - k) / 0.14));
-      const cx = w * 0.5;
-      // 추력을 화면 높이에서 역산해 잎힌 용암이 화면 밖으로 나가지 않게 한다
-      // (자유낙하 h = v²/2g — 중력 0.3, 상한은 화면의 82%).
-      const vmax = Math.sqrt(2 * 0.3 * h * 0.82);
-      for (let i = 0, n = Math.round(7 * rate * f); i < n; i++) {
-        P.push({
-          x: cx + NR(-w * 0.035, w * 0.035), y: h + 6,
-          vx: NR(-4.2, 4.2), vy: -NR(vmax * 0.55, vmax), r: NR(1.6, 4.6),
-          life: 1, dec: NR(0.0032, 0.0068), hue: NR(6, 46),
-        });
-      }
-      ctx.globalCompositeOperation = 'lighter';
-      const g = ctx.createRadialGradient(cx, h, 0, cx, h, Math.max(w * 0.4, h * 0.5));
-      g.addColorStop(0, `rgba(255,148,44,${0.45 * a})`);
-      g.addColorStop(0.45, `rgba(224,68,20,${0.16 * a})`);
-      g.addColorStop(1, 'rgba(180,30,10,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-      P = P.filter((p) => {
-        p.vy += 0.3 * f; p.x += p.vx * f; p.y += p.vy * f;
-        p.life -= p.dec * f;
-        if (p.life <= 0 || p.y > h + 60) return false;
-        ctx.globalAlpha = a * Math.max(0, p.life);
-        ctx.fillStyle = `hsl(${p.hue},95%,${(52 + p.life * 24).toFixed(1)}%)`;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (0.45 + p.life * 0.75), 0, 6.284); ctx.fill();
-        return true;
-      });
-    };
-  });
-}
-
 /** 🌊 파도 — 거대한 파도가 화면을 덮었다가 밀려난다. */
 function fxWave() {
   natRun('wave', 5, () => {
@@ -463,16 +426,8 @@ function fxMagicCircle() {
       ctx.globalAlpha = 1; ctx.fillStyle = dim; ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'lighter';
 
-      // 하늘로 솟는 빛기둥 — 진이 완성되면 가운데에서 위로 뻗는다
+      // 진이 완성되면 뒤에서 빛살이 천천히 돈다
       if (done0 > 0) {
-        const bw = R * (0.22 + Math.sin(t * 4) * 0.03);
-        const pil = ctx.createLinearGradient(cx - bw, 0, cx + bw, 0);
-        pil.addColorStop(0, hc(0)); pil.addColorStop(0.5, `rgba(255,255,255,${0.35 * done0 * a})`); pil.addColorStop(1, hc(0));
-        ctx.globalAlpha = 1; ctx.fillStyle = pil; ctx.fillRect(cx - bw, 0, bw * 2, cy);
-        const pil2 = ctx.createLinearGradient(cx - bw * 2.2, 0, cx + bw * 2.2, 0);
-        pil2.addColorStop(0, hc(0)); pil2.addColorStop(0.5, hc(0.22 * done0 * a)); pil2.addColorStop(1, hc(0));
-        ctx.fillStyle = pil2; ctx.fillRect(cx - bw * 2.2, 0, bw * 4.4, cy);
-        // 천천히 도는 빛살
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * 0.15);
         ctx.fillStyle = gLoc;
         for (let j = 0; j < 12; j++) {
