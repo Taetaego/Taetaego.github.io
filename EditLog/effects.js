@@ -538,7 +538,12 @@ function fxMagicCircle() {
     // 꼭짓점에 돋는 부속 진 — 안쪽에 문자를 하나씩 새긴다.
     const nodes = { n: 6, r: 0.78, sub: 0.075, d: 0.52, chars: pick(6) };
     return (ctx, w, h, t, k) => {
-      const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.4, acc = accentColor();
+      const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.4;
+      // 한 가지 색 대신 무지개 — 진 전체에 민트→하늘→보라→분홍→금빛이 돌아가며 흐른다.
+      // gAbs는 화면 좌표(고리), gLoc는 가운데를 원점으로 옮긴 좌표(돌아가는 띠·도형)용.
+      const gAbs = rainbowConic(ctx, cx, cy, t * 0.6), gLoc = rainbowConic(ctx, 0, 0, t * 0.6);
+      const hue = (165 + t * 45) % 360;
+      const hc = (al) => `hsla(${hue.toFixed(0)},95%,68%,${al})`;
       // 마지막 1.1초 — 가운데 빛이 확 퍼지고 진은 그 빛에 삼켜지듯 사라진다.
       const burst = Math.max(0, Math.min(1, (t - 7.9) / 1.1));
       // 등장 시점은 초로 잡는다. 첫 고리는 0초부터 — 누르는 즉시 그려진다.
@@ -547,13 +552,13 @@ function fxMagicCircle() {
       ctx.globalCompositeOperation = 'lighter';
 
       const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.2);
-      glow.addColorStop(0, hexAlpha(acc, 0.18 * a));
-      glow.addColorStop(0.7, hexAlpha(acc, 0.06 * a));
-      glow.addColorStop(1, hexAlpha(acc, 0));
+      glow.addColorStop(0, hc(0.22 * a));
+      glow.addColorStop(0.7, hc(0.07 * a));
+      glow.addColorStop(1, hc(0));
       ctx.globalAlpha = 1; ctx.fillStyle = glow;
       ctx.fillRect(cx - R * 1.25, cy - R * 1.25, R * 2.5, R * 2.5);
 
-      ctx.strokeStyle = acc;
+      ctx.strokeStyle = gAbs;
       for (const [s, wd, d] of rings) {
         const o = on(d);
         if (o <= 0) continue;
@@ -566,7 +571,7 @@ function fxMagicCircle() {
         const o = on(b.d);
         if (o <= 0) continue;
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * b.sp * b.dir);
-        ctx.globalAlpha = a * o * 0.5; ctx.lineWidth = b.wd;
+        ctx.globalAlpha = a * o * 0.5; ctx.lineWidth = b.wd; ctx.strokeStyle = gLoc;
         for (let j = 0; j < b.n; j++) {
           ctx.rotate(6.284 / b.n);
           ctx.beginPath();
@@ -582,7 +587,7 @@ function fxMagicCircle() {
         const o = on(b.d);
         if (o <= 0) continue;
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * b.sp * b.dir);
-        ctx.fillStyle = acc;
+        ctx.fillStyle = gLoc;
         ctx.font = `${(R * b.size).toFixed(1)}px "Noto Sans Symbols","Segoe UI Symbol",serif`;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         for (let j = 0; j < b.n; j++) {
@@ -611,7 +616,7 @@ function fxMagicCircle() {
         const o = on(s.d);
         if (o <= 0) continue;
         ctx.save(); ctx.translate(cx, cy);
-        ctx.globalAlpha = a * o * s.al; ctx.lineWidth = s.wd; ctx.strokeStyle = acc;
+        ctx.globalAlpha = a * o * s.al; ctx.lineWidth = s.wd; ctx.strokeStyle = gLoc;
         poly(s.n, R * s.rr, t * s.sp, s.step);
         if (s.twin) poly(s.n, R * s.rr, t * s.sp + Math.PI, s.step);
         ctx.restore();
@@ -621,14 +626,14 @@ function fxMagicCircle() {
       const oN = on(nodes.d);
       if (oN > 0) {
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(-t * 0.14);
-        ctx.globalAlpha = a * oN * 0.5; ctx.strokeStyle = acc; ctx.lineWidth = 1.2;
+        ctx.globalAlpha = a * oN * 0.5; ctx.strokeStyle = gLoc; ctx.lineWidth = 1.2;
         for (let j = 0; j < nodes.n; j++) {
           ctx.rotate(6.284 / nodes.n);
           const ny = -R * nodes.r, nr = R * nodes.sub;
           ctx.beginPath(); ctx.arc(0, ny, nr, 0, 6.284); ctx.stroke();
           // 안쪽 원·십자 선 대신 문자를 하나 새긴다.
           ctx.save();
-          ctx.fillStyle = acc; ctx.globalAlpha = a * oN * 0.8;
+          ctx.fillStyle = gLoc; ctx.globalAlpha = a * oN * 0.8;
           ctx.font = `${(nr * 1.5).toFixed(1)}px "Noto Sans Symbols","Segoe UI Symbol",serif`;
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillText(nodes.chars[j], 0, ny);
@@ -649,14 +654,23 @@ function fxMagicCircle() {
         const lv = done * (burst > 0 ? 1 - Math.pow(burst, 2.4) : a);
         const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, CR);
         cg.addColorStop(0, hexAlpha('#ffffff', (0.55 + 0.4 * eo) * lv));
-        cg.addColorStop(0.22, hexAlpha(acc, (0.32 + 0.22 * eo) * lv));
-        cg.addColorStop(0.6, hexAlpha(acc, (0.05 + 0.12 * eo) * lv));
-        cg.addColorStop(1, hexAlpha(acc, 0));
+        cg.addColorStop(0.22, hc((0.32 + 0.22 * eo) * lv));
+        cg.addColorStop(0.6, hc((0.05 + 0.12 * eo) * lv));
+        cg.addColorStop(1, hc(0));
         ctx.globalAlpha = 1; ctx.fillStyle = cg;
         ctx.fillRect(cx - CR, cy - CR, CR * 2, CR * 2);
       }
     };
   });
+}
+
+/** 편집실 단계 색(민트·하늘·보라·분홍)에 금빛을 더한 무지개 원뿔 그라디언트. rot만큼 돌아간다.
+    createConicGradient가 없는 옛 브라우저는 같은 색의 가로 그라디언트로 대신한다. */
+const RAINBOW = ['#34e0b0', '#5ab8f0', '#8f82ed', '#d98aea', '#ffd75e', '#34e0b0'];
+function rainbowConic(ctx, x, y, rot) {
+  const g = ctx.createConicGradient ? ctx.createConicGradient(rot, x, y) : ctx.createLinearGradient(x - 300, y, x + 300, y);
+  RAINBOW.forEach((c, i) => g.addColorStop(i / (RAINBOW.length - 1), c));
+  return g;
 }
 
 /** 커서가 마지막으로 있었던 자리 (버튼을 누르면 그 버튼 자리가 된다). */
