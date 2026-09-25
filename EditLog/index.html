@@ -1463,7 +1463,7 @@
     </div>
 
     <div class="fxBar card" id="fxBar" style="display:none">
-      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">22개</span></div>
+      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">21개</span></div>
       <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
         <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
         <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
@@ -1487,7 +1487,6 @@
           <button type="button" class="fireBtn" id="btnMeteor" style="--k:3"><span class="e">🌠</span><span class="t">별똥별</span></button>
           <button type="button" class="fireBtn" id="btnPrStarlight" style="--k:4"><span class="e">🌟</span><span class="t">별빛</span></button>
           <button type="button" class="fireBtn" id="btnWave" style="--k:5"><span class="e">🌊</span><span class="t">파도</span></button>
-          <button type="button" class="fireBtn" id="btnVolcano" style="--k:6"><span class="e">🌋</span><span class="t">화산</span></button>
         </div>
       </div>
       <div class="fxRow" data-fx="2" role="tabpanel" style="--fc:#4fd18b" hidden>
@@ -1689,17 +1688,6 @@ const Sfx = (() => {
     wave: () => {
       noise({ d: 5, type: 'lowpass', f: 700, v: 0.14, a: 1.4, lfo: [0.45, 350] });
       noise({ d: 4, type: 'highpass', f: 3500, v: 0.04, a: 1.8, at: 1.0, lfo: [0.5, 900] });
-    },
-    volcano: () => {
-      noise({ d: 0.08, type: 'highpass', f: 1500, v: 0.4 });                                       // 터지는 첫 순간
-      noise({ d: 1.8, type: 'lowpass', f: 1600, to: 120, v: 0.75, wet: true });
-      tone({ f: 60, to: 30, d: 1.6, v: 0.45 });
-      noise({ d: 4.8, type: 'bandpass', f: 700, q: 0.9, v: 0.22, a: 0.3, lfo: [5, 260] });          // 뿜어져 나오는 굉음
-      noise({ d: 4.6, type: 'lowpass', f: 220, v: 0.3, a: 0.4, lfo: [2.3, 60] });                   // 땅울림
-      for (let i = 0; i < 26; i++) {                                                                 // 튀는 용암
-        const at = 0.3 + Math.random() * 4;
-        noise({ d: 0.04, type: 'bandpass', f: 900 + Math.random() * 1600, q: 3, v: 0.12, at });
-      }
     },
     sakura: () => [880, 988, 1175, 1318, 1568].forEach((f, i) => bell(f, i * 0.16 + Math.random() * 0.05, 0.04)),
     petalStorm: () => {
@@ -4737,7 +4725,7 @@ function initFxButtons() {
   const FX_SOUND = {
     btnSlot: 'slot', btnCut: 'screenCut', btnPrGlitter: 'glitter', btnPrHeart: 'heart',
     btnPour: 'rain', btnSnow: 'snow', btnAurora: 'aurora', btnMeteor: 'meteor', btnPrStarlight: 'starlight',
-    btnWave: 'wave', btnVolcano: 'volcano',
+    btnWave: 'wave',
     btnSakura: 'sakura', btnPrPetalStorm: 'petalStorm', btnLeaf: 'leaf', btnPrBloom: 'bloom',
     btnPrGarden: 'butterfly', btnFly: 'firefly',
     btnMgCircle: 'magic', btnMgDark: 'dark', btnHrHaunt: 'ghost', btnSpUfo: 'ufo',
@@ -4752,7 +4740,6 @@ function initFxButtons() {
   wire('btnSnow', fxSnow);
   wire('btnSakura', fxSakura);
   wire('btnPour', fxDownpour);
-  wire('btnVolcano', fxVolcano);
   wire('btnWave', fxWave);
   wire('btnAurora', fxAurora);
 
