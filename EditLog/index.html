@@ -1463,7 +1463,7 @@
     </div>
 
     <div class="fxBar card" id="fxBar" style="display:none">
-      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">23개</span></div>
+      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">22개</span></div>
       <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
         <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
         <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
@@ -1488,7 +1488,6 @@
           <button type="button" class="fireBtn" id="btnPrStarlight" style="--k:4"><span class="e">🌟</span><span class="t">별빛</span></button>
           <button type="button" class="fireBtn" id="btnWave" style="--k:5"><span class="e">🌊</span><span class="t">파도</span></button>
           <button type="button" class="fireBtn" id="btnVolcano" style="--k:6"><span class="e">🌋</span><span class="t">화산</span></button>
-          <button type="button" class="fireBtn" id="btnTornado" style="--k:7"><span class="e">🌪️</span><span class="t">토네이도</span></button>
         </div>
       </div>
       <div class="fxRow" data-fx="2" role="tabpanel" style="--fc:#4fd18b" hidden>
@@ -1628,25 +1627,14 @@ const Sfx = (() => {
     tick: () => { tone({ f: 1500, d: 0.03, type: 'square', v: 0.05 }); tone({ f: 2200, d: 0.08, v: 0.1, at: 0.03 }); },
     boing: () => { tone({ f: 200, to: 460, d: 0.12, v: 0.2 }); tone({ f: 460, to: 300, d: 0.18, v: 0.14, at: 0.1 }); },
     like: () => { tone({ f: 520, to: 1150, d: 0.08, v: 0.25 }); tone({ f: 1400, d: 0.14, type: 'triangle', v: 0.08, at: 0.06 }); },
-    // 게이지(1.5초)에 맞춘 웅장한 한 방 — 팀파니 롤이 점점 커지고 금관 화음이 부풀어 오르다가,
-    // 게이지가 멈추는 순간 큰북·심벌과 함께 장조 화음이 '빠-밤!' 터진다. 100%면 한 옥타브 위 팡파르를 더 얹는다.
+    // 게이지(1.5초)와 같이 기운이 모여 차오르는 소리 — 떨림이 점점 커지며 올라가다 그대로 스르르 사라진다.
+    // 진행률이 높을수록 더 높이 올라간다.
     fill: (pct = 50) => {
-      const D = 1.45;
-      for (let i = 0; i < 18; i++) {                                                      // 팀파니 롤 (점점 세게)
-        const k = i / 17;
-        tone({ f: 73.4, to: 68, d: 0.18, v: 0.06 + k * 0.22, at: k * (D - 0.12) });
-      }
-      pad({ fs: [98, 146.8, 196, 246.9], d: D + 0.1, v: 0.045, a: D * 0.9, rel: 0.15, cut0: 250, cut1: 2800 });   // 부풀어 오르는 금관
-      noise({ d: D, type: 'highpass', f: 6000, v: 0.05, a: D * 0.95 });                     // 심벌 스웰
-      // 터지는 순간
-      tone({ f: 65, to: 32, d: 1.2, v: 0.5, at: D });
-      noise({ d: 0.35, type: 'lowpass', f: 900, to: 120, v: 0.5, at: D });
-      noise({ d: 2.2, type: 'highpass', f: 4500, v: 0.18, at: D, a: 0.01, wet: true });
-      pad({ fs: [65.4, 130.8, 164.8, 196, 261.6, 329.6], at: D, d: 2.4, v: 0.05, a: 0.03, rel: 1.9, cut0: 3500, cut1: 1400 });
-      if (pct >= 100) {
-        [523.3, 659.3, 784, 1046.5].forEach((f, i) => tone({ f, d: 0.9, type: 'sawtooth', v: 0.025, at: D + 0.12 + i * 0.1, wet: true }));
-        bell(2093, D + 0.5, 0.05);
-      }
+      const p = Math.max(0, Math.min(100, pct)) / 100, D = 1.5, top = 260 * Math.pow(2, 0.8 + p * 1.3);
+      tone({ f: 260, to: top, d: D + 0.5, v: 0.07, a: 0.3, vib: [6, 8], wet: true });
+      tone({ f: 390, to: top * 1.5, d: D + 0.4, type: 'triangle', v: 0.03, a: 0.4, vib: [6.5, 12], wet: true });
+      noise({ d: D + 0.4, f: 800, to: 7000, q: 3, v: 0.05, a: D * 0.8, wet: true });
+      for (let i = 0; i < 10; i++) tone({ f: 1500 + i * 180 + Math.random() * 120, d: 0.25, v: 0.018, at: 0.2 + i * 0.12, wet: true });
     },
     count: () => { for (let i = 0; i < 6; i++) tone({ f: 620 + i * 110, d: 0.05, type: 'square', v: 0.045, at: i * 0.075 }); },
     // 가위 — 날이 스치는 '샥'(높은 잡음이 아래로 미끄러짐) + 날이 맞물리는 '칙'(짧은 금속음).
@@ -1711,7 +1699,6 @@ const Sfx = (() => {
         noise({ d: 0.04, type: 'bandpass', f: 900 + Math.random() * 1600, q: 3, v: 0.12, at });
       }
     },
-    tornado: () => noise({ d: 2.4, f: 700, q: 6, v: 0.2, a: 0.6, lfo: [3.5, 450] }),
     sakura: () => [880, 988, 1175, 1318, 1568].forEach((f, i) => bell(f, i * 0.16 + Math.random() * 0.05, 0.04)),
     petalStorm: () => {
       noise({ d: 2.0, f: 1200, q: 2, v: 0.12, a: 0.5, lfo: [1.5, 500] });
@@ -1749,17 +1736,16 @@ const Sfx = (() => {
         tone({ f: 73.4, d: 1.2, v: 0.12, at });
       });
       for (let i = 0; i < 16; i++) tone({ f: 1400 + i * 110, d: 0.3, v: 0.018, at: 4.2 + i * 0.22, wet: true });
-      // 7.9초 — 가운데 빛이 터질 때 한 방.
-      tone({ f: 80, to: 28, d: 2.0, v: 0.55, at: 7.9 });
-      noise({ d: 2.2, type: 'lowpass', f: 3000, to: 120, v: 0.6, at: 7.9, wet: true });
-      noise({ d: 0.1, type: 'highpass', f: 2500, v: 0.3, at: 7.9 });
-      [587.3, 740, 880, 1174.7].forEach(f => tone({ f, d: 2.4, type: 'triangle', v: 0.05, at: 7.92, wet: true }));
+      // 7.9초 — 터지기 직전 빨아들이는 소리가 차오르다가, 종소리가 폭포처럼 위로 쏟아진다.
+      noise({ d: 0.9, f: 400, to: 5000, q: 2, v: 0.12, a: 0.85, at: 7.0 });
+      [1046.5, 1174.7, 1318.5, 1568, 1760, 2093, 2349.3, 2637, 3136, 3520].forEach((f, i) => bell(f, 7.9 + i * 0.045, 0.05));
+      noise({ d: 1.6, type: 'highpass', f: 5000, v: 0.08, at: 7.9, a: 0.02, wet: true });
+      pad({ fs: [587.3, 740, 880, 1174.7], at: 7.9, d: 2.2, v: 0.02, a: 0.05, rel: 1.8, cut0: 5000, cut1: 2000, type: 'triangle' });
     },
-    // 블랙홀(6초) — 빨려 드는 저음, 번개 지직, 닫힐 때 '훕' 하고 빛을 뱉는다.
+    // 블랙홀(6초) — 빨려 드는 저음, 닫힐 때 '훕' 하고 빛을 뱉는다.
     dark: () => {
       pad({ fs: [55, 58.3, 82.4], d: 5.6, v: 0.05, a: 1.2, rel: 0.8, cut0: 120, cut1: 900 });
       noise({ d: 5.2, type: 'bandpass', f: 300, to: 1200, q: 3, v: 0.08, a: 1.5, lfo: [0.6, 150] });
-      for (let i = 0; i < 7; i++) noise({ d: 0.12, type: 'highpass', f: 2500, v: 0.14, at: 0.6 + i * 0.6 + Math.random() * 0.3 });
       tone({ f: 40, to: 180, d: 0.5, v: 0.35, at: 5.0 });
       noise({ d: 0.9, type: 'lowpass', f: 2500, to: 200, v: 0.35, at: 5.35, wet: true });
     },
@@ -4749,7 +4735,7 @@ function initFxButtons() {
   const FX_SOUND = {
     btnSlot: 'slot', btnCut: 'screenCut', btnPrGlitter: 'glitter', btnPrHeart: 'heart',
     btnPour: 'rain', btnSnow: 'snow', btnAurora: 'aurora', btnMeteor: 'meteor', btnPrStarlight: 'starlight',
-    btnWave: 'wave', btnVolcano: 'volcano', btnTornado: 'tornado',
+    btnWave: 'wave', btnVolcano: 'volcano',
     btnSakura: 'sakura', btnPrPetalStorm: 'petalStorm', btnLeaf: 'leaf', btnPrBloom: 'bloom',
     btnPrGarden: 'butterfly', btnFly: 'firefly',
     btnMgCircle: 'magic', btnMgDark: 'dark', btnHrHaunt: 'ghost', btnSpUfo: 'ufo',
@@ -4764,7 +4750,6 @@ function initFxButtons() {
   wire('btnSnow', fxSnow);
   wire('btnSakura', fxSakura);
   wire('btnPour', fxDownpour);
-  wire('btnTornado', fxTornado);
   wire('btnVolcano', fxVolcano);
   wire('btnWave', fxWave);
   wire('btnAurora', fxAurora);
