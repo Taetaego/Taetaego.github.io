@@ -426,18 +426,6 @@ function fxMagicCircle() {
       ctx.globalAlpha = 1; ctx.fillStyle = dim; ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'lighter';
 
-      // 진이 완성되면 뒤에서 빛살이 천천히 돈다
-      if (done0 > 0) {
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * 0.15);
-        ctx.fillStyle = gLoc;
-        for (let j = 0; j < 12; j++) {
-          ctx.rotate(6.284 / 12);
-          ctx.globalAlpha = a * done0 * (0.07 + 0.05 * Math.sin(t * 2 + j));
-          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-R * 0.09, -R * 1.9); ctx.lineTo(R * 0.09, -R * 1.9); ctx.closePath(); ctx.fill();
-        }
-        ctx.restore();
-      }
-
       // 사방에서 빛 알갱이가 소용돌이치며 진 안으로 빨려 든다
       if (t < 7.6) for (let i = 0; i < 3 * f; i++) {
         motes.push({ ang: Math.random() * 6.284, rad: R * NR(1.3, 2.3), sp: NR(1.2, 3.2), hue: HUES[Math.floor(Math.random() * HUES.length)], r: NR(1, 2.4) });
