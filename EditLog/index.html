@@ -1206,7 +1206,7 @@
   .quoteBody .q { font-size: 14px; font-weight: 700; line-height: 1.45; letter-spacing: -0.01em; word-break: keep-all; }
   .quoteBody .by { font-size: 11px; color: var(--ink3); }
   .quoteBar { position: absolute; left: 18px; right: 18px; bottom: 7px; height: 2px; border-radius: 2px; overflow: hidden; opacity: .6; }
-  .quoteBar i { display: block; height: 100%; background: var(--grad); transform-origin: left; animation: quoteTimer 7s linear forwards; }
+  .quoteBar i { display: block; height: 100%; background: var(--grad); transform-origin: left; animation: quoteTimer 4.5s linear forwards; }
   @keyframes quoteTimer { to { transform: scaleX(0); } }
   @media (prefers-reduced-motion: reduce) {
     .quoteToast { transition: opacity .3s ease; }
@@ -3867,7 +3867,7 @@ function initFxButtons() {
 main();
 
 /* ===== 여행 명언 카드 =====
-   페이지에 들어오면 업적 달성 알림처럼 위에서 한 장 떨어진다. 7초 뒤(또는 누르면) 올라간다. */
+   페이지에 들어오면 업적 달성 알림처럼 위에서 한 장 떨어진다. 4.5초 뒤(또는 누르면) 올라간다. */
 const TRAVEL_QUOTES = [
   ['세상은 한 권의 책이다. 여행하지 않는 사람은 그 책의 한 페이지만 읽는 셈이다.', '아우구스티누스', '📖'],
   ['천 리 길도 한 걸음부터.', '노자', '👣'],
@@ -3906,7 +3906,7 @@ function showTravelQuote() {
   // (rAF는 백그라운드·일부 폰 브라우저에서 멈춰 있어 카드가 아예 안 뜰 수 있어 타이머로.)
   el.getBoundingClientRect();
   setTimeout(() => el.classList.add('show'), 30);
-  setTimeout(close, 7000);
+  setTimeout(close, 4500);
 }
 setTimeout(showTravelQuote, 900);
 </script>
