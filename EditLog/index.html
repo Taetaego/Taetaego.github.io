@@ -436,7 +436,6 @@
   .pastCover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease, opacity .4s ease; opacity: 0; }
   .pastCover img.ok { opacity: 1; }
   .pastCover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.55), transparent 55%); }
-  .pastEp { position: absolute; z-index: 1; left: 8px; bottom: 6px; font: 700 12px/1 'JetBrains Mono', monospace; color: #fff; letter-spacing: .06em; }
   .pastPlay { position: absolute; z-index: 1; right: 7px; top: 7px; font-size: 10px; font-weight: 700; color: #fff;
               background: rgba(0,0,0,.55); padding: 3px 7px; border-radius: 99px; backdrop-filter: blur(4px); }
   .pastMain { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 3px 4px 3px 0; }
@@ -1583,6 +1582,23 @@ const Sfx = (() => {
     tone({ f: f * 2.01, d: 0.45, v: v * 0.35, at, wet: true });
     tone({ f: f * 3.02, d: 0.2, v: v * 0.15, at });
   }
+  // 여러 톱니파를 살짝 어긋나게 겹친 합창 같은 패드 — 필터가 열리며 부풀었다가 rel초에 걸쳐 사라진다.
+  function pad({ fs, at = 0, d = 3, v = 0.05, a = 1, rel = 1, cut0 = 300, cut1 = 2400, type = 'sawtooth' }) {
+    const t = ctx.currentTime + at;
+    const lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    lp.type = 'lowpass'; lp.Q.value = 0.7;
+    lp.frequency.setValueAtTime(cut0, t); lp.frequency.exponentialRampToValueAtTime(cut1, t + Math.max(0.05, d - rel));
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(v, t + a);
+    g.gain.setValueAtTime(v, t + Math.max(a, d - rel));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    lp.connect(g); g.connect(master); g.connect(echo);
+    for (const f of fs) for (const det of [-7, 7]) {
+      const o = ctx.createOscillator();
+      o.type = type; o.frequency.value = f; o.detune.value = det;
+      o.connect(lp); o.start(t); o.stop(t + d + 0.05);
+    }
+  }
   function blade(at, k) {
     noise({ d: 0.075, f: 7000, to: 2600, q: 1.1, v: 0.32 * k, at, a: 0.004 });
     tone({ f: 3100, to: 2300, d: 0.018, type: 'square', v: 0.06 * k, at: at + 0.06 });
@@ -1593,12 +1609,23 @@ const Sfx = (() => {
     tick: () => { tone({ f: 1500, d: 0.03, type: 'square', v: 0.05 }); tone({ f: 2200, d: 0.08, v: 0.1, at: 0.03 }); },
     boing: () => { tone({ f: 200, to: 460, d: 0.12, v: 0.2 }); tone({ f: 460, to: 300, d: 0.18, v: 0.14, at: 0.1 }); },
     like: () => { tone({ f: 520, to: 1150, d: 0.08, v: 0.25 }); tone({ f: 1400, d: 0.14, type: 'triangle', v: 0.08, at: 0.06 }); },
-    // 진행률만큼 올라가는 종소리 아르페지오 — %가 높을수록 음이 많고 높다. 100%면 화음으로 맺는다.
+    // 게이지(1.5초)와 같이 차오르는 부드러운 스윕 + 10%마다 다이얼 틱, 다 차면 '투-딩' 두 음으로 맺는다.
+    // 진행률이 높을수록 스윕이 더 높이 올라간다.
     fill: (pct = 50) => {
-      const SCALE = [523, 587, 659, 784, 880, 1046, 1175, 1318, 1568];
-      const n = 3 + Math.round(Math.max(0, Math.min(100, pct)) / 100 * 6);
-      for (let i = 0; i < n; i++) bell(SCALE[i], i * 0.085, 0.06);
-      if (pct >= 100) [1046, 1318, 1568].forEach(f => bell(f, n * 0.085 + 0.05, 0.05));
+      const p = Math.max(0, Math.min(100, pct)) / 100;
+      const D = 1.45, top = 330 * Math.pow(2, 0.4 + p * 1.2);
+      tone({ f: 330, to: top, d: D, type: 'triangle', v: 0.05, a: 0.25 });
+      tone({ f: 331.5, to: top * 1.003, d: D, v: 0.04, a: 0.25 });
+      noise({ d: D, f: 900, to: 5200, q: 2.5, v: 0.025, a: 0.5 });
+      const ticks = Math.max(1, Math.round(p * 10));
+      for (let i = 0; i < ticks; i++) {
+        const k = (i + 1) / ticks, at = D * (1 - Math.pow(1 - k, 1 / 3)) * 0.98;   // 게이지 곡선(easeOutCubic)에 맞춰
+        tone({ f: 2400 + i * 60, d: 0.02, type: 'square', v: 0.012, at });
+      }
+      const root = pct >= 100 ? 1046 : 784;
+      tone({ f: root, d: 0.5, v: 0.07, at: D - 0.05, wet: true });
+      tone({ f: root * 1.26, d: 0.7, v: 0.07, at: D + 0.07, wet: true });
+      tone({ f: root * 2.52, d: 0.35, v: 0.015, at: D + 0.07 });
     },
     count: () => { for (let i = 0; i < 6; i++) tone({ f: 620 + i * 110, d: 0.05, type: 'square', v: 0.045, at: i * 0.075 }); },
     // 가위 — 날이 스치는 '샥'(높은 잡음이 아래로 미끄러짐) + 날이 맞물리는 '칙'(짧은 금속음).
@@ -1641,11 +1668,24 @@ const Sfx = (() => {
     aurora: () => [262, 330, 392, 494].forEach((f, i) => tone({ f, d: 2.6, type: 'triangle', v: 0.05, a: 0.9, at: i * 0.12, wet: true })),
     meteor: () => { noise({ d: 0.9, f: 4000, to: 500, q: 2, v: 0.18, a: 0.05 }); bell(1568, 0.75, 0.05); bell(2093, 0.9, 0.04); },
     starlight: () => [1046, 1318, 1568, 2093, 2637].forEach((f, i) => bell(f, i * 0.11, 0.045)),
-    wave: () => { noise({ d: 2.2, type: 'lowpass', f: 300, to: 1800, v: 0.22, a: 0.9 }); noise({ d: 1.2, type: 'highpass', f: 3000, v: 0.06, a: 0.2, at: 1.0 }); },
+    wave: () => {
+      noise({ d: 2.3, type: 'lowpass', f: 180, to: 1500, v: 0.3, a: 2.0, q: 0.5 });               // 밀려오는 물
+      noise({ d: 2.2, type: 'bandpass', f: 500, to: 2500, q: 0.6, v: 0.12, a: 1.9 });
+      noise({ d: 0.9, type: 'lowpass', f: 2600, to: 700, v: 0.55, at: 2.0, a: 0.05, wet: true });  // 부서지는 순간
+      tone({ f: 70, to: 40, d: 0.6, v: 0.25, at: 2.0 });
+      noise({ d: 3.0, type: 'highpass', f: 2500, to: 6000, v: 0.14, at: 2.1, a: 0.15, lfo: [0.7, 800] });  // 거품이 쓸려 나감
+      noise({ d: 2.9, type: 'lowpass', f: 1200, to: 200, v: 0.18, at: 2.2, a: 0.2 });
+    },
     volcano: () => {
-      noise({ d: 1.6, type: 'lowpass', f: 180, v: 0.4, a: 0.4 });
-      tone({ f: 70, to: 35, d: 1.4, v: 0.3, a: 0.3 });
-      noise({ d: 0.9, type: 'lowpass', f: 900, to: 150, v: 0.5, at: 0.9 });
+      noise({ d: 0.08, type: 'highpass', f: 1500, v: 0.4 });                                       // 터지는 첫 순간
+      noise({ d: 1.8, type: 'lowpass', f: 1600, to: 120, v: 0.75, wet: true });
+      tone({ f: 60, to: 30, d: 1.6, v: 0.45 });
+      noise({ d: 4.8, type: 'bandpass', f: 700, q: 0.9, v: 0.22, a: 0.3, lfo: [5, 260] });          // 뿜어져 나오는 굉음
+      noise({ d: 4.6, type: 'lowpass', f: 220, v: 0.3, a: 0.4, lfo: [2.3, 60] });                   // 땅울림
+      for (let i = 0; i < 26; i++) {                                                                 // 튀는 용암
+        const at = 0.3 + Math.random() * 4;
+        noise({ d: 0.04, type: 'bandpass', f: 900 + Math.random() * 1600, q: 3, v: 0.12, at });
+      }
     },
     tornado: () => noise({ d: 2.4, f: 700, q: 6, v: 0.2, a: 0.6, lfo: [3.5, 450] }),
     sakura: () => [880, 988, 1175, 1318, 1568].forEach((f, i) => bell(f, i * 0.16 + Math.random() * 0.05, 0.04)),
@@ -1653,21 +1693,52 @@ const Sfx = (() => {
       noise({ d: 2.0, f: 1200, q: 2, v: 0.12, a: 0.5, lfo: [1.5, 500] });
       for (let i = 0; i < 6; i++) bell(pick([988, 1175, 1318, 1568]), 0.3 + i * 0.2, 0.035);
     },
-    leaf: () => { for (let i = 0; i < 7; i++) noise({ d: 0.12, f: 3500 + Math.random() * 2000, q: 1.5, v: 0.12, at: i * 0.13 + Math.random() * 0.05 }); },
+    leaf: () => {
+      noise({ d: 4.6, type: 'bandpass', f: 500, q: 1.2, v: 0.07, a: 1.2, lfo: [0.35, 250] });
+      const NOTES = [1175, 988, 880, 784, 659, 587, 523, 440];
+      NOTES.forEach((f, i) => {
+        const at = 0.25 + i * 0.42 + Math.random() * 0.12;
+        tone({ f, d: 0.9, type: 'triangle', v: 0.06, at, wet: true });
+        tone({ f: f * 3, d: 0.12, v: 0.015, at });
+      });
+    },
     bloom: () => { tone({ f: 300, to: 700, d: 0.1, v: 0.2 }); [784, 988, 1175].forEach((f, i) => bell(f, 0.1 + i * 0.07, 0.05)); },
-    butterfly: () => { for (let i = 0; i < 3; i++) noise({ d: 0.35, f: 1500, q: 1, v: 0.1, a: 0.02, at: i * 0.45, lfo: [22, 900] }); },
+    butterfly: () => {
+      const UP = [784, 880, 1046, 1175, 1318, 1568, 1760];
+      [0, 1.3, 2.7].forEach((start, r) => {
+        const run = r % 2 ? [...UP].reverse() : UP;
+        run.forEach((f, i) => tone({ f: f * (r === 2 ? 1.5 : 1), d: 0.5, v: 0.035, at: start + i * 0.055, wet: true }));
+      });
+      pad({ fs: [392, 494, 587], d: 4.2, v: 0.012, a: 1.2, rel: 1.5, cut0: 800, cut1: 2500, type: 'triangle' });
+    },
     firefly: () => { for (let i = 0; i < 6; i++) tone({ f: 1800 + Math.random() * 900, d: 0.18, v: 0.035, a: 0.06, at: i * 0.22 + Math.random() * 0.1, wet: true }); },
     magic: () => {
-      noise({ d: 1.0, f: 800, to: 6000, q: 3, v: 0.08, a: 0.4 });
-      [523, 659, 784, 1046].forEach((f, i) => bell(f, 0.5 + i * 0.05, 0.05));
+      tone({ f: 55, to: 32, d: 2.4, v: 0.5 });                                                     // 진이 깔리는 둔중한 울림
+      noise({ d: 2.2, type: 'lowpass', f: 700, to: 90, v: 0.4, wet: true });
+      pad({ fs: [73.4, 110, 146.8, 174.6, 220], d: 8.6, v: 0.035, a: 5.5, rel: 1.4, cut0: 180, cut1: 3200 });   // D 단조 합창
+      noise({ d: 7.8, type: 'bandpass', f: 400, to: 7000, q: 4, v: 0.05, a: 6.5 });                 // 차오르는 기운
+      [0.36, 1.08, 1.8, 2.52, 3.24].forEach((at, i) => {                                            // 문자 띠가 하나씩 켜질 때
+        bell([293.7, 349.2, 440, 523.3, 587.3][i], at, 0.07);
+        tone({ f: 73.4, d: 1.2, v: 0.12, at });
+      });
+      for (let i = 0; i < 16; i++) tone({ f: 1400 + i * 110, d: 0.3, v: 0.018, at: 4.2 + i * 0.22, wet: true });
+      // 7.9초 — 가운데 빛이 터질 때 한 방.
+      tone({ f: 80, to: 28, d: 2.0, v: 0.55, at: 7.9 });
+      noise({ d: 2.2, type: 'lowpass', f: 3000, to: 120, v: 0.6, at: 7.9, wet: true });
+      noise({ d: 0.1, type: 'highpass', f: 2500, v: 0.3, at: 7.9 });
+      [587.3, 740, 880, 1174.7].forEach(f => tone({ f, d: 2.4, type: 'triangle', v: 0.05, at: 7.92, wet: true }));
     },
     dark: () => { tone({ f: 110, to: 55, d: 2.0, type: 'sawtooth', v: 0.05, a: 0.4 }); tone({ f: 116, to: 58, d: 2.0, type: 'sawtooth', v: 0.04, a: 0.4 }); },
     ghost: () => { tone({ f: 420, to: 260, d: 1.6, v: 0.12, a: 0.3, vib: [5, 18], wet: true }); tone({ f: 560, to: 330, d: 1.3, v: 0.05, a: 0.3, at: 0.4, vib: [6, 22], wet: true }); },
     ufo: () => { tone({ f: 600, to: 900, d: 1.8, v: 0.1, a: 0.2, vib: [9, 160] }); tone({ f: 1200, d: 1.6, type: 'triangle', v: 0.03, a: 0.2, vib: [9, 300] }); },
-    fireworks: () => {
-      tone({ f: 700, to: 2200, d: 0.55, v: 0.05, a: 0.05 });
-      noise({ d: 0.9, type: 'lowpass', f: 700, to: 120, v: 0.55, at: 0.55 });
-      for (let i = 0; i < 9; i++) noise({ d: 0.03, type: 'highpass', f: 3500, v: 0.12, at: 0.75 + Math.random() * 0.6 });
+    // 폭죽은 실제 로켓이 뜨고 터지는 순간에 맞춰 따로 울린다.
+    launch: () => { tone({ f: 520, to: 1900, d: 0.75, v: 0.04, a: 0.05 }); noise({ d: 0.5, type: 'highpass', f: 2500, v: 0.05, a: 0.03 }); },
+    boom: (big) => {
+      const k = big ? 1 : 0.65;
+      noise({ d: 0.05, type: 'highpass', f: 2000, v: 0.35 * k });
+      noise({ d: big ? 1.4 : 0.9, type: 'lowpass', f: 1400, to: 110, v: 0.7 * k, wet: true });
+      tone({ f: 90, to: 38, d: 0.55, v: 0.4 * k });
+      for (let i = 0; i < (big ? 14 : 6); i++) noise({ d: 0.025, type: 'highpass', f: 3500 + Math.random() * 2500, v: 0.1 * k, at: 0.25 + Math.random() * 0.9 });
     },
   };
   return {
@@ -1706,7 +1777,7 @@ async function main() {
   const summaryCard = document.getElementById('summaryCard');
 
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
-  document.getElementById('fireBtn').addEventListener('click', () => { sfx('fireworks'); launchFireworks(); });
+  document.getElementById('fireBtn').addEventListener('click', launchFireworks);
   initFxButtons();
   initSfxBtn();
   initAmbientLayers();
@@ -2257,8 +2328,6 @@ function renderPastList() {
     body.innerHTML = '<div class="empty">아직 프로젝트가 없어요</div>';
     return;
   }
-  // 에피소드 번호는 시작한 순서대로.
-  const order = [...list].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)).map(p => p.id);
   const done = list.filter(p => p.status === 'completed');
   const durs = done.map(p => p.totalDuration).filter(d => d != null);
   const finals = done.map(p => parseMinutes(p.finalLength)).filter(m => m != null);
@@ -2271,7 +2340,6 @@ function renderPastList() {
   body.innerHTML = sum + list.map((p, k) => {
     const isDone = p.status === 'completed';
     const viewing = p.id === current;
-    const ep = String(order.indexOf(p.id) + 1).padStart(2, '0');
     const orig = parseMinutes(p.originalLength), fin = parseMinutes(p.finalLength);
     const len = orig && fin
       ? `<div class="pastLen"><b>${escapeHtml(formatMinutes(orig))}</b><span class="pastBar"><i style="width:${Math.max(3, Math.min(100, fin / orig * 100)).toFixed(1)}%"></i></span><b>${escapeHtml(formatMinutes(fin))}</b></div>`
@@ -2284,7 +2352,7 @@ function renderPastList() {
     const cover = pastCovers.get(p.id);
     return `
       <button type="button" class="pastRow${viewing ? ' current' : ''}" data-id="${escapeHtml(p.id)}" style="--k:${k}">
-        <span class="pastCover">${cover ? `<img class="ok" src="${escapeHtml(cover)}" alt="" loading="lazy">` : ''}<span class="pastEp">EP.${ep}</span>${viewing ? '<span class="pastPlay">▶ 보는 중</span>' : ''}</span>
+        <span class="pastCover">${cover ? `<img class="ok" src="${escapeHtml(cover)}" alt="" loading="lazy">` : ''}${viewing ? '<span class="pastPlay">▶ 보는 중</span>' : ''}</span>
         <span class="pastMain">
           <span class="pastTop"><span class="pastTopic">${escapeHtml(p.topic || '(제목 없음)')}</span><span class="pastState ${isDone ? 'done' : 'wip'}">${isDone ? '완료' : '편집 중'}</span></span>
           ${len}
@@ -3933,7 +4001,8 @@ function initFx() {
   fx.sizeFn();
   window.addEventListener('resize', fx.sizeFn);
 
-  fx.boom = (x, y, big) => {
+  fx.boom = (x, y, big, snd) => {
+    if (snd) sfx('boom', big);
     const n = big ? 130 : 80;
     const hues = fxHues();
     const hue = hues[Math.floor(Math.random() * hues.length)];
@@ -3950,19 +4019,20 @@ function initFx() {
     }
     if (big) {
       [420, 780].forEach(t => setTimeout(() => {
-        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false);
+        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false, snd);
         fx.kick();
       }, t));
     }
   };
 
-  fx.rocket = () => {
+  fx.rocket = (snd) => {
+    if (snd) sfx('launch');
     const page = document.querySelector('.page');
     const r = page ? page.getBoundingClientRect() : null;
     const cx = r ? r.left + r.width / 2 : fx.w / 2;
     const half = r ? Math.min(fx.w * 0.48, r.width * 0.75) : fx.w * 0.4;
     const x = Math.max(12, Math.min(fx.w - 12, cx + (Math.random() * 2 - 1) * half));
-    fx.rs.push({ x, y: fx.h + 8, vx: (Math.random() - 0.5) * 1.0, vy: -(7.4 + Math.random() * 1.8), ty: fx.h * (0.1 + Math.random() * 0.24) });
+    fx.rs.push({ x, y: fx.h + 8, vx: (Math.random() - 0.5) * 1.0, vy: -(7.4 + Math.random() * 1.8), ty: fx.h * (0.1 + Math.random() * 0.24), snd });
   };
 
   const step = () => {
@@ -3975,7 +4045,7 @@ function initFx() {
       ctx.strokeStyle = hexAlpha(accentColor(), 0.9);
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.vx * 2.6, r.y - r.vy * 2.6); ctx.stroke();
-      if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55); }
+      if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55, r.snd); }
     }
     for (let i = fx.ps.length - 1; i >= 0; i--) {
       const p = fx.ps[i];
@@ -4181,7 +4251,7 @@ function launchFireworks() {
   if (reducedMotion) return;
   const f = initFx();
   if (!f) return;
-  f.rocket();
+  f.rocket(true);   // 버튼으로 쏜 것만 소리를 낸다 (완료 축포·잔잔한 불꽃은 조용히)
   f.kick();
 }
 
