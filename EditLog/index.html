@@ -4001,22 +4001,9 @@ function applyTheme(mode) {
 })();
 
 /* ===== 폭죽 (완료된 프로젝트일 때만) ===== */
-/** #rrggbb -> 색상환 각도(0~360). 폭죽 색을 지금 고른 하이라이트 색에 맞추는 데 쓴다. */
-function hexToHue(hex) {
-  const m = /^#([0-9a-f]{6})$/i.exec(String(hex).trim());
-  if (!m) return 160;
-  const n = parseInt(m[1], 16);
-  const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
-  if (d === 0) return 0;
-  let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  h *= 60;
-  return h < 0 ? h + 360 : h;
-}
-/** 지금 하이라이트 색을 중심으로 한 폭죽 색 팔레트 (매번 새로 뽑아 accent 변경에 바로 반응). */
+/** 폭죽 색 — 단계 그라디언트(민트·하늘·보라·분홍)에 금빛·산호·라임을 더한 팔레트. */
 function fxHues() {
-  const base = hexToHue(accentColor());
-  return [base - 48, base - 24, base, base, base + 24, base + 48].map(h => ((h % 360) + 360) % 360);
+  return [162, 200, 248, 290, 318, 342, 44, 18, 95];
 }
 let fx = null;
 let fxTimer = null;
@@ -4040,13 +4027,14 @@ function initFx() {
   window.addEventListener('resize', fx.sizeFn);
 
   // 모양: peony(국화, 기본) · willow(금빛 버들 — 오래 늘어짐) · ring(고리) · crackle(흩어진 뒤 타닥 터짐)
-  fx.boom = (x, y, big, snd, shape) => {
+  fx.boom = (x, y, big, snd, shape, hueMain) => {
     if (snd) sfx('boom', big);
-    shape = shape || (snd ? ['peony', 'willow', 'ring', 'crackle'][Math.floor(Math.random() * 4)] : 'peony');
+    shape = shape || (snd ? ['peony', 'willow', 'ring', 'crackle', 'rainbow'][Math.floor(Math.random() * 5)] : 'peony');
     const n = big ? 130 : 80;
     const hues = fxHues();
-    const hue = hues[Math.floor(Math.random() * hues.length)];
-    const hue2 = Math.random() < 0.35 ? hues[Math.floor(Math.random() * hues.length)] : hue;
+    const hue = hueMain ?? hues[Math.floor(Math.random() * hues.length)];
+    // 두 번째 색은 거의 항상 섞는다 — 한 가지 색보다 두 색이 엇갈릴 때 훨씬 화려하다.
+    const hue2 = Math.random() < 0.8 ? hues[Math.floor(Math.random() * hues.length)] : hue;
     const tilt = Math.random() * 6.28;
     for (let i = 0; i < n; i++) {
       const a = (Math.PI * 2 * i) / n + (shape === 'ring' ? 0 : Math.random() * 0.25);
@@ -4054,7 +4042,9 @@ function initFx() {
       let vx = Math.cos(a) * sp, vy = Math.sin(a) * sp;
       if (shape === 'ring') { const c = Math.cos(tilt), s2 = Math.sin(tilt); vy *= 0.45; [vx, vy] = [vx * c - vy * s2, vx * s2 + vy * c]; }
       const willow = shape === 'willow';
-      const h = willow ? 40 + Math.random() * 10 : (i % 2 === 0 ? hue : hue2) + Math.random() * 18 - 9;
+      const h = willow ? 40 + Math.random() * 10
+        : shape === 'rainbow' ? (i / n) * 360
+        : (i % 2 === 0 ? hue : hue2) + Math.random() * 18 - 9;
       fx.ps.push({ x, y, px: x, py: y, vx, vy, life: 1,
         dec: willow ? 0.0022 + Math.random() * 0.0016 : 0.0042 + Math.random() * 0.0046,
         hue: h, r: big ? 2.6 : 2.0, tw: Math.random() < 0.45 ? 6 + Math.random() * 7 : 0, ph: Math.random() * 6.28, t: 0,
@@ -4068,7 +4058,7 @@ function initFx() {
     }
     if (big) {
       [420, 780].forEach(t => setTimeout(() => {
-        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false, snd, shape === 'willow' ? 'peony' : shape);
+        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false, snd, shape === 'willow' ? 'peony' : shape, hues[Math.floor(Math.random() * hues.length)]);
         fx.kick();
       }, t));
     }
@@ -4081,7 +4071,8 @@ function initFx() {
     const cx = r ? r.left + r.width / 2 : fx.w / 2;
     const half = r ? Math.min(fx.w * 0.48, r.width * 0.75) : fx.w * 0.4;
     const x = Math.max(12, Math.min(fx.w - 12, cx + (Math.random() * 2 - 1) * half));
-    fx.rs.push({ x, y: fx.h + 8, vx: (Math.random() - 0.5) * 1.0, vy: -(7.4 + Math.random() * 1.8), ty: fx.h * (0.1 + Math.random() * 0.24), snd });
+    const hs = fxHues();
+    fx.rs.push({ x, y: fx.h + 8, vx: (Math.random() - 0.5) * 1.0, vy: -(7.4 + Math.random() * 1.8), ty: fx.h * (0.1 + Math.random() * 0.24), snd, hue: hs[Math.floor(Math.random() * hs.length)] });
   };
 
   const step = () => {
@@ -4096,10 +4087,10 @@ function initFx() {
     for (let i = fx.rs.length - 1; i >= 0; i--) {
       const r = fx.rs[i];
       r.x += r.vx; r.y += r.vy; r.vy += 0.055;
-      ctx.strokeStyle = hexAlpha(accentColor(), 0.9);
+      ctx.strokeStyle = `hsla(${r.hue},100%,72%,0.95)`;
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(r.x, r.y); ctx.lineTo(r.x - r.vx * 2.6, r.y - r.vy * 2.6); ctx.stroke();
-      if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55, r.snd); }
+      if (r.vy > -1.6 || r.y <= r.ty) { fx.rs.splice(i, 1); fx.boom(r.x, r.y, Math.random() < 0.55, r.snd, undefined, r.hue); }
     }
     for (let i = fx.ps.length - 1; i >= 0; i--) {
       const p = fx.ps[i];
@@ -4118,7 +4109,7 @@ function initFx() {
         }
       }
       const flick = p.tw ? (0.62 + 0.38 * Math.sin(p.t / p.tw * 6.28 + p.ph)) : 1;
-      ctx.strokeStyle = 'hsla(' + p.hue + ',90%,' + (52 + p.life * 26) + '%,' + (p.life * flick) + ')';
+      ctx.strokeStyle = 'hsla(' + p.hue + ',100%,' + (55 + p.life * 25) + '%,' + (p.life * flick) + ')';
       ctx.lineWidth = p.r * p.life + 0.4;
       ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
     }
@@ -4439,7 +4430,6 @@ function startLiquid() {
     const t = Math.max(0, now - t0) / 1000;
     const target = Math.max(0, Math.min(1, heroPct / 100));
     const fill = reducedMotion ? target : target * Math.min(1, 1 - Math.pow(1 - Math.min(1, t / 1.6), 3));
-    const acc = accentColor();
     ctx.clearRect(0, 0, s, s);
     ctx.save();
     ctx.beginPath(); ctx.arc(s / 2, s / 2, s / 2 - 1, 0, 6.284); ctx.clip();
@@ -4447,9 +4437,10 @@ function startLiquid() {
     // 그러지 않으면 100%에서 꼭대기에 파도 골만큼 빈 틈이 남고, 0%에서도 마루가 비쳐 보인다.
     const AMP = 9;
     const level = (s + 2 * AMP) * (1 - fill) - AMP;
-    const grad = ctx.createLinearGradient(0, level, 0, s);
-    grad.addColorStop(0, acc);
-    grad.addColorStop(1, hexAlpha(acc, 0.45));
+    // 물빛도 도넛과 같은 단계 그라디언트 — 천천히 좌우로 흐른다.
+    const sh = Math.sin(t * 0.7) * s * 0.3;
+    const grad = ctx.createLinearGradient(sh, level, s + sh, s);
+    ['#34e0b0', '#5ab8f0', '#8f82ed', '#d98aea'].forEach((c, i) => grad.addColorStop(i / 3, c));
     [[9, 1.5, 0.55, 0.92], [6, 2.3, -0.9, 0.45]].forEach(([amp, freq, spd, alpha]) => {
       ctx.globalAlpha = alpha;
       ctx.fillStyle = grad;
@@ -4508,10 +4499,11 @@ function initComet() {
     if (!f) { requestAnimationFrame(draw); return; }
     const { w, h, ctx } = f;
     ctx.clearRect(0, 0, w, h);
-    const acc = accentColor();
+    const RB = ['#34e0b0', '#5ab8f0', '#8f82ed', '#d98aea'];
     for (let i = 1; i < trail.length; i++) {
       const a = i / trail.length;
-      ctx.strokeStyle = acc;
+      // 꼬리 끝에서 머리 쪽으로 단계 색이 차례로 흐른다.
+      ctx.strokeStyle = RB[Math.floor((i + now / 90) % RB.length)];
       ctx.globalAlpha = a * 0.5;
       ctx.lineWidth = 1 + a * 4;
       ctx.lineCap = 'round';
