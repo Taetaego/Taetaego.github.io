@@ -802,9 +802,6 @@
   .slateGrid span:first-child { border-left: 0; padding-left: 0; }
   .slateGrid span:last-child { font-size: 13px; justify-content: flex-end; }
   .slateGrid i { font-style: normal; font-size: 9px; letter-spacing: .14em; opacity: .6; }
-  .slateBang { position: absolute; right: -10px; top: -14px; font: 800 22px/1 'IBM Plex Sans KR', sans-serif; color: #ffd75e;
-               text-shadow: 0 2px 0 #141414; animation: slateBang .5s cubic-bezier(.2,1.6,.4,1) both; }
-  @keyframes slateBang { from { opacity: 0; transform: scale(.3) rotate(-20deg); } }
   .slateFlash { position: fixed; inset: 0; z-index: 10001; background: #fff; pointer-events: none; opacity: 0; }
   .logDaySum { margin-left: 8px; font-weight: 500; letter-spacing: 0; color: var(--ink3); -webkit-text-fill-color: var(--ink3); }
   /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
@@ -3250,7 +3247,7 @@ function renderDayBand(data) {
   document.getElementById('dayCard').style.display = '';
 }
 
-/** 제목(태태고 편집실)을 누르면 슬레이트가 내려와 '딱!' 치고 사라진다.
+/** 제목(태태고 편집실)을 누르면 슬레이트가 내려와 막대를 치고 사라진다.
     SCENE은 에피소드 번호, TAKE는 누를 때마다 하나씩 올라간다(이 기기에만 저장). */
 function initSlate() {
   const brand = document.querySelector('.brand');
@@ -3287,7 +3284,7 @@ function initSlate() {
     stick.animate([{ transform: 'rotate(-26deg)' }, { transform: 'rotate(-30deg)', offset: 0.85 }, { transform: 'rotate(0deg)' }],
       { duration: 620, delay: 380, easing: 'cubic-bezier(.7,0,1,.5)', fill: 'both' });
     setTimeout(() => {
-      // 딱! — 화면이 한 번 하얗게 번쩍이고 슬레이트가 떨린다.
+      // 막대가 닫히는 순간 화면이 한 번 하얗게 번쩍이고 슬레이트가 떨린다.
       const flash = document.createElement('div');
       flash.className = 'slateFlash';
       document.body.appendChild(flash);
@@ -3296,10 +3293,6 @@ function initSlate() {
         { transform: 'translate(-50%, 0) rotate(0)' }, { transform: 'translate(calc(-50% - 4px), 3px) rotate(-1.5deg)' },
         { transform: 'translate(calc(-50% + 3px), -2px) rotate(1deg)' }, { transform: 'translate(-50%, 0) rotate(0)' },
       ], { duration: 220, composite: 'replace' });
-      const bang = document.createElement('span');
-      bang.className = 'slateBang';
-      bang.textContent = '딱!';
-      el.appendChild(bang);
     }, 1000);
     setTimeout(() => {
       el.animate([
