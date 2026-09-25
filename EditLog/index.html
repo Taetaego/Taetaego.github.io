@@ -236,11 +236,15 @@
     30% { opacity: 1; transform: translate(-50%, -90%) scale(1.25); }
     100% { opacity: 0; transform: translate(calc(-50% + var(--sx)), -260%) scale(.8) rotate(var(--sr)); }
   }
+  .heatTile { cursor: pointer; }
+  .heatTile.flipped .v { -webkit-text-fill-color: var(--tc); }
+  .heatSpark { position: absolute; z-index: 4; width: 5px; height: 5px; border-radius: 50%; pointer-events: none;
+               box-shadow: 0 0 6px currentColor; }
   .heatTip { position: absolute; z-index: 4; pointer-events: none; transform: translate(-50%, calc(-100% - 8px));
              font-size: 11px; font-weight: 600; white-space: nowrap; padding: 5px 9px; border-radius: 9px;
              background: var(--ink); color: var(--bg); box-shadow: 0 6px 18px rgba(0,0,0,.3);
              animation: heatTip 1.8s ease both; }
-  .heatTip::after { content: ''; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px;
+  .heatTip::after { content: ''; position: absolute; left: calc(50% + var(--tail, 0px)); bottom: -4px; width: 8px; height: 8px;
                     background: inherit; transform: translateX(-50%) rotate(45deg); }
   @keyframes heatTip { 0% { opacity: 0; margin-top: 6px; } 12%, 80% { opacity: 1; margin-top: 0; } 100% { opacity: 0; } }
   .heatPane { display: flex; flex-direction: column; gap: 12px; }
@@ -1637,10 +1641,61 @@ function initHeat() {
   document.getElementById('heatCard').addEventListener('click', heatBurst);
 }
 
+/** 잔디 위 숫자 타일은 따로 논다 — 누르면 휙 뒤집혀 뒷면의 숫자를 보여주고,
+    누른 자리에서 타일 색 불꽃이 튄다. 잠시 뒤(또는 다시 누르면) 앞면으로 돌아온다. */
+function heatTileFlip(tile, ev) {
+  if (!tile.dataset.bk) return;
+  const k = tile.querySelector('.k'), v = tile.querySelector('.v');
+  const toBack = !tile.classList.contains('flipped');
+  const swap = () => {
+    tile.classList.toggle('flipped', toBack);
+    k.textContent = toBack ? tile.dataset.bk : tile.dataset.fk;
+    v.textContent = toBack ? tile.dataset.bv : tile.dataset.fv;
+    v.title = v.textContent;
+  };
+  clearTimeout(tile._back);
+  if (reducedMotion) swap();
+  else {
+    tile.getAnimations().forEach(a => a.cancel());
+    tile.animate([{ transform: 'perspective(400px) rotateX(0)' }, { transform: 'perspective(400px) rotateX(90deg)' }],
+      { duration: 140, easing: 'ease-in' }).onfinish = () => {
+      swap();
+      tile.animate([
+        { transform: 'perspective(400px) rotateX(-90deg)' },
+        { transform: 'perspective(400px) rotateX(12deg)', offset: 0.7 },
+        { transform: 'perspective(400px) rotateX(0)' },
+      ], { duration: 320, easing: 'ease-out' });
+    };
+    if (toBack) heatTileSparks(tile, ev);
+  }
+  if (toBack) tile._back = setTimeout(() => { if (tile.classList.contains('flipped')) heatTileFlip(tile, null); }, 3000);
+}
+
+function heatTileSparks(tile, ev) {
+  const card = document.getElementById('heatCard');
+  const cr = card.getBoundingClientRect(), tr = tile.getBoundingClientRect();
+  const x = (ev ? ev.clientX : tr.left + tr.width / 2) - cr.left;
+  const y = (ev ? ev.clientY : tr.top + tr.height / 2) - cr.top;
+  const color = getComputedStyle(tile).getPropertyValue('--tc').trim() || 'var(--accent)';
+  for (let i = 0; i < 12; i++) {
+    const sp = document.createElement('span');
+    sp.className = 'heatSpark';
+    sp.style.left = `${x}px`; sp.style.top = `${y}px`; sp.style.background = color; sp.style.color = color;
+    card.appendChild(sp);
+    const a = (i / 12) * Math.PI * 2 + Math.random() * 0.4, d = 26 + Math.random() * 22;
+    sp.animate([
+      { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(.2)`, opacity: 0 },
+    ], { duration: 520 + Math.random() * 200, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' }).onfinish = () => sp.remove();
+  }
+}
+
 /** 잔디 카드를 누르면 누른 자리에서 물결이 퍼지고, 기록 있는 날마다 새싹이 돋는다.
     칸을 누르면 그날 날짜·기록 수를 말풍선으로 띄운다. */
 function heatBurst(ev) {
   if (ev.target.closest('button') || heatTab !== 'overview') return;
+  const tile = ev.target.closest('.heatTile');
+  if (tile) { heatTileFlip(tile, ev); return; }
   const card = document.getElementById('heatCard');
   const grid = document.getElementById('heatGrid');
   const cr = card.getBoundingClientRect();
@@ -1653,9 +1708,14 @@ function heatBurst(ev) {
     tip.className = 'heatTip';
     tip.textContent = hit.title;
     // 카드 밖으로 삐져나가지 않게 가로 위치를 안쪽으로 당긴다.
-    const cx = Math.min(Math.max(r.left + r.width / 2 - cr.left, 70), cr.width - 70);
-    tip.style.left = `${cx}px`; tip.style.top = `${r.top - cr.top}px`;
+    const cellX = r.left + r.width / 2 - cr.left;
+    tip.style.top = `${r.top - cr.top}px`;
     card.appendChild(tip);
+    const half = tip.offsetWidth / 2;
+    const cx = Math.min(Math.max(cellX, half + 6), cr.width - half - 6);
+    tip.style.left = `${cx}px`;
+    // 말풍선 몸통은 안쪽으로 당겨도, 꼬리는 누른 칸을 그대로 가리키게 한다.
+    tip.style.setProperty('--tail', `${Math.max(-half + 10, Math.min(half - 10, cellX - cx)).toFixed(1)}px`);
     setTimeout(() => tip.remove(), 1850);
   }
   if (reducedMotion) return;
@@ -1724,16 +1784,25 @@ function renderHeat({ animate = true } = {}) {
   // 0시·12시는 '오전 12시'처럼 헷갈리게 읽히니 밤/낮으로.
   const hourLabel = (h) => h === null ? '—' : h === 0 ? '밤 12시' : h === 12 ? '낮 12시' : `${h < 12 ? '오전' : '오후'} ${h % 12}시`;
   // 타일마다 제 색 — 앱 편집 잔디 타일과 같은 짝.
+  // 뒷면 숫자 — 타일을 누르면 뒤집혀서 보인다.
+  const doneIdx = heatData.categories.indexOf('완료');
+  const doneEps = new Set(inRange.filter(r => r.c === doneIdx).map(r => r.ep)).size;
+  const firstDay = inRange.length ? new Date(Math.min(...inRange.map(r => r.d.getTime()))) : today;
+  firstDay.setHours(0, 0, 0, 0);
+  const spanDays = since ? Number(heatRange) : Math.round((today - firstDay) / 86400000) + 1;
   const tiles = [
-    ['에피소드', `${eps.size}개`, 'var(--grp-1)'],
-    ['작업 기록', `${inRange.length}개`, 'var(--grp-2)'],
-    ['활성 일수', `${activeDays.size}일`, 'var(--grp-3)'],
-    ['최다 작업 시간', hourLabel(peakHour), 'var(--grp-4)'],
-    ['최다 단계', topCat ? topCat[0] : '—', 'var(--gold)'],
-    ['연속 작업', current >= 2 ? `🔥 ${current}일` : `최장 ${longest}일`, '#ff8a3d'],
+    ['에피소드', `${eps.size}개`, 'var(--grp-1)', '완료 · 편집 중', `${doneEps} · ${eps.size - doneEps}`],
+    ['작업 기록', `${inRange.length}개`, 'var(--grp-2)', '작업한 날 평균',
+      activeDays.size ? `${(inRange.length / activeDays.size).toFixed(1)}개` : '—'],
+    ['활성 일수', `${activeDays.size}일`, 'var(--grp-3)', `${spanDays}일 중`,
+      spanDays ? `${Math.round(activeDays.size / spanDays * 100)}%` : '—'],
+    ['최다 작업 시간', hourLabel(peakHour), 'var(--grp-4)', '그 시간에 시작', peakHour === null ? '—' : `${hours[peakHour]}번`],
+    ['최다 단계', topCat ? topCat[0] : '—', 'var(--gold)', '그 단계 기록', topCat ? `${topCat[1]}개` : '—'],
+    ['연속 작업', current >= 2 ? `🔥 ${current}일` : `최장 ${longest}일`, '#ff8a3d',
+      current >= 2 ? '최장 기록' : '지금 연속', current >= 2 ? `${longest}일` : `${current}일`],
   ];
   document.getElementById('heatTiles').innerHTML = tiles
-    .map(([k, v, c]) => `<div class="heatTile" style="--tc:${c}"><span class="k">${k}</span><span class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</span></div>`)
+    .map(([k, v, c, bk, bv]) => `<div class="heatTile" style="--tc:${c}" data-fk="${escapeHtml(k)}" data-fv="${escapeHtml(v)}" data-bk="${escapeHtml(bk)}" data-bv="${escapeHtml(bv)}"><span class="k">${k}</span><span class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</span></div>`)
     .join('');
 
   // ── 칸: 일~토 7줄, 가장 오른쪽 줄이 이번 주 ──
