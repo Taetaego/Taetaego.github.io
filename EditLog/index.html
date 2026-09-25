@@ -388,11 +388,10 @@
     0% { box-shadow: 0 0 0 0 rgba(229,52,61,.55); }
     70%, 100% { box-shadow: 0 0 0 8px rgba(229,52,61,0); }
   }
-  /* 시작 후 · 예상 완료 · (완료 시) 총 소요 · 완성 — 작은 숫자 블록을 한 줄로 */
+  /* 시작 후 · (완료 시) 총 소요 · 완성 — 작은 숫자 블록을 한 줄로 */
   .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .heroStat { display: flex; flex-direction: column; gap: 2px; }
   .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .heroStat .etaVal small { font-weight: 500; color: var(--ink3); margin-left: 3px; }
   @media (prefers-reduced-motion: reduce) {
     .liveBadge, .liveBadge i { animation: none; }
     .heroBg, .hero::after { transition: none; }
@@ -1809,7 +1808,6 @@ function renderSummary(cardEl, data) {
 
   // ② 마지막 기록이 30분 안이면 LIVE. 1분마다 updateLive()가 다시 본다.
   const liveSince = !isCompleted && lastEntryTime ? lastEntryTime : '';
-  const eta = isCompleted ? null : estimateFinish(data, pct);
 
   // 완료된 회차는 오른쪽이 휑하지 않게 총 소요·완성 길이를 올린다.
   let doneStats = '';
@@ -1851,11 +1849,6 @@ function renderSummary(cardEl, data) {
             <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
               <span class="stageLabel">에피소드 편집 시작 후</span>
               <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
-            </div>` : ''}
-          ${eta ? `
-            <div class="heroStat" title="지금까지의 속도로 계산한 예상">
-              <span class="stageLabel">예상 완료</span>
-              <b class="etaVal">${escapeHtml(eta.label)}<small>${escapeHtml(eta.left)}</small></b>
             </div>` : ''}
           ${doneStats}
         </div>` : ''}
@@ -1900,22 +1893,6 @@ function isLive(since) {
 /** ② LIVE 배지는 시간이 지나면 저절로 꺼져야 한다 — 1분마다 다시 본다. */
 function updateLive() {
   document.querySelectorAll('.liveBadge[data-since]').forEach(el => { el.hidden = !isLive(el.dataset.since); });
-}
-
-/** ② 지금까지의 속도로 끝날 날을 어림한다. 너무 이르거나(진행 8% 미만, 반나절 미만)
-    너무 멀면(60일 넘게) 믿을 만하지 않아 보여주지 않는다. */
-function estimateFinish(data, pct) {
-  if (!data.createdAt || pct < 8 || pct >= 100) return null;
-  const start = new Date(data.createdAt).getTime();
-  const elapsed = Date.now() - start;
-  if (elapsed < 12 * 3600 * 1000) return null;
-  const finish = start + elapsed * 100 / pct;
-  const daysLeft = (finish - Date.now()) / 86400000;
-  if (daysLeft > 60) return null;
-  return {
-    label: `${formatDayLabel(new Date(finish).toISOString())}쯤`,
-    left: daysLeft < 1 ? '오늘 중' : `${Math.ceil(daysLeft)}일 남음`,
-  };
 }
 
 function renderPipeline(data) {
