@@ -1302,6 +1302,7 @@
     <div class="topbar">
       <div class="brand">태태고 편집실</div>
       <div class="topRight">
+        <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false">🔇</button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드">🗂<span class="pastBtnText"> 지난 에피소드</span></button>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
@@ -1452,13 +1453,126 @@ let reducedMotion = false;
 let heroPct = 0;
 let heroCompleted = false;
 
+/* ===== 효과음 — 음원 파일 없이 Web Audio로 그때그때 합성한다. 기본은 꺼져 있고 🔇 버튼으로 켠다. ===== */
+const Sfx = (() => {
+  let on = false, ctx = null, master = null, noiseBuf = null;
+  try { on = localStorage.getItem('sfx') === 'on'; } catch (e) {}
+  function ensure() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = 0.55; master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  // 음 하나 — f에서 to로 미끄러지며, 짧게 올라갔다가 d초 동안 사그라든다.
+  function tone({ f = 440, to = null, d = 0.1, type = 'sine', v = 0.2, at = 0, a = 0.005 }) {
+    const t = ctx.currentTime + at;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g).connect(master);
+    o.start(t); o.stop(t + d + 0.03);
+  }
+  // 잡음 한 줌 — 필터로 깎아 가위·박수·바람 소리를 만든다.
+  function noise({ d = 0.1, v = 0.2, at = 0, type = 'bandpass', f = 2000, to = null, q = 1, a = 0.002 }) {
+    if (!noiseBuf) {
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const ch = noiseBuf.getChannelData(0);
+      for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+    }
+    const t = ctx.currentTime + at;
+    const src = ctx.createBufferSource(), bf = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noiseBuf; src.loop = true;
+    bf.type = type; bf.Q.value = q; bf.frequency.setValueAtTime(f, t);
+    if (to) bf.frequency.exponentialRampToValueAtTime(to, t + d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    src.connect(bf).connect(g).connect(master);
+    src.start(t, Math.random() * 0.5); src.stop(t + d + 0.03);
+  }
+  const SOUNDS = {
+    tap: () => tone({ f: 900, to: 620, d: 0.05, type: 'triangle', v: 0.12 }),
+    tick: () => { tone({ f: 1500, d: 0.03, type: 'square', v: 0.05 }); tone({ f: 2200, d: 0.08, v: 0.1, at: 0.03 }); },
+    boing: () => { tone({ f: 200, to: 460, d: 0.12, v: 0.2 }); tone({ f: 460, to: 300, d: 0.18, v: 0.14, at: 0.1 }); },
+    like: () => { tone({ f: 520, to: 1150, d: 0.08, v: 0.25 }); tone({ f: 1400, d: 0.14, type: 'triangle', v: 0.08, at: 0.06 }); },
+    fill: () => { tone({ f: 220, to: 880, d: 0.7, type: 'triangle', v: 0.1, a: 0.05 }); tone({ f: 1320, d: 0.35, v: 0.08, at: 0.62 }); },
+    count: () => { for (let i = 0; i < 6; i++) tone({ f: 620 + i * 110, d: 0.05, type: 'square', v: 0.045, at: i * 0.075 }); },
+    snip: () => { for (let i = 0; i < 3; i++) noise({ d: 0.035, type: 'highpass', f: 5200 + i * 400, v: 0.22, at: i * 0.15 }); },
+    cut: () => {
+      noise({ d: 0.1, f: 3400, q: 2, v: 0.35 });
+      tone({ f: 150, to: 55, d: 0.3, v: 0.3, at: 0.28 });
+      noise({ d: 0.12, type: 'lowpass', f: 500, v: 0.2, at: 0.28 });
+    },
+    whoosh: () => noise({ d: 1.1, f: 350, to: 2600, q: 1.2, v: 0.16, a: 0.35 }),
+    chime: () => [1046, 1318, 1568].forEach((f, i) => tone({ f, d: 0.6, v: 0.09, at: i * 0.07 })),
+    drop: () => { tone({ f: 1300, to: 320, d: 0.16, v: 0.22 }); tone({ f: 600, to: 900, d: 0.1, v: 0.06, at: 0.12 }); },
+    sprout: (at, k) => tone({ f: 500 + k * 90, to: (500 + k * 90) * 1.7, d: 0.07, v: 0.08, at }),
+    flip: () => { noise({ d: 0.06, f: 1800, q: 3, v: 0.22 }); tone({ f: 720, to: 420, d: 0.07, type: 'triangle', v: 0.08 }); },
+    sparkle: () => { for (let i = 0; i < 5; i++) tone({ f: 2000 + Math.random() * 2200, d: 0.09, v: 0.045, at: 0.05 + i * 0.045 }); },
+    rewind: (dur = 0.9) => {
+      tone({ f: 1000, to: 260, d: dur, type: 'sawtooth', v: 0.035, a: 0.03 });
+      noise({ d: dur, f: 2600, to: 700, q: 5, v: 0.1, a: 0.03 });
+    },
+    play: () => { tone({ f: 880, d: 0.09, type: 'square', v: 0.06 }); tone({ f: 1320, d: 0.14, type: 'square', v: 0.05, at: 0.1 }); },
+    clap: () => { noise({ d: 0.14, f: 1400, q: 0.8, v: 0.7 }); noise({ d: 0.05, type: 'highpass', f: 4000, v: 0.3 }); tone({ f: 170, to: 70, d: 0.12, v: 0.3 }); },
+    achieve: () => {
+      [523, 659, 784].forEach((f, i) => tone({ f, d: 0.12, type: 'square', v: 0.05, at: i * 0.08 }));
+      tone({ f: 1046, d: 0.45, type: 'square', v: 0.05, at: 0.24 });
+      tone({ f: 2093, d: 0.5, v: 0.05, at: 0.26 });
+    },
+    pop: () => tone({ f: 420, to: 950, d: 0.07, v: 0.18 }),
+    fireworks: () => {
+      tone({ f: 700, to: 2200, d: 0.55, v: 0.05, a: 0.05 });
+      noise({ d: 0.9, type: 'lowpass', f: 700, to: 120, v: 0.55, at: 0.55 });
+      for (let i = 0; i < 9; i++) noise({ d: 0.03, type: 'highpass', f: 3500, v: 0.12, at: 0.75 + Math.random() * 0.6 });
+    },
+  };
+  return {
+    get on() { return on; },
+    play(name, ...args) {
+      if (!on || !SOUNDS[name]) return;
+      // 한 번도 누르지 않은 상태(첫 방문 명언 카드 등)에선 소리를 못 내니, 쌓아뒀다 늦게 울리지 않게 건너뛴다.
+      if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+      if (!ensure() || ctx.state !== 'running' && ctx.state !== 'suspended') return;
+      try { SOUNDS[name](...args); } catch (e) {}
+    },
+    toggle() {
+      on = !on;
+      try { localStorage.setItem('sfx', on ? 'on' : 'off'); } catch (e) {}
+      if (on) this.play('chime');
+      return on;
+    },
+  };
+})();
+const sfx = (name, ...args) => Sfx.play(name, ...args);
+
+function initSfxBtn() {
+  const btn = document.getElementById('sfxBtn');
+  if (!btn) return;
+  const paint = () => {
+    btn.textContent = Sfx.on ? '🔊' : '🔇';
+    btn.setAttribute('aria-pressed', String(Sfx.on));
+    btn.title = Sfx.on ? '효과음 끄기' : '효과음 켜기';
+  };
+  paint();
+  btn.addEventListener('click', () => { Sfx.toggle(); paint(); });
+}
+
 async function main() {
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const summaryCard = document.getElementById('summaryCard');
 
   // 폭죽 버튼·반딧불이는 status.json과 무관하므로, 데이터를 못 불러와도 살아있게 밖에 둔다.
-  document.getElementById('fireBtn').addEventListener('click', launchFireworks);
+  document.getElementById('fireBtn').addEventListener('click', () => { sfx('fireworks'); launchFireworks(); });
   initFxButtons();
+  initSfxBtn();
   initAmbientLayers();
   initSkyTop();
   initComet();
@@ -1490,11 +1604,12 @@ async function main() {
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
       // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
-      if (ev.target.closest('#donutGauge')) { runGauge(heroPct, false, true); return; }
+      if (ev.target.closest('#donutGauge')) { sfx('fill'); runGauge(heroPct, false, true); return; }
       const since = ev.target.closest('.sinceBlock');
-      if (since) { animateCounter(since.querySelector('.sinceVal')); return; }
+      if (since) { sfx('count'); animateCounter(since.querySelector('.sinceVal')); return; }
       // 카드를 누르면 게이지만 다시 채우고, 완료된 프로젝트면 다 찼을 때 도넛 안에서만 한 발 터진다.
       // 화면 전체로 쏘아 올리는 축포·잔잔한 불꽃은 처음 열었을 때만 (celebrate).
+      sfx('fill');
       runGauge(heroPct, heroCompleted && !reducedMotion);
     });
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
@@ -1676,6 +1791,8 @@ function heatTileFlip(tile, ev) {
     v.title = v.textContent;
   };
   clearTimeout(tile._back);
+  sfx('flip');
+  if (toBack) sfx('sparkle');
   if (reducedMotion) swap();
   else {
     tile.getAnimations().forEach(a => a.cancel());
@@ -1740,6 +1857,7 @@ function heatBurst(ev) {
     tip.style.setProperty('--tail', `${Math.max(-half + 10, Math.min(half - 10, cellX - cx)).toFixed(1)}px`);
     setTimeout(() => tip.remove(), 1850);
   }
+  sfx('drop');
   if (reducedMotion) return;
   const SPROUT = { l1: '🌱', l2: '🌱', l3: '🌿', l4: '🌸' };
   let sprouts = 0, maxDelay = 0;
@@ -1764,6 +1882,7 @@ function heatBurst(ev) {
       sp.style.setProperty('--sr', `${((Math.random() * 2 - 1) * 25).toFixed(0)}deg`);
       card.appendChild(sp);
       setTimeout(() => sp.remove(), delay + 1300);
+      if (sprouts <= 14) sfx('sprout', (delay + 80) / 1000, sprouts % 7);
     }
   }
   clearTimeout(heatBurst.t);
@@ -1963,6 +2082,7 @@ function initPastProjects() {
   if (!btn || !back) return;
 
   const open = async () => {
+    sfx('whoosh');
     back.hidden = false;
     if (!pastIndex) {
       document.getElementById('pastBody').innerHTML = '<div class="empty">불러오는 중…</div>';
@@ -2822,6 +2942,7 @@ function initCounterReplay() {
   body.addEventListener('click', (ev) => {
     const tile = ev.target.closest('.statTile');
     if (!tile) return;
+    if (!tile.classList.contains('lenTile') || reducedMotion) sfx('count');
     tile.querySelectorAll('[data-count]').forEach(animateCounter);
     if (reducedMotion) return;
     // 영상 길이 카드는 막대를 다시 채우는 대신 가위가 원본을 싹둑 자른다.
@@ -2848,6 +2969,7 @@ function lenSnip(tile) {
   const keep = parseFloat(shortest.style.width) / 100;
   if (!(keep > 0 && keep < 0.98)) return;
   tile._snipping = true;
+  sfx('snip');
 
   const tr = tile.getBoundingClientRect(), br = bar.getBoundingClientRect();
   const x0 = br.left - tr.left, y0 = br.top - tr.top, w = br.width, h = br.height;
@@ -2870,6 +2992,7 @@ function lenSnip(tile) {
 
   setTimeout(() => {
     // 원본 막대는 자른 자리까지만 남기고, 나머지는 조각으로 떨어뜨린다.
+    sfx('cut');
     fill.style.transition = 'none';
     fill.style.clipPath = `inset(0 ${((1 - keep) * 100).toFixed(2)}% 0 0)`;
     const piece = document.createElement('span');
@@ -3165,7 +3288,9 @@ function initTodoPoke() {
   // 완료된 단계는 체크가 한 번 더 찍히는 느낌만 준다.
   body.addEventListener('click', (ev) => {
     const dot = ev.target.closest('.pipeItem.done')?.querySelector('.dot');
-    if (!dot || reducedMotion) return;
+    if (!dot) return;
+    sfx('tick');
+    if (reducedMotion) return;
     dot.classList.remove('rechecked');
     void dot.offsetWidth;
     dot.classList.add('rechecked');
@@ -3176,6 +3301,7 @@ function initTodoPoke() {
   body.addEventListener('click', (ev) => {
     const item = ev.target.closest('.pipeItem.todo, .pipeItem.done');
     if (!item) return;
+    if (item.classList.contains('todo')) sfx('boing');
 
     const name = item.querySelector('.name');
     let bubble = item.querySelector('.poke');
@@ -3285,6 +3411,7 @@ function initSlate() {
       { duration: 620, delay: 380, easing: 'cubic-bezier(.7,0,1,.5)', fill: 'both' });
     setTimeout(() => {
       // 막대가 닫히는 순간 화면이 한 번 하얗게 번쩍이고 슬레이트가 떨린다.
+      sfx('clap');
       const flash = document.createElement('div');
       flash.className = 'slateFlash';
       document.body.appendChild(flash);
@@ -3322,6 +3449,7 @@ function initRewind() {
     day.appendChild(badge);
     if (reducedMotion) { setTimeout(() => { badge.remove(); day._rewinding = false; }, 900); return; }
     const STEP = 70;
+    sfx('rewind', (rows.length * STEP + 420) / 1000);
     // 되감기니까 아래 행부터 위로 거슬러 올라간다.
     rows.slice().reverse().forEach((row, i) => {
       row.animate([
@@ -3334,6 +3462,7 @@ function initRewind() {
     const total = rows.length * STEP + 420;
     setTimeout(() => {
       badge.textContent = '▶ PLAY';
+      sfx('play');
       badge.classList.add('play');
       rows.forEach((row, i) => {
         row.animate([{ opacity: 0.3, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
@@ -3350,7 +3479,9 @@ function initRowPulse() {
   if (!body) return;
   body.addEventListener('click', (ev) => {
     const row = ev.target.closest('.logRow');
-    if (!row || reducedMotion) return;
+    if (!row) return;
+    sfx('tap');
+    if (reducedMotion) return;
     row.classList.remove('pulsed');
     void row.offsetWidth;
     row.classList.add('pulsed');
@@ -3380,6 +3511,7 @@ function daySweep(card) {
   const band = document.getElementById('dayBand');
   if (!band || card._sweeping) return;
   card._sweeping = true;
+  sfx('whoosh');
   const DUR = 1700;
   const orb = document.createElement('span');
   orb.className = 'daySweeper';
@@ -3403,6 +3535,7 @@ function daySweep(card) {
       card.querySelectorAll('.dayType').forEach(x => x.remove());
       const el = document.createElement('span');
       el.className = 'dayType';
+      sfx('chime');
       el.textContent = b;
       card.appendChild(el);
       setTimeout(() => el.remove(), 2600);
@@ -3585,7 +3718,7 @@ function applyTheme(mode) {
   applyTheme(saved || 'dark');
   document.getElementById('themeToggle').addEventListener('click', (e) => {
     const btn = e.target.closest('button');
-    if (btn) applyTheme(btn.dataset.mode);
+    if (btn) { sfx('tap'); applyTheme(btn.dataset.mode); }
   });
 })();
 
@@ -3816,6 +3949,7 @@ function initThumbLike() {
   let pressed = 0;
 
   link.addEventListener('click', () => {
+    sfx('like');
     // 연달아 누르면 앞 것을 건드리지 않고 그 위에 하나 더 쌓는다 (다른 이펙트들과 같은 방식).
     // 다만 마구 눌렀을 때 한없이 쌓이지 않게 개수는 상한을 둔다.
     const live = link.querySelectorAll('.likeFx');
@@ -4333,7 +4467,7 @@ function initDoneGlow(data) {
 function initFxButtons() {
   const wire = (id, fn) => {
     const b = document.getElementById(id);
-    if (b) b.addEventListener('click', fn);
+    if (b) b.addEventListener('click', (ev) => { sfx('pop'); fn(ev); });
   };
   wire('btnMeteor', meteorShower);
   wire('btnFly', () => fx2Spawn('firefly'));
@@ -4470,7 +4604,7 @@ function showTravelQuote() {
   // 붙인 직전 상태가 한 번 그려진 뒤에 올려야 떨어지는 전환이 보인다.
   // (rAF는 백그라운드·일부 폰 브라우저에서 멈춰 있어 카드가 아예 안 뜰 수 있어 타이머로.)
   el.getBoundingClientRect();
-  setTimeout(() => el.classList.add('show'), 30);
+  setTimeout(() => { el.classList.add('show'); sfx('achieve'); }, 30);
   setTimeout(close, 4500);
 }
 setTimeout(showTravelQuote, 900);
