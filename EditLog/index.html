@@ -165,7 +165,16 @@
 
   /* 작업 시간대 — 하루치 하늘 위에 세션을 점으로 찍는다 (0시~24시 벽시계 기준) */
   .dayCard { display: flex; flex-direction: column; gap: 10px; }
-  #dayCard { cursor: pointer; }   /* 누르면 등장 애니메이션을 다시 재생 */
+  #dayCard { cursor: pointer; position: relative; }   /* 누르면 등장 애니메이션을 다시 재생 */
+  .daySweeper { position: absolute; top: 50%; z-index: 3; pointer-events: none; font-size: 18px; line-height: 1;
+                filter: drop-shadow(0 0 8px rgba(255,215,94,.8)); }
+  .dayType { position: absolute; z-index: 4; bottom: 8px; left: 50%; pointer-events: none; white-space: nowrap;
+             font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 99px;
+             background: var(--ink); color: var(--bg); box-shadow: 0 8px 22px rgba(0,0,0,.3);
+             animation: dayType 2.6s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes dayType { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); }
+                       12%, 85% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+                       100% { opacity: 0; transform: translate(-50%, -6px) scale(.95); } }
   .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
   .daySpot {
     position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
@@ -655,6 +664,11 @@
 
   /* 아직 안 한 단계를 누르면 흔들리며 한마디 한다 */
   .pipeItem.todo, .pipeItem.done { cursor: pointer; }
+  /* 단계마다 걸린 시간 — 오른쪽 끝에 붙는다 */
+  .pipeDur { margin-left: auto; flex: none; font-size: 10.5px; color: var(--ink3); padding: 2px 7px; border-radius: 99px;
+             background: color-mix(in srgb, var(--rowc, var(--accent)) 10%, transparent); white-space: nowrap; }
+  .pipeDur.now { color: var(--warn); background: var(--warn-soft); }
+  .pipeDur.hot { color: #ff8a3d; background: rgba(255,138,61,.13); }
   /* 완료 단계를 누르면 체크가 다시 찍히듯 튀고, 그 단계의 그룹 색으로 파문이 퍼진다 */
   .pipeItem.done .dot { position: relative; }
   .pipeItem.done .dot.rechecked { animation: checkPop .45s cubic-bezier(.2,1.5,.4,1); }
@@ -707,7 +721,17 @@
      (라벨-값-첫 줄 사이 여백은 그대로 둔다). */
   .statTile .sub + .sub { margin-top: -4px; }
   /* 영상 길이 카드: 두 칸짜리 격자를 통째로 쓰고, 안에서 세 칸으로 나눈다 */
-  .statTile.lenTile { grid-column: 1 / -1; gap: 11px; padding: 14px 16px; }
+  .statTile.lenTile { grid-column: 1 / -1; gap: 11px; padding: 14px 16px; position: relative; }
+  .lenScissors { position: absolute; z-index: 3; pointer-events: none; font-size: 20px; line-height: 1; margin-left: -10px;
+                 filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+  .lenPiece { position: absolute; z-index: 2; pointer-events: none; border-radius: 0 99px 99px 0;
+              background: color-mix(in srgb, var(--ink3) 70%, transparent); }
+  .lenBadge { position: absolute; z-index: 4; pointer-events: none; transform: translate(-50%, calc(-100% - 6px));
+              font-size: 11.5px; font-weight: 700; white-space: nowrap; padding: 4px 10px; border-radius: 99px;
+              background: linear-gradient(90deg, var(--grp-1), var(--grp-3)); color: #fff;
+              box-shadow: 0 6px 18px color-mix(in srgb, var(--grp-3) 40%, transparent);
+              animation: lenBadge 1.8s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes lenBadge { 0% { opacity: 0; scale: .5; } 15%, 80% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: .9; } }
   .lenRows { display: flex; flex-direction: column; gap: 10px; }
   .lenRow { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
   .lenRow .label { white-space: nowrap; }
@@ -755,6 +779,7 @@
   .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
+  .logDaySum { margin-left: 8px; font-weight: 500; letter-spacing: 0; color: var(--ink3); -webkit-text-fill-color: var(--ink3); }
   /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
      .logHead에 같은 크기의 padding-left를 줘서 헤더와 열이 어긋나지 않게 맞춘다. */
   .logRow {
@@ -2543,6 +2568,32 @@ function renderPipeline(data) {
   // 아이콘 색은 카테고리 칩·작업 기록과 같은 그룹 색을 따른다.
   const iconColorVar = makeGroupColorVar(data);
 
+  // 단계마다 걸린 시간 — 그 단계 첫 기록부터 다음 단계 첫 기록까지. 지금 단계는 지금까지.
+  const firstAt = new Map();
+  for (const e of data.entries || []) {
+    const t = new Date(e.timestamp).getTime();
+    if (e.category && !(firstAt.get(e.category) <= t)) firstAt.set(e.category, t);
+  }
+  const touched = cats.map((c, i) => ({ i, t: firstAt.get(c.name) })).filter(x => x.t != null);
+  const durOf = (index) => {
+    const k = touched.findIndex(x => x.i === index);
+    if (k < 0) return null;
+    const next = touched[k + 1];
+    const end = next ? next.t : data.status === 'completed' ? new Date(data.completedAt ?? data.lastUpdate).getTime() : Date.now();
+    return Math.max(0, (end - touched[k].t) / 1000);
+  };
+  // 가장 오래 붙잡고 있던 완료 단계엔 🔥 — 이번 회차의 고비.
+  const doneDurs = touched.filter(x => x.i < lastTouchedIndex).map(x => durOf(x.i));
+  const maxDur = doneDurs.length > 1 ? Math.max(...doneDurs) : null;
+  const durTag = (index, isDone, isCurrent) => {
+    if (!isDone && !isCurrent) return '';
+    const d = durOf(index);
+    if (d == null) return '';
+    const txt = isCurrent ? `${formatSpan(d)}째` : formatSpan(d);
+    const hot = isDone && maxDur != null && d === maxDur;
+    return `<span class="pipeDur mono${isCurrent ? ' now' : ''}${hot ? ' hot' : ''}" title="${isCurrent ? '이 단계 시작 후' : '이 단계에 걸린 시간'}">${hot ? '🔥 ' : ''}${escapeHtml(txt)}</span>`;
+  };
+
   let html = '';
   for (const groupName of Object.keys(groups)) {
     const items = groups[groupName].map(c => {
@@ -2550,7 +2601,7 @@ function renderPipeline(data) {
       const isCurrent = c.index === lastTouchedIndex && data.status !== 'completed';
       const cls = isDone ? 'done' : (isCurrent ? 'current' : 'todo');
       const n = String(c.index + 1).padStart(2, '0');
-      return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span></div>`;
+      return `<div class="pipeItem ${cls}" style="${iconColorVar(c.name)}--i:${c.index}"><span class="dot">${isDone ? '✓' : ''}</span><span class="n mono">${n}</span><span class="pipeIcon">${categorySvg(c.symbolName)}</span><span class="name">${escapeHtml(c.name)}</span>${durTag(c.index, isDone, isCurrent)}</div>`;
     }).join('');
     // 그룹 제목도 그 그룹의 카테고리 색을 쓰고, 등장 순서(--i)는 그 그룹 첫 단계에 맞춘다
     // (제목이 자기 그룹 항목들보다 살짝 먼저 올라오도록 CSS에서 딜레이를 조금 당긴다).
@@ -2682,12 +2733,82 @@ function initCounterReplay() {
     if (!tile) return;
     tile.querySelectorAll('[data-count]').forEach(animateCounter);
     if (reducedMotion) return;
+    // 영상 길이 카드는 막대를 다시 채우는 대신 가위가 원본을 싹둑 자른다.
+    if (tile.classList.contains('lenTile')) { lenSnip(tile); return; }
     // animation 전체가 아니라 이름만 껐다 켠다 — 전체를 덮으면 인라인 animation-delay까지
     // 지워져서, 다시 볼 때 줄마다 밀리던 시작이 사라지고 옆 숫자와 박자가 어긋난다.
     tile.querySelectorAll('.lenFill').forEach(el => {
       el.style.animationName = 'none'; void el.offsetWidth; el.style.animationName = '';
     });
   });
+}
+
+/** 가위가 원본 막대 끝에서 완성(없으면 컷편집 후) 길이까지 달려가 자르고,
+    잘린 조각은 떨어지고, 자른 비율이 뱃지로 튀어나온다. 잠시 뒤 막대는 원래대로. */
+function lenSnip(tile) {
+  const bar = tile.querySelector('.lenRow.orig .lenBar');
+  const fill = bar && bar.querySelector('.lenFill');
+  // 완성 길이가 있으면 완성까지, 아직이면 컷편집 후 길이까지 자른다.
+  const shortest = [...tile.querySelectorAll('.lenRow.final, .lenRow.cut')]
+    .filter(r => r.querySelector('.value').textContent.trim() !== '-')
+    .map(r => r.querySelector('.lenFill'))
+    .find(f => f && parseFloat(f.style.width) > 0);
+  if (!fill || !shortest || tile._snipping) return;
+  const keep = parseFloat(shortest.style.width) / 100;
+  if (!(keep > 0 && keep < 0.98)) return;
+  tile._snipping = true;
+
+  const tr = tile.getBoundingClientRect(), br = bar.getBoundingClientRect();
+  const x0 = br.left - tr.left, y0 = br.top - tr.top, w = br.width, h = br.height;
+  const cutX = x0 + w * keep;
+
+  const sc = document.createElement('span');
+  sc.className = 'lenScissors';
+  sc.textContent = '✂️';
+  sc.style.left = `${cutX}px`; sc.style.top = `${y0 + h / 2}px`;
+  tile.appendChild(sc);
+  const travel = 520;
+  sc.animate([
+    { transform: `translate(${x0 + w - cutX}px, -50%) scaleX(-1) rotate(0deg)`, opacity: 0 },
+    { opacity: 1, offset: 0.1 },
+    { transform: `translate(${(x0 + w - cutX) * 0.6}px, -50%) scaleX(-1) rotate(-18deg)`, offset: 0.3 },
+    { transform: `translate(${(x0 + w - cutX) * 0.3}px, -50%) scaleX(-1) rotate(8deg)`, offset: 0.6 },
+    { transform: 'translate(0, -50%) scaleX(-1) rotate(-22deg)', offset: 0.85 },
+    { transform: 'translate(0, -50%) scaleX(-1) rotate(0deg)', opacity: 1 },
+  ], { duration: travel, easing: 'ease-in-out', fill: 'forwards' });
+
+  setTimeout(() => {
+    // 원본 막대는 자른 자리까지만 남기고, 나머지는 조각으로 떨어뜨린다.
+    fill.style.transition = 'none';
+    fill.style.clipPath = `inset(0 ${((1 - keep) * 100).toFixed(2)}% 0 0)`;
+    const piece = document.createElement('span');
+    piece.className = 'lenPiece';
+    Object.assign(piece.style, { left: `${cutX}px`, top: `${y0}px`, width: `${x0 + w - cutX}px`, height: `${h}px` });
+    tile.appendChild(piece);
+    piece.animate([
+      { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+      { transform: 'translate(14px, 46px) rotate(9deg)', opacity: 0 },
+    ], { duration: 800, easing: 'cubic-bezier(.5,0,.8,.6)', fill: 'forwards' });
+    sc.animate([{ opacity: 1 }, { opacity: 0, transform: 'translate(-6px, -90%) scaleX(-1) rotate(-30deg)' }],
+      { duration: 400, delay: 150, fill: 'forwards' });
+
+    const badge = document.createElement('span');
+    badge.className = 'lenBadge';
+    badge.textContent = `✂️ ${Math.round((1 - keep) * 100)}% 싹둑!`;
+    badge.style.left = `${Math.min(Math.max(cutX, 60), tr.width - 60)}px`;
+    badge.style.top = `${y0}px`;
+    tile.appendChild(badge);
+
+    setTimeout(() => {
+      fill.style.transition = 'clip-path .7s cubic-bezier(.2,.8,.2,1)';
+      fill.style.clipPath = 'inset(0 0 0 0)';
+      setTimeout(() => {
+        fill.style.transition = ''; fill.style.clipPath = '';
+        sc.remove(); piece.remove(); badge.remove();
+        tile._snipping = false;
+      }, 750);
+    }, 1300);
+  }, travel);
 }
 
 /** 도넛을 잡고 돌릴 수 있게 한다. 놓으면 원래 각도로 튕겨 돌아온다.
@@ -2992,6 +3113,8 @@ function initTodoPoke() {
 
 /** 0시~24시 하늘 그라데이션 위에 세션 시각을 점으로 찍는다.
     여러 날의 기록이 한 축에 겹치므로 "몇 시에 일하는 사람인지"가 드러난다. */
+let dayNightPct = null;   // 해 진 뒤 시작한 기록 비율 — 머리글 '밤 작업 %'와 같은 값으로 유형 뱃지를 붙인다
+
 function renderDayBand(data) {
   const entries = data.entries || [];
   if (entries.length === 0) return;
@@ -3027,6 +3150,7 @@ function renderDayBand(data) {
     if (d.getTime() < rise || d.getTime() >= set) night++;
   }
   document.getElementById('dayMeta').textContent = `밤 작업 ${Math.round(night / entries.length * 100)}%`;
+  dayNightPct = Math.round(night / entries.length * 100);
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
@@ -3059,7 +3183,53 @@ function initDayBandReplay() {
       s.style.animation = '';
       s.style.animationDelay = `${i * 45}ms`;
     });
+    daySweep(card);
   });
+}
+
+/** 해·달이 0시에서 24시까지 띠 위를 호를 그리며 건너가고, 다 건너면 편집자 유형 뱃지가 뜬다. */
+function daySweep(card) {
+  const band = document.getElementById('dayBand');
+  if (!band || card._sweeping) return;
+  card._sweeping = true;
+  const DUR = 1700;
+  const orb = document.createElement('span');
+  orb.className = 'daySweeper';
+  orb.textContent = '🌙';
+  band.appendChild(orb);
+  const frames = [];
+  for (let k = 0; k <= 24; k++) {
+    const f = k / 24;
+    // 낮(6~19시)엔 위로 떠오르고, 밤엔 띠에 붙어 지나간다.
+    const lift = f > 0.25 && f < 0.79 ? Math.sin((f - 0.25) / 0.54 * Math.PI) * 26 : 0;
+    frames.push({ left: `${f * 100}%`, transform: `translate(-50%, calc(-50% - ${lift.toFixed(1)}px))`, offset: f });
+  }
+  frames[0].opacity = 0; frames[1].opacity = 1; frames[23].opacity = 1; frames[24].opacity = 0;
+  orb.animate(frames, { duration: DUR, easing: 'linear', fill: 'forwards' });
+  [[0.25, '☀️'], [0.79, '🌙']].forEach(([f, e]) => setTimeout(() => { orb.textContent = e; }, DUR * f));
+
+  setTimeout(() => {
+    orb.remove();
+    const b = dayTypeBadge();
+    if (b) {
+      card.querySelectorAll('.dayType').forEach(x => x.remove());
+      const el = document.createElement('span');
+      el.className = 'dayType';
+      el.textContent = b;
+      card.appendChild(el);
+      setTimeout(() => el.remove(), 2600);
+    }
+    card._sweeping = false;
+  }, DUR);
+}
+
+/** 머리글의 '밤 작업 %'(해 뜨고 지는 시각 기준)로 편집자 유형을 붙인다 — 두 곳이 어긋나지 않게. */
+function dayTypeBadge() {
+  if (dayNightPct === null) return null;
+  const n = dayNightPct;
+  if (n >= 60) return `🦉 올빼미형 편집자 · 밤 작업 ${n}%`;
+  if (n > 40) return `🌗 밤낮 없는 편집자 · 밤 작업 ${n}%`;
+  return `☀️ 햇살형 편집자 · 낮 작업 ${100 - n}%`;
 }
 
 /** 띠 위의 '지금' 표식을 현재 시각으로 옮긴다. */
@@ -3118,7 +3288,11 @@ function renderLog(data) {
       return ai - bi;
     });
 
-    html += `<div class="logDay">${formatDayLabel(dayEntries[0].timestamp)}</div>`;
+    // 그날 요약 — 기록 몇 개를, 몇 시부터 몇 시까지 했는지.
+    const ts = dayEntries.map(e => new Date(e.timestamp).getTime());
+    const t0 = new Date(Math.min(...ts)).toISOString(), t1 = new Date(Math.max(...ts)).toISOString();
+    const span = dayEntries.length > 1 ? ` · ${formatTimeOnly(t0)} ~ ${formatTimeOnly(t1)}` : '';
+    html += `<div class="logDay">${formatDayLabel(dayEntries[0].timestamp)}<span class="logDaySum">기록 ${dayEntries.length}개${escapeHtml(span)}</span></div>`;
 
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
