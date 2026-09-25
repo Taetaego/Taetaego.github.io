@@ -177,6 +177,21 @@
     background: var(--ink); box-shadow: 0 0 0 1.5px var(--surface); transition: left .6s ease;
   }
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  /* ③ 날짜별 잔디 — 작업한 날마다 칸 하나, 기록이 많을수록 진하게 */
+  .daySub { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; }
+  .dayGrid { display: flex; flex-wrap: wrap; gap: 4px; }
+  .dayCell {
+    width: 18px; height: 18px; border-radius: 5px; background: var(--surface2);
+    animation: dayCellIn .35s cubic-bezier(.3,1.4,.5,1) both;
+  }
+  .dayCell.l1 { background: color-mix(in srgb, var(--accent) 30%, var(--surface2)); }
+  .dayCell.l2 { background: color-mix(in srgb, var(--accent) 55%, var(--surface2)); }
+  .dayCell.l3 { background: color-mix(in srgb, var(--accent) 80%, var(--surface2)); }
+  .dayCell.l4 { background: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent); }
+  .dayCell.today { outline: 1.5px solid var(--ink3); outline-offset: 1.5px; }
+  @keyframes dayCellIn { from { opacity: 0; transform: scale(.4); } }
+  .dayGridAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  @media (prefers-reduced-motion: reduce) { .dayCell { animation: none; } }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   .madeBy {
@@ -211,6 +226,23 @@
   .fxRow { flex: 0 0 100%; display: flex; flex-direction: column; align-items: center; gap: 7px; }
   .fxRowLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
   .fxRowBtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  /* 폰에선 줄바꿈하지 않고 종류별 한 줄을 옆으로 넘긴다 (외톨이 버튼이 안 생기게) */
+  @media (max-width: 560px) {
+    .fxBar { align-self: stretch; min-width: 0; }
+    .fxRow { align-items: stretch; min-width: 0; }
+    .fxRowLabel { text-align: center; }
+    .fxRowBtns {
+      flex-wrap: nowrap; justify-content: flex-start; min-width: 0;
+      overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: 12px; scrollbar-width: none;
+      margin: 0 -12px; padding: 2px 12px 6px;
+    }
+    .fxRowBtns::-webkit-scrollbar { display: none; }
+    .fireBtn { flex: none; scroll-snap-align: start; }
+    /* 다 들어가는 줄은 가운데, 넘치는 줄은 왼쪽부터 — 넘칠 때 가운데 정렬을 하면 왼쪽 버튼이
+       화면 밖으로 밀려 스크롤로도 닿지 않는다. 양 끝 자동 여백은 넘치면 0이 된다. */
+    .fxRowBtns > .fireBtn:first-child { margin-left: auto; }
+    .fxRowBtns > .fireBtn:last-child { margin-right: auto; }
+  }
 
   /* 화면 전체에 얇게 깔리는 필름 그레인 (아날로그 질감) */
   .grain {
@@ -294,6 +326,20 @@
   /* 브랜드·시계·테마·색 모두 한 줄에. */
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
   .accentPicker { display: flex; gap: 7px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
+  .topRight { position: relative; }
+  /* 폰에선 고른 색 하나만 보이고, 누르면 나머지가 아래로 펼쳐진다 */
+  @media (max-width: 560px) {
+    .accentPicker:not(.open) .accentSwatch:not([aria-pressed="true"]) { display: none; }
+    .accentPicker.open {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 20;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  .logHead .sm { display: none; }
+  @media (max-width: 560px) {
+    .logHead .lg { display: none; }
+    .logHead .sm { display: inline; }
+  }
   .accentSwatch {
     position: relative; width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
@@ -304,8 +350,53 @@
   .accentSwatch:active { transform: scale(0.9); }
 
   /* 히어로: 원형 게이지 */
-  .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer; }
+  .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer;
+          position: relative; overflow: hidden; isolation: isolate; }
   .hero:active { transform: scale(0.995); }
+  /* ① 시네마틱 히어로 — 이 회차의 캡처/썸네일을 흐리게 깔아 포스터처럼. 이미지는 작게 받아
+     늘리므로 원래 부드럽고, 카드 크기 레이어 하나라 폰에서도 부담이 작다. */
+  .heroBg {
+    position: absolute; inset: -12%; z-index: -2; pointer-events: none;
+    background: var(--heroImg, none) center / cover no-repeat;
+    filter: blur(10px) saturate(1.25); opacity: 0; transition: opacity .7s ease;
+  }
+  .hero.hasBg .heroBg { opacity: .62; }
+  .hero::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+    background: linear-gradient(100deg, var(--surface) 24%,
+                color-mix(in srgb, var(--surface) 70%, transparent) 58%,
+                color-mix(in srgb, var(--surface) 30%, transparent));
+    transition: opacity .7s ease;
+  }
+  .hero.hasBg::after { opacity: 1; }
+  /* 줄 하나에 상태 칩과 LIVE 배지 */
+  .chipRow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  /* ② 마지막 기록이 30분 안이면 '지금 편집 중' */
+  .liveBadge {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px 4px 7px; border-radius: 99px;
+    font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: .08em; color: #fff;
+    background: #e5343d; box-shadow: 0 0 0 0 rgba(229,52,61,.5); animation: livePing 1.8s ease-out infinite;
+  }
+  .liveBadge i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: labelFade 1.8s ease-in-out infinite; }
+  .liveBadge[hidden] { display: none; }
+  /* 폰·태블릿에선 '물결로 보기'와 부딪히지 않게 카드 왼쪽 위 모서리에 (방송 LIVE 표시처럼).
+     데스크톱은 히어로가 세로 배치라 상태 칩 옆에 그대로 둔다. */
+  @media (max-width: 899px) {
+    .liveBadge { position: absolute; top: 14px; left: 14px; z-index: 2; }
+  }
+  @keyframes livePing {
+    0% { box-shadow: 0 0 0 0 rgba(229,52,61,.55); }
+    70%, 100% { box-shadow: 0 0 0 8px rgba(229,52,61,0); }
+  }
+  /* 시작 후 · 예상 완료 · (완료 시) 총 소요 · 완성 — 작은 숫자 블록을 한 줄로 */
+  .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  .heroStat { display: flex; flex-direction: column; gap: 2px; }
+  .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .heroStat .etaVal small { font-weight: 500; color: var(--ink3); margin-left: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .liveBadge, .liveBadge i { animation: none; }
+    .heroBg, .hero::after { transition: none; }
+  }
   /* 화면을 끝까지 내렸다 올리면 브라우저가 이 자리의 래스터를 버렸다 다시 그리는데,
      원형 클립 안에 conic-gradient 두 겹(링 + 눈금)이 겹쳐 있어 그 과정에서 링이
      통째로 날아가는 일이 있었다. 자기 합성 레이어로 올려 두면 다시 그릴 일이 없다. */
@@ -933,6 +1024,10 @@
        작업 기록은 앞으로 계속 쌓이는 표라, 남는 높이를 이 카드가 흡수하는 게 자연스럽다. */
     #logCard { flex: 1; }
     .hero { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .hero::after {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 40%, transparent) 0%,
+                  color-mix(in srgb, var(--surface) 78%, transparent) 42%, var(--surface) 78%);
+    }
     .donut { width: 128px; height: 128px; }
     .donut .in { width: 98px; height: 98px; }
     .donut .pct { font-size: 28px; }
@@ -992,6 +1087,9 @@
         </div>
         <div class="dayBand" id="dayBand"><span class="dayNow" id="dayNow"></span></div>
         <div class="dayAxis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
+        <div class="daySub"><span class="cardTitle">날짜별</span><span class="cardMeta" id="streakMeta"></span></div>
+        <div class="dayGrid" id="dayGrid"></div>
+        <div class="dayGridAxis" id="dayGridAxis"></div>
       </div>
 
       <div class="card logCard" id="logCard" style="display:none">
@@ -1090,7 +1188,7 @@ async function main() {
     const data = await fetchData('status.json');
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initDayBandReplay();
-    setInterval(() => { updateDayNow(); updateSinceStart(); }, 60000);
+    setInterval(() => { updateDayNow(); updateSinceStart(); updateLive(); }, 60000);
     initRowPulse();
     initGalaxy(data);
     initTodoPoke();
@@ -1592,6 +1690,12 @@ function pipelineProgress(data) {
   const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
   let lastTouchedIndex = -1;
   cats.forEach((c, i) => { if (touchedNames.has(c.name)) lastTouchedIndex = Math.max(lastTouchedIndex, i); });
+  // 완료 처리된 회차는 건너뛴 단계가 있어도(나중에 생긴 단계 등) 끝난 것이다 — 100%로 본다.
+  if (data.status === 'completed') {
+    const tw = cats.reduce((sum, c) => sum + catWeight(c), 0);
+    return { done: cats.length, total: cats.length, pct: 100, lastTouchedIndex: cats.length - 1,
+             stage: null, weights: cats.map(catWeight), totalWeight: tw };
+  }
   // 마지막으로 손댄 단계는 지금 '진행 중'이라 아직 완료가 아니다.
   // 프로젝트가 완료 처리됐을 때만 그 단계까지 완료로 센다.
   const done = Math.max(data.status === 'completed' ? lastTouchedIndex + 1 : lastTouchedIndex, 0);
@@ -1703,8 +1807,23 @@ function renderSummary(cardEl, data) {
     ? (data.completedAt ?? data.lastUpdate)
     : (lastEntryTime ?? data.lastUpdate);
 
+  // ② 마지막 기록이 30분 안이면 LIVE. 1분마다 updateLive()가 다시 본다.
+  const liveSince = !isCompleted && lastEntryTime ? lastEntryTime : '';
+  const eta = isCompleted ? null : estimateFinish(data, pct);
+
+  // 완료된 회차는 오른쪽이 휑하지 않게 총 소요·완성 길이를 올린다.
+  let doneStats = '';
+  if (isCompleted && data.completedAt) {
+    const span = (new Date(data.completedAt) - new Date(data.createdAt)) / 1000;
+    const finalLen = normalizeLength(data.finalLength);
+    doneStats = `
+      <div class="heroStat"><span class="stageLabel">총 소요</span><b>${escapeHtml(formatSpan(span))}</b></div>
+      ${finalLen ? `<div class="heroStat"><span class="stageLabel">완성 영상</span><b>${escapeHtml(finalLen)}</b></div>` : ''}`;
+  }
+
   cardEl.style.display = '';
   cardEl.innerHTML = `
+    <span class="heroBg" aria-hidden="true"></span>
     <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
       <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
@@ -1716,21 +1835,87 @@ function renderSummary(cardEl, data) {
       ${donutTicks(progress)}
     </div>
     <div class="heroRight">
-      <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
+      <div class="chipRow">
+        <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
+        <span class="liveBadge" data-since="${escapeHtml(liveSince)}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE</span>
+      </div>
       <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
       ${stageText ? `
         <div style="display:flex;flex-direction:column;gap:2px">
           <span class="stageLabel">현재 단계</span>
           <span class="stageName"><span class="stageIcon">${stageIcon}</span>${escapeHtml(stageText)}</span>
         </div>` : ''}
-      ${sinceIso ? `
-        <div class="sinceBlock" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
-          <span class="stageLabel">에피소드 편집 시작 후</span>
-          <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
+      ${sinceIso || doneStats ? `
+        <div class="heroStats">
+          ${sinceIso ? `
+            <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
+              <span class="stageLabel">에피소드 편집 시작 후</span>
+              <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
+            </div>` : ''}
+          ${eta ? `
+            <div class="heroStat" title="지금까지의 속도로 계산한 예상">
+              <span class="stageLabel">예상 완료</span>
+              <b class="etaVal">${escapeHtml(eta.label)}<small>${escapeHtml(eta.left)}</small></b>
+            </div>` : ''}
+          ${doneStats}
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
     </div>
   `;
+  setHeroBackdrop(cardEl, data);
+}
+
+/** ① 히어로 배경 — 완성 영상이면 유튜브 썸네일, 편집 중이면 캡처를 흐리게 깐다.
+    캡처는 같은 출처라 64px로 줄여서 넣는다 (늘리면 자연히 흐릿하고 가볍다). */
+function setHeroBackdrop(card, data) {
+  card.classList.remove('hasBg');
+  card.style.removeProperty('--heroImg');
+  const yt = data.youtubeId;
+  const src = yt ? `https://img.youtube.com/vi/${encodeURIComponent(yt)}/mqdefault.jpg` : data.previewImage;
+  card._bgSrc = src || null;
+  if (!src) return;
+  const img = new Image();
+  img.onload = () => {
+    if (card._bgSrc !== src) return;          // 그사이 다른 회차로 바뀌었다
+    let url = src;
+    if (!yt) {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 64; c.height = Math.max(1, Math.round(64 * img.naturalHeight / img.naturalWidth));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        url = c.toDataURL('image/jpeg', 0.7);
+      } catch (e) { /* 줄이지 못하면 원본 그대로 */ }
+    }
+    card.style.setProperty('--heroImg', `url("${url}")`);
+    card.classList.add('hasBg');
+  };
+  img.src = src;
+}
+
+/** ② 마지막 기록이 30분 안인가. */
+function isLive(since) {
+  return !!since && Date.now() - new Date(since).getTime() < 30 * 60 * 1000;
+}
+
+/** ② LIVE 배지는 시간이 지나면 저절로 꺼져야 한다 — 1분마다 다시 본다. */
+function updateLive() {
+  document.querySelectorAll('.liveBadge[data-since]').forEach(el => { el.hidden = !isLive(el.dataset.since); });
+}
+
+/** ② 지금까지의 속도로 끝날 날을 어림한다. 너무 이르거나(진행 8% 미만, 반나절 미만)
+    너무 멀면(60일 넘게) 믿을 만하지 않아 보여주지 않는다. */
+function estimateFinish(data, pct) {
+  if (!data.createdAt || pct < 8 || pct >= 100) return null;
+  const start = new Date(data.createdAt).getTime();
+  const elapsed = Date.now() - start;
+  if (elapsed < 12 * 3600 * 1000) return null;
+  const finish = start + elapsed * 100 / pct;
+  const daysLeft = (finish - Date.now()) / 86400000;
+  if (daysLeft > 60) return null;
+  return {
+    label: `${formatDayLabel(new Date(finish).toISOString())}쯤`,
+    left: daysLeft < 1 ? '오늘 중' : `${Math.ceil(daysLeft)}일 남음`,
+  };
 }
 
 function renderPipeline(data) {
@@ -1767,7 +1952,7 @@ function renderPipeline(data) {
   }
 
   document.getElementById('pipelineBody').innerHTML = html;
-  document.getElementById('pipelineMeta').textContent = `${progress.done} DONE`;
+  document.getElementById('pipelineMeta').textContent = `${progress.done}/${progress.total} 완료`;
   document.getElementById('pipelineCard').style.display = '';
 }
 
@@ -2233,7 +2418,50 @@ function renderDayBand(data) {
   document.getElementById('dayMeta').textContent = `밤 작업 ${Math.round(night / entries.length * 100)}%`;
 
   updateDayNow();
+  renderDayGrid(data);
   document.getElementById('dayCard').style.display = '';
+}
+
+/** ③ 날짜별 잔디 — 시작한 날부터 오늘(완료면 완료한 날)까지 하루 한 칸. 연속으로 작업한
+    날이 이어지고 있으면 '🔥 N일 연속'을 띄운다. */
+function renderDayGrid(data) {
+  const grid = document.getElementById('dayGrid');
+  const axis = document.getElementById('dayGridAxis');
+  const meta = document.getElementById('streakMeta');
+  if (!grid || !data.createdAt) return;
+  const dayKey = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  const counts = new Map();
+  for (const e of data.entries || []) {
+    const k = dayKey(new Date(e.timestamp));
+    counts.set(k, (counts.get(k) || 0) + 1);
+  }
+  const first = new Date(data.createdAt); first.setHours(0, 0, 0, 0);
+  const last = new Date(data.status === 'completed' && data.completedAt ? data.completedAt : Date.now());
+  last.setHours(0, 0, 0, 0);
+  const days = [];
+  for (let d = new Date(first); d <= last && days.length < 60; d.setDate(d.getDate() + 1)) days.push(new Date(d));
+  const shown = days.slice(-42);   // 너무 길면 최근 6주만
+
+  const todayKey = dayKey(new Date());
+  const level = (n) => n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 5 ? 3 : 4;
+  grid.innerHTML = shown.map((d, i) => {
+    const n = counts.get(dayKey(d)) || 0;
+    const today = dayKey(d) === todayKey && data.status !== 'completed' ? ' today' : '';
+    const label = `${d.getMonth() + 1}월 ${d.getDate()}일 · ${n ? `기록 ${n}개` : '쉼'}`;
+    return `<span class="dayCell l${level(n)}${today}" style="animation-delay:${i * 30}ms" title="${label}"></span>`;
+  }).join('');
+  const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+  axis.innerHTML = shown.length > 1 ? `<span>${md(shown[0])}</span><span>${md(shown[shown.length - 1])}</span>` : '';
+
+  // 연속 작업: 마지막으로 작업한 날부터 거꾸로 센다.
+  const worked = days.filter(d => counts.get(dayKey(d)));
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if (counts.get(dayKey(days[i]))) streak++;
+    else if (streak > 0 || i < days.length - 2) break;   // 오늘 아직 안 했으면 어제까지로 본다
+  }
+  if (data.status !== 'completed' && streak >= 2) meta.textContent = `🔥 ${streak}일 연속`;
+  else meta.textContent = `작업한 날 ${worked.length}/${days.length}일`;
 }
 
 /** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
@@ -2306,7 +2534,7 @@ function renderLog(data) {
       <span>카테고리</span>
       <span class="c"><span class="lbl">시작 시점<button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button><div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지<br>편집되어 있었는지 (영상 길이 기준)</div></span></span>
       <span class="c"><span class="lbl">시작 시간<button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button><div class="infoPopover">이 작업을 실제로 시작한 시각</div></span></span>
-      <span class="c">이전 기록<br>으로부터</span>
+      <span class="c"><span class="lg">이전 기록<br>으로부터</span><span class="sm">간격</span></span>
       ${hasMemo ? '<span class="c memoHead">메모</span>' : '<span></span>'}
     </div>
   `;
@@ -2460,7 +2688,17 @@ function initAccentPicker() {
   ).join('');
   host.addEventListener('click', (e) => {
     const b = e.target.closest('.accentSwatch');
-    if (b) applyAccent(b.dataset.accent);
+    if (!b) return;
+    // 폰에선 고른 색 하나만 보이다가, 누르면 펼쳐지고 하나 고르면 다시 접힌다.
+    if (matchMedia('(max-width: 560px)').matches && !host.classList.contains('open')) {
+      host.classList.add('open');
+      return;
+    }
+    applyAccent(b.dataset.accent);
+    host.classList.remove('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (host.classList.contains('open') && !host.contains(e.target)) host.classList.remove('open');
   });
   let saved = null;
   try { saved = localStorage.getItem('accent'); } catch (e) {}
