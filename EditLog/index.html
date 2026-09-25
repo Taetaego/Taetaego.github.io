@@ -127,7 +127,7 @@
   .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; --cardGap: 12px; gap: var(--cardGap); }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #dayCard.card, #logCard.card {
+  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #dayCard.card, #heatCard.card, #logCard.card {
     /* both가 아니라 backwards여야 등장이 끝난 뒤 transform이 풀려서 hover로 카드를
        띄울 수 있다. 지연 동안의 opacity:0은 backwards가 알아서 처리한다. */
     animation: cardIn .5s ease backwards;
@@ -139,10 +139,11 @@
   #pipelineCard.card { animation-delay: .12s; }
   #statsWrap { animation-delay: .16s; }
   #dayCard.card { animation-delay: .2s; }
-  #logCard.card { animation-delay: .24s; }
+  #heatCard.card { animation-delay: .24s; }
+  #logCard.card { animation-delay: .28s; }
   /* 카드들이 display:none으로 시작하므로, 버튼도 렌더가 끝난 뒤 같이 나타나야
      위에 잠깐 붙었다가 아래로 튀는 일이 없다. */
-  #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .28s; }
+  #fxBar { opacity: 0; animation: cardIn .5s ease both; animation-delay: .32s; }
   #madeBy { opacity: 0; animation: cardIn .5s ease both; animation-delay: .36s; }
   /* 등장 애니메이션 중에는 카드의 opacity가 1보다 작아 카드가 쌓임 맥락을 만든다.
      그러면 그 안의 메모 말풍선(z-index:20)이 카드 안에 갇혀, 뒤에 오는 버튼 바에
@@ -177,26 +178,38 @@
     background: var(--ink); box-shadow: 0 0 0 1.5px var(--surface); transition: left .6s ease;
   }
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
-  /* ③ 날짜별 잔디 — 작업한 날마다 칸 하나, 기록이 많을수록 진하게 */
-  .daySub { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; }
-  /* 날짜 수만큼 가로를 똑같이 나눠 꽉 채운다 — 칸이 왼쪽에 몰리면 그 뒤로 쉰 것처럼 읽힌다. */
-  .dayGrid { display: grid; grid-template-columns: repeat(var(--days, 7), minmax(0, 1fr)); gap: 4px; }
-  .dayCell {
-    height: 20px; border-radius: 5px; background: var(--surface2);
-    animation: dayCellIn .35s cubic-bezier(.3,1.4,.5,1) both;
+
+  /* 편집 잔디 — Claude 사용량 화면처럼 위에 숫자 타일, 아래에 요일 7줄 × 주 단위 칸 */
+  .heatCard { display: flex; flex-direction: column; gap: 12px; }
+  .heatCard .cardHead { align-items: center; }
+  .rangeToggle { display: flex; gap: 2px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
+  .rangeToggle button {
+    border: none; cursor: pointer; font-family: inherit; font-size: 10.5px; font-weight: 600;
+    padding: 5px 10px; border-radius: 99px; background: transparent; color: var(--ink3);
   }
-  .dayCell.l1 { background: color-mix(in srgb, var(--accent) 30%, var(--surface2)); }
-  .dayCell.l2 { background: color-mix(in srgb, var(--accent) 55%, var(--surface2)); }
-  .dayCell.l3 { background: color-mix(in srgb, var(--accent) 80%, var(--surface2)); }
-  .dayCell.l4 { background: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent); }
-  .dayCell.today { outline: 1.5px solid var(--ink3); outline-offset: 1.5px; }
-  @keyframes dayCellIn { from { opacity: 0; transform: scale(.4); } }
-  .dayGridAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
-  /* 날짜가 적으면 칸마다 날짜를 단다 (칸과 같은 격자라 딱 맞는다) */
-  .dayGridAxis.perDay { display: grid; grid-template-columns: repeat(var(--days, 7), minmax(0, 1fr)); gap: 4px; }
-  .dayGridAxis.perDay span { text-align: center; white-space: nowrap; }
-  .dayGridAxis.perDay .today { color: var(--ink); font-weight: 700; }
-  @media (prefers-reduced-motion: reduce) { .dayCell { animation: none; } }
+  .rangeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
+  .heatTiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .heatTile { display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 10px 11px; border-radius: 12px; background: var(--surface2); }
+  .heatTile .k { font-size: 10px; font-weight: 600; color: var(--ink3); white-space: nowrap; }
+  .heatTile .v { font-size: 14.5px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em;
+                 white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .heatGrid {
+    display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, auto);
+    grid-template-columns: repeat(var(--weeks, 20), minmax(0, 1fr)); gap: 3px;
+  }
+  .heatCell { aspect-ratio: 1; border-radius: 3px; background: var(--surface2);
+              animation: heatIn .4s ease both; transition: opacity .25s ease; }
+  .heatCell.l1 { background: color-mix(in srgb, var(--accent) 32%, var(--surface2)); }
+  .heatCell.l2 { background: color-mix(in srgb, var(--accent) 56%, var(--surface2)); }
+  .heatCell.l3 { background: color-mix(in srgb, var(--accent) 80%, var(--surface2)); }
+  .heatCell.l4 { background: var(--accent); }
+  .heatCell.today { outline: 1.5px solid var(--ink2); outline-offset: 1px; }
+  .heatCell.out { opacity: .22; }
+  .heatCell.future { visibility: hidden; }
+  @keyframes heatIn { from { opacity: 0; transform: scale(.5); } }
+  .heatFoot { font-size: 11.5px; line-height: 1.5; color: var(--ink3); word-break: keep-all; }
+  .heatFoot b { color: var(--ink2); font-weight: 600; }
+  @media (prefers-reduced-motion: reduce) { .heatCell { animation: none; } }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
   .madeBy {
@@ -218,10 +231,10 @@
   @media (hover: hover) {
     .fireBtn:hover { background: var(--soft); color: var(--accent2); }
     /* 마우스를 올리면 카드가 2px 떠오른다 (터치 기기에선 hover가 남아 적용하지 않는다) */
-    #summaryCard, #pipelineCard, #dayCard, #logCard, .statTile {
+    #summaryCard, #pipelineCard, #dayCard, #heatCard, #logCard, .statTile {
       transition: transform .18s ease, box-shadow .18s ease;
     }
-    #summaryCard:hover, #pipelineCard:hover, #dayCard:hover, #logCard:hover, .statTile:hover {
+    #summaryCard:hover, #pipelineCard:hover, #dayCard:hover, #heatCard:hover, #logCard:hover, .statTile:hover {
       transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.26);
     }
   }
@@ -1093,9 +1106,22 @@
         </div>
         <div class="dayBand" id="dayBand"><span class="dayNow" id="dayNow"></span></div>
         <div class="dayAxis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
-        <div class="daySub"><span class="cardTitle">날짜별</span><span class="cardMeta" id="streakMeta"></span></div>
-        <div class="dayGrid" id="dayGrid"></div>
-        <div class="dayGridAxis" id="dayGridAxis"></div>
+      </div>
+
+      <!-- 채널 전체 편집 잔디 (Claude 사용량 화면처럼). 회차와 상관없이 늘 같은 내용이라
+           지난 에피소드를 열어도 바뀌지 않는다. 데이터는 앱이 올리는 projects/activity.json. -->
+      <div class="card heatCard" id="heatCard" style="display:none">
+        <div class="cardHead">
+          <span class="cardTitle">편집 잔디</span>
+          <div class="rangeToggle" id="heatRange" role="group" aria-label="기간">
+            <button type="button" data-range="all" class="active">전체</button>
+            <button type="button" data-range="30">30일</button>
+            <button type="button" data-range="7">7일</button>
+          </div>
+        </div>
+        <div class="heatTiles" id="heatTiles"></div>
+        <div class="heatGrid" id="heatGrid" role="img" aria-label="날짜별 작업량"></div>
+        <div class="heatFoot" id="heatFoot"></div>
       </div>
 
       <div class="card logCard" id="logCard" style="display:none">
@@ -1224,6 +1250,8 @@ async function main() {
     // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
     shownSignature = snapshotSignature(data);
     renderProject(data, { fireworks: true });
+    initHeat();
+    loadActivity();
     initAutoRefresh();
   } catch (e) {
     summaryCard.style.display = '';
@@ -1312,6 +1340,7 @@ async function refreshCurrentProject() {
     const justCompleted = data.status === 'completed' && !heroCompleted;
     shownSignature = sig;
     pastIndex = null;   // 프로젝트가 늘었을 수 있으니 목록도 다음에 열 때 새로 받는다
+    loadActivity();     // 새 기록이 생겼으니 잔디도 다시
     renderProject(data, { fireworks: justCompleted });
   } catch (e) {
     // 오프라인이거나 잠깐 실패한 거면 다음 기회에 다시 본다.
@@ -1327,6 +1356,135 @@ function initAutoRefresh() {
   // 데스크톱은 다른 창에 갔다 와도 탭이 계속 '보이는' 상태라 창 포커스로도 확인한다.
   window.addEventListener('focus', refreshCurrentProject);
   setInterval(refreshCurrentProject, 60000);
+}
+
+/* ===== 편집 잔디 (채널 전체) ===== */
+let heatData = null;        // projects/activity.json
+let heatRange = 'all';
+const HEAT_CELL = 15, HEAT_GAP = 3;
+
+async function loadActivity() {
+  try {
+    heatData = await fetchData('projects/activity.json');
+  } catch (e) {
+    heatData = null;   // 예전 앱이 올린 사이트라 파일이 없으면 카드를 숨긴다
+  }
+  renderHeat();
+}
+
+function initHeat() {
+  const toggle = document.getElementById('heatRange');
+  toggle.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-range]');
+    if (!b || b.dataset.range === heatRange) return;
+    heatRange = b.dataset.range;
+    toggle.querySelectorAll('button').forEach(x => x.classList.toggle('active', x === b));
+    renderHeat({ animate: false });
+  });
+  // 폭이 바뀌어 들어가는 주 수가 달라질 때만 다시 그린다.
+  let t = 0, lastWeeks = 0;
+  addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(() => { if (heatWeeks() !== lastWeeks) renderHeat({ animate: false }); }, 150);
+  });
+  const orig = renderHeat;
+  renderHeat = (opts) => { lastWeeks = heatWeeks(); orig(opts); };
+}
+
+function heatWeeks() {
+  const grid = document.getElementById('heatGrid');
+  const w = grid.clientWidth || grid.parentElement.clientWidth - 32;
+  return Math.max(8, Math.floor((w + HEAT_GAP) / (HEAT_CELL + HEAT_GAP)));
+}
+
+const dayKeyOf = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+
+function renderHeat({ animate = true } = {}) {
+  const card = document.getElementById('heatCard');
+  if (!heatData || !(heatData.records || []).length) { card.style.display = 'none'; return; }
+  card.style.display = '';
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const since = heatRange === 'all' ? null : new Date(today.getTime() - (Number(heatRange) - 1) * 86400000);
+  const recs = heatData.records.map(([t, c, ep]) => ({ d: new Date(t * 1000), c, ep }));
+  const inRange = since ? recs.filter(r => r.d >= since) : recs;
+
+  // ── 타일 ──
+  const perDay = new Map();
+  for (const r of recs) { const k = dayKeyOf(r.d); perDay.set(k, (perDay.get(k) || 0) + 1); }
+  const activeDays = new Set(inRange.map(r => dayKeyOf(r.d)));
+  const hours = new Array(24).fill(0);
+  const cats = new Map();
+  for (const r of inRange) {
+    hours[r.d.getHours()]++;
+    const name = heatData.categories[r.c];
+    if (name && name !== '완료') cats.set(name, (cats.get(name) || 0) + 1);
+  }
+  const peakHour = inRange.length ? hours.indexOf(Math.max(...hours)) : null;
+  const topCat = [...cats.entries()].sort((a, b) => b[1] - a[1])[0];
+  const eps = new Set(inRange.map(r => r.ep));
+  const { current, longest } = heatStreaks(perDay, today, since);
+  // 0시·12시는 '오전 12시'처럼 헷갈리게 읽히니 밤/낮으로.
+  const hourLabel = (h) => h === null ? '—' : h === 0 ? '밤 12시' : h === 12 ? '낮 12시' : `${h < 12 ? '오전' : '오후'} ${h % 12}시`;
+  const tiles = [
+    ['에피소드', `${eps.size}개`],
+    ['작업 기록', `${inRange.length}개`],
+    ['활성 일수', `${activeDays.size}일`],
+    ['최다 작업 시간', hourLabel(peakHour)],
+    ['최다 단계', topCat ? topCat[0] : '—'],
+    ['연속 작업', current >= 2 ? `🔥 ${current}일` : `최장 ${longest}일`],
+  ];
+  document.getElementById('heatTiles').innerHTML = tiles
+    .map(([k, v]) => `<div class="heatTile"><span class="k">${k}</span><span class="v" title="${escapeHtml(v)}">${escapeHtml(v)}</span></div>`)
+    .join('');
+
+  // ── 칸: 일~토 7줄, 가장 오른쪽 줄이 이번 주 ──
+  const grid = document.getElementById('heatGrid');
+  const weeks = heatWeeks();
+  grid.style.setProperty('--weeks', weeks);
+  const start = new Date(today); start.setDate(today.getDate() - today.getDay() - (weeks - 1) * 7);
+  const level = (n) => n === 0 ? 0 : n <= 2 ? 1 : n <= 4 ? 2 : n <= 7 ? 3 : 4;
+  const WD = ['일', '월', '화', '수', '목', '금', '토'];
+  let html = '';
+  for (let w = 0; w < weeks; w++) {
+    for (let dow = 0; dow < 7; dow++) {
+      const d = new Date(start); d.setDate(start.getDate() + w * 7 + dow);
+      const n = perDay.get(dayKeyOf(d)) || 0;
+      const cls = ['heatCell', `l${level(n)}`];
+      if (d > today) cls.push('future');
+      else if (since && d < since) cls.push('out');
+      if (d.getTime() === today.getTime()) cls.push('today');
+      const tip = `${d.getMonth() + 1}월 ${d.getDate()}일 (${WD[dow]}) · ${n ? `기록 ${n}개` : '쉼'}`;
+      const delay = animate ? ` style="animation-delay:${w * 14}ms"` : ' style="animation:none"';
+      html += `<span class="${cls.join(' ')}" title="${tip}"${delay}></span>`;
+    }
+  }
+  grid.innerHTML = html;
+
+  // ── 한 줄 요약 ──
+  const h = Math.floor(heatData.originalMinutes / 60), m = heatData.originalMinutes % 60;
+  const dayish = heatData.originalMinutes >= 1440
+    ? ` — 꼬박 ${formatSpan(heatData.originalMinutes * 60)} 넘게 찍었어요` : '';
+  const fin = heatData.finalMinutes ? ` · 완성 영상 <b>${formatMinutes(heatData.finalMinutes)}</b>` : '';
+  document.getElementById('heatFoot').innerHTML =
+    `지금까지 촬영 원본 <b>${h ? `${h}시간 ` : ''}${m}분</b>${dayish}${fin}`;
+}
+
+/** 오늘(오늘 아직 안 했으면 어제)까지 이어진 연속 작업 일수와, 기간 안 최장 연속. */
+function heatStreaks(perDay, today, since) {
+  const has = (d) => (perDay.get(dayKeyOf(d)) || 0) > 0;
+  let current = 0;
+  const d = new Date(today);
+  if (!has(d)) d.setDate(d.getDate() - 1);
+  while (has(d) && (!since || d >= since)) { current++; d.setDate(d.getDate() - 1); }
+  const keys = [...perDay.keys()].map(k => { const [y, mo, da] = k.split('-').map(Number); return new Date(y, mo - 1, da); })
+    .filter(x => !since || x >= since).sort((a, b) => a - b);
+  let longest = 0, run = 0, prev = null;
+  for (const x of keys) {
+    run = prev && Math.round((x - prev) / 86400000) === 1 ? run + 1 : 1;
+    longest = Math.max(longest, run); prev = x;
+  }
+  return { current, longest };
 }
 
 /* ===== 지난 프로젝트 목록 ===== */
@@ -2402,61 +2560,7 @@ function renderDayBand(data) {
   document.getElementById('dayMeta').textContent = `밤 작업 ${Math.round(night / entries.length * 100)}%`;
 
   updateDayNow();
-  renderDayGrid(data);
   document.getElementById('dayCard').style.display = '';
-}
-
-/** ③ 날짜별 잔디 — 시작한 날부터 오늘(완료면 완료한 날)까지 하루 한 칸. 연속으로 작업한
-    날이 이어지고 있으면 '🔥 N일 연속'을 띄운다. */
-function renderDayGrid(data) {
-  const grid = document.getElementById('dayGrid');
-  const axis = document.getElementById('dayGridAxis');
-  const meta = document.getElementById('streakMeta');
-  if (!grid || !data.createdAt) return;
-  const dayKey = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-  const counts = new Map();
-  for (const e of data.entries || []) {
-    const k = dayKey(new Date(e.timestamp));
-    counts.set(k, (counts.get(k) || 0) + 1);
-  }
-  const first = new Date(data.createdAt); first.setHours(0, 0, 0, 0);
-  const last = new Date(data.status === 'completed' && data.completedAt ? data.completedAt : Date.now());
-  last.setHours(0, 0, 0, 0);
-  const days = [];
-  for (let d = new Date(first); d <= last && days.length < 60; d.setDate(d.getDate() + 1)) days.push(new Date(d));
-  const shown = days.slice(-42);   // 너무 길면 최근 6주만
-
-  const todayKey = dayKey(new Date());
-  const level = (n) => n === 0 ? 0 : n <= 1 ? 1 : n <= 3 ? 2 : n <= 5 ? 3 : 4;
-  grid.innerHTML = shown.map((d, i) => {
-    const n = counts.get(dayKey(d)) || 0;
-    const today = dayKey(d) === todayKey && data.status !== 'completed' ? ' today' : '';
-    const label = `${d.getMonth() + 1}월 ${d.getDate()}일 · ${n ? `기록 ${n}개` : '쉼'}`;
-    return `<span class="dayCell l${level(n)}${today}" style="animation-delay:${i * 30}ms" title="${label}"></span>`;
-  }).join('');
-  const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
-  grid.style.setProperty('--days', shown.length);
-  axis.style.setProperty('--days', shown.length);
-  // 열흘 이하면 칸마다 날짜를, 그보다 길면 양 끝만. 첫 칸과 달이 바뀌는 칸은 '월/일'로.
-  const perDay = shown.length <= 10;
-  axis.classList.toggle('perDay', perDay);
-  axis.innerHTML = perDay
-    ? shown.map((d, i) => {
-        const label = i === 0 || d.getDate() === 1 ? md(d) : String(d.getDate());
-        const today = dayKey(d) === todayKey && data.status !== 'completed' ? ' class="today"' : '';
-        return `<span${today}>${label}</span>`;
-      }).join('')
-    : (shown.length > 1 ? `<span>${md(shown[0])}</span><span>${md(shown[shown.length - 1])}</span>` : '');
-
-  // 연속 작업: 마지막으로 작업한 날부터 거꾸로 센다.
-  const worked = days.filter(d => counts.get(dayKey(d)));
-  let streak = 0;
-  for (let i = days.length - 1; i >= 0; i--) {
-    if (counts.get(dayKey(days[i]))) streak++;
-    else if (streak > 0 || i < days.length - 2) break;   // 오늘 아직 안 했으면 어제까지로 본다
-  }
-  if (data.status !== 'completed' && streak >= 2) meta.textContent = `🔥 ${streak}일 연속`;
-  else meta.textContent = `작업한 날 ${worked.length}/${days.length}일`;
 }
 
 /** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
@@ -2984,7 +3088,7 @@ function initThumbLike() {
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
   const cards = [
-    ...['summaryCard', 'pipelineCard', 'dayCard', 'logCard']
+    ...['summaryCard', 'pipelineCard', 'dayCard', 'heatCard', 'logCard']
       .map(id => document.getElementById(id)).filter(Boolean),
     ...document.querySelectorAll('.statTile'),   // 통계 타일도 같이 기울어지게
   ];
