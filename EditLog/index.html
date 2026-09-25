@@ -509,11 +509,6 @@
   }
   .liveBadge i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: labelFade 1.8s ease-in-out infinite; }
   .liveBadge[hidden] { display: none; }
-  /* 폰·태블릿에선 '물결로 보기'와 부딪히지 않게 카드 왼쪽 위 모서리에 (방송 LIVE 표시처럼).
-     데스크톱은 히어로가 세로 배치라 상태 칩 옆에 그대로 둔다. */
-  @media (max-width: 899px) {
-    .liveBadge { position: absolute; top: 14px; left: 14px; z-index: 2; }
-  }
   @keyframes livePing {
     0% { box-shadow: 0 0 0 0 rgba(229,52,61,.55); }
     70%, 100% { box-shadow: 0 0 0 8px rgba(229,52,61,0); }
@@ -982,25 +977,6 @@
   .card, .statTile { position: relative; }
   .spotLayer { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; }
 
-  /* ===== 10 물결 진행률 (도넛 ↔ 물결 전환) ===== */
-  .gaugeSwap {
-    position: absolute; top: 14px; right: 14px; z-index: 2;
-    border: 1px solid var(--line2); border-radius: 99px;
-    background: var(--surface); color: var(--ink3); font-family: inherit;
-    font-size: 10px; font-weight: 600; padding: 6px 11px; cursor: pointer;
-    transition: transform .15s ease, background-color .15s ease, color .15s ease;
-  }
-  @media (hover: hover) { .gaugeSwap:hover { background: var(--soft); color: var(--accent2); } }
-  .gaugeSwap:active { transform: scale(0.96); }
-  #liquidCanvas { display: none; position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; z-index: 0; }
-  .donut.liquid { background: var(--surface2) !important; }
-  .donut.liquid .donutTicks { display: none; }
-  .donut.liquid #liquidCanvas { display: block; }
-  .donut.liquid .donutGlow, .donut.liquid .donutSpark { display: none; }
-  .donut.liquid { box-shadow: inset 0 0 0 2px var(--line2), 0 6px 20px rgba(0,0,0,.28); }
-  .donut.liquid .in { background: transparent; width: 100%; height: 100%; }
-  .donut.liquid .pct { text-shadow: 0 1px 8px rgba(0,0,0,.45); }
-  .donut.liquid .steps { color: var(--ink2); text-shadow: 0 1px 6px rgba(0,0,0,.4); }
 
   #cometCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; }
 
@@ -1314,8 +1290,8 @@
   @media (prefers-reduced-motion: reduce) {
     .logRow.latest .cat::after, .lenRow .lenFill::after { animation: none; }
   }
-  /* 도넛 가운데 % 도 그라데이션 (물결 보기에선 배경 위라 흰 글자 유지) */
-  .donut:not(.liquid) .pct {
+  /* 도넛 가운데 % 도 그라데이션 */
+  .donut .pct {
     background: linear-gradient(180deg, var(--ink), var(--grp-1) 60%, var(--grp-2));
     -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
   }
@@ -1825,7 +1801,6 @@ async function main() {
     });
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
-      // (물결 모드일 땐 initLiquidRefill이 먼저 잡아서 여기까지 오지 않는다.)
       if (ev.target.closest('#donutGauge')) { sfx('fill'); runGauge(heroPct, false, true); return; }
       const since = ev.target.closest('.sinceBlock');
       if (since) { sfx('count'); animateCounter(since.querySelector('.sinceVal')); return; }
@@ -1877,10 +1852,9 @@ function renderProject(data, { fireworks = false } = {}) {
 
   renderSummary(summaryCard, data);
   renderThumb(data);
-  // 도넛·물결 버튼은 renderSummary가 매번 새로 만드는 요소라, 여기서 다시 걸어야 한다.
+  // 도넛은 renderSummary가 매번 새로 만드는 요소라, 여기서 다시 걸어야 한다.
   // main()에서 한 번만 걸면 첫 렌더 전이라 붙을 대상이 없고, 프로젝트를 바꾸면
   // 리스너를 달아둔 요소째 사라진다.
-  initGaugeToggle();
   initDonutSpin();
   renderCompletion(data);
   placeStatsCard(data);
@@ -2833,7 +2807,6 @@ function renderSummary(cardEl, data) {
   cardEl.innerHTML = `
     <span class="heroBg" aria-hidden="true"></span>
     <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
-      <canvas id="liquidCanvas"></canvas>
       <span class="donutGlow" aria-hidden="true"></span>
       <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
       <div class="in">
@@ -2867,7 +2840,6 @@ function renderSummary(cardEl, data) {
               : '<div class="heroStat paceBlock" id="paceBlock" hidden></div>'}` : ''}
           ${doneStats}
         </div>` : ''}
-      <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
     </div>
     ${entries.length >= 2 ? `<span class="heroWave" title="편집 파형 — 이번 에피소드를 시간순으로 펼친 것. 작업 기록이 몰린 때일수록 크게 솟아요" role="img" aria-label="편집 파형">${waveSvg(entries.map(e => e.timestamp), data.createdAt, isCompleted ? (data.completedAt ?? lastEntryTime) : new Date().toISOString())}</span>` : ''}
   `;
@@ -4433,79 +4405,6 @@ function initSpotlight() {
   });
 }
 
-/* ===== 10 리퀴드 진행률 — 버튼으로 도넛 ↔ 물결 전환 ===== */
-let liquidRun = 0;
-function initGaugeToggle() {
-  initLiquidRefill();
-  const btn = document.getElementById('gaugeSwap');
-  const donut = document.getElementById('donutGauge');
-  if (!btn || !donut) return;
-  btn.addEventListener('click', (ev) => {
-    ev.stopPropagation();   // 히어로 카드의 폭죽까지 터지지 않게
-    const on = donut.classList.toggle('liquid');
-    btn.textContent = on ? '◎ 도넛으로 보기' : '🌊 물결로 보기';
-    // 어느 쪽으로 바꾸든 0%에서 다시 차오르게 한다.
-    if (on) {
-      startLiquid();
-    } else {
-      liquidRun++;                     // 물결 루프 정지
-      runGauge(heroPct, false, true);  // 링만 0%부터 다시 채우고 숫자는 그대로
-    }
-  });
-}
-
-/** 리퀴드 상태에서 도넛을 누르면 물을 다시 밑에서부터 채운다. */
-function initLiquidRefill() {
-  const donut = document.getElementById('donutGauge');
-  if (!donut) return;
-  donut.addEventListener('click', (ev) => {
-    if (!donut.classList.contains('liquid')) return;
-    ev.stopPropagation();
-    startLiquid();
-  });
-}
-
-function startLiquid() {
-  const cv = document.getElementById('liquidCanvas');
-  if (!cv) return;
-  const my = ++liquidRun;
-  const t0 = performance.now();
-  const draw = (now) => {
-    if (my !== liquidRun) return;
-    const f = fitCanvas(cv);
-    if (!f) { requestAnimationFrame(draw); return; }
-    const { w: s, ctx } = f;
-    const t = Math.max(0, now - t0) / 1000;
-    const target = Math.max(0, Math.min(1, heroPct / 100));
-    const fill = reducedMotion ? target : target * Math.min(1, 1 - Math.pow(1 - Math.min(1, t / 1.6), 3));
-    ctx.clearRect(0, 0, s, s);
-    ctx.save();
-    ctx.beginPath(); ctx.arc(s / 2, s / 2, s / 2 - 1, 0, 6.284); ctx.clip();
-    // 파도가 수면 위아래로 AMP만큼 출렁이므로, 수위를 그만큼 넉넉한 범위에 매핑한다.
-    // 그러지 않으면 100%에서 꼭대기에 파도 골만큼 빈 틈이 남고, 0%에서도 마루가 비쳐 보인다.
-    const AMP = 9;
-    const level = (s + 2 * AMP) * (1 - fill) - AMP;
-    // 물빛도 도넛과 같은 단계 그라디언트 — 천천히 좌우로 흐른다.
-    const sh = Math.sin(t * 0.7) * s * 0.3;
-    const grad = ctx.createLinearGradient(sh, level, s + sh, s);
-    ['#34e0b0', '#5ab8f0', '#8f82ed', '#d98aea'].forEach((c, i) => grad.addColorStop(i / 3, c));
-    [[9, 1.5, 0.55, 0.92], [6, 2.3, -0.9, 0.45]].forEach(([amp, freq, spd, alpha]) => {
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.moveTo(0, s);
-      for (let x = 0; x <= s; x += 4) {
-        ctx.lineTo(x, level + Math.sin((x / s) * freq * 6.284 + t * spd * 2.4) * (reducedMotion ? 0 : amp));
-      }
-      ctx.lineTo(s, s); ctx.closePath(); ctx.fill();
-    });
-    ctx.restore();
-    ctx.globalAlpha = 1;
-    if (!reducedMotion) requestAnimationFrame(draw);
-  };
-  requestAnimationFrame(draw);
-}
-
 /* ===== 31 살아있는 하늘 배경 — 지금 시각의 하늘색을 상단에 옅게 ===== */
 function initSkyTop() {
   if (reducedMotion) return;
@@ -4853,9 +4752,7 @@ const TRAVEL_QUOTES = [
   ['원본 14시간, 완성 37분. 나머지는 추억으로.', '태태고 편집실', '💾'],
   ['좋은 컷은 찍을 때 반, 자를 때 반.', '태태고 편집실', '🎥'],
   ['오늘의 한 컷이 내일의 한 편이 된다.', '태태고 편집실', '🧩'],
-  ['타임라인 위에서 한 번 더 떠나는 여행.', '태태고 편집실', '⏱️'],
   ['자막 한 줄에 여행 하루가 담긴다.', '태태고 편집실', '💬'],
-  ['렌더링은 기다림, 업로드는 설렘.', '태태고 편집실', '⏳'],
   ['길을 잃어야 보이는 장면이 있다.', '태태고 편집실', '🌫️'],
   ['카메라를 켜는 순간, 동네도 여행지가 된다.', '태태고 편집실', '🔴'],
   ['천 번의 계획보다 한 번의 출발.', '태태고 편집실', '🚀'],
@@ -4873,25 +4770,21 @@ const TRAVEL_QUOTES = [
   ['오늘도 1프레임씩 앞으로.', '태태고 편집실', '🐌'],
   ['맞춤법 검사까지가 여행이다.', '태태고 편집실', '🔤'],
   ['자른 장면들도 다 추억이었다.', '태태고 편집실', '🗑️'],
-  ['편집하다 보면 그날로 다시 떠나 있다.', '태태고 편집실', '🧳'],
   ['영상은 짧게, 여행은 길게.', '태태고 편집실', '⏩'],
   ['모닥불 앞에서 한 이야기는 자막으로 다시 불을 붙인다.', '태태고 편집실', '🔥'],
   ['친구들 웃음소리는 음악보다 좋은 BGM.', '태태고 편집실', '😂'],
   ['지도 한 장 넣으니 여행이 이어졌다.', '태태고 편집실', '🗺️'],
   ['하이라이트는 찍을 땐 모르고, 볼 때 안다.', '태태고 편집실', '⭐'],
   ['편집이 끝나야 여행도 진짜 끝난다.', '태태고 편집실', '🏁'],
-  ['업로드 버튼 앞에서 한 번 더 설렌다.', '태태고 편집실', '📤'],
   ['원본은 길고, 기억은 더 길다.', '태태고 편집실', '📼'],
   ['길 위의 며칠을 30분에 담는 일.', '태태고 편집실', '⌛'],
   ['카메라는 흔들려도 그날의 마음은 또렷하다.', '태태고 편집실', '🎥'],
-  ['좋은 장면은 두 번 여행하게 한다. 찍을 때 한 번, 편집할 때 한 번.', '태태고 편집실', '🔁'],
   ['에베레스트보다 높은 건 편집 대기열이다.', '태태고 편집실', '🏔️'],
   ['1프레임 차이가 웃음을 만든다.', '태태고 편집실', '😆'],
   ['타임라인이 길어질수록 추억도 길어진다.', '태태고 편집실', '📏'],
   ['렌더링 바가 멈춰 보여도, 여행은 계속된다.', '태태고 편집실', '⏳'],
   ['자막 오타 하나에 여행이 흔들린다.', '태태고 편집실', '🫨'],
   ['좋은 BGM은 풍경을 한 번 더 칠한다.', '태태고 편집실', '🎨'],
-  ['편집은 두 번째 여행, 업로드는 세 번째 여행.', '태태고 편집실', '3️⃣'],
   ['배터리는 바닥나도 추억은 풀충전.', '태태고 편집실', '🔋'],
   ['SD카드가 가득 찰수록 마음도 가득 찬다.', '태태고 편집실', '💽'],
   ['고산병보다 무서운 건 원본 14시간.', '태태고 편집실', '😵'],
@@ -4903,7 +4796,6 @@ const TRAVEL_QUOTES = [
   ['셔터는 순간, 편집은 오래.', '태태고 편집실', '📸'],
   ['페루의 바람 소리를 이어폰으로 다시 듣는다.', '태태고 편집실', '🎧'],
   ['와카치나의 노을은 색보정이 필요 없다.', '태태고 편집실', '🌇'],
-  ['한 컷 한 컷, 다시 걷는 길.', '태태고 편집실', '👣'],
   ['편집실 불이 꺼지면 영상이 켜진다.', '태태고 편집실', '💡'],
   ['좋은 여행은 두 번 끝난다. 돌아올 때, 그리고 업로드할 때.', '태태고 편집실', '🔚'],
   ['원본 폴더는 여권, 완성본은 도장.', '태태고 편집실', '🛂'],
@@ -4956,26 +4848,20 @@ const TRAVEL_QUOTES = [
   ['가족 같던 친구들과의 작별은 편집할 때 한 번 더 한다.', '태태고 편집실', '🤝'],
   ['해발 3,400m에서 넉 달, 숨은 차도 편집은 계속된다.', '태태고 편집실', '🏠'],
   ['무지개산 5,000m엔 색보정이 필요 없었다.', '태태고 편집실', '🌈'],
-  ['잉카 트레일에서 만난 곰은 편집하다 다시 봐도 놀랍다.', '태태고 편집실', '🐻'],
   ['버스 옆자리 인연이 사막까지 이어졌다.', '태태고 편집실', '🚌'],
   ['세계여행 중인 집돌이도 편집할 땐 밖에 안 나간다.', '태태고 편집실', '🏡'],
   ['떨어진 자리에서 다시 오르면 그게 리벤지다.', '태태고 편집실', '🧗'],
   ['지구 반대편에서 먹는 순대국밥은 자막으로 다 못 쓴다.', '태태고 편집실', '🍲'],
   ['드럼통에서 고기가 나와도 놀라지 않는 사람이 됐다.', '태태고 편집실', '🍖'],
-  ['페루의 생일파티는 편집할 때 한 번 더 열린다.', '태태고 편집실', '🎂'],
   ['이과수의 물소리를 BGM으로 쓰면 반칙일까.', '태태고 편집실', '💦'],
-  ['쿠스코의 골목은 편집할수록 더 그립다.', '태태고 편집실', '🏘️'],
   ['부에노스아이레스 넉 달 살이, 추억은 .zip으로 압축.', '태태고 편집실', '🗜️'],
   ['비자 만료보다 무서운 건 업로드 마감.', '태태고 편집실', '📆'],
   ['해발 3,900m 호스텔에서도 와이파이부터 찾는다.', '태태고 편집실', '📶'],
   ['사막 노숙도 자전거가 곁에 있어 외롭지 않았다.', '태태고 편집실', '🚲'],
-  ['여행 555일차에도 편집은 1일차처럼 설렌다.', '태태고 편집실', '✨'],
-  ['매주 한 편, 매주 한 번 더 떠나는 여행.', '태태고 편집실', '🗓️'],
   ['20분 영상 속에 며칠의 길이 접혀 있다.', '태태고 편집실', '🗺️'],
   ['태우를 태우고, 오늘도 편집실로 떠난다.', '태태고 편집실', '🚗'],
   ['남극까지 간 배낭여행자의 다음 목적지는 타임라인 끝.', '태태고 편집실', '🐧'],
   ['구독과 좋아요는 다음 배낭의 무게를 덜어 준다.', '태태고 편집실', '🔔'],
-  ['함께 걸어 주는 사람들이 있어 편집이 외롭지 않다.', '태태고 편집실', '👣'],
   ['모든 여행은 결국 누군가를 만나는 일이었다.', '태태고 편집실', '👋'],
   ['여권 도장이 늘수록 원본 폴더도 늘어난다.', '태태고 편집실', '🛂'],
   ['"외로워요" 한마디가 한 끼의 동행이 됐다.', '태태고 편집실', '🍽️'],
@@ -4983,10 +4869,31 @@ const TRAVEL_QUOTES = [
   ['안전바 없는 바이킹보다 무서운 건 저장 안 한 프로젝트.', '태태고 편집실', '🎢'],
   ['척추 마취 두통도 자막 한 줄로 웃어넘긴다.', '태태고 편집실', '🤕'],
   ['병원 침대에서도 다음 편을 생각했다.', '태태고 편집실', '🛏️'],
-  ['대환장 크루즈 첫날도 편집하면 제법 여행 같다.', '태태고 편집실', '🎊'],
   ['로키산맥은 어딜 잘라도 장관이라 컷이 제일 어렵다.', '태태고 편집실', '🏞️'],
   ['인도 옷 그대로 입고 돌아와도 여행은 계속된다.', '태태고 편집실', '🥻'],
   ['한 번에 몰아보기는 편집자의 체력 테스트다.', '태태고 편집실', '🔋'],
+  ['리우 카니발 7시간, 컷편집도 7시간.', '태태고 편집실', '🎉'],
+  ['5분 찍고 5시간 자른다.', '태태고 편집실', '⏱️'],
+  ['원본을 여는 순간, 여행보다 긴 여정이 시작된다.', '태태고 편집실', '📂'],
+  ['렌더링 99%에서 멈추는 건 여행에서도 못 겪은 공포다.', '태태고 편집실', '😱'],
+  ['프로그램이 꺼진 순간, 마지막으로 저장한 기억이 없다.', '태태고 편집실', '💥'],
+  ['여행은 열흘, 편집은 한 달.', '태태고 편집실', '📆'],
+  ['컷편집 사흘째, 같은 장면을 백 번째 보는 중.', '태태고 편집실', '🔁'],
+  ['자막 오타는 꼭 업로드 직후에 보인다.', '태태고 편집실', '🙈'],
+  ['편집자의 목은 거북이, 허리는 새우.', '태태고 편집실', '🐢'],
+  ['용량 부족 알림이 고산병보다 어지럽다.', '태태고 편집실', '💾'],
+  ['촬영할 땐 말을 아끼자. 자막 달 사람을 생각해서.', '태태고 편집실', '🤐'],
+  ['싱크 맞추다 보면 해가 뜬다.', '태태고 편집실', '🌄'],
+  ['카메라 끄는 걸 잊은 20분, 편집자는 그걸 다 본다.', '태태고 편집실', '🎥'],
+  ['렌더링 걸어 놓고 자면 꼭 에러가 나 있다.', '태태고 편집실', '⚠️'],
+  ['음악 저작권 확인이 입국 심사보다 까다롭다.', '태태고 편집실', '🎼'],
+  ['편집 대기열에 아직 나라 세 개가 쌓여 있다.', '태태고 편집실', '📚'],
+  ['모자이크할 얼굴이 풍경보다 많다.', '태태고 편집실', '🫥'],
+  ['자막 달다 보면 그날 내가 말을 너무 많이 했다는 걸 안다.', '태태고 편집실', '🗣️'],
+  ['타임라인 확대 한 번에 하루가 간다.', '태태고 편집실', '🔍'],
+  ['원본 14시간을 다 보고 나면 여행을 한 번 더 다녀온 만큼 지친다.', '태태고 편집실', '🥵'],
+  ['마감 전날 밤, 커피는 물보다 많이 마신다.', '태태고 편집실', '☕'],
+  ['편집이 끝나면 다음 여행 원본이 기다리고 있다.', '태태고 편집실', '🗃️'],
 ];
 
 function showTravelQuote() {
