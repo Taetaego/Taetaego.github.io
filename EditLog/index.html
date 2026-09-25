@@ -853,6 +853,26 @@
               animation: vhsBlink .5s steps(2, end) infinite; }
   .vhsBadge.play { background: #15803d; animation: none; }
   @keyframes vhsBlink { 50% { opacity: .55; } }
+  /* 🎰 슬롯머신 */
+  .slotBox { position: fixed; z-index: 10002; left: 50%; top: 42%; transform: translate(-50%, -50%); pointer-events: none;
+             padding: 12px 14px 14px; border-radius: 22px; background: linear-gradient(160deg, #3a1d5c, #1b0f2e);
+             border: 3px solid #f5c542; box-shadow: 0 0 0 4px #1b0f2e, 0 0 30px rgba(245,197,66,.45), 0 20px 50px rgba(0,0,0,.55);
+             animation: slotIn .45s cubic-bezier(.2,1.4,.4,1) both; }
+  .slotBox.out { animation: slotOut .35s ease-in forwards; }
+  @keyframes slotIn { from { opacity: 0; transform: translate(-50%, -80%) scale(.7); } }
+  @keyframes slotOut { to { opacity: 0; transform: translate(-50%, -40%) scale(.85); } }
+  .slotTop { text-align: center; font-size: 13px; font-weight: 700; letter-spacing: .3em; color: #f5c542; margin-bottom: 8px;
+             text-shadow: 0 0 10px rgba(245,197,66,.7); }
+  .slotReels { display: flex; gap: 8px; }
+  .slotReel { width: 64px; height: 64px; overflow: hidden; border-radius: 12px; background: linear-gradient(#fff, #e8e2f0 50%, #fff);
+              box-shadow: inset 0 6px 10px rgba(0,0,0,.35), inset 0 -6px 10px rgba(0,0,0,.35); }
+  .slotStrip span { display: flex; align-items: center; justify-content: center; height: 64px; font-size: 36px; line-height: 1; }
+  .slotReel.stopped { animation: reelBump .25s ease; }
+  @keyframes reelBump { 40% { transform: translateY(4px); } }
+  .slotBox.win { animation: slotWin .5s ease 3; border-color: #fff3b0; }
+  .slotBox.win .slotTop { animation: slotBlink .25s steps(2, end) 8; }
+  @keyframes slotWin { 50% { box-shadow: 0 0 0 4px #1b0f2e, 0 0 60px 10px rgba(245,197,66,.9), 0 20px 50px rgba(0,0,0,.55); transform: translate(-50%, -50%) scale(1.06); } }
+  @keyframes slotBlink { 50% { opacity: .2; } }
   /* 제목을 누르면 내려오는 슬레이트 */
   .slate { position: fixed; top: 70px; left: 50%; z-index: 10002; width: min(300px, calc(100% - 48px)); pointer-events: none;
            transform: translate(-50%, -140%); filter: drop-shadow(0 18px 40px rgba(0,0,0,.5)); }
@@ -981,7 +1001,6 @@
   .donut.liquid .steps { color: var(--ink2); text-shadow: 0 1px 6px rgba(0,0,0,.4); }
 
   #cometCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; }
-  #fx2Canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 
   /* ===== 29 텔레타이프 현재 단계 ===== */
 
@@ -1650,10 +1669,14 @@ const Sfx = (() => {
     },
     pop: () => tone({ f: 420, to: 950, d: 0.07, v: 0.18 }),
     // ── 아래 이펙트 버튼마다 제 소리 ──
-    slot: () => {
-      for (let i = 0; i < 14; i++) tone({ f: 900 + (i % 3) * 120, d: 0.03, type: 'square', v: 0.04, at: i * 0.07 });
-      [784, 988, 1175, 1568].forEach((f, i) => tone({ f, d: 0.25, type: 'square', v: 0.05, at: 1.05 + i * 0.07 }));
+    slot: () => { for (let i = 0; i < 22; i++) tone({ f: 900 + (i % 3) * 120, d: 0.03, type: 'square', v: 0.035, at: i * 0.068 }); },
+    reelStop: () => { tone({ f: 180, to: 90, d: 0.09, type: 'square', v: 0.08 }); noise({ d: 0.04, f: 1500, q: 2, v: 0.15 }); },
+    jackpot: () => {
+      [784, 988, 1175, 1568].forEach((f, i) => tone({ f, d: 0.22, type: 'square', v: 0.05, at: i * 0.08 }));
+      tone({ f: 2093, d: 0.6, type: 'square', v: 0.04, at: 0.34 });
+      for (let i = 0; i < 16; i++) tone({ f: 2500 + Math.random() * 1500, d: 0.06, v: 0.04, at: 0.3 + i * 0.07 });
     },
+    slotMiss: () => { tone({ f: 440, to: 400, d: 0.18, type: 'triangle', v: 0.07 }); tone({ f: 330, to: 300, d: 0.3, type: 'triangle', v: 0.07, at: 0.18 }); },
     screenCut: () => { blade(0, 1); noise({ d: 0.35, f: 600, to: 3000, q: 1, v: 0.12, at: 0.08 }); },
     glitter: () => { for (let i = 0; i < 10; i++) tone({ f: 2200 + Math.random() * 2400, d: 0.12, v: 0.04, at: i * 0.06, wet: true }); },
     heart: () => {
@@ -1666,7 +1689,10 @@ const Sfx = (() => {
     },
     snow: () => { for (let i = 0; i < 7; i++) bell(pick([1568, 1760, 2093, 2349, 2637]), i * 0.26 + Math.random() * 0.1, 0.035); },
     aurora: () => [262, 330, 392, 494].forEach((f, i) => tone({ f, d: 2.6, type: 'triangle', v: 0.05, a: 0.9, at: i * 0.12, wet: true })),
-    meteor: () => { noise({ d: 0.9, f: 4000, to: 500, q: 2, v: 0.18, a: 0.05 }); bell(1568, 0.75, 0.05); bell(2093, 0.9, 0.04); },
+    meteor: () => {
+      for (let i = 0; i < 9; i++) noise({ d: 0.6, f: NR(3000, 5000), to: 600, q: 2, v: 0.09, a: 0.04, at: i * 0.45 + Math.random() * 0.2 });
+      [0.8, 2.1, 3.3].forEach((at, i) => { noise({ d: 1.1, type: 'lowpass', f: 1500, to: 200, v: 0.18, a: 0.1, at }); bell([1568, 2093, 1760][i], at + 0.7, 0.04); });
+    },
     starlight: () => [1046, 1318, 1568, 2093, 2637].forEach((f, i) => bell(f, i * 0.11, 0.045)),
     wave: () => {
       noise({ d: 2.3, type: 'lowpass', f: 180, to: 1500, v: 0.3, a: 2.0, q: 0.5 });               // 밀려오는 물
@@ -1711,7 +1737,10 @@ const Sfx = (() => {
       });
       pad({ fs: [392, 494, 587], d: 4.2, v: 0.012, a: 1.2, rel: 1.5, cut0: 800, cut1: 2500, type: 'triangle' });
     },
-    firefly: () => { for (let i = 0; i < 6; i++) tone({ f: 1800 + Math.random() * 900, d: 0.18, v: 0.035, a: 0.06, at: i * 0.22 + Math.random() * 0.1, wet: true }); },
+    firefly: () => {
+      noise({ d: 6.5, type: 'bandpass', f: 4200, q: 8, v: 0.02, a: 1, lfo: [9, 300] });   // 여름밤 풀벌레
+      for (let i = 0; i < 14; i++) tone({ f: 1800 + Math.random() * 900, d: 0.25, v: 0.03, a: 0.08, at: i * 0.45 + Math.random() * 0.2, wet: true });
+    },
     magic: () => {
       tone({ f: 55, to: 32, d: 2.4, v: 0.5 });                                                     // 진이 깔리는 둔중한 울림
       noise({ d: 2.2, type: 'lowpass', f: 700, to: 90, v: 0.4, wet: true });
@@ -1728,7 +1757,14 @@ const Sfx = (() => {
       noise({ d: 0.1, type: 'highpass', f: 2500, v: 0.3, at: 7.9 });
       [587.3, 740, 880, 1174.7].forEach(f => tone({ f, d: 2.4, type: 'triangle', v: 0.05, at: 7.92, wet: true }));
     },
-    dark: () => { tone({ f: 110, to: 55, d: 2.0, type: 'sawtooth', v: 0.05, a: 0.4 }); tone({ f: 116, to: 58, d: 2.0, type: 'sawtooth', v: 0.04, a: 0.4 }); },
+    // 블랙홀(6초) — 빨려 드는 저음, 번개 지직, 닫힐 때 '훕' 하고 빛을 뱉는다.
+    dark: () => {
+      pad({ fs: [55, 58.3, 82.4], d: 5.6, v: 0.05, a: 1.2, rel: 0.8, cut0: 120, cut1: 900 });
+      noise({ d: 5.2, type: 'bandpass', f: 300, to: 1200, q: 3, v: 0.08, a: 1.5, lfo: [0.6, 150] });
+      for (let i = 0; i < 7; i++) noise({ d: 0.12, type: 'highpass', f: 2500, v: 0.14, at: 0.6 + i * 0.6 + Math.random() * 0.3 });
+      tone({ f: 40, to: 180, d: 0.5, v: 0.35, at: 5.0 });
+      noise({ d: 0.9, type: 'lowpass', f: 2500, to: 200, v: 0.35, at: 5.35, wet: true });
+    },
     ghost: () => { tone({ f: 420, to: 260, d: 1.6, v: 0.12, a: 0.3, vib: [5, 18], wet: true }); tone({ f: 560, to: 330, d: 1.3, v: 0.05, a: 0.3, at: 0.4, vib: [6, 22], wet: true }); },
     ufo: () => { tone({ f: 600, to: 900, d: 1.8, v: 0.1, a: 0.2, vib: [9, 160] }); tone({ f: 1200, d: 1.6, type: 'triangle', v: 0.03, a: 0.2, vib: [9, 300] }); },
     // 폭죽은 실제 로켓이 뜨고 터지는 순간에 맞춰 따로 울린다.
@@ -4001,25 +4037,36 @@ function initFx() {
   fx.sizeFn();
   window.addEventListener('resize', fx.sizeFn);
 
-  fx.boom = (x, y, big, snd) => {
+  // 모양: peony(국화, 기본) · willow(금빛 버들 — 오래 늘어짐) · ring(고리) · crackle(흩어진 뒤 타닥 터짐)
+  fx.boom = (x, y, big, snd, shape) => {
     if (snd) sfx('boom', big);
+    shape = shape || (snd ? ['peony', 'willow', 'ring', 'crackle'][Math.floor(Math.random() * 4)] : 'peony');
     const n = big ? 130 : 80;
     const hues = fxHues();
     const hue = hues[Math.floor(Math.random() * hues.length)];
     const hue2 = Math.random() < 0.35 ? hues[Math.floor(Math.random() * hues.length)] : hue;
+    const tilt = Math.random() * 6.28;
     for (let i = 0; i < n; i++) {
-      const a = (Math.PI * 2 * i) / n + Math.random() * 0.25;
-      const sp = (big ? 4.8 : 3.4) * (0.35 + Math.random() * 0.65);
-      const h = (i % 2 === 0 ? hue : hue2) + Math.random() * 18 - 9;
-      fx.ps.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, dec: 0.0042 + Math.random() * 0.0046, hue: h, r: big ? 2.6 : 2.0, tw: Math.random() < 0.45 ? 6 + Math.random() * 7 : 0, ph: Math.random() * 6.28, t: 0 });
+      const a = (Math.PI * 2 * i) / n + (shape === 'ring' ? 0 : Math.random() * 0.25);
+      let sp = (big ? 4.8 : 3.4) * (shape === 'ring' ? 0.9 : 0.35 + Math.random() * 0.65);
+      let vx = Math.cos(a) * sp, vy = Math.sin(a) * sp;
+      if (shape === 'ring') { const c = Math.cos(tilt), s2 = Math.sin(tilt); vy *= 0.45; [vx, vy] = [vx * c - vy * s2, vx * s2 + vy * c]; }
+      const willow = shape === 'willow';
+      const h = willow ? 40 + Math.random() * 10 : (i % 2 === 0 ? hue : hue2) + Math.random() * 18 - 9;
+      fx.ps.push({ x, y, px: x, py: y, vx, vy, life: 1,
+        dec: willow ? 0.0022 + Math.random() * 0.0016 : 0.0042 + Math.random() * 0.0046,
+        hue: h, r: big ? 2.6 : 2.0, tw: Math.random() < 0.45 ? 6 + Math.random() * 7 : 0, ph: Math.random() * 6.28, t: 0,
+        grav: willow ? 0.045 : 0, crackle: shape === 'crackle' && Math.random() < 0.5 });
     }
+    // 터지는 순간 하늘이 한 번 환해진다
+    if (snd) fx.flash = Math.max(fx.flash || 0, big ? 0.22 : 0.14);
     for (let i = 0; i < (big ? 22 : 12); i++) {
       const a = Math.random() * Math.PI * 2, sp = 0.8 + Math.random() * 0.9;
       fx.ps.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, dec: 0.0036 + Math.random() * 0.004, hue: 48 + Math.random() * 12, r: 1.6, tw: 9, ph: Math.random() * 6.28, t: 0 });
     }
     if (big) {
       [420, 780].forEach(t => setTimeout(() => {
-        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false, snd);
+        fx.boom(x + (Math.random() - 0.5) * 140, y + (Math.random() - 0.5) * 100, false, snd, shape === 'willow' ? 'peony' : shape);
         fx.kick();
       }, t));
     }
@@ -4037,6 +4084,11 @@ function initFx() {
 
   const step = () => {
     ctx.clearRect(0, 0, fx.w, fx.h);
+    if (fx.flash > 0.005) {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = `rgba(255,236,200,${fx.flash.toFixed(3)})`; ctx.fillRect(0, 0, fx.w, fx.h);
+      fx.flash *= 0.86;
+    }
     ctx.globalCompositeOperation = 'lighter';
     ctx.lineCap = 'round';
     for (let i = fx.rs.length - 1; i >= 0; i--) {
@@ -4051,10 +4103,18 @@ function initFx() {
       const p = fx.ps[i];
       p.px = p.x; p.py = p.y;
       p.x += p.vx; p.y += p.vy;
-      p.vx *= 0.966; p.vy = p.vy * 0.966 + 0.022;
+      p.vx *= 0.966; p.vy = p.vy * 0.966 + 0.022 + (p.grav || 0) * 0.3;
       p.life -= p.dec;
       p.t += 1;
       if (p.life <= 0) { fx.ps.splice(i, 1); continue; }
+      // 딱총 — 날아가다 한 번 흰 불똥으로 쪼개진다
+      if (p.crackle && p.life < 0.55) {
+        p.crackle = false;
+        for (let j = 0; j < 4; j++) {
+          const a = Math.random() * 6.28, sp = 0.8 + Math.random() * 1.2;
+          fx.ps.push({ x: p.x, y: p.y, px: p.x, py: p.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0.5, dec: 0.02, hue: 50, r: 1.4, tw: 3, ph: 0, t: 0 });
+        }
+      }
       const flick = p.tw ? (0.62 + 0.38 * Math.sin(p.t / p.tw * 6.28 + p.ph)) : 1;
       ctx.strokeStyle = 'hsla(' + p.hue + ',90%,' + (52 + p.life * 26) + '%,' + (p.life * flick) + ')';
       ctx.lineWidth = p.r * p.life + 0.4;
@@ -4247,12 +4307,13 @@ function isNightNow() {
 }
 
 /** 누를 때마다 폭죽 하나씩 (프로젝트 완료 여부와 무관). */
+/** 🎆 폭죽 버튼 — 로켓 여섯 발을 1.8초에 걸쳐 쏘아 올린다. 모양(국화·버들·고리·딱총)은 매번 섞인다. */
 function launchFireworks() {
   if (reducedMotion) return;
   const f = initFx();
   if (!f) return;
-  f.rocket(true);   // 버튼으로 쏜 것만 소리를 낸다 (완료 축포·잔잔한 불꽃은 조용히)
-  f.kick();
+  // 버튼으로 쏜 것만 소리를 낸다 (완료 축포·잔잔한 불꽃은 조용히)
+  [0, 260, 620, 900, 1300, 1750].forEach((d) => setTimeout(() => { f.rocket(true); f.kick(); }, d));
 }
 
 function celebrate(targetPct, isCompleted, allowFireworks = true) {
@@ -4461,101 +4522,6 @@ function initComet() {
   requestAnimationFrame(draw);
 }
 
-/* ===== 버튼 이펙트 : 꽃잎 · 반딧불이용 파티클 레이어 ===== */
-let fx2 = null;
-function initFx2() {
-  if (fx2) return fx2;
-  const cv = document.createElement('canvas');
-  cv.id = 'fx2Canvas';
-  cv.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(cv);
-  fx2 = { cv, parts: [], loop: null };
-  return fx2;
-}
-
-/** 지금 계절 (버튼 이름·이모지·꽃잎 색이 같은 값을 쓴다) */
-function currentSeason() {
-  const m = new Date().getMonth();
-  if (m >= 2 && m <= 4) return { label: '🌸 꽃잎', color: '#f7c8d8', speed: 1 };
-  if (m >= 5 && m <= 7) return { label: '🍃 초록잎', color: '#8fd6a8', speed: 1.15 };
-  if (m >= 8 && m <= 10) return { label: '🍁 낙엽', color: '#f2b84a', speed: 1.9 };
-  return { label: '❄️ 눈', color: '#eef5f2', speed: 0.8 };
-}
-
-function fx2Spawn(kind) {
-  if (reducedMotion) return;
-  const f = initFx2();
-  const W = window.innerWidth, H = window.innerHeight;
-  const rand = (a, b) => a + Math.random() * (b - a);
-  // 계절에 맞춰 꽃잎 / 낙엽 / 눈으로 바뀐다.
-  const season = currentSeason();
-  if (kind === 'petal') {
-    for (let i = 0; i < 26; i++) f.parts.push({
-      kind, x: rand(0, W), y: rand(-H * 0.6, -10), vx: rand(-0.35, 0.35) * season.speed, vy: rand(0.7, 1.7) * season.speed,
-      r: rand(3, 6.5), rot: rand(0, 6.28), spin: rand(-0.03, 0.03), sway: rand(0.5, 1.5),
-      tw: rand(0, 6.28), life: 1, decay: 0.0016, color: season.color, delay: i * 90,
-    });
-  } else {
-    for (let i = 0; i < 22; i++) f.parts.push({
-      kind: 'firefly', x: rand(0.05, 0.95) * W, y: rand(0.15, 0.95) * H,
-      vx: rand(-0.35, 0.35), vy: rand(-0.45, 0.2), tw: rand(0, 6.28),
-      r: rand(1.4, 2.8), life: 1, decay: rand(0.0022, 0.0045), delay: i * 45,
-    });
-  }
-  if (f.loop) return;
-  let last = performance.now();
-  const draw = (now) => {
-    const fit = fitCanvas(f.cv);
-    if (!fit) { f.loop = requestAnimationFrame(draw); return; }
-    const { w, h, ctx } = fit;
-    const dt = Math.min(40, Math.max(0, now - last)); last = now;
-    const acc = accentColor();
-    ctx.clearRect(0, 0, w, h);
-    f.parts = f.parts.filter((p) => {
-      if (p.delay > 0) { p.delay -= dt; return true; }
-      if (p.kind === 'petal') {
-        p.tw += 0.03 * dt / 16;
-        p.x += (p.vx + Math.sin(p.tw) * p.sway) * dt / 16;
-        p.y += p.vy * dt / 16; p.rot += p.spin * dt / 16;
-        if (p.y > h + 20) p.life = 0;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-        ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
-        ctx.fillStyle = p.color;
-        ctx.beginPath(); ctx.ellipse(0, 0, p.r * 1.6, p.r * 0.8, 0, 0, 6.284); ctx.fill();
-        ctx.restore(); ctx.globalAlpha = 1;
-      } else {
-        p.tw += 0.05 * dt / 16;
-        p.vx = Math.max(-0.7, Math.min(0.7, p.vx + (Math.random() - 0.5) * 0.05));
-        p.vy = Math.max(-0.7, Math.min(0.7, p.vy + (Math.random() - 0.5) * 0.05));
-        p.x += p.vx * dt / 16; p.y += p.vy * dt / 16; p.life -= p.decay * dt / 16;
-        // 반짝임에 맞춰 밝기가 오르내리고, 겹칠수록 빛이 더해지는 glow.
-        const glow = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(p.tw));
-        const al = glow * Math.max(0, p.life);
-        const R = p.r * (7 + glow * 5);
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, R);
-        g.addColorStop(0, hexAlpha('#ffffff', 0.85 * al));
-        g.addColorStop(0.16, hexAlpha(acc, 0.5 * al));
-        g.addColorStop(0.45, hexAlpha(acc, 0.14 * al));
-        g.addColorStop(1, hexAlpha(acc, 0));
-        ctx.fillStyle = g;
-        ctx.fillRect(p.x - R, p.y - R, R * 2, R * 2);
-        ctx.globalAlpha = al;
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowBlur = 16; ctx.shadowColor = acc;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * (0.85 + glow * 0.35), 0, 6.284); ctx.fill();
-        ctx.restore();
-        ctx.globalAlpha = 1;
-      }
-      return p.life > 0 && p.y < h + 120;
-    });
-    if (f.parts.length) f.loop = requestAnimationFrame(draw);
-    else { ctx.clearRect(0, 0, w, h); f.loop = null; }
-  };
-  f.loop = requestAnimationFrame(draw);
-}
-
 /** 화면 전체 위에 잠깐 얹는 레이어. */
 function fxLayer(css, ms) {
   const el = document.createElement('div');
@@ -4567,39 +4533,65 @@ function fxLayer(css, ms) {
   return el;
 }
 
-/** 🌠 별똥별 소나기 — 기존 별똥별을 20개 연달아 */
-function meteorShower() {
-  if (reducedMotion) return;
-  const f = initFx();
-  if (!f) return;
-  for (let i = 0; i < 7; i++) {
-    const d = i * 420 + Math.random() * 220;
-    setTimeout(() => { f.meteor(); f.kick(); }, d);
-  }
-}
-
-/** ✂️ 화면 컷편집 */
+/** ✂️ 화면 컷편집 — 빛나는 칼선이 화면을 사선으로 긋고, 화면이 그 선을 따라 두 조각으로
+    갈라져 어긋났다가 다시 붙는다. 칼선을 따라 불똥이 튄다. */
 function fxScreenCut() {
   if (reducedMotion) return;
   const page = document.querySelector('.page');
-  const line = fxLayer('left:-20%;right:-20%;top:46%;height:2px;background:#fff;box-shadow:0 0 16px 4px rgba(255,255,255,.7);transform:rotate(-8deg)', 700);
-  if (line && line.animate) line.animate([
-    { opacity: 0, transform: 'rotate(-8deg) scaleX(0)' },
-    { opacity: 1, transform: 'rotate(-8deg) scaleX(1)', offset: 0.45 },
-    { opacity: 0, transform: 'rotate(-8deg) scaleX(1)' },
-  ], { duration: 650, easing: 'ease-out' });
+  const W = innerWidth, H = innerHeight, ANG = -9 * Math.PI / 180;
+  const y0 = H * NR(0.35, 0.55);
+  const cutY = (x) => y0 + Math.tan(ANG) * (x - W / 2);   // 화면 좌표에서 칼선의 높이
+  const line = fxLayer(`left:-20%;right:-20%;top:${y0}px;height:3px;background:#fff;box-shadow:0 0 18px 5px rgba(255,255,255,.8),0 0 40px 10px rgba(120,220,255,.45);transform:rotate(${ANG}rad)`, 900);
+  line.animate([
+    { opacity: 1, transform: `rotate(${ANG}rad) scaleX(0)`, transformOrigin: 'left center' },
+    { opacity: 1, transform: `rotate(${ANG}rad) scaleX(1)`, transformOrigin: 'left center', offset: 0.3 },
+    { opacity: 0, transform: `rotate(${ANG}rad) scaleX(1) scaleY(3)`, transformOrigin: 'left center' },
+  ], { duration: 880, easing: 'ease-out', fill: 'forwards' });
+  // 칼선을 따라 튀는 불똥
+  natRun('cutSparks', 1.2, () => {
+    const P = Array.from({ length: 70 }, (_, i) => {
+      const x = (i / 70) * W;
+      return { x, y: cutY(x), vx: NR(-1, 3), vy: NR(-4, 2), life: 1, d: (i / 70) * 0.25 };
+    });
+    return (ctx, w, h, t, k, f) => {
+      ctx.globalCompositeOperation = 'lighter';
+      for (const p of P) {
+        if (t < p.d) continue;
+        p.x += p.vx * f; p.y += p.vy * f; p.vy += 0.2 * f; p.life -= 0.03 * f;
+        if (p.life <= 0) continue;
+        ctx.globalAlpha = p.life; ctx.fillStyle = '#fff6d0';
+        ctx.fillRect(p.x, p.y, 2, 2);
+      }
+    };
+  });
   if (!page) return;
+  // 화면을 두 장으로 — 원본은 칼선 아래, 복제본은 칼선 위만 남겨 서로 반대로 민다.
   setTimeout(() => {
-    page.style.transition = 'transform .45s cubic-bezier(.2,1.5,.4,1)';
-    page.style.transform = 'translateX(14px) skewX(-1.5deg)';
-    setTimeout(() => { page.style.transform = ''; }, 220);
-    setTimeout(() => { page.style.transition = ''; }, 720);
-  }, 300);
+    const r = page.getBoundingClientRect();
+    const clone = page.cloneNode(true);
+    clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+    clone.removeAttribute('id');
+    clone.setAttribute('aria-hidden', 'true');
+    Object.assign(clone.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, margin: '0',
+      pointerEvents: 'none', zIndex: '9990', background: 'var(--bg)' });
+    const y1 = cutY(r.left) - r.top, y2 = cutY(r.right) - r.top;
+    clone.style.clipPath = `polygon(0 0, 100% 0, 100% ${y2}px, 0 ${y1}px)`;
+    page.style.clipPath = `polygon(0 ${y1}px, 100% ${y2}px, 100% 100%, 0 100%)`;
+    document.body.appendChild(clone);
+    const move = (el, dx, dy, rot) => el.animate([
+      { transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.35 },
+      { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: 0.6 }, { transform: 'none' },
+    ], { duration: 700, easing: 'cubic-bezier(.2,.9,.3,1)' });
+    move(clone, -16, -12, -0.8);
+    move(page, 16, 12, 0.8).onfinish = () => { clone.remove(); page.style.clipPath = ''; };
+  }, 180);
 }
 
-/** 🎰 숫자 슬롯 — 화면의 숫자가 돌다 멈춘다 */
+/** 🎰 슬롯 — 화면 가운데 슬롯머신이 내려와 릴 세 개가 돌다 차례로 멈춘다. 셋이 맞으면 잭팟
+    (코인 폭발). 그동안 화면의 숫자들도 같이 돌다 멈춘다. */
 function fxSlot() {
   if (reducedMotion) return;
+  slotMachine();
   const digits = '0123456789';
   // 날짜·경과 시간·비율까지, 화면에서 숫자가 들어간 잎 요소를 모두 돌린다.
   const targets = [...document.querySelectorAll('.page *')]
@@ -4622,6 +4614,57 @@ function fxSlot() {
     requestAnimationFrame(step);
     setTimeout(() => { if (el._slotRun === run) el.textContent = final; }, dur + 200);
   });
+}
+
+function slotMachine() {
+  if (document.querySelector('.slotBox')) return;
+  const SYM = ['🎬', '✂️', '🎞️', '🌄', '💎', '7️⃣'];
+  const win = Math.random() < 0.4;
+  const pickSym = () => SYM[Math.floor(Math.random() * SYM.length)];
+  let res = win ? Array(3).fill(pickSym()) : [pickSym(), pickSym(), pickSym()];
+  if (!win && res[0] === res[1] && res[1] === res[2]) res[2] = SYM[(SYM.indexOf(res[2]) + 1) % SYM.length];
+  const box = document.createElement('div');
+  box.className = 'slotBox';
+  box.setAttribute('aria-hidden', 'true');
+  box.innerHTML = `<div class="slotTop mono">JACKPOT</div><div class="slotReels">${res.map(() => '<div class="slotReel"><div class="slotStrip"></div></div>').join('')}</div>`;
+  document.body.appendChild(box);
+  const H = 64;
+  const reels = [...box.querySelectorAll('.slotStrip')];
+  reels.forEach((strip, i) => {
+    const n = 18 + i * 6;
+    const items = Array.from({ length: n }, pickSym);
+    items.push(res[i]);
+    strip.innerHTML = items.map(e => `<span>${e}</span>`).join('');
+    const stopAt = 700 + i * 380;
+    strip.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-(items.length - 1) * H}px)` }],
+      { duration: stopAt, easing: 'cubic-bezier(.15,.6,.25,1.04)', fill: 'forwards' });
+    setTimeout(() => { sfx('reelStop'); strip.parentElement.classList.add('stopped'); }, stopAt);
+  });
+  const end = 700 + 2 * 380;
+  setTimeout(() => {
+    if (win) {
+      box.classList.add('win');
+      sfx('jackpot');
+      const r = box.getBoundingClientRect();
+      natRun('coins', 3, () => {
+        const P = Array.from({ length: 90 }, () => {
+          const a = -Math.PI / 2 + NR(-1.1, 1.1), sp = NR(5, 14);
+          return { x: r.left + r.width / 2, y: r.top + r.height / 2, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, rot: NR(0, 6.28), sp2: NR(0.1, 0.3), r: NR(6, 10) };
+        });
+        return (ctx, w, h, t, k, f) => {
+          const al = natFade(k, 0.01, 0.25);
+          for (const p of P) {
+            p.vy += 0.3 * f; p.x += p.vx * f; p.y += p.vy * f; p.rot += p.sp2 * f;
+            const sx = Math.abs(Math.cos(p.rot));
+            ctx.globalAlpha = al; ctx.fillStyle = '#f5c542'; ctx.strokeStyle = '#a8740e'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * Math.max(0.15, sx), p.r, 0, 0, 6.284); ctx.fill(); ctx.stroke();
+            if (sx > 0.9) { ctx.fillStyle = '#fff6c8'; ctx.beginPath(); ctx.ellipse(p.x - p.r * 0.25, p.y - p.r * 0.3, p.r * 0.25, p.r * 0.2, 0, 0, 6.284); ctx.fill(); }
+          }
+        };
+      });
+    } else sfx('slotMiss');
+  }, end + 60);
+  setTimeout(() => { box.classList.add('out'); setTimeout(() => box.remove(), 400); }, end + (win ? 1700 : 1000));
 }
 
 /* ===== 06 + 12 은하수 패럴랙스 (밤에만) — 별 수는 마지막 기록 이후 흐른 시간에 비례 ===== */
@@ -4756,8 +4799,8 @@ function initFxButtons() {
     btnPrGarden: 'butterfly', btnFly: 'firefly',
     btnMgCircle: 'magic', btnMgDark: 'dark', btnHrHaunt: 'ghost', btnSpUfo: 'ufo',
   };
-  wire('btnMeteor', meteorShower);
-  wire('btnFly', () => fx2Spawn('firefly'));
+  wire('btnMeteor', fxMeteorStorm);
+  wire('btnFly', fxFireflies);
   wire('btnCut', fxScreenCut);
   wire('btnSlot', fxSlot);
 
