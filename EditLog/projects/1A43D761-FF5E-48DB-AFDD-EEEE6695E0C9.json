@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "자막 입력",
+  "currentStage" : "자막 디자인",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -204,11 +204,54 @@
       "categorySymbol" : "captions.bubble",
       "elapsed" : "23시간 8분",
       "timestamp" : "2026-09-24T15:42:30Z",
-      "videoLength" : "19"
+      "videoLength" : "9"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "22시간 21분",
+      "timestamp" : "2026-09-25T14:03:54Z",
+      "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "51분",
+      "timestamp" : "2026-09-25T14:55:23Z",
+      "videoLength" : "13"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "35분",
+      "memo" : "끝나는게 어색해서 영상 더붙여서 컷편집하고 자막작업 진행",
+      "timestamp" : "2026-09-25T15:30:46Z",
+      "videoLength" : "15"
+    },
+    {
+      "category" : "추가 영상 삽입",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "31분",
+      "timestamp" : "2026-09-25T16:02:12Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "맞춤법 검사",
+      "categorySymbol" : "text.badge.checkmark",
+      "elapsed" : "25분",
+      "timestamp" : "2026-09-25T16:27:41Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "9분",
+      "timestamp" : "2026-09-25T16:36:43Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 15,
-  "lastUpdate" : "2026-09-25T13:44:54Z",
+  "entryCount" : 21,
+  "lastUpdate" : "2026-09-25T17:16:10Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
