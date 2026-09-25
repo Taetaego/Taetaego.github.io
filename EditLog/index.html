@@ -199,10 +199,11 @@
   }
   .heatCell { aspect-ratio: 1; border-radius: 3px; background: var(--surface2);
               animation: heatIn .4s ease both; transition: opacity .25s ease; }
-  .heatCell.l1 { background: color-mix(in srgb, var(--accent) 32%, var(--surface2)); }
-  .heatCell.l2 { background: color-mix(in srgb, var(--accent) 56%, var(--surface2)); }
-  .heatCell.l3 { background: color-mix(in srgb, var(--accent) 80%, var(--surface2)); }
-  .heatCell.l4 { background: var(--accent); }
+  /* 많이 달린 날일수록 민트 → 하늘 → 보라로 달아오른다 (앱과 같은 단계). */
+  .heatCell.l1 { background: color-mix(in srgb, var(--grp-1) 35%, var(--surface2)); }
+  .heatCell.l2 { background: color-mix(in srgb, var(--grp-1) 75%, var(--surface2)); }
+  .heatCell.l3 { background: var(--grp-2); box-shadow: 0 0 6px color-mix(in srgb, var(--grp-2) 60%, transparent); }
+  .heatCell.l4 { background: var(--grp-3); box-shadow: 0 0 8px color-mix(in srgb, var(--grp-3) 70%, transparent); }
   .heatCell.today { outline: 1.5px solid var(--ink2); outline-offset: 1px; }
   .heatCell.out { opacity: .22; }
   .heatCell.future { visibility: hidden; }
@@ -318,7 +319,10 @@
     transition: color .18s ease, border-color .18s ease, background-color .18s ease;
   }
   @media (hover: hover) {
-    .pastBtn:hover { color: var(--accent2); border-color: var(--accent); background: var(--soft); }
+    .pastBtn:hover {
+      color: var(--ink); border-color: transparent;
+      background: linear-gradient(var(--surface2), var(--surface2)) padding-box, var(--grad) border-box;
+    }
   }
   .pastBtn:active { transform: scale(0.97); }
 
@@ -367,34 +371,14 @@
   .themeToggle button { border: none; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: 0.1em; padding: 6px 8px; border-radius: 99px; background: transparent; color: var(--ink3); }
   .themeToggle button.active { background: var(--tg-on-bg); color: var(--tg-on-ink); }
 
-  /* 브랜드·시계·테마·색 모두 한 줄에. */
+  /* 브랜드·지난 에피소드·테마 모두 한 줄에. */
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-  .accentPicker { display: flex; gap: 7px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .topRight { position: relative; }
-  /* 색 고르기가 펼쳐져도 줄에서 차지하던 자리는 그대로 둔다 — 안 그러면 왼쪽 버튼들이 밀린다 */
-  .accentSlot { position: relative; flex: none; }
-  /* 폰에선 고른 색 하나만 보이고, 누르면 나머지가 아래로 펼쳐진다 */
-  @media (max-width: 560px) {
-    .accentPicker:not(.open) .accentSwatch:not([aria-pressed="true"]) { display: none; }
-    .accentPicker.open {
-      position: absolute; right: 0; top: calc(100% + 6px); z-index: 20;
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-    }
-  }
   .logHead .sm { display: none; }
   @media (max-width: 560px) {
     .logHead .lg { display: none; }
     .logHead .sm { display: inline; }
   }
-  .accentSwatch {
-    position: relative; width: 17px; height: 17px; padding: 0; border: none; border-radius: 50%; cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
-    transition: transform .15s ease;
-  }
-  /* 선택 표시 링이 옆 스와치의 영역까지 번지므로, 선택된 것이 이웃 위에 그려지게 한다. */
-  .accentSwatch[aria-pressed="true"] { z-index: 1; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 2px var(--surface), 0 0 0 3.5px currentColor; }
-  .accentSwatch:active { transform: scale(0.9); }
-
   /* 히어로: 원형 게이지 */
   .hero { display: flex; align-items: center; gap: 18px; padding: 22px 18px; cursor: pointer;
           position: relative; overflow: hidden; isolation: isolate; }
@@ -709,8 +693,8 @@
   }
   @keyframes lenFill { from { transform: scaleX(0); } }
   .lenRow.orig .lenFill { background: color-mix(in srgb, var(--ink3) 70%, transparent); }
-  .lenRow.cut .lenFill { background: var(--accent); }
-  .lenRow.final .lenFill { background: linear-gradient(90deg, var(--accent), var(--gold)); }
+  .lenRow.cut .lenFill { background: linear-gradient(90deg, var(--grp-1), var(--grp-2)); }
+  .lenRow.final .lenFill { background: linear-gradient(90deg, var(--grp-1), var(--grp-3), var(--gold)); }
   .lenVal { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; min-width: 76px; }
   .lenRow .value { font-size: 14px; line-height: 1; white-space: nowrap; }
   .lenRow .ratio { font-size: 10px; color: var(--ink3); white-space: nowrap; }
@@ -1079,6 +1063,51 @@
     /* 넓어진 폭을 카테고리 열이 독차지하지 않도록 재배분 (모바일은 고정폭 유지) */
     .logHead, .logRow { grid-template-columns: minmax(110px, 1.5fr) 1fr 1.1fr 1.2fr var(--memoCol, 0px); }
   }
+  /* ===== 그라데이션 =====
+     앱과 같은 흐름 — 단계 그룹 색(민트 → 하늘 → 보라 → 분홍)을 잇는다. 테마마다 --grp가
+     대비에 맞게 바뀌므로 그대로 따라간다. */
+  html { --grad: linear-gradient(90deg, var(--grp-1), var(--grp-2), var(--grp-3), var(--grp-4)); }
+  .gradText, .brand, .logDay {
+    background: var(--grad); -webkit-background-clip: text; background-clip: text;
+    color: transparent; -webkit-text-fill-color: transparent;
+  }
+  .brand { font-weight: 800; font-size: 14.5px; width: fit-content; }
+  .logDay { width: fit-content; font-weight: 700; }
+  /* 뒤에서 은은하게 번지는 오로라 */
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(55% 45% at 8% 0%, color-mix(in srgb, var(--grp-1) 16%, transparent), transparent 70%),
+      radial-gradient(45% 40% at 96% 12%, color-mix(in srgb, var(--grp-3) 14%, transparent), transparent 70%),
+      radial-gradient(55% 45% at 70% 100%, color-mix(in srgb, var(--grp-4) 11%, transparent), transparent 70%),
+      radial-gradient(40% 35% at 0% 75%, color-mix(in srgb, var(--grp-2) 10%, transparent), transparent 70%);
+  }
+  /* 켜진 토글 — 그라데이션 알약 */
+  .rangeToggle button.active, .themeToggle button.active {
+    background: var(--grad); color: var(--on-accent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--grp-2) 45%, transparent);
+  }
+  /* 히어로 테두리에 그라데이션 한 줄 */
+  #summaryCard.card::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.2px; z-index: 2;
+    background: var(--grad); pointer-events: none; opacity: .85;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  /* 도넛 가운데 % 도 그라데이션 (물결 보기에선 배경 위라 흰 글자 유지) */
+  .donut:not(.liquid) .pct {
+    background: linear-gradient(180deg, var(--ink), var(--grp-1) 60%, var(--grp-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  }
+  /* 카드에 마우스를 올리면 단계 색으로 은은하게 빛난다 (완료 카드는 자체 금빛이 있어 뺀다) */
+  @media (hover: hover) {
+    .card:not(#doneCard) { transition: box-shadow .25s ease, transform .25s ease; }
+    .card:not(#doneCard):hover {
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--grp-2) 45%, transparent),
+                  0 12px 34px color-mix(in srgb, var(--grp-3) 20%, transparent);
+    }
+  }
+  /* 그라데이션 글자는 색 대신 배경을 쓰므로, 앞에서 준 color보다 이 규칙이 뒤에 와야 한다. */
 </style>
 </head>
 <body>
@@ -1092,7 +1121,6 @@
           <button type="button" data-mode="light">LIGHT</button>
           <button type="button" data-mode="dark">DARK</button>
         </div>
-        <div class="accentPicker" id="accentPicker" title="하이라이트 색"></div>
       </div>
     </div>
 
@@ -2050,7 +2078,10 @@ function donutRing(pct) {
   const p = Math.max(0, Math.min(100, Number(pct) || 0));
   const deg = p * 3.6;
   const a = (deg - RING_FEATHER).toFixed(2), b = (deg + RING_FEATHER).toFixed(2);
-  return `conic-gradient(var(--accent) 0deg ${a}deg, var(--surface2) ${b}deg 360deg)`;
+  // 채운 만큼 민트 → 하늘 → 보라 → 분홍으로 흐른다 (앱 링과 같은 그라데이션).
+  const d = Math.max(Number(a), 0.01);
+  return `conic-gradient(var(--grp-1) 0deg, var(--grp-2) ${(d * 0.36).toFixed(2)}deg, ` +
+    `var(--grp-3) ${(d * 0.7).toFixed(2)}deg, var(--grp-4) ${a}deg, var(--surface2) ${b}deg 360deg)`;
 }
 
 /** 도넛 링을 끊어주는 눈금. 단계 경계마다 하나씩, 그리고 12시(시작점)에도 하나.
@@ -2861,103 +2892,20 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-/* ===== 하이라이트 색 (LIGHT/DARK 옆에서 선택) =====
-   테마별로 대비가 맞는 짝을 미리 정해두고 --accent / --accent2 / --soft만 덮어쓴다. */
-/* warn은 '편집 중' 표식 색. 하이라이트 색과 겹치면 "지금 여기"가 묻히므로 짝을 따로 정한다.
-   카테고리 색(색상환 163·202·247·289°)과도 겹치지 않게 따뜻한 쪽에서 고른다.
-   앰버·코랄은 기본 앰버와 너무 가까워(0°·31°) 각각 분홍·라임으로 바꾼다. */
-const ACCENTS = {
-  mint:     { label: '민트',   dark: ['#34e0b0', '#8ff0d4'], light: ['#0f9b78', '#076b52'], warn: ['#f2b84a', '#a3690c'] },
-  blue:     { label: '블루',   dark: ['#5ab8f0', '#a9dcfb'], light: ['#1a7fb8', '#0d5580'], warn: ['#f2b84a', '#a3690c'] },
-  amber:    { label: '앰버',   dark: ['#f2b84a', '#ffd98a'], light: ['#a3690c', '#7a4d06'], warn: ['#ff7a94', '#c01e46'] },
-  coral:    { label: '코랄',   dark: ['#ff8f6b', '#ffbfa8'], light: ['#c8502a', '#93361a'], warn: ['#dfe84a', '#6f7a06'] },
-  lavender: { label: '라벤더', dark: ['#b39cf0', '#d6c8ff'], light: ['#6a4fbf', '#4b3590'], warn: ['#f2b84a', '#a3690c'] },
-};
-
-function accentSoft(hex, a) {
-  const m = /^#([0-9a-f]{6})$/i.exec(hex);
-  if (!m) return hex;
-  const n = parseInt(m[1], 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
-}
-
-let accentKey = 'mint';
-
-function applyAccent(key) {
-  if (!ACCENTS[key]) key = 'mint';
-  accentKey = key;
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const [accent, accent2] = ACCENTS[key][isLight ? 'light' : 'dark'];
-  const root = document.documentElement.style;
-  root.setProperty('--accent', accent);
-  root.setProperty('--accent2', accent2);
-  root.setProperty('--soft', accentSoft(accent, isLight ? 0.12 : 0.14));
-  root.setProperty('--tg-on-ink', accent2);
-  // '편집 중' 색은 하이라이트마다 짝지어 둔 값으로 (같은 색이 되어 묻히지 않게).
-  const warn = (ACCENTS[key].warn || ['#f2b84a', '#a3690c'])[isLight ? 1 : 0];
-  root.setProperty('--warn', warn);
-  root.setProperty('--warn-soft', accentSoft(warn, isLight ? 0.14 : 0.16));
-  // 카테고리 그룹 색(--grp-1~4)은 건드리지 않는다 — 하이라이트 색을 바꿔도
-  // 단계·칩·기록 행의 카테고리 색은 그대로 유지돼야 한다.
-  // 캔버스 이펙트가 즉시 새 색을 쓰게 캐시를 버린다 (선언보다 먼저 불릴 수 있어 방어)
-  if (typeof _accCache === 'object' && _accCache) _accCache.t = -1e9;
-  document.querySelectorAll('.accentSwatch').forEach((b) => {
-    b.setAttribute('aria-pressed', String(b.dataset.accent === key));
-    b.style.color = accent;
-  });
-  try { localStorage.setItem('accent', key); } catch (e) {}
-}
-
-
-function initAccentPicker() {
-  const host = document.getElementById('accentPicker');
-  if (!host) return;
-  host.innerHTML = Object.entries(ACCENTS).map(([key, v]) =>
-    `<button type="button" class="accentSwatch" data-accent="${key}" aria-pressed="false" aria-label="${v.label}" title="${v.label}" style="background:${v.dark[0]}"></button>`
-  ).join('');
-  // 펼칠 때 색 고르기는 줄 밖으로 떠오른다. 그 자리를 이 틀이 접힌 크기 그대로 붙잡고 있어야
-  // 🗂·LIGHT/DARK가 옆으로 밀리지 않는다.
-  const slot = document.createElement('div');
-  slot.className = 'accentSlot';
-  host.replaceWith(slot);
-  slot.appendChild(host);
-  const open = () => {
-    slot.style.width = host.offsetWidth + 'px';
-    slot.style.height = host.offsetHeight + 'px';
-    host.classList.add('open');
-  };
-  const close = () => {
-    host.classList.remove('open');
-    slot.style.width = slot.style.height = '';
-  };
-  host.addEventListener('click', (e) => {
-    const b = e.target.closest('.accentSwatch');
-    if (!b) return;
-    // 폰에선 고른 색 하나만 보이다가, 누르면 펼쳐지고 하나 고르면 다시 접힌다.
-    if (matchMedia('(max-width: 560px)').matches && !host.classList.contains('open')) {
-      open();
-      return;
-    }
-    applyAccent(b.dataset.accent);
-    close();
-  });
-  document.addEventListener('click', (e) => {
-    if (host.classList.contains('open') && !host.contains(e.target)) close();
-  });
-  let saved = null;
-  try { saved = localStorage.getItem('accent'); } catch (e) {}
-  applyAccent(saved || 'mint');
-}
+/* ===== 강조색 =====
+   예전엔 하이라이트 색을 고를 수 있었는데, 이제 앱과 같은 그라데이션(단계 그룹 색
+   민트 → 하늘 → 보라 → 분홍) 하나로 간다. 예전에 골라 둔 값은 지워 둔다. */
+try { localStorage.removeItem('accent'); } catch (e) {}
 
 function applyTheme(mode) {
   document.documentElement.setAttribute('data-theme', mode);
   document.querySelectorAll('#themeToggle button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   try { localStorage.setItem('theme', mode); } catch (e) {}
-  applyAccent(accentKey);
+  // 캔버스 이펙트가 새 테마의 --accent를 바로 쓰게 캐시를 버린다 (선언보다 먼저 불릴 수 있어 방어).
+  if (typeof _accCache === 'object' && _accCache) _accCache.t = -1e9;
   // 시작 시간 색은 테마별로 대비를 맞춰둔 값이라 테마가 바뀌면 다시 칠해야 한다.
   paintTimes();
 }
-initAccentPicker();
 (function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem('theme'); } catch (e) {}
