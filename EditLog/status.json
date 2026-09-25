@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "하이라이트 배치",
+  "currentStage" : "지도\/위치 추가",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -256,10 +256,17 @@
       "memo" : "웹페이지 대개편 ㅋㅋ",
       "timestamp" : "2026-09-25T17:24:56Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "52분",
+      "timestamp" : "2026-09-25T18:17:05Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 22,
-  "lastUpdate" : "2026-09-25T17:25:06Z",
+  "entryCount" : 23,
+  "lastUpdate" : "2026-09-25T18:17:11Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
