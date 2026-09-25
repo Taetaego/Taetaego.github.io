@@ -783,6 +783,29 @@
   .infoPopover.open { display: block; }
   .logDay { padding: 13px 0 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: var(--accent2); }
   .logDay:first-of-type { padding-top: 0; }
+  .logDay { cursor: pointer; }
+  .vhsBadge { margin-left: 8px; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; padding: 2px 7px; border-radius: 4px;
+              color: #fff; -webkit-text-fill-color: #fff; background: #1d4ed8; text-shadow: 1px 0 #f0f, -1px 0 #0ff;
+              animation: vhsBlink .5s steps(2, end) infinite; }
+  .vhsBadge.play { background: #15803d; animation: none; }
+  @keyframes vhsBlink { 50% { opacity: .55; } }
+  /* 제목을 누르면 내려오는 슬레이트 */
+  .slate { position: fixed; top: 70px; left: 50%; z-index: 10002; width: min(300px, calc(100% - 48px)); pointer-events: none;
+           transform: translate(-50%, -140%); filter: drop-shadow(0 18px 40px rgba(0,0,0,.5)); }
+  .slateStick { height: 26px; border-radius: 5px 5px 0 0; transform-origin: 6px 100%; transform: rotate(-26deg);
+                background: repeating-linear-gradient(-45deg, #f4f4f4 0 14px, #141414 14px 28px); border: 2px solid #141414; }
+  .slateBody { margin-top: 3px; background: #161616; color: #f4f4f4; border: 2px solid #141414; border-radius: 0 0 8px 8px; padding: 12px 14px 10px; }
+  .slateTitle { font-size: 15px; font-weight: 700; letter-spacing: .02em; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,.35);
+                font-family: 'IBM Plex Sans KR', sans-serif; }
+  .slateGrid { display: grid; grid-template-columns: 1fr 1fr 1.6fr; margin-top: 8px; }
+  .slateGrid span { display: flex; flex-direction: column; gap: 2px; font-size: 17px; font-weight: 700; padding: 0 8px; border-left: 1px solid rgba(255,255,255,.35); }
+  .slateGrid span:first-child { border-left: 0; padding-left: 0; }
+  .slateGrid span:last-child { font-size: 13px; justify-content: flex-end; }
+  .slateGrid i { font-style: normal; font-size: 9px; letter-spacing: .14em; opacity: .6; }
+  .slateBang { position: absolute; right: -10px; top: -14px; font: 800 22px/1 'IBM Plex Sans KR', sans-serif; color: #ffd75e;
+               text-shadow: 0 2px 0 #141414; animation: slateBang .5s cubic-bezier(.2,1.6,.4,1) both; }
+  @keyframes slateBang { from { opacity: 0; transform: scale(.3) rotate(-20deg); } }
+  .slateFlash { position: fixed; inset: 0; z-index: 10001; background: #fff; pointer-events: none; opacity: 0; }
   .logDaySum { margin-left: 8px; font-weight: 500; letter-spacing: 0; color: var(--ink3); -webkit-text-fill-color: var(--ink3); }
   /* 행 왼쪽 3px 바로 카테고리 그룹을 구분한다 (--rowc는 renderLog에서 넣어준다).
      .logHead에 같은 크기의 padding-left를 줘서 헤더와 열이 어긋나지 않게 맞춘다. */
@@ -1451,6 +1474,8 @@ async function main() {
     initDayBandReplay();
     setInterval(() => { updateDayNow(); updateSinceStart(); updateLive(); }, 60000);
     initRowPulse();
+    initSlate();
+    initRewind();
     initGalaxy(data);
     initTodoPoke();
     initCounterReplay();
@@ -3223,6 +3248,107 @@ function renderDayBand(data) {
 
   updateDayNow();
   document.getElementById('dayCard').style.display = '';
+}
+
+/** 제목(태태고 편집실)을 누르면 슬레이트가 내려와 '딱!' 치고 사라진다.
+    SCENE은 에피소드 번호, TAKE는 누를 때마다 하나씩 올라간다(이 기기에만 저장). */
+function initSlate() {
+  const brand = document.querySelector('.brand');
+  if (!brand) return;
+  brand.style.cursor = 'pointer';
+  brand.addEventListener('click', () => {
+    if (document.querySelector('.slate')) return;
+    let take = 1;
+    try { take = Number(localStorage.getItem('slateTake') || 0) + 1; localStorage.setItem('slateTake', String(take)); } catch (e) {}
+    const scene = heatData && heatData.episodes ? heatData.episodes : 1;
+    const d = new Date();
+    const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    const el = document.createElement('div');
+    el.className = 'slate';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `
+      <div class="slateStick"></div>
+      <div class="slateBody mono">
+        <div class="slateTitle">태태고 편집실</div>
+        <div class="slateGrid">
+          <span><i>SCENE</i>${String(scene).padStart(2, '0')}</span>
+          <span><i>TAKE</i>${take}</span>
+          <span><i>ROLL</i>${date}</span>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    if (reducedMotion) { setTimeout(() => el.remove(), 1200); return; }
+    const stick = el.querySelector('.slateStick');
+    el.animate([
+      { transform: 'translate(-50%, -140%) rotate(-8deg)' },
+      { transform: 'translate(-50%, 0) rotate(2deg)', offset: 0.75 },
+      { transform: 'translate(-50%, 0) rotate(0deg)' },
+    ], { duration: 420, easing: 'cubic-bezier(.2,.9,.3,1.2)', fill: 'forwards' });
+    stick.animate([{ transform: 'rotate(-26deg)' }, { transform: 'rotate(-30deg)', offset: 0.85 }, { transform: 'rotate(0deg)' }],
+      { duration: 620, delay: 380, easing: 'cubic-bezier(.7,0,1,.5)', fill: 'both' });
+    setTimeout(() => {
+      // 딱! — 화면이 한 번 하얗게 번쩍이고 슬레이트가 떨린다.
+      const flash = document.createElement('div');
+      flash.className = 'slateFlash';
+      document.body.appendChild(flash);
+      flash.animate([{ opacity: 0.32 }, { opacity: 0 }], { duration: 320, easing: 'ease-out' }).onfinish = () => flash.remove();
+      el.animate([
+        { transform: 'translate(-50%, 0) rotate(0)' }, { transform: 'translate(calc(-50% - 4px), 3px) rotate(-1.5deg)' },
+        { transform: 'translate(calc(-50% + 3px), -2px) rotate(1deg)' }, { transform: 'translate(-50%, 0) rotate(0)' },
+      ], { duration: 220, composite: 'replace' });
+      const bang = document.createElement('span');
+      bang.className = 'slateBang';
+      bang.textContent = '딱!';
+      el.appendChild(bang);
+    }, 1000);
+    setTimeout(() => {
+      el.animate([
+        { transform: 'translate(-50%, 0) rotate(0)', opacity: 1 },
+        { transform: 'translate(-50%, 60px) rotate(6deg)', opacity: 0 },
+      ], { duration: 380, easing: 'ease-in', fill: 'forwards' }).onfinish = () => el.remove();
+    }, 1900);
+  });
+}
+
+/** 작업 기록의 날짜 줄을 누르면 그날 행들이 VHS 테이프처럼 ◀◀ 되감겼다가 ▶ 다시 재생된다. */
+function initRewind() {
+  const body = document.getElementById('logBody');
+  if (!body) return;
+  body.addEventListener('click', (ev) => {
+    const day = ev.target.closest('.logDay');
+    if (!day || day._rewinding) return;
+    const rows = [];
+    for (let n = day.nextElementSibling; n && !n.classList.contains('logDay'); n = n.nextElementSibling) {
+      if (n.classList.contains('logRow')) rows.push(n);
+    }
+    if (!rows.length) return;
+    day._rewinding = true;
+    const badge = document.createElement('span');
+    badge.className = 'vhsBadge mono';
+    badge.textContent = '◀◀ REW';
+    day.appendChild(badge);
+    if (reducedMotion) { setTimeout(() => { badge.remove(); day._rewinding = false; }, 900); return; }
+    const STEP = 70;
+    // 되감기니까 아래 행부터 위로 거슬러 올라간다.
+    rows.slice().reverse().forEach((row, i) => {
+      row.animate([
+        { transform: 'none', filter: 'none', opacity: 1 },
+        { transform: 'translateX(-22px) skewX(10deg)', filter: 'blur(1px) saturate(2.4) hue-rotate(60deg)', opacity: 0.45, offset: 0.35 },
+        { transform: 'translateX(6px) skewX(-4deg)', filter: 'saturate(1.6) hue-rotate(-30deg)', opacity: 0.8, offset: 0.7 },
+        { transform: 'none', filter: 'none', opacity: 1 },
+      ], { duration: 420, delay: i * STEP, easing: 'steps(6, end)' });
+    });
+    const total = rows.length * STEP + 420;
+    setTimeout(() => {
+      badge.textContent = '▶ PLAY';
+      badge.classList.add('play');
+      rows.forEach((row, i) => {
+        row.animate([{ opacity: 0.3, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 260, delay: i * 40, easing: 'ease-out', fill: 'backwards' });
+      });
+    }, total);
+    setTimeout(() => { badge.remove(); day._rewinding = false; }, total + 1100);
+  });
 }
 
 /** 작업 기록 행을 누르면 그 행이 한 번 번쩍인다. */
