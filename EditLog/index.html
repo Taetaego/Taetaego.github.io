@@ -1182,6 +1182,11 @@
   }
   .quoteToast.show { transform: translate(-50%, 0) scale(1); opacity: 1; }
   .quoteToast.hide { transform: translate(-50%, -140%) scale(.9); opacity: 0; transition-duration: .4s; }
+  /* 폰에서는 위에서 떨어지면 첫 카드를 가리므로, 아래에서 올라오게 한다. */
+  @media (max-width: 560px) {
+    .quoteToast { top: auto; bottom: calc(16px + env(safe-area-inset-bottom)); transform: translate(-50%, 140%) scale(.7); }
+    .quoteToast.hide { transform: translate(-50%, 140%) scale(.9); }
+  }
   .quoteToast::before {
     content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
     background: conic-gradient(from var(--orbit), transparent 0 40%, var(--grp-1) 55%, #fff 70%, var(--grp-3) 85%, transparent 100%),
