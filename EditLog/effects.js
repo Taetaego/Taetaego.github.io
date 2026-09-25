@@ -463,16 +463,8 @@ function fxMagicCircle() {
       ctx.globalAlpha = 1; ctx.fillStyle = dim; ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = 'lighter';
 
-      // 하늘로 솟는 빛기둥 — 진이 완성되면 가운데에서 위로 뻗는다
+      // 진이 완성되면 뒤에서 빛살이 천천히 돈다
       if (done0 > 0) {
-        const bw = R * (0.22 + Math.sin(t * 4) * 0.03);
-        const pil = ctx.createLinearGradient(cx - bw, 0, cx + bw, 0);
-        pil.addColorStop(0, hc(0)); pil.addColorStop(0.5, `rgba(255,255,255,${0.35 * done0 * a})`); pil.addColorStop(1, hc(0));
-        ctx.globalAlpha = 1; ctx.fillStyle = pil; ctx.fillRect(cx - bw, 0, bw * 2, cy);
-        const pil2 = ctx.createLinearGradient(cx - bw * 2.2, 0, cx + bw * 2.2, 0);
-        pil2.addColorStop(0, hc(0)); pil2.addColorStop(0.5, hc(0.22 * done0 * a)); pil2.addColorStop(1, hc(0));
-        ctx.fillStyle = pil2; ctx.fillRect(cx - bw * 2.2, 0, bw * 4.4, cy);
-        // 천천히 도는 빛살
         ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * 0.15);
         ctx.fillStyle = gLoc;
         for (let j = 0; j < 12; j++) {
