@@ -211,6 +211,29 @@
   .heatFoot { font-size: 11.5px; line-height: 1.5; color: var(--ink3); word-break: keep-all; }
   .heatFoot b { color: var(--ink2); font-weight: 600; }
   @media (prefers-reduced-motion: reduce) { .heatCell { animation: none; } }
+  /* 잔디를 누르면 — 누른 자리에서 물결이 퍼지고, 기록 있는 날엔 새싹이 돋는다 */
+  #heatCard { position: relative; }
+  #heatOverview .heatGrid { cursor: pointer; }
+  @keyframes heatRipple {
+    0% { transform: scale(1); filter: none; }
+    35% { transform: scale(1.5); filter: brightness(1.9) saturate(1.4);
+          box-shadow: 0 0 10px color-mix(in srgb, var(--grp-1) 80%, transparent); }
+    100% { transform: scale(1); filter: none; }
+  }
+  .heatSprout { position: absolute; z-index: 3; pointer-events: none; font-size: 15px; line-height: 1;
+                transform: translate(-50%, -50%); animation: heatSprout 1.1s cubic-bezier(.2,.8,.3,1) both; }
+  @keyframes heatSprout {
+    0% { opacity: 0; transform: translate(-50%, -20%) scale(.2); }
+    30% { opacity: 1; transform: translate(-50%, -90%) scale(1.25); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--sx)), -260%) scale(.8) rotate(var(--sr)); }
+  }
+  .heatTip { position: absolute; z-index: 4; pointer-events: none; transform: translate(-50%, calc(-100% - 8px));
+             font-size: 11px; font-weight: 600; white-space: nowrap; padding: 5px 9px; border-radius: 9px;
+             background: var(--ink); color: var(--bg); box-shadow: 0 6px 18px rgba(0,0,0,.3);
+             animation: heatTip 1.8s ease both; }
+  .heatTip::after { content: ''; position: absolute; left: 50%; bottom: -4px; width: 8px; height: 8px;
+                    background: inherit; transform: translateX(-50%) rotate(45deg); }
+  @keyframes heatTip { 0% { opacity: 0; margin-top: 6px; } 12%, 80% { opacity: 1; margin-top: 0; } 100% { opacity: 0; } }
   .heatPane { display: flex; flex-direction: column; gap: 12px; }
   .heatPane[hidden] { display: none; }
 
@@ -422,6 +445,11 @@
   .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .heroStat { display: flex; flex-direction: column; gap: 2px; }
   .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .paceIn { color: var(--ink3); font-weight: 500; }
+  .paceChip { align-self: flex-start; margin-top: 3px; font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 99px;
+              background: var(--line); color: var(--ink2); white-space: nowrap; }
+  .paceChip.fast { background: var(--soft); color: var(--accent2); }
+  .paceChip.slow { background: var(--warn-soft); color: var(--warn); }
   @media (prefers-reduced-motion: reduce) {
     .liveBadge, .liveBadge i { animation: none; }
     .heroBg, .hero::after { transition: none; }
@@ -787,7 +815,7 @@
   }
   .logRow .cat .catName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .logRow .at { font-size: 11px; font-weight: 600; text-align: center; }
-  .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); }
+  .logRow .time { font: 400 10.5px/1 'JetBrains Mono', monospace; text-align: center; color: var(--ink3); white-space: nowrap; letter-spacing: -0.03em; }
   .logRow .gap { font-size: 10px; line-height: 1.2; text-align: center; color: var(--ink3); white-space: nowrap; }
 
   /* 메모: 있는 행에만 아이콘이 뜨고, 누르면 말풍선으로 펼쳐진다. */
@@ -1550,6 +1578,7 @@ async function loadActivity() {
     heatData = null;   // 예전 앱이 올린 사이트라 파일이 없으면 카드를 숨긴다
   }
   renderHeat();
+  renderPace();
 }
 
 let heatTab = 'overview';
@@ -1581,6 +1610,58 @@ function initHeat() {
   });
   const orig = renderHeat;
   renderHeat = (opts) => { lastWeeks = heatWeeks(); orig(opts); };
+  document.getElementById('heatCard').addEventListener('click', heatBurst);
+}
+
+/** 잔디 카드를 누르면 누른 자리에서 물결이 퍼지고, 기록 있는 날마다 새싹이 돋는다.
+    칸을 누르면 그날 날짜·기록 수를 말풍선으로 띄운다. */
+function heatBurst(ev) {
+  if (ev.target.closest('button') || heatTab !== 'overview') return;
+  const card = document.getElementById('heatCard');
+  const grid = document.getElementById('heatGrid');
+  const cr = card.getBoundingClientRect();
+  const x = ev.clientX, y = ev.clientY;
+  card.querySelectorAll('.heatTip').forEach(t => t.remove());
+  const hit = ev.target.closest('.heatCell');
+  if (hit && !hit.classList.contains('future')) {
+    const r = hit.getBoundingClientRect();
+    const tip = document.createElement('span');
+    tip.className = 'heatTip';
+    tip.textContent = hit.title;
+    // 카드 밖으로 삐져나가지 않게 가로 위치를 안쪽으로 당긴다.
+    const cx = Math.min(Math.max(r.left + r.width / 2 - cr.left, 70), cr.width - 70);
+    tip.style.left = `${cx}px`; tip.style.top = `${r.top - cr.top}px`;
+    card.appendChild(tip);
+    setTimeout(() => tip.remove(), 1850);
+  }
+  if (reducedMotion) return;
+  const SPROUT = { l1: '🌱', l2: '🌱', l3: '🌿', l4: '🌸' };
+  let sprouts = 0, maxDelay = 0;
+  for (const cell of grid.children) {
+    if (cell.classList.contains('future')) continue;
+    const r = cell.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const delay = Math.hypot(cx - x, cy - y) * 1.6;
+    maxDelay = Math.max(maxDelay, delay);
+    cell.style.animation = 'none';
+    void cell.offsetWidth;   // 연달아 눌러도 처음부터 다시 퍼지게
+    cell.style.animation = `heatRipple .6s ease ${delay.toFixed(0)}ms both`;
+    const lv = [...cell.classList].find(c => SPROUT[c]);
+    if (lv && sprouts < 60) {
+      sprouts++;
+      const sp = document.createElement('span');
+      sp.className = 'heatSprout';
+      sp.textContent = SPROUT[lv];
+      sp.style.left = `${cx - cr.left}px`; sp.style.top = `${cy - cr.top}px`;
+      sp.style.animationDelay = `${(delay + 80).toFixed(0)}ms`;
+      sp.style.setProperty('--sx', `${((Math.random() * 2 - 1) * 12).toFixed(1)}px`);
+      sp.style.setProperty('--sr', `${((Math.random() * 2 - 1) * 25).toFixed(0)}deg`);
+      card.appendChild(sp);
+      setTimeout(() => sp.remove(), delay + 1300);
+    }
+  }
+  clearTimeout(heatBurst.t);
+  heatBurst.t = setTimeout(() => { for (const c of grid.children) c.style.animation = 'none'; }, maxDelay + 700);
 }
 
 function heatWeeks() {
@@ -2286,7 +2367,8 @@ function renderSummary(cardEl, data) {
             <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
               <span class="stageLabel">에피소드 편집 시작 후</span>
               <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
-            </div>` : ''}
+            </div>
+            <div class="heroStat paceBlock" id="paceBlock" hidden></div>` : ''}
           ${doneStats}
         </div>` : ''}
       <button type="button" class="gaugeSwap" id="gaugeSwap">🌊 물결로 보기</button>
@@ -2295,6 +2377,78 @@ function renderSummary(cardEl, data) {
   `;
   cardEl.classList.toggle('hasWave', entries.length >= 2);
   setHeroBackdrop(cardEl, data);
+  paceData = isCompleted ? null : data;
+  renderPace();
+}
+
+/* ===== 예상 완료 · 페이스 — 지난 회차들이 같은 단계에서 끝나기까지 걸린 시간으로 어림한다 ===== */
+let paceData = null;   // 지금 히어로에 떠 있는 편집 중 회차 (완료 회차면 null)
+
+function paceEstimate(data, act) {
+  if (!data || !act || !(act.records || []).length || !data.currentStage) return null;
+  const stageIdx = act.categories.indexOf(data.currentStage);
+  const doneIdx = act.categories.indexOf('완료');
+  if (stageIdx < 0 || doneIdx < 0) return null;
+  // 회차별로 기록을 모은다 — 세 번째 값이 회차 번호.
+  const eps = new Map();
+  for (const [ts, cat, ep] of act.records) {
+    if (!eps.has(ep)) eps.set(ep, []);
+    eps.get(ep).push([ts, cat]);
+  }
+  // 첫 기록이 이 회차 시작 시각과 가장 가까운 회차가 지금 회차다.
+  const start = new Date(data.createdAt).getTime() / 1000;
+  let cur = null, best = Infinity;
+  for (const [ep, rs] of eps) {
+    const d = Math.abs(Math.min(...rs.map(r => r[0])) - start);
+    if (d < best) { best = d; cur = ep; }
+  }
+  if (cur === null || best > 3600) return null;
+  const firstAt = (rs, idx) => { const t = rs.filter(r => r[1] >= idx).map(r => r[0]); return t.length ? Math.min(...t) : null; };
+  const curRs = eps.get(cur);
+  const curStart = Math.min(...curRs.map(r => r[0]));
+  const curReach = firstAt(curRs, stageIdx);
+  if (curReach === null) return null;
+  // 완료까지 간 지난 회차만 비교 대상으로 쓴다.
+  const past = [];
+  for (const [ep, rs] of eps) {
+    if (ep === cur) continue;
+    const s0 = Math.min(...rs.map(r => r[0]));
+    const reach = firstAt(rs, stageIdx), end = firstAt(rs, doneIdx);
+    if (reach === null || end === null) continue;
+    past.push({ toStage: reach - s0, total: end - s0 });
+  }
+  if (!past.length) return null;
+  const avg = k => past.reduce((a, p) => a + p[k], 0) / past.length;
+  // 진행률이 어느 정도 쌓이면 지금 속도로 남은 %를 채우는 시간을, 초반엔 지난 회차 평균 소요를 쓴다.
+  const nowS = Date.now() / 1000, elapsed = nowS - curStart;
+  const pct = heroPct;
+  const eta = pct >= 10 && pct < 100 ? nowS + elapsed * (100 - pct) / pct : curStart + avg('total');
+  return {
+    eta: eta * 1000, byPct: pct >= 10,
+    diff: avg('toStage') - (curReach - curStart),   // +면 지난 평균보다 빠르다
+    n: past.length,
+  };
+}
+
+function renderPace() {
+  const el = document.getElementById('paceBlock');
+  if (!el) return;
+  const p = paceEstimate(paceData, heatData);
+  if (!p) { el.hidden = true; return; }
+  const now = Date.now();
+  const d = new Date(Math.max(p.eta, now));
+  const days = Math.round((new Date(d).setHours(0, 0, 0, 0) - new Date(now).setHours(0, 0, 0, 0)) / 86400000);
+  const when = days <= 0 ? '오늘 중' : days === 1 ? '내일' : `${d.getMonth() + 1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+  const fast = p.diff >= 0;
+  const gap = Math.abs(p.diff);
+  const paceText = gap < 3 * 3600 ? '지난 평균과 비슷한 페이스' : `지난 평균보다 ${formatSpan(gap)} ${fast ? '빨라요' : '늦어요'}`;
+  el.hidden = false;
+  el.title = (p.byPct ? `지금까지의 속도(${heroPct}%)로 남은 단계를 채운다고 어림한 날짜예요.` : `지난 에피소드 ${p.n}개의 평균 편집 기간으로 어림한 날짜예요.`) +
+    `\n페이스: '${paceData.currentStage}' 단계에 닿기까지 걸린 시간을 지난 에피소드 평균과 비교해요.`;
+  el.innerHTML = `
+    <span class="stageLabel">예상 완료</span>
+    <b>${escapeHtml(when)}${days > 1 ? `<span class="paceIn"> · D-${days}</span>` : ''}</b>
+    <span class="paceChip ${gap < 3 * 3600 ? '' : fast ? 'fast' : 'slow'}">${fast && gap >= 3 * 3600 ? '⚡ ' : ''}${escapeHtml(paceText)}</span>`;
 }
 
 /** ① 히어로 배경 — 완성 영상이면 유튜브 썸네일, 편집 중이면 캡처를 흐리게 깐다.
@@ -3875,12 +4029,10 @@ main();
    페이지에 들어오면 업적 달성 알림처럼 위에서 한 장 떨어진다. 4.5초 뒤(또는 누르면) 올라간다. */
 const TRAVEL_QUOTES = [
   ['세상은 한 권의 책이다. 여행하지 않는 사람은 그 책의 한 페이지만 읽는 셈이다.', '아우구스티누스', '📖'],
-  ['천 리 길도 한 걸음부터.', '노자', '👣'],
   ['진정한 발견의 여정은 새로운 풍경을 찾는 데 있지 않고, 새로운 눈을 갖는 데 있다.', '마르셀 프루스트', '👀'],
   ['여행은 편견과 편협함에 치명적이다.', '마크 트웨인', '🌍'],
   ['인생은 대담한 모험이거나, 아무것도 아니다.', '헬렌 켈러', '🧗'],
   ['모든 여행에는 여행자도 모르는 비밀스러운 목적지가 있다.', '마르틴 부버', '🧭'],
-  ['백 번 듣는 것이 한 번 보는 것만 못하다.', '한서', '🏔️'],
   ['가장 긴 여행은 자기 안으로 떠나는 여행이다.', '다그 함마르셸드', '🌌'],
   ['편집은 여행을 한 번 더 떠나는 일이다.', '태태고 편집실', '🎬'],
   ['찍을 땐 몰랐던 장면이, 자를 때 보인다.', '태태고 편집실', '✂️'],
@@ -3892,11 +4044,6 @@ const TRAVEL_QUOTES = [
   ['행복은 목적지가 아니라 여행하는 방식이다.', '마거릿 리 런벡', '🌅'],
   ['새로운 땅을 찾으려면 오랫동안 해안을 보지 않을 용기가 있어야 한다.', '앙드레 지드', '🌊'],
   ['여행은 사람을 겸손하게 만든다.', '귀스타브 플로베르', '🏜️'],
-  ['만 권의 책을 읽고, 만 리 길을 걸어라.', '중국 옛말', '📚'],
-  ['길은 걸어야 길이 된다.', '장자', '🥾'],
-  ['좋은 여행자는 정해진 계획도, 꼭 도착하려는 마음도 없다.', '노자', '🍃'],
-  ['천천히 가는 것을 두려워 말고, 멈추는 것을 두려워하라.', '중국 속담', '🐢'],
-  ['여행에서 돌아온 사람은 떠날 때의 그 사람이 아니다.', '중국 속담', '🔁'],
   ['산이 부른다. 나는 가야 한다.', '존 뮤어', '⛰️'],
   ['자연의 모든 것에는 경이로움이 있다.', '아리스토텔레스', '🌿'],
   ['일 년에 한 번은 가 보지 않은 곳에 가 보라.', '달라이 라마', '🗺️'],
@@ -3917,6 +4064,31 @@ const TRAVEL_QUOTES = [
   ['카메라를 켜는 순간, 동네도 여행지가 된다.', '태태고 편집실', '🔴'],
   ['천 번의 계획보다 한 번의 출발.', '태태고 편집실', '🚀'],
   ['잘 찍은 하루보다 잘 남긴 하루.', '태태고 편집실', '📝'],
+  ['컷 하나 버릴 때마다 영상은 한 뼘 자란다.', '태태고 편집실', '✂️'],
+  ['촬영은 발로, 편집은 엉덩이로.', '태태고 편집실', '🪑'],
+  ['여행은 끝나도 타임라인은 남는다.', '태태고 편집실', '🎞️'],
+  ['흔들린 화면에도 그날의 바람이 담겨 있다.', '태태고 편집실', '🌬️'],
+  ['3500미터에서 찍은 한 컷, 방구석에서 다시 숨이 찬다.', '태태고 편집실', '🏔️'],
+  ['사막의 모래는 털어도 영상 속엔 남는다.', '태태고 편집실', '🏜️'],
+  ['구름 위에서 본 그림을 자막 한 줄로 옮긴다.', '태태고 편집실', '☁️'],
+  ['저장 안 한 편집은 여행 안 간 것과 같다. Ctrl+S.', '태태고 편집실', '💾'],
+  ['BGM 하나 바꿨더니 여행이 달라졌다.', '태태고 편집실', '🎵'],
+  ['썸네일은 여행의 첫인상, 제목은 두 번째 인상.', '태태고 편집실', '🖼️'],
+  ['오늘도 1프레임씩 앞으로.', '태태고 편집실', '🐌'],
+  ['맞춤법 검사까지가 여행이다.', '태태고 편집실', '🔤'],
+  ['자른 장면들도 다 추억이었다.', '태태고 편집실', '🗑️'],
+  ['편집하다 보면 그날로 다시 떠나 있다.', '태태고 편집실', '🧳'],
+  ['영상은 짧게, 여행은 길게.', '태태고 편집실', '⏩'],
+  ['모닥불 앞에서 한 이야기는 자막으로 다시 불을 붙인다.', '태태고 편집실', '🔥'],
+  ['친구들 웃음소리는 음악보다 좋은 BGM.', '태태고 편집실', '😂'],
+  ['지도 한 장 넣으니 여행이 이어졌다.', '태태고 편집실', '🗺️'],
+  ['하이라이트는 찍을 땐 모르고, 볼 때 안다.', '태태고 편집실', '⭐'],
+  ['편집이 끝나야 여행도 진짜 끝난다.', '태태고 편집실', '🏁'],
+  ['업로드 버튼 앞에서 한 번 더 설렌다.', '태태고 편집실', '📤'],
+  ['원본은 길고, 기억은 더 길다.', '태태고 편집실', '📼'],
+  ['길 위의 하루를 20분에 담는 일.', '태태고 편집실', '⌛'],
+  ['카메라는 흔들려도 그날의 마음은 또렷하다.', '태태고 편집실', '🎥'],
+  ['좋은 장면은 두 번 여행하게 한다. 찍을 때 한 번, 편집할 때 한 번.', '태태고 편집실', '🔁'],
 ];
 
 function showTravelQuote() {
