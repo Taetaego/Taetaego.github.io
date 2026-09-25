@@ -179,9 +179,10 @@
   .dayAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
   /* ③ 날짜별 잔디 — 작업한 날마다 칸 하나, 기록이 많을수록 진하게 */
   .daySub { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; }
-  .dayGrid { display: flex; flex-wrap: wrap; gap: 4px; }
+  /* 날짜 수만큼 가로를 똑같이 나눠 꽉 채운다 — 칸이 왼쪽에 몰리면 그 뒤로 쉰 것처럼 읽힌다. */
+  .dayGrid { display: grid; grid-template-columns: repeat(var(--days, 7), minmax(0, 1fr)); gap: 4px; }
   .dayCell {
-    width: 18px; height: 18px; border-radius: 5px; background: var(--surface2);
+    height: 20px; border-radius: 5px; background: var(--surface2);
     animation: dayCellIn .35s cubic-bezier(.3,1.4,.5,1) both;
   }
   .dayCell.l1 { background: color-mix(in srgb, var(--accent) 30%, var(--surface2)); }
@@ -191,6 +192,10 @@
   .dayCell.today { outline: 1.5px solid var(--ink3); outline-offset: 1.5px; }
   @keyframes dayCellIn { from { opacity: 0; transform: scale(.4); } }
   .dayGridAxis { display: flex; justify-content: space-between; font: 500 9.5px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+  /* 날짜가 적으면 칸마다 날짜를 단다 (칸과 같은 격자라 딱 맞는다) */
+  .dayGridAxis.perDay { display: grid; grid-template-columns: repeat(var(--days, 7), minmax(0, 1fr)); gap: 4px; }
+  .dayGridAxis.perDay span { text-align: center; white-space: nowrap; }
+  .dayGridAxis.perDay .today { color: var(--ink); font-weight: 700; }
   @media (prefers-reduced-motion: reduce) { .dayCell { animation: none; } }
   @keyframes tlPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
@@ -327,6 +332,8 @@
   .topRight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
   .accentPicker { display: flex; gap: 7px; padding: 3px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--line); }
   .topRight { position: relative; }
+  /* 색 고르기가 펼쳐져도 줄에서 차지하던 자리는 그대로 둔다 — 안 그러면 왼쪽 버튼들이 밀린다 */
+  .accentSlot { position: relative; flex: none; }
   /* 폰에선 고른 색 하나만 보이고, 누르면 나머지가 아래로 펼쳐진다 */
   @media (max-width: 560px) {
     .accentPicker:not(.open) .accentSwatch:not([aria-pressed="true"]) { display: none; }
@@ -2428,7 +2435,18 @@ function renderDayGrid(data) {
     return `<span class="dayCell l${level(n)}${today}" style="animation-delay:${i * 30}ms" title="${label}"></span>`;
   }).join('');
   const md = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
-  axis.innerHTML = shown.length > 1 ? `<span>${md(shown[0])}</span><span>${md(shown[shown.length - 1])}</span>` : '';
+  grid.style.setProperty('--days', shown.length);
+  axis.style.setProperty('--days', shown.length);
+  // 열흘 이하면 칸마다 날짜를, 그보다 길면 양 끝만. 첫 칸과 달이 바뀌는 칸은 '월/일'로.
+  const perDay = shown.length <= 10;
+  axis.classList.toggle('perDay', perDay);
+  axis.innerHTML = perDay
+    ? shown.map((d, i) => {
+        const label = i === 0 || d.getDate() === 1 ? md(d) : String(d.getDate());
+        const today = dayKey(d) === todayKey && data.status !== 'completed' ? ' class="today"' : '';
+        return `<span${today}>${label}</span>`;
+      }).join('')
+    : (shown.length > 1 ? `<span>${md(shown[0])}</span><span>${md(shown[shown.length - 1])}</span>` : '');
 
   // 연속 작업: 마지막으로 작업한 날부터 거꾸로 센다.
   const worked = days.filter(d => counts.get(dayKey(d)));
@@ -2663,19 +2681,34 @@ function initAccentPicker() {
   host.innerHTML = Object.entries(ACCENTS).map(([key, v]) =>
     `<button type="button" class="accentSwatch" data-accent="${key}" aria-pressed="false" aria-label="${v.label}" title="${v.label}" style="background:${v.dark[0]}"></button>`
   ).join('');
+  // 펼칠 때 색 고르기는 줄 밖으로 떠오른다. 그 자리를 이 틀이 접힌 크기 그대로 붙잡고 있어야
+  // 🗂·LIGHT/DARK가 옆으로 밀리지 않는다.
+  const slot = document.createElement('div');
+  slot.className = 'accentSlot';
+  host.replaceWith(slot);
+  slot.appendChild(host);
+  const open = () => {
+    slot.style.width = host.offsetWidth + 'px';
+    slot.style.height = host.offsetHeight + 'px';
+    host.classList.add('open');
+  };
+  const close = () => {
+    host.classList.remove('open');
+    slot.style.width = slot.style.height = '';
+  };
   host.addEventListener('click', (e) => {
     const b = e.target.closest('.accentSwatch');
     if (!b) return;
     // 폰에선 고른 색 하나만 보이다가, 누르면 펼쳐지고 하나 고르면 다시 접힌다.
     if (matchMedia('(max-width: 560px)').matches && !host.classList.contains('open')) {
-      host.classList.add('open');
+      open();
       return;
     }
     applyAccent(b.dataset.accent);
-    host.classList.remove('open');
+    close();
   });
   document.addEventListener('click', (e) => {
-    if (host.classList.contains('open') && !host.contains(e.target)) host.classList.remove('open');
+    if (host.classList.contains('open') && !host.contains(e.target)) close();
   });
   let saved = null;
   try { saved = localStorage.getItem('accent'); } catch (e) {}
