@@ -208,11 +208,12 @@
   }
   .heatCell { aspect-ratio: 1; border-radius: 3px; background: var(--surface2);
               animation: heatIn .4s ease both; transition: opacity .25s ease; }
-  /* 많이 달린 날일수록 민트 → 하늘 → 보라로 달아오른다 (앱과 같은 단계). */
-  .heatCell.l1 { background: color-mix(in srgb, var(--grp-1) 35%, var(--surface2)); }
-  .heatCell.l2 { background: color-mix(in srgb, var(--grp-1) 75%, var(--surface2)); }
-  .heatCell.l3 { background: var(--grp-2); box-shadow: 0 0 6px color-mix(in srgb, var(--grp-2) 60%, transparent); }
-  .heatCell.l4 { background: var(--grp-3); box-shadow: 0 0 8px color-mix(in srgb, var(--grp-3) 70%, transparent); }
+  /* 많이 달린 날일수록 초록이 짙어진다. */
+  .heatCell.l1 { background: color-mix(in srgb, var(--grp-1) 30%, var(--surface2)); }
+  .heatCell.l2 { background: color-mix(in srgb, var(--grp-1) 60%, var(--surface2)); }
+  .heatCell.l3 { background: var(--grp-1); box-shadow: 0 0 6px color-mix(in srgb, var(--grp-1) 55%, transparent); }
+  /* 가장 많이 한 날 — 다크에선 더 밝은 민트, 라이트에선 더 짙은 초록 (--accent2가 테마마다 그렇게 잡혀 있다) */
+  .heatCell.l4 { background: var(--accent2); box-shadow: 0 0 9px color-mix(in srgb, var(--grp-1) 75%, transparent); }
   .heatCell.today { outline: 1.5px solid var(--ink2); outline-offset: 1px; }
   .heatCell.out { opacity: .22; }
   .heatCell.future { visibility: hidden; }
