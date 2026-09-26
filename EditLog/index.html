@@ -519,12 +519,6 @@
   .heroStats { display: flex; flex-wrap: wrap; gap: 8px 20px; }
   .heroStat { display: flex; flex-direction: column; gap: 2px; }
   .heroStat b { font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .paceBlock { transition: opacity .35s ease; }
-  .paceBlock.pending { opacity: 0; }
-  .paceChip { align-self: flex-start; margin-top: 3px; font-size: 10.5px; font-weight: 600; padding: 3px 8px; border-radius: 99px;
-              background: var(--line); color: var(--ink2); white-space: nowrap; }
-  .paceChip.fast { background: var(--soft); color: var(--accent2); }
-  .paceChip.slow { background: var(--warn-soft); color: var(--warn); }
   @media (prefers-reduced-motion: reduce) {
     .liveBadge, .liveBadge i { animation: none; }
     .heroBg, .hero::after { transition: none; }
@@ -1428,7 +1422,8 @@
   .cardIcon { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
               background: linear-gradient(135deg, var(--ic), color-mix(in srgb, var(--ic) 50%, #d98aea));
               box-shadow: 0 0 10px color-mix(in srgb, var(--ic) 55%, transparent); }
-  .cardIcon svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  /* 26px 원 안에 14px — 가장자리가 정수 픽셀에 떨어져야 흐리게 번지지 않는다 */
+  .cardIcon svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
   .cardMeta { font-weight: 600; }
 
   /* ===== 히어로 ===== */
@@ -1456,10 +1451,6 @@
                              color-mix(in srgb, var(--heroInk) 12%, transparent) 88%); }
 
   .heroTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
-  .heroMomentum { flex: none; font-size: 11.5px; font-weight: 700; color: var(--ink); white-space: nowrap;
-                  padding: 5px 11px; border-radius: 99px; background: var(--tileBg);
-                  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); }
-  .heroMomentum[hidden] { display: none; }
   /* 상태 칩 — 빛나는 점 + 반투명 알약 + 제 색 테두리 */
   .statusChip, .statusChip.wip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700;
     padding: 5px 10px; border-radius: 99px; background: var(--tileBg); animation: none;
@@ -1478,27 +1469,20 @@
   .donut .pct { font: 800 27px/1 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -0.04em; }
   .donut .steps { font-size: 9.5px; }
 
-  /* 숫자 타일 — 반투명 유리 조각 위에 작은 라벨과 큰 값 (2칸 격자) */
-  .heroStats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .heroStat { position: relative; display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 10px 12px;
-              border-radius: 14px; background: var(--tileBg); border: 1px solid var(--tileLine);
-              box-shadow: inset 0 1px 0 var(--glassHi); }
-  .heroStat[style*="--tc"] { border-color: color-mix(in srgb, var(--tc) 40%, transparent);
-              box-shadow: inset 0 1px 0 color-mix(in srgb, var(--tc) 30%, transparent); }
-  .heroStat .stageLabel { font-size: 10.5px; font-weight: 700; letter-spacing: 0; color: var(--ink3); }
-  .heroStat[style*="--tc"] .stageLabel { color: color-mix(in srgb, var(--tc) 85%, var(--ink)); }
-  .heroStat b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* 숫자들 — 예전처럼 작은 라벨 + 값을 한 줄에 (카드 틀 없이) */
+  .heroStats { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+  .heroStat { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .heroStat .stageLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
+  .heroStat b { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
   .heroStat b.goldVal { color: var(--gold); }
-  .stageTile .stageName { font-size: 14.5px; font-weight: 800; color: var(--tc); gap: 6px; min-width: 0; }
+  .stageTile .stageName { font-size: 14px; font-weight: 700; color: var(--tc, var(--accent2)); gap: 5px; min-width: 0; }
   .stageTile .stageText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .stageTile .stageIcon { width: 15px; height: 15px; }
-  .stagePct { flex: none; font-size: 10px; font-weight: 800; color: #08120c; background: var(--tc); padding: 2px 6px; border-radius: 99px; }
+  .stageTile .stageIcon { width: 14px; height: 14px; }
   .streakTile b { background: linear-gradient(180deg, #ffd75e, #ff6a3d); -webkit-background-clip: text; background-clip: text;
                   color: transparent; -webkit-text-fill-color: transparent; }
   .streakTile { transition: opacity .35s ease; }
   .streakTile.pending { opacity: 0; }
   .streakTile[hidden] { display: none; }
-  .paceBlock .paceChip { margin-top: 0; font-size: 11px; white-space: normal; line-height: 1.35; }
   @media (min-width: 900px) {
     .hero { flex-direction: column; align-items: stretch; }
     .topic { font-size: 23px; }
@@ -1558,13 +1542,34 @@
   .pipeGroupTitle { display: flex; align-items: center; gap: 8px; }
   .pipeGroupTitle::after { content: ''; flex: 1; height: 1px;
     background: linear-gradient(90deg, color-mix(in srgb, var(--rowc, var(--accent)) 50%, transparent), transparent); }
+
+  /* ===== 3단계 — 영상 길이 막대 · 썸네일 칩 · 상단 로고 ===== */
+  /* 막대마다 제 그라데이션 + 은은한 빛 (앱의 LengthBars와 같은 색) */
+  .lenRow.orig .lenFill { background: linear-gradient(90deg, #5ab8f0, #8f82ed, #d98aea); box-shadow: 0 0 8px rgba(143,130,237,.45); }
+  .lenRow.cut .lenFill { background: linear-gradient(90deg, #34e0b0, #2de3ff); box-shadow: 0 0 8px rgba(52,224,176,.5); }
+  .lenRow.final .lenFill { background: linear-gradient(90deg, #d98aea, #ff7ab6); box-shadow: 0 0 8px rgba(255,122,182,.45); }
+  .lenBar { height: 10px; background: color-mix(in srgb, var(--ink) 7%, transparent); overflow: visible; }
+  .lenBar .lenFill { border-radius: 99px; }
+  .lenRow .value { font-weight: 800; }
+  .lenRow .ratio { font-size: 10.5px; font-weight: 800; padding: 2px 6px; border-radius: 99px; }
+  .lenRow .ratio .of { display: none; }
+  .lenRow.cut .ratio { color: #2fcf9f; background: rgba(52,224,176,.14); }
+  .lenRow.final .ratio { color: #ff7ab6; background: rgba(255,122,182,.14); }
+  /* 썸네일의 '편집 중' — 히어로 상태 칩과 같은 모양 (빛나는 점 + 반투명 알약) */
+  .thumbTag { background: rgba(0,0,0,.55); color: var(--warn); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+              border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); padding: 5px 10px; font-size: 11px; animation: none; }
+  .thumbTag::before { background: currentColor; box-shadow: 0 0 6px currentColor; animation: labelFade 1.8s ease-in-out infinite; }
+  /* 상단 — 앱 아이콘 + 이름 */
+  .brand { display: inline-flex; align-items: center; gap: 8px; }
+  .brandIcon { flex: none; width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+  .heatCard > .cardHead:first-child { margin-bottom: -2px; }
 </style>
 </head>
 <body>
   <canvas id="fxCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
     <div class="topbar">
-      <div class="brand">태태고 편집실</div>
+      <div class="brand"><img class="brandIcon" src="favicon-192.png" alt="" width="26" height="26">태태고 편집실</div>
       <div class="topRight">
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false">🔇</button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드">🗂<span class="pastBtnText"> 지난 에피소드</span></button>
@@ -1592,7 +1597,7 @@
 
       <div class="card pipeCard" id="pipelineCard" style="display:none">
         <div class="cardHead">
-          <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>전체 진행 단계</span>
+          <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span>전체 진행 단계</span>
           <span class="cardMeta mono" id="pipelineMeta"></span>
         </div>
         <div id="pipelineBody"></div>
@@ -1616,6 +1621,7 @@
       <!-- 채널 전체 편집 잔디 (Claude 사용량 화면처럼). 회차와 상관없이 늘 같은 내용이라
            지난 에피소드를 열어도 바뀌지 않는다. 데이터는 앱이 올리는 projects/activity.json. -->
       <div class="card heatCard" id="heatCard" style="display:none">
+        <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></span>편집 잔디</span><span class="cardMeta mono">채널 전체</span></div>
         <div class="cardHead">
           <div class="rangeToggle" id="heatTabs" role="tablist" aria-label="보기">
             <button type="button" data-tab="overview" class="active">개요</button>
@@ -1648,7 +1654,7 @@
     </div>
 
     <div class="fxBar card" id="fxBar" style="display:none">
-      <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-4)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></span>이펙트</span><span class="cardMeta mono">21개</span></div>
+      <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-4)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.2 6.3 6.3 2.2-6.3 2.2-2.2 6.3-2.2-6.3L3.5 12l6.3-2.2z"/></svg></span>이펙트</span><span class="cardMeta mono">21개</span></div>
       <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
         <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
         <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
@@ -2153,7 +2159,6 @@ async function loadActivity() {
   }
   activityLoaded = true;
   renderHeat();
-  renderPace();
   renderMomentum();
 }
 
@@ -3020,7 +3025,6 @@ function renderSummary(cardEl, data) {
   const groups = [...new Set((data.allCategories || []).map(c => c.group))];
   const gi = stageCat ? groups.indexOf(stageCat.group) : -1;
   const mood = isCompleted ? 'var(--gold)' : gi >= 0 ? `var(--grp-${Math.min(gi, 3) + 1})` : 'var(--accent)';
-  const stageFrac = progress && progress.stage && progress.stage.frac != null ? Math.round(progress.stage.frac * 100) : null;
   cardEl.style.setProperty('--mood', mood);
 
   cardEl.style.display = '';
@@ -3032,7 +3036,6 @@ function renderSummary(cardEl, data) {
         <span class="statusChip${isCompleted ? ' done' : ' wip'}"><i></i>${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
         <span class="liveBadge" data-since="${escapeHtml(liveSince)}" data-session="${escapeHtml(sessionStart(entries))}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE <span class="rec">${recCode(sessionStart(entries))}</span></span>
       </div>
-      <span class="heroMomentum" id="heroMomentum" hidden></span>
     </div>
     <div class="heroMain">
       <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
@@ -3052,118 +3055,40 @@ function renderSummary(cardEl, data) {
     <div class="heroStats">
       ${stageText ? `
         <div class="heroStat stageTile" style="--tc:${mood}">
-          <span class="stageLabel">지금 단계</span>
-          <span class="stageName"><span class="stageIcon">${stageIcon}</span><span class="stageText">${escapeHtml(stageText)}</span>${stageFrac != null ? `<span class="stagePct">${stageFrac}%</span>` : ''}</span>
+          <span class="stageLabel">현재 단계</span>
+          <span class="stageName"><span class="stageIcon">${stageIcon}</span><span class="stageText">${escapeHtml(stageText)}</span></span>
         </div>` : ''}
       ${sinceIso ? `
         <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
-          <span class="stageLabel">편집 시작 후</span>
+          <span class="stageLabel">에피소드 편집 시작 후</span>
           <b class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</b>
         </div>
-        <div class="heroStat streakTile pending" id="streakTile" style="--tc:#ff8a3d"><span class="stageLabel">연속 작업</span><b>🔥 0일</b></div>
-        ${data.currentStage
-          // 페이스·연속 작업은 잔디 데이터가 도착한 뒤에 채워진다. 자리를 미리 잡아 두지 않으면 폰에서
-          // 카드가 한 박자 늦게 쑥 커진다 — 같은 모양의 빈 자리를 투명하게 깔아 둔다.
-          ? `<div class="heroStat paceBlock pending" id="paceBlock"><span class="stageLabel">페이스</span><span class="paceChip">지난 평균과 비교 중</span></div>`
-          : '<div class="heroStat paceBlock" id="paceBlock" hidden></div>'}` : ''}
+        ${/* 연속 작업은 잔디 데이터가 도착한 뒤에 채워진다 — 자리를 미리 투명하게 잡아 둬서 카드가 늦게 커지지 않게 */''}
+        <div class="heroStat streakTile pending" id="streakTile"><span class="stageLabel">연속 작업</span><b>🔥 0일</b></div>` : ''}
       ${doneStats}
     </div>
     ${entries.length >= 2 ? `<span class="heroWave" title="편집 파형 — 이번 에피소드를 시간순으로 펼친 것. 작업 기록이 몰린 때일수록 크게 솟아요" role="img" aria-label="편집 파형">${waveSvg(entries.map(e => e.timestamp), data.createdAt, isCompleted ? (data.completedAt ?? lastEntryTime) : new Date().toISOString())}</span>` : ''}
   `;
   cardEl.classList.toggle('hasWave', entries.length >= 2);
   setHeroBackdrop(cardEl, data);
-  paceData = isCompleted ? null : data;
-  renderPace();
   renderMomentum();
 }
 
-/** 히어로의 '오늘 몇 번 작업' 알약과 연속 작업 타일 — 채널 전체 잔디 데이터로 센다 (앱의 EditingMomentum). */
+/** 히어로의 연속 작업 — 채널 전체 잔디 데이터로 센다 (앱의 EditingMomentum). */
 function renderMomentum() {
-  const pill = document.getElementById('heroMomentum');
   const tile = document.getElementById('streakTile');
-  if (!pill && !tile) return;
+  if (!tile) return;
   if (!heatData || !(heatData.records || []).length) {
-    if (activityLoaded && tile) tile.hidden = true;   // 데이터가 없으면 자리를 접는다
+    if (activityLoaded) tile.hidden = true;   // 데이터가 없으면 자리를 접는다
     return;
   }
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const perDay = new Map();
   for (const [t] of heatData.records) { const k = dayKeyOf(new Date(t * 1000)); perDay.set(k, (perDay.get(k) || 0) + 1); }
-  const n = perDay.get(dayKeyOf(today)) || 0;
   const { current, longest } = heatStreaks(perDay, today, null);
-  if (pill) {
-    pill.hidden = !(n > 0 && paceData);
-    pill.innerHTML = n >= 3 ? `🔥 오늘 ${n}번 작업` : `⚡ 오늘 ${n}번 작업`;
-  }
-  if (tile) {
-    tile.classList.remove('pending');
-    tile.querySelector('.stageLabel').textContent = current >= 1 ? '연속 작업' : '최장 연속';
-    tile.querySelector('b').textContent = current >= 1 ? `🔥 ${current}일` : `${longest}일`;
-  }
-}
-
-/* ===== 페이스 — 지금 단계에 닿기까지 걸린 시간을 지난 회차들과 비교한다 ===== */
-let paceData = null;   // 지금 히어로에 떠 있는 편집 중 회차 (완료 회차면 null)
-
-function paceEstimate(data, act) {
-  if (!data || !act || !(act.records || []).length || !data.currentStage) return null;
-  const stageIdx = act.categories.indexOf(data.currentStage);
-  const doneIdx = act.categories.indexOf('완료');
-  if (stageIdx < 0 || doneIdx < 0) return null;
-  // 회차별로 기록을 모은다 — 세 번째 값이 회차 번호.
-  const eps = new Map();
-  for (const [ts, cat, ep] of act.records) {
-    if (!eps.has(ep)) eps.set(ep, []);
-    eps.get(ep).push([ts, cat]);
-  }
-  // 첫 기록이 이 회차 시작 시각과 가장 가까운 회차가 지금 회차다.
-  const start = new Date(data.createdAt).getTime() / 1000;
-  let cur = null, best = Infinity;
-  for (const [ep, rs] of eps) {
-    const d = Math.abs(Math.min(...rs.map(r => r[0])) - start);
-    if (d < best) { best = d; cur = ep; }
-  }
-  if (cur === null || best > 3600) return null;
-  const firstAt = (rs, idx) => { const t = rs.filter(r => r[1] >= idx).map(r => r[0]); return t.length ? Math.min(...t) : null; };
-  const curRs = eps.get(cur);
-  const curStart = Math.min(...curRs.map(r => r[0]));
-  const curReach = firstAt(curRs, stageIdx);
-  if (curReach === null) return null;
-  // 완료까지 간 지난 회차만 비교 대상으로 쓴다.
-  const past = [];
-  for (const [ep, rs] of eps) {
-    if (ep === cur) continue;
-    const s0 = Math.min(...rs.map(r => r[0]));
-    const reach = firstAt(rs, stageIdx), end = firstAt(rs, doneIdx);
-    if (reach === null || end === null) continue;
-    past.push({ toStage: reach - s0 });
-  }
-  if (!past.length) return null;
-  const avg = k => past.reduce((a, p) => a + p[k], 0) / past.length;
-  return {
-    diff: avg('toStage') - (curReach - curStart),   // +면 지난 평균보다 빠르다
-    n: past.length,
-  };
-}
-
-function renderPace() {
-  const el = document.getElementById('paceBlock');
-  if (!el) return;
-  const p = paceEstimate(paceData, heatData);
-  if (!p) {
-    // 아직 잔디 데이터를 기다리는 중이면 비워 둔 자리를 그대로 둔다.
-    if (!(paceData && !activityLoaded)) el.hidden = true;
-    return;
-  }
-  el.classList.remove('pending');
-  const fast = p.diff >= 0;
-  const gap = Math.abs(p.diff);
-  const paceText = gap < 3 * 3600 ? '지난 평균과 비슷한 페이스' : `지난 평균보다 ${formatSpan(gap)} ${fast ? '빨라요' : '늦어요'}`;
-  el.hidden = false;
-  el.title = `'${paceData.currentStage}' 단계에 닿기까지 걸린 시간을 지난 에피소드 ${p.n}개 평균과 비교해요`;
-  el.innerHTML = `
-    <span class="stageLabel">페이스</span>
-    <span class="paceChip ${gap < 3 * 3600 ? '' : fast ? 'fast' : 'slow'}">${fast && gap >= 3 * 3600 ? '⚡ ' : ''}${escapeHtml(paceText)}</span>`;
+  tile.classList.remove('pending');
+  tile.querySelector('.stageLabel').textContent = current >= 1 ? '연속 작업' : '최장 연속';
+  tile.querySelector('b').textContent = current >= 1 ? `🔥 ${current}일` : `${longest}일`;
 }
 
 /** ① 히어로 배경 — 완성 영상이면 유튜브 썸네일, 편집 중이면 캡처를 흐리게 깐다.
@@ -5213,17 +5138,20 @@ function showTravelQuote() {
   setTimeout(() => { el.classList.add('show'); sfx('achieve'); }, 30);
   setTimeout(close, 4500);
 }
-// 브라우저는 한 번도 누르지 않은 페이지에선 소리를 못 내게 막는다. 효과음을 켜 둔 사람에겐
-// 첫 터치 때 명언을 띄워 소리와 같이 나오게 하고, 꺼 둔 사람에겐 원래대로 열자마자 띄운다.
-if (Sfx.on && navigator.userActivation && !navigator.userActivation.hasBeenActive) {
-  const first = () => {
+// 명언은 언제나 열자마자 뜬다. 다만 브라우저는 한 번도 누르지 않은 페이지에선 소리를 못 내게
+// 막으므로, 효과음을 켜 둔 사람이 아직 안 눌렀다면 카드가 떠 있는 동안 처음 누를 때 소리를 낸다.
+setTimeout(() => {
+  showTravelQuote();
+  if (!(Sfx.on && navigator.userActivation && !navigator.userActivation.hasBeenActive)) return;
+  const first = (ev) => {
     ['pointerup', 'keydown', 'touchend'].forEach(t => removeEventListener(t, first, true));
-    setTimeout(showTravelQuote, 120);
+    // 명언 버튼을 누른 거면 새 카드가 제 소리를 낸다 — 두 번 울리지 않게 건너뛴다.
+    if (ev && ev.target && ev.target.closest && ev.target.closest('#quoteBtn')) return;
+    if (document.querySelector('.quoteToast:not(.hide)')) sfx('achieve');
   };
   ['pointerup', 'keydown', 'touchend'].forEach(t => addEventListener(t, first, true));
-} else {
-  setTimeout(showTravelQuote, 900);
-}
+  setTimeout(first, 4600);   // 카드가 사라진 뒤엔 기다리지 않는다
+}, 900);
 </script>
 </body>
 </html>
