@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
@@ -118,7 +119,7 @@
   ::selection { background: var(--soft); color: var(--ink); }
   body {
     margin: 0; min-height: 100vh; overflow-x: clip; background: var(--bg); color: var(--ink);
-    font-family: 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Pretendard Variable', Pretendard, 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
     display: flex; justify-content: center; padding: 10px 12px 96px;   /* 아래 명언 버튼에 마지막 내용이 가리지 않게 */
     -webkit-font-smoothing: antialiased;
   }
@@ -1374,6 +1375,136 @@
     .quoteToast::before, .quoteBadge { animation: none; }
   }
   /* 그라데이션 글자는 색 대신 배경을 쓰므로, 앞에서 준 color보다 이 규칙이 뒤에 와야 한다. */
+
+  /* ==========================================================================
+     앱 룩 — 편집 앱(Editing Record)과 같은 디자인 언어로.
+     유리 카드 · 동그란 그라데이션 아이콘이 붙은 카드 제목 · 썸네일을 통째로 깐 히어로 ·
+     유리 조각 숫자 타일. 앱보다 한 톤 차분하게(구독자가 읽는 화면이라 가독성 우선).
+     ========================================================================== */
+  html[data-theme="dark"] {
+    --glass: rgba(12,20,22,.72);
+    --glassTop: rgba(255,255,255,.06);
+    --glassLine: rgba(255,255,255,.1);
+    --glassHi: rgba(255,255,255,.14);
+    --heroInk: #05080a;
+    --tileBg: rgba(0,0,0,.32);
+    --tileLine: rgba(255,255,255,.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --glass: rgba(12,20,22,.72);
+      --glassTop: rgba(255,255,255,.06);
+      --glassLine: rgba(255,255,255,.1);
+    --glassHi: rgba(255,255,255,.14);
+      --heroInk: #05080a;
+      --tileBg: rgba(0,0,0,.32);
+      --tileLine: rgba(255,255,255,.12);
+    }
+  }
+  html[data-theme="light"] {
+    --glass: rgba(255,255,255,.82);
+    --glassTop: rgba(255,255,255,.7);
+    --glassLine: rgba(11,22,21,.1);
+    --glassHi: rgba(255,255,255,.9);
+    --heroInk: #ffffff;
+    --tileBg: rgba(255,255,255,.62);
+    --tileLine: rgba(11,22,21,.12);
+  }
+
+  /* 유리 카드 — 반투명 바탕 + 위에서 번지는 옅은 빛 + 얇은 테두리와 윗변 하이라이트.
+     (그라데이션 테두리를 border-box 배경으로 깔면 반투명 바탕 사이로 비쳐 카드 전체가 물든다.) */
+  .card, .statTile {
+    border: 1px solid var(--glassLine);
+    background: linear-gradient(180deg, var(--glassTop), transparent 42%), var(--glass);
+    box-shadow: inset 0 1px 0 var(--glassHi);
+  }
+  .card { border-radius: 20px; }
+  .statTile { border-radius: 18px; }
+  @media (max-width: 420px) { .card { border-radius: 18px; } }
+
+  /* 카드 제목 — 동그란 그라데이션 아이콘 + 굵은 제목 (앱의 CardTitle) */
+  .cardHead { align-items: center; }
+  .cardTitle { display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 800;
+               letter-spacing: -0.01em; color: var(--ink); }
+  .cardIcon { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+              background: linear-gradient(135deg, var(--ic), color-mix(in srgb, var(--ic) 50%, #d98aea));
+              box-shadow: 0 0 10px color-mix(in srgb, var(--ic) 55%, transparent); }
+  .cardIcon svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .cardMeta { font-weight: 600; }
+
+  /* ===== 히어로 ===== */
+  .hero, #summaryCard.hero { display: flex; flex-direction: column; align-items: stretch; gap: 16px;
+          padding: 18px 18px 20px; border-radius: 24px;
+          box-shadow: 0 18px 50px color-mix(in srgb, var(--mood, var(--accent)) 22%, transparent); }
+  #summaryCard.hero.hasWave { padding-bottom: 50px; }
+  /* 흐린 판 전체 + 오른쪽 선명한 원본(천천히 다가가는 줌) */
+  .heroBg { inset: -10%; filter: blur(28px) saturate(1.5); }
+  .hero.hasBg .heroBg { opacity: .55; }
+  .heroShot { position: absolute; z-index: -2; top: 0; right: 0; bottom: 0; width: 64%; pointer-events: none;
+              background: var(--heroFull, none) center / cover no-repeat; opacity: 0; transition: opacity .8s ease;
+              -webkit-mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.85) 55%, #000);
+                      mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.85) 55%, #000);
+              animation: kenBurns 26s ease-in-out infinite alternate; }
+  .hero.hasBg .heroShot { opacity: .8; }
+  @keyframes kenBurns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.14) translate(-2%, -1.5%); } }
+  /* 글자 쪽은 눌러서 읽히게 + 링 뒤로 분위기 색이 번진다 */
+  .hero::after, .hero.hasBg::after { opacity: 1;
+    background:
+      radial-gradient(260px circle at 16% 42%, color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent), transparent 70%),
+      linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--heroInk) 55%, transparent)),
+      linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 90%, transparent) 0%,
+                             color-mix(in srgb, var(--heroInk) 66%, transparent) 42%,
+                             color-mix(in srgb, var(--heroInk) 12%, transparent) 88%); }
+
+  .heroTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
+  .heroMomentum { flex: none; font-size: 11.5px; font-weight: 700; color: var(--ink); white-space: nowrap;
+                  padding: 5px 11px; border-radius: 99px; background: var(--tileBg);
+                  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); }
+  .heroMomentum[hidden] { display: none; }
+  /* 상태 칩 — 빛나는 점 + 반투명 알약 + 제 색 테두리 */
+  .statusChip, .statusChip.wip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700;
+    padding: 5px 10px; border-radius: 99px; background: var(--tileBg); animation: none;
+    color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 38%, transparent); }
+  .statusChip.done { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 38%, transparent); }
+  .statusChip i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor;
+                  animation: labelFade 1.8s ease-in-out infinite; }
+  .statusChip.done i { animation: none; }
+
+  .heroMain { display: flex; align-items: center; gap: 18px; }
+  .heroMain .donut { flex: none; }
+  .heroRight { gap: 6px; }
+  .heroKicker { font-size: 9.5px; font-weight: 700; letter-spacing: .22em; color: color-mix(in srgb, var(--mood, var(--accent)) 80%, var(--ink)); }
+  .topic { font-size: 21px; font-weight: 800; line-height: 1.3; letter-spacing: -0.03em; }
+  html[data-theme="dark"] .topic { text-shadow: 0 2px 14px rgba(0,0,0,.6); }
+  .donut .pct { font: 800 27px/1 'Pretendard Variable', Pretendard, sans-serif; letter-spacing: -0.04em; }
+  .donut .steps { font-size: 9.5px; }
+
+  /* 숫자 타일 — 반투명 유리 조각 위에 작은 라벨과 큰 값 (2칸 격자) */
+  .heroStats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .heroStat { position: relative; display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 10px 12px;
+              border-radius: 14px; background: var(--tileBg); border: 1px solid var(--tileLine);
+              box-shadow: inset 0 1px 0 var(--glassHi); }
+  .heroStat[style*="--tc"] { border-color: color-mix(in srgb, var(--tc) 40%, transparent);
+              box-shadow: inset 0 1px 0 color-mix(in srgb, var(--tc) 30%, transparent); }
+  .heroStat .stageLabel { font-size: 10.5px; font-weight: 700; letter-spacing: 0; color: var(--ink3); }
+  .heroStat[style*="--tc"] .stageLabel { color: color-mix(in srgb, var(--tc) 85%, var(--ink)); }
+  .heroStat b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .heroStat b.goldVal { color: var(--gold); }
+  .stageTile .stageName { font-size: 14.5px; font-weight: 800; color: var(--tc); gap: 6px; min-width: 0; }
+  .stageTile .stageText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stageTile .stageIcon { width: 15px; height: 15px; }
+  .stagePct { flex: none; font-size: 10px; font-weight: 800; color: #08120c; background: var(--tc); padding: 2px 6px; border-radius: 99px; }
+  .streakTile b { background: linear-gradient(180deg, #ffd75e, #ff6a3d); -webkit-background-clip: text; background-clip: text;
+                  color: transparent; -webkit-text-fill-color: transparent; }
+  .streakTile { transition: opacity .35s ease; }
+  .streakTile.pending { opacity: 0; }
+  .streakTile[hidden] { display: none; }
+  .paceBlock .paceChip { margin-top: 0; font-size: 11px; white-space: normal; line-height: 1.35; }
+  @media (min-width: 900px) {
+    .hero { flex-direction: column; align-items: stretch; }
+    .topic { font-size: 23px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .heroShot { animation: none; } }
 </style>
 </head>
 <body>
@@ -1408,7 +1539,7 @@
 
       <div class="card pipeCard" id="pipelineCard" style="display:none">
         <div class="cardHead">
-          <span class="cardTitle">전체 진행 단계</span>
+          <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg></span>전체 진행 단계</span>
           <span class="cardMeta mono" id="pipelineMeta"></span>
         </div>
         <div id="pipelineBody"></div>
@@ -1422,7 +1553,7 @@
 
       <div class="card dayCard" id="dayCard" style="display:none">
         <div class="cardHead">
-          <span class="cardTitle">작업 시간대</span>
+          <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-2)" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span>작업 시간대</span>
           <span class="cardMeta mono" id="dayMeta"></span>
         </div>
         <div class="dayBand" id="dayBand"><span class="dayNow" id="dayNow"></span></div>
@@ -1456,7 +1587,7 @@
 
       <div class="card logCard" id="logCard" style="display:none">
         <div class="cardHead">
-          <span class="cardTitle">작업 기록</span>
+          <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-3)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></span>작업 기록</span>
           <span class="cardMeta mono" id="logMeta"></span>
         </div>
         <div id="logBody"></div>
@@ -1464,7 +1595,7 @@
     </div>
 
     <div class="fxBar card" id="fxBar" style="display:none">
-      <div class="cardHead"><span class="cardTitle">이펙트</span><span class="cardMeta mono">21개</span></div>
+      <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-4)" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></span>이펙트</span><span class="cardMeta mono">21개</span></div>
       <div class="fxTabs" id="fxTabs" role="tablist" aria-label="이펙트 종류">
         <button type="button" class="fxTab active" role="tab" aria-selected="true" data-fx="0" style="--fc:var(--grp-1)"><span class="e">🎬</span>편집실</button>
         <button type="button" class="fxTab" role="tab" aria-selected="false" data-fx="1" style="--fc:var(--grp-2)"><span class="e">🌤️</span>날씨</button>
@@ -1970,6 +2101,7 @@ async function loadActivity() {
   activityLoaded = true;
   renderHeat();
   renderPace();
+  renderMomentum();
 }
 
 let heatTab = 'overview';
@@ -2827,47 +2959,61 @@ function renderSummary(cardEl, data) {
     const span = (new Date(data.completedAt) - new Date(data.createdAt)) / 1000;
     const finalLen = normalizeLength(data.finalLength);
     doneStats = `
-      <div class="heroStat"><span class="stageLabel">총 소요</span><b>${escapeHtml(formatSpan(span))}</b></div>
+      <div class="heroStat" style="--tc:var(--gold)"><span class="stageLabel">총 소요</span><b class="goldVal">${escapeHtml(formatSpan(span))}</b></div>
       ${finalLen ? `<div class="heroStat"><span class="stageLabel">완성 영상</span><b>${escapeHtml(finalLen)}</b></div>` : ''}`;
   }
+
+  // 지금 단계의 그룹 색 — 히어로 전체의 분위기 색(뒤에서 번지는 빛)과 단계 타일 색이 된다 (앱과 같다).
+  const groups = [...new Set((data.allCategories || []).map(c => c.group))];
+  const gi = stageCat ? groups.indexOf(stageCat.group) : -1;
+  const mood = isCompleted ? 'var(--gold)' : gi >= 0 ? `var(--grp-${Math.min(gi, 3) + 1})` : 'var(--accent)';
+  const stageFrac = progress && progress.stage && progress.stage.frac != null ? Math.round(progress.stage.frac * 100) : null;
+  cardEl.style.setProperty('--mood', mood);
 
   cardEl.style.display = '';
   cardEl.innerHTML = `
     <span class="heroBg" aria-hidden="true"></span>
-    <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
-      <span class="donutGlow" aria-hidden="true"></span>
-      <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
-      <div class="in">
-        <span class="pct mono" id="donutPct">0%</span>
-        <span class="steps mono">${progress ? `${progress.done} / ${progress.total}` : '0 / 0'}</span>
-      </div>
-      ${donutTicks(progress)}
-    </div>
-    <div class="heroRight">
+    <span class="heroShot" aria-hidden="true"></span>
+    <div class="heroTop">
       <div class="chipRow">
-        <span class="statusChip${isCompleted ? '' : ' wip'}">${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
+        <span class="statusChip${isCompleted ? ' done' : ' wip'}"><i></i>${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
         <span class="liveBadge" data-since="${escapeHtml(liveSince)}" data-session="${escapeHtml(sessionStart(entries))}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE <span class="rec">${recCode(sessionStart(entries))}</span></span>
       </div>
-      <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
+      <span class="heroMomentum" id="heroMomentum" hidden></span>
+    </div>
+    <div class="heroMain">
+      <div class="donut" id="donutGauge" style="background: ${donutRing(0)}">
+        <span class="donutGlow" aria-hidden="true"></span>
+        <span class="donutSpark" id="donutSpark" aria-hidden="true"><span class="tip"></span></span>
+        <div class="in">
+          <span class="pct" id="donutPct">0%</span>
+          <span class="steps mono">${progress ? `${progress.done} / ${progress.total} 단계` : '0 / 0'}</span>
+        </div>
+        ${donutTicks(progress)}
+      </div>
+      <div class="heroRight">
+        <span class="heroKicker mono">${isCompleted ? 'EPISODE COMPLETE' : 'NOW EDITING'}</span>
+        <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
+      </div>
+    </div>
+    <div class="heroStats">
       ${stageText ? `
-        <div style="display:flex;flex-direction:column;gap:2px">
-          <span class="stageLabel">현재 단계</span>
-          <span class="stageName"><span class="stageIcon">${stageIcon}</span>${escapeHtml(stageText)}</span>
+        <div class="heroStat stageTile" style="--tc:${mood}">
+          <span class="stageLabel">지금 단계</span>
+          <span class="stageName"><span class="stageIcon">${stageIcon}</span><span class="stageText">${escapeHtml(stageText)}</span>${stageFrac != null ? `<span class="stagePct">${stageFrac}%</span>` : ''}</span>
         </div>` : ''}
-      ${sinceIso || doneStats ? `
-        <div class="heroStats">
-          ${sinceIso ? `
-            <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
-              <span class="stageLabel">에피소드 편집 시작 후</span>
-              <span class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</span>
-            </div>
-            ${data.currentStage
-              // 페이스는 잔디 데이터가 도착한 뒤에 채워진다. 자리를 미리 잡아 두지 않으면 폰에서
-              // 카드가 한 박자 늦게 한 줄만큼 쑥 커진다 — 같은 모양의 빈 자리를 투명하게 깔아 둔다.
-              ? `<div class="heroStat paceBlock pending" id="paceBlock"><span class="stageLabel">페이스</span><span class="paceChip">지난 평균과 비교 중</span></div>`
-              : '<div class="heroStat paceBlock" id="paceBlock" hidden></div>'}` : ''}
-          ${doneStats}
-        </div>` : ''}
+      ${sinceIso ? `
+        <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
+          <span class="stageLabel">편집 시작 후</span>
+          <b class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</b>
+        </div>
+        <div class="heroStat streakTile pending" id="streakTile" style="--tc:#ff8a3d"><span class="stageLabel">연속 작업</span><b>🔥 0일</b></div>
+        ${data.currentStage
+          // 페이스·연속 작업은 잔디 데이터가 도착한 뒤에 채워진다. 자리를 미리 잡아 두지 않으면 폰에서
+          // 카드가 한 박자 늦게 쑥 커진다 — 같은 모양의 빈 자리를 투명하게 깔아 둔다.
+          ? `<div class="heroStat paceBlock pending" id="paceBlock"><span class="stageLabel">페이스</span><span class="paceChip">지난 평균과 비교 중</span></div>`
+          : '<div class="heroStat paceBlock" id="paceBlock" hidden></div>'}` : ''}
+      ${doneStats}
     </div>
     ${entries.length >= 2 ? `<span class="heroWave" title="편집 파형 — 이번 에피소드를 시간순으로 펼친 것. 작업 기록이 몰린 때일수록 크게 솟아요" role="img" aria-label="편집 파형">${waveSvg(entries.map(e => e.timestamp), data.createdAt, isCompleted ? (data.completedAt ?? lastEntryTime) : new Date().toISOString())}</span>` : ''}
   `;
@@ -2875,6 +3021,32 @@ function renderSummary(cardEl, data) {
   setHeroBackdrop(cardEl, data);
   paceData = isCompleted ? null : data;
   renderPace();
+  renderMomentum();
+}
+
+/** 히어로의 '오늘 몇 번 작업' 알약과 연속 작업 타일 — 채널 전체 잔디 데이터로 센다 (앱의 EditingMomentum). */
+function renderMomentum() {
+  const pill = document.getElementById('heroMomentum');
+  const tile = document.getElementById('streakTile');
+  if (!pill && !tile) return;
+  if (!heatData || !(heatData.records || []).length) {
+    if (activityLoaded && tile) tile.hidden = true;   // 데이터가 없으면 자리를 접는다
+    return;
+  }
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const perDay = new Map();
+  for (const [t] of heatData.records) { const k = dayKeyOf(new Date(t * 1000)); perDay.set(k, (perDay.get(k) || 0) + 1); }
+  const n = perDay.get(dayKeyOf(today)) || 0;
+  const { current, longest } = heatStreaks(perDay, today, null);
+  if (pill) {
+    pill.hidden = !(n > 0 && paceData);
+    pill.innerHTML = n >= 3 ? `🔥 오늘 ${n}번 작업` : `⚡ 오늘 ${n}번 작업`;
+  }
+  if (tile) {
+    tile.classList.remove('pending');
+    tile.querySelector('.stageLabel').textContent = current >= 1 ? '연속 작업' : '최장 연속';
+    tile.querySelector('b').textContent = current >= 1 ? `🔥 ${current}일` : `${longest}일`;
+  }
 }
 
 /* ===== 페이스 — 지금 단계에 닿기까지 걸린 시간을 지난 회차들과 비교한다 ===== */
@@ -2946,8 +3118,9 @@ function renderPace() {
 function setHeroBackdrop(card, data) {
   card.classList.remove('hasBg');
   card.style.removeProperty('--heroImg');
+  card.style.removeProperty('--heroFull');
   const yt = data.youtubeId;
-  const src = yt ? `https://img.youtube.com/vi/${encodeURIComponent(yt)}/mqdefault.jpg` : data.previewImage;
+  const src = yt ? `https://img.youtube.com/vi/${encodeURIComponent(yt)}/hqdefault.jpg` : data.previewImage;
   card._bgSrc = src || null;
   if (!src) return;
   const img = new Image();
@@ -2963,6 +3136,8 @@ function setHeroBackdrop(card, data) {
       } catch (e) { /* 줄이지 못하면 원본 그대로 */ }
     }
     card.style.setProperty('--heroImg', `url("${url}")`);
+    // 오른쪽엔 선명한 원본을 깔고 왼쪽으로 스르르 사라지게 (앱 히어로와 같은 구성).
+    card.style.setProperty('--heroFull', `url("${src}")`);
     card.classList.add('hasBg');
   };
   img.src = src;
@@ -3162,7 +3337,7 @@ function renderStats(data) {
   const summary = from && to && from !== to
     ? `<span class="lenSummary">${from}<i>→</i>${to}</span>` : '';
   document.getElementById('statsBody').innerHTML =
-    `<div class="statTile lenTile"><div class="cardHead"><span class="cardTitle">영상 길이</span>${summary}</div>`
+    `<div class="statTile lenTile"><div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-2)" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9.5h4M3 14.5h4M17 9.5h4M17 14.5h4"/></svg></span>영상 길이</span>${summary}</div>`
     + `<div class="lenRows">${html}</div></div>`;
   runCounters();
 }
