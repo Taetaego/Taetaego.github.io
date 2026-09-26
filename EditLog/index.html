@@ -2817,7 +2817,7 @@ function renderSummary(cardEl, data) {
     ? (data.completedAt ?? data.lastUpdate)
     : (lastEntryTime ?? data.lastUpdate);
 
-  // ② 마지막 기록이 30분 안이면 LIVE. 1분마다 updateLive()가 다시 본다.
+  // ② 마지막 기록이 90분 안이면 LIVE. 1분마다 updateLive()가 다시 본다.
   const liveSince = !isCompleted && lastEntryTime ? lastEntryTime : '';
 
   // 완료된 회차는 오른쪽이 휑하지 않게 총 소요·완성 길이를 올린다.
@@ -3022,7 +3022,7 @@ setInterval(() => {
 
 /** ② 마지막 기록이 30분 안인가. */
 function isLive(since) {
-  return !!since && Date.now() - new Date(since).getTime() < 30 * 60 * 1000;
+  return !!since && Date.now() - new Date(since).getTime() < 90 * 60 * 1000;
 }
 
 /** ② LIVE 배지는 시간이 지나면 저절로 꺼져야 한다 — 1분마다 다시 본다. */
