@@ -1202,12 +1202,11 @@
      앱과 같은 흐름 — 단계 그룹 색(민트 → 하늘 → 보라 → 분홍)을 잇는다. 테마마다 --grp가
      대비에 맞게 바뀌므로 그대로 따라간다. */
   html { --grad: linear-gradient(90deg, var(--grp-1), var(--grp-2), var(--grp-3), var(--grp-4)); }
-  .gradText, .brand, .logDay {
+  .gradText, .brand {
     background: var(--grad); -webkit-background-clip: text; background-clip: text;
     color: transparent; -webkit-text-fill-color: transparent;
   }
   .brand { font-weight: 800; font-size: 14.5px; width: fit-content; }
-  .logDay { width: fit-content; font-weight: 700; }
   /* 뒤에서 은은하게 번지는 오로라 */
   body::before {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -1505,6 +1504,60 @@
     .topic { font-size: 23px; }
   }
   @media (prefers-reduced-motion: reduce) { .heroShot { animation: none; } }
+
+  /* ===== 작업 기록 — 날짜 알약(날마다 다른 그라데이션) · 그룹 색 아이콘 타일 (앱과 같다) ===== */
+  .logDay { display: flex; align-items: center; gap: 8px; padding: 16px 0 8px; font-size: 11.5px; font-weight: 800;
+            letter-spacing: 0; color: var(--ink); }
+  .logDay:first-of-type { padding-top: 4px; }
+  .dayPill { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px; border-radius: 99px;
+             background: linear-gradient(90deg, color-mix(in srgb, var(--d1) 26%, transparent), color-mix(in srgb, var(--d2) 26%, transparent));
+             box-shadow: inset 0 0 0 1.2px color-mix(in srgb, var(--d1) 80%, transparent), 0 0 10px color-mix(in srgb, var(--d1) 35%, transparent); }
+  .dayCnt { font-size: 10px; font-weight: 900; color: #05080a; padding: 1px 6px; border-radius: 99px;
+            background: linear-gradient(90deg, var(--d1), var(--d2)); }
+  .logDaySum { flex: none; margin-left: 0; font-size: 10.5px; font-weight: 600; color: var(--ink3); -webkit-text-fill-color: currentColor; }
+  .dayLine { flex: 1; height: 1.5px; min-width: 12px; border-radius: 2px;
+             background: linear-gradient(90deg, color-mix(in srgb, var(--d1) 60%, transparent), color-mix(in srgb, var(--d2) 30%, transparent), transparent); }
+  @media (max-width: 420px) { .logDaySum { display: none; } }
+  .logRow .cat { gap: 8px; }
+  .logRow .cat .catIcon { width: 22px; height: 22px; padding: 4.5px; border-radius: 7px; color: #fff;
+    background: linear-gradient(135deg, var(--rowc, var(--ink3)), color-mix(in srgb, var(--rowc, var(--ink3)) 45%, #d98aea));
+    box-shadow: 0 0 6px color-mix(in srgb, var(--rowc, var(--ink3)) 45%, transparent); }
+  .logRow .cat .catIcon svg { stroke-width: 2.2; }
+  /* 폰에선 카테고리 이름이 잘리지 않게 타일을 줄이고 간격을 좁힌다 */
+  @media (max-width: 560px) {
+    .logRow { padding-left: 5px; }
+    .logRow .cat { gap: 5px; }
+    .logRow .cat .catIcon { width: 18px; height: 18px; padding: 3.5px; border-radius: 6px; }
+    .logRow .cat .catName { letter-spacing: -0.03em; }
+  }
+  @media (max-width: 380px) { #logCard.card { padding-left: 11px; padding-right: 11px; } }
+  /* 가장 좁은 폰(360px대)에선 숫자 열을 한 번 더 조여 이름 자리를 만든다 */
+  @media (max-width: 440px) {
+    .logHead, .logRow { grid-template-columns: 1fr 40px 56px 70px var(--memoCol, 0px); gap: 4px; }
+    .logRow .cat .catName { font-size: 11.5px; }
+    /* '지금 여기' 점은 이름 옆 대신 아이콘 타일 모서리에 */
+    .logRow .cat { position: relative; }
+    .logRow.latest .cat::after { position: absolute; left: 13px; top: -2px; margin: 0; width: 6px; height: 6px;
+                                 box-shadow: 0 0 0 1.5px var(--surface), 0 0 8px var(--rowc, var(--grp-1)); }
+  }
+  #logMeta { font-size: 11px; font-weight: 800; color: var(--accent2); background: var(--soft); padding: 2px 8px; border-radius: 99px; }
+
+  /* ===== 진행 단계 — 아이콘 타일 + 지금 단계 줄 강조 ===== */
+  .pipeItem .pipeIcon { width: 20px; height: 20px; padding: 4px; margin-right: 0; border-radius: 6px; color: #fff;
+    background: linear-gradient(135deg, var(--rowc, var(--ink3)), color-mix(in srgb, var(--rowc, var(--ink3)) 45%, #d98aea)); }
+  .pipeItem .pipeIcon svg { stroke-width: 2.2; }
+  .pipeItem.todo .pipeIcon { opacity: 1; color: var(--ink3); background: var(--surface2); box-shadow: inset 0 0 0 1px var(--line2); }
+  /* 강조 배경을 좌우로 10px 넓히되 점과 세로선 위치는 그대로 (세로선도 10px 밀어 준다) */
+  .pipeItem.current { margin: 0 -10px; padding: 5px 10px; border-radius: 12px;
+    background: color-mix(in srgb, var(--rowc, var(--accent)) 12%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rowc, var(--accent)) 38%, transparent),
+                0 0 18px color-mix(in srgb, var(--rowc, var(--accent)) 16%, transparent); }
+  .pipeItem.current .pipeIcon { box-shadow: 0 0 8px color-mix(in srgb, var(--rowc, var(--accent)) 60%, transparent); }
+  .pipeItem.current .name { font-weight: 800; }
+  .pipeItem.current::before { left: 18px; }
+  .pipeGroupTitle { display: flex; align-items: center; gap: 8px; }
+  .pipeGroupTitle::after { content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--rowc, var(--accent)) 50%, transparent), transparent); }
 </style>
 </head>
 <body>
@@ -4092,8 +4145,8 @@ function renderLog(data) {
   let html = `
     <div class="logHead">
       <span>카테고리</span>
-      <span class="c"><span class="lbl">시작 시점<button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button><div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지<br>편집되어 있었는지 (영상 길이 기준)</div></span></span>
-      <span class="c"><span class="lbl">시작 시간<button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button><div class="infoPopover">이 작업을 실제로 시작한 시각</div></span></span>
+      <span class="c"><span class="lbl"><span class="lg">시작 시점</span><span class="sm">시점</span><button type="button" class="infoBtn" aria-label="시작 시점 설명">ⓘ</button><div class="infoPopover">이 작업을 시작했을 때 영상이 어디까지<br>편집되어 있었는지 (영상 길이 기준)</div></span></span>
+      <span class="c"><span class="lbl"><span class="lg">시작 시간</span><span class="sm">시간</span><button type="button" class="infoBtn" aria-label="시작 시간 설명">ⓘ</button><div class="infoPopover">이 작업을 실제로 시작한 시각</div></span></span>
       <span class="c"><span class="lg">이전 기록<br>으로부터</span><span class="sm">간격</span></span>
       ${hasMemo ? '<span class="c memoHead">메모</span>' : '<span></span>'}
     </div>
@@ -4114,7 +4167,9 @@ function renderLog(data) {
     const ts = dayEntries.map(e => new Date(e.timestamp).getTime());
     const t0 = new Date(Math.min(...ts)).toISOString(), t1 = new Date(Math.max(...ts)).toISOString();
     const span = dayEntries.length > 1 ? ` · ${formatTimeOnly(t0)} ~ ${formatTimeOnly(t1)}` : '';
-    html += `<div class="logDay">${formatDayLabel(dayEntries[0].timestamp)}<span class="logDaySum">기록 ${dayEntries.length}개${escapeHtml(span)}</span></div>`;
+    const [d1, d2] = dayGradient(dayEntries[0].timestamp);
+    html += `<div class="logDay" style="--d1:${d1};--d2:${d2}"><span class="dayPill"><span class="dayName">${formatDayLabel(dayEntries[0].timestamp)}</span><span class="dayCnt">${dayEntries.length}</span></span>`
+      + (span ? `<span class="logDaySum">${escapeHtml(span.replace(/^ · /, ''))}</span>` : '') + `<span class="dayLine"></span></div>`;
 
     for (const e of dayEntries) {
       const catLabel = e.category ? escapeHtml(e.category) : '체크포인트';
@@ -4145,11 +4200,20 @@ function renderLog(data) {
   logBody.innerHTML = html;
   // 메모가 하나도 없으면 열을 0으로 접는다 — 좁은 화면에서 카테고리 이름 자리를 뺏지 않게.
   logBody.style.setProperty('--memoCol', hasMemo ? '20px' : '0px');
-  document.getElementById('logMeta').textContent = `${entries.length}개`;
+  document.getElementById('logMeta').textContent = `${entries.length}`;
   document.getElementById('logCard').style.display = '';
   initInfoPopover();
   initMemoPopover();
   paintTimes();
+}
+
+/** 날짜마다 다른 두 색 — 무지개를 천천히 돈다 (같은 날은 늘 같은 색). 앱의 Theme.dayGradient와 같은 팔레트. */
+function dayGradient(iso) {
+  const P = [['#34E0B0', '#2DE3FF'], ['#2DE3FF', '#5A6BF0'], ['#8F82ED', '#D98AEA'], ['#D98AEA', '#FF7AB6'],
+             ['#FF7AB6', '#FF8A3D'], ['#FFB347', '#FFD75E'], ['#A6F04A', '#34E0B0']];
+  const d = new Date(iso);
+  const n = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
+  return P[((n % P.length) + P.length) % P.length];
 }
 
 /** 메모 아이콘 (작업 기록 표의 카테고리 아이콘과 같은 선 스타일). */
