@@ -988,18 +988,16 @@
   .card.ytThumb { padding: 0; }
   /* 도넛 · 썸네일 · 그 다음 카드는 한 덩어리로 읽히게 정확히 8px씩 띄운다.
      기본 간격이 화면 폭마다 달라서(모바일 12 / 데스크톱 16) 뺄셈으로 맞춘다. */
-  #summaryCard + .ytThumb,
-  .ytThumb + #doneCard,
-  .ytThumb + #pipelineCard { margin-top: calc(8px - var(--cardGap)); }
+  /* 썸네일이 접혀 있을 땐(편집 중) 뒤 카드가 붙어버리지 않게 보이는 경우에만. */
+  #summaryCard + .ytThumb:not([hidden]),
+  .ytThumb:not([hidden]) + #doneCard,
+  .ytThumb:not([hidden]) + #pipelineCard { margin-top: calc(8px - var(--cardGap)); }
   .ytThumb {
     position: relative; display: block; padding: 0; cursor: pointer;
     border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 9;
     background: var(--surface2); border: 1px solid var(--line);
     transition: transform .18s ease, border-color .18s ease;
   }
-  /* 아직 영상이 안 나온 캡처에는 갈 곳이 없다 — 재생 표시도 링크도 빼고 배지만 붙인다.
-     그래도 누르면 '찰칵' 하고 반응하니 손가락 커서는 남겨둔다. */
-  .ytThumb.still .ytPlay { display: none; }
 
   /* 누르면 유튜브 좋아요 버튼을 누른 것처럼 — 가운데 '👍 좋아요' 알약이 뜨고, 엄지가
      꾹 눌렸다가 채워지며 위로 까딱, 그 자리에서 링과 색 점들이 터진다. */
@@ -1053,25 +1051,6 @@
     .likePill, .likeThumb, .likeRing, .likeDot { animation-duration: 0s; animation-delay: 0s; }
   }
 
-  .thumbTag {
-    position: absolute; left: 10px; bottom: 10px; z-index: 1;
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 9px 4px 8px; border-radius: 99px;
-    background: color-mix(in srgb, var(--warn) 88%, black); color: #10131a;
-    font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em;
-    /* 다른 '편집 중' 표시(상태 칩·현재 단계)와 같은 주기·같은 위상으로 깜빡인다.
-       썸네일이 뜨는 순간과 그 표시들이 그려지는 순간이 같은 프레임이라 박자가 맞는다. */
-    animation: labelFade 1.8s ease-in-out infinite;
-  }
-  /* 녹화등처럼 보이는 점 (깜빡임은 배지 전체가 담당한다) */
-  .thumbTag::before {
-    content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%;
-    background: #10131a;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .thumbTag { animation: none; }
-  }
-  .thumbTag[hidden] { display: none; }
   .ytThumb[hidden] { display: none; }
   .ytThumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   /* 유튜브 재생 삼각형. 이미지가 늦게 와도 자리가 흔들리지 않게 비율로 잡아둔다. */
@@ -1555,10 +1534,6 @@
   .lenRow .ratio .of { display: none; }
   .lenRow.cut .ratio { color: #2fcf9f; background: rgba(52,224,176,.14); }
   .lenRow.final .ratio { color: #ff7ab6; background: rgba(255,122,182,.14); }
-  /* 썸네일의 '편집 중' — 히어로 상태 칩과 같은 모양 (빛나는 점 + 반투명 알약) */
-  .thumbTag { background: rgba(0,0,0,.55); color: var(--warn); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-              border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); padding: 5px 10px; font-size: 11px; animation: none; }
-  .thumbTag::before { background: currentColor; box-shadow: 0 0 6px currentColor; animation: labelFade 1.8s ease-in-out infinite; }
   /* 상단 — 앱 아이콘 + 이름 */
   .brand { display: inline-flex; align-items: center; gap: 8px; }
   .brandIcon { flex: none; width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
@@ -1583,11 +1558,10 @@
     <div class="colLeft">
       <div class="card hero" id="summaryCard" style="display:none"></div>
 
-      <!-- 완성 영상 썸네일(완료) 또는 편집 중 캡처(편집 중). 둘 중 하나만 뜬다. -->
+      <!-- 완성 영상 썸네일. 편집 중엔 캡처가 히어로 배경에 깔려 있으니 이 카드는 접어둔다. -->
       <a class="ytThumb card" id="ytThumb" hidden target="_blank" rel="noopener noreferrer">
         <img id="ytImg" alt="영상 미리보기" loading="lazy" decoding="async">
         <span class="ytPlay" aria-hidden="true"></span>
-        <span class="thumbTag" id="thumbTag" hidden>편집 중</span>
       </a>
 
       <div class="card doneCard" id="doneCard" style="display:none">
@@ -2731,40 +2705,17 @@ function placeStatsCard(data) {
   }
 }
 
-/** 미리보기 한 칸. 완료된 프로젝트는 유튜브 썸네일(눌러서 영상으로),
-    아직 진행 중이면 앱에서 넣어둔 편집 캡처를 보여준다. 둘 다 없으면 자리째 접는다. */
+/** 미리보기 한 칸. 완료된 프로젝트만 유튜브 썸네일(눌러서 영상으로)을 띄운다.
+    편집 중엔 캡처가 이미 히어로 배경에 깔려 있어 같은 그림이 두 번 나오니 자리째 접는다. */
 function renderThumb(data) {
-  if (data.youtubeId) { renderYouTubeThumb(data.youtubeId); return; }
-  renderStillThumb(data.previewImage);
-}
-
-/** 앱에서 넣어둔 편집 중 캡처. 누를 곳이 없으니 링크도 재생 표시도 없다. */
-function renderStillThumb(path) {
-  const link = document.getElementById('ytThumb');
-  const img = document.getElementById('ytImg');
-  const tag = document.getElementById('thumbTag');
-  if (!link || !img) return;
-  if (!path) { renderYouTubeThumb(null); return; }
-
-  img.onerror = () => { link.hidden = true; };
-  img.onload = null;
-  link.classList.add('still');
-  link.removeAttribute('href');
-  link.removeAttribute('target');
-  if (tag) tag.hidden = false;
-  img.alt = '편집 중 캡처';
-  img.src = path;
-  link.hidden = false;
+  renderYouTubeThumb(data.youtubeId || null);
 }
 
 /** 완성 영상 썸네일. 링크가 없으면 자리째 접는다 (프로젝트를 바꿔도 남지 않게). */
 function renderYouTubeThumb(videoId) {
   const link = document.getElementById('ytThumb');
   const img = document.getElementById('ytImg');
-  const tag = document.getElementById('thumbTag');
   if (!link || !img) return;
-  link.classList.remove('still');
-  if (tag) tag.hidden = true;
   img.alt = '완성 영상 썸네일';
   if (!videoId) {
     // 앞 영상의 onerror가 남아 있으면 src를 걷어낼 때 엉뚱한 요청이 한 번 더 나간다.
@@ -4439,8 +4390,7 @@ function initAmbientLayers() {
 /** 카드에 마우스를 올리면 커서 위치를 따라 살짝 기울어진다 (PC 전용). */
 /** 썸네일을 누르면 유튜브 좋아요 버튼을 누른 것처럼 한 번 반응한다.
     (진짜로 좋아요가 눌리는 건 아니다 — 그건 유튜브 로그인이 있어야 한다.)
-    완성 영상 썸네일은 그대로 유튜브로 넘어가고(새 탭이라 이 반응은 이 페이지에 남는다),
-    편집 중 캡처는 갈 곳이 없으니 이 반응이 전부다. */
+    썸네일은 그대로 유튜브로 넘어간다(새 탭이라 이 반응은 이 페이지에 남는다). */
 const LIKE_OFF = '<svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.58 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2zM9 9l4.34-4.34L12 10h9v2l-3 7H9V9zM1 9h4v12H1z"/></svg>';
 const LIKE_ON = '<svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>';
 
