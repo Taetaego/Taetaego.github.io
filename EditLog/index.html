@@ -4717,7 +4717,7 @@ function fxSlot() {
 function slotMachine() {
   if (document.querySelector('.slotBox')) return;
   const SYM = ['🎬', '✂️', '🎞️', '🌄', '💎', '7️⃣'];
-  const win = Math.random() < 0.4;
+  const win = Math.random() < 0.1;   // 잭팟은 10번에 한 번꼴
   const pickSym = () => SYM[Math.floor(Math.random() * SYM.length)];
   let res = win ? Array(3).fill(pickSym()) : [pickSym(), pickSym(), pickSym()];
   if (!win && res[0] === res[1] && res[1] === res[2]) res[2] = SYM[(SYM.indexOf(res[2]) + 1) % SYM.length];
