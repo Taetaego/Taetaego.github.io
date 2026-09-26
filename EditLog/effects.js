@@ -9,7 +9,7 @@
 */
 
 /* ==========================================================================
-   🌿 자연 · 날씨 이펙트
+   자연 · 날씨 이펙트
    버튼 하나가 '장면(scene)' 하나다. 장면들은 한 캔버스·한 rAF를 같이 쓰고,
    정해진 시간이 지나면 자기 장면만 목록에서 뺀다. 같은 버튼을 다시 누르면
    진행 중인 장면을 건드리지 않고 하나 더 쌓는다 (중첩 재생).
@@ -93,7 +93,7 @@ function natFade(k, inK, outK) {
   return Math.max(0, Math.min(Math.min(1, k / inK), Math.min(1, (1 - k) / outK)));
 }
 
-/** ❄️ 눈 — 눈속이가 내려오며 밑에 천천히 쌓인다 (가로 96칸의 눈 높이를 들고 있는다). */
+/** 눈 — 눈속이가 내려오며 밑에 천천히 쌓인다 (가로 96칸의 눈 높이를 들고 있는다). */
 function fxSnow() {
   natRun('snow', 5, () => {
     const COLS = 96;
@@ -138,7 +138,7 @@ function fxSnow() {
   });
 }
 
-/** 🌸 벚꽃 — 바람이 불다 잔잉며 꽃입이 훀달린다. */
+/** 벚꽃 — 바람이 불다 잔잉며 꽃입이 훀달린다. */
 function fxSakura() {
   natRun('sakura', 5, () => {
     const COLORS = ['#ffe6ef', '#f9d5e0', '#f7c8d8', '#f2b3ca'];
@@ -169,7 +169,7 @@ function fxSakura() {
   });
 }
 
-/** 🍂 낙엽 — 가을 잎사귀가 위에서 아래로 떨어진다 (뒤집힐 때는 세로로 눌린다). */
+/** 낙엽 — 가을 잎사귀가 위에서 아래로 떨어진다 (뒤집힐 때는 세로로 눌린다). */
 function fxLeaves() {
   natRun('leaf', 5, () => {
     const COLORS = ['#e0a83c', '#d98a3a', '#c25b2a', '#b8452a', '#8f5a2a'];
@@ -205,7 +205,7 @@ function fxLeaves() {
   });
 }
 
-/** 🌧️ 비 — 바람을 타고 사선으로 새지게 내리고, 밑에서 방울이 튀다. */
+/** 비 — 바람을 타고 사선으로 새지게 내리고, 밑에서 방울이 튀다. */
 function fxDownpour() {
   natRun('pour', 5, () => {
     let P = null; const splash = [];
@@ -239,7 +239,7 @@ function fxDownpour() {
   });
 }
 
-/** 🌊 파도 — 거대한 파도가 화면을 덮었다가 밀려난다. */
+/** 파도 — 거대한 파도가 화면을 덮었다가 밀려난다. */
 function fxWave() {
   natRun('wave', 5, () => {
     const spray = [];
@@ -279,7 +279,7 @@ function fxWave() {
   });
 }
 
-/** 🌌 오로라 — 밤하늘에 보라가 커튼처럼 움직인다. */
+/** 오로라 — 밤하늘에 보라가 커튼처럼 움직인다. */
 function fxAurora() {
   natRun('aurora', 5, () => {
     const BANDS = [
@@ -311,11 +311,11 @@ function fxAurora() {
 }
 
 /* ==========================================================================
-   🔥 마법 · 원소 이펙트 — 자연·날씨와 같은 장면 엔진(natRun)을 쓴다.
+   마법 · 원소 이펙트 — 자연·날씨와 같은 장면 엔진(natRun)을 쓴다.
    전부 5초짜리며, 생기고 사라지는 페이드를 길게 잡았다.
    ========================================================================== */
 
-/** 🌑 암흑 — 화면 가운데 블랙홀이 열린다. 보랏빛 강착원반이 소용돌이치며 빨려 들고,
+/** 암흑 — 화면 가운데 블랙홀이 열린다. 보랏빛 강착원반이 소용돌이치며 빨려 들고,
     마지막엔 모든 걸 삼킨 뒤 빛을 한 번 뱉고 닫힌다 (6초). */
 function fxMagicDark() {
   natRun('mDark', 6, () => {
@@ -373,7 +373,7 @@ function fxMagicDark() {
   });
 }
 
-/** 🔮 마법진 — 누르는 즉시 그려지기 시작하는 소환진 (9초).
+/** 마법진 — 누르는 즉시 그려지기 시작하는 소환진 (9초).
     안쪽에서 바깥으로 고리가 그려지고, 룬 띠 3줄·눈금 띠 4줄이 서로 반대로 돌고,
     기하 문양(삼각·오각·육각)이 겹쳐 얹히고, 꼭짓점마다 작은 부속 진이 돋고,
     약 4.9초에 완성되고 3초 동안 돌다가, 마지막에 가운데 빛이 확 퍼지며 사라진다. */
@@ -603,7 +603,7 @@ function ptr() {
   return _ptr;
 }
 
-/** 👽 UFO — 미끄러져 들어와 멈춰 서고, 스캔 빛을 내리쬐고 사라진다.
+/** UFO — 미끄러져 들어와 멈춰 서고, 스캔 빛을 내리쬐고 사라진다.
     선체는 금속 그라디언트 + 반사광으로 잡고, 빛줄기 안에는 스캔 링이 흐른다. */
 function fxUfo() {
   natRun('sUfo', 5, () => {
@@ -760,7 +760,7 @@ function drawFlower(ctx, r, petals, c, core) {
   ctx.beginPath(); ctx.arc(0, 0, r * 0.24, 0, 6.284); ctx.fill();
 }
 
-/** 👻 유령 — 불이 깜빡이고 안개가 깔리더니, 유령 떼가 떠다니다가 한 마리가 확 달려든다. */
+/** 유령 — 불이 깜빡이고 안개가 깔리더니, 유령 떼가 떠다니다가 한 마리가 확 달려든다. */
 function fxHaunting() {
   natRun('hrHaunt', 5.5, () => {
     let G = null, fog = null;
@@ -827,7 +827,7 @@ function drawGhost(ctx, x, y, S, t, alpha, flip, rage = 0) {
   ctx.restore();
 }
 
-/** 💖 하트 폭발 — 눌러준 자리에서 하트가 톡 터진다. */
+/** 하트 폭발 — 눌러준 자리에서 하트가 톡 터진다. */
 function fxHeartBurst() {
   natRun('prHeart', 7, () => {
     const COLORS = ['#ff6b81', '#ff9fb5', '#ffd0dc', '#ff4f6d'];
@@ -865,7 +865,7 @@ function fxHeartBurst() {
   });
 }
 
-/** 🌟 별빛 — 밤하늘이 내려앉고, 화면 가운데에서 별이 하나씩 켜지며 선으로 이어져 별자리 하나가 그려진다 (6초). */
+/** 별빛 — 밤하늘이 내려앉고, 화면 가운데에서 별이 하나씩 켜지며 선으로 이어져 별자리 하나가 그려진다 (6초). */
 function fxStarlight() {
   natRun('prStar', 6, () => {
     let C = null, dust = null;
@@ -923,7 +923,7 @@ function fxStarlight() {
   });
 }
 
-/** 🦋 나비 정원 — 나비들이 저마다 방향을 바꾸며 화면을 돌아다닌다. */
+/** 나비 정원 — 나비들이 저마다 방향을 바꾸며 화면을 돌아다닌다. */
 function fxButterflyGarden() {
   natRun('prGarden', 5, () => {
     const COLORS = ['#ffb3d1', '#ffd98a', '#a9dcfb', '#c9b6f7', '#a9f0c8'];
@@ -952,7 +952,7 @@ function fxButterflyGarden() {
   });
 }
 
-/** 🌺 꽃 피기 — 화면 곳곳에서 꽃이 피어난다. */
+/** 꽃 피기 — 화면 곳곳에서 꽃이 피어난다. */
 function fxBloom() {
   natRun('prBloom', 5, () => {
     const PALETTE = [['#ffb3c7', '#ffe08a'], ['#f7c8ff', '#fff1a8'], ['#fff0f5', '#ffc46b'], ['#ffd3e0', '#ff9f43']];
@@ -979,7 +979,7 @@ function fxBloom() {
   });
 }
 
-/** ✨ 반짝이 폭발 — 누른 자리와 화면 두 곳에서 금속 반짝이가 연달아 터지고,
+/** 반짝이 폭발 — 누른 자리와 화면 두 곳에서 금속 반짝이가 연달아 터지고,
     빙글빙글 뒤집히며 빛을 튕기다가 반짝이 비로 내려앉는다. */
 function fxGlitterBurst() {
   natRun('prGlitter', 5.5, () => {
@@ -1030,7 +1030,7 @@ function fxGlitterBurst() {
   });
 }
 
-/** 🌸 꽃잎 폭풍 — 벚꽃이 엄청난 양으로 훀몰아친다. */
+/** 꽃잎 폭풍 — 벚꽃이 엄청난 양으로 훀몰아친다. */
 function fxPetalStorm() {
   natRun('prPetalStorm', 5, () => {
     const COLORS = ['#ffe6ef', '#f9d5e0', '#f7c8d8', '#f2b3ca', '#ffd9e6'];
@@ -1060,7 +1060,7 @@ function fxPetalStorm() {
   });
 }
 
-/** 🌠 별똥별 소나기 — 하늘이 어두워지고 푸른 별똥별 수십 개가 쏟아진다 (5.5초). */
+/** 별똥별 소나기 — 하늘이 어두워지고 푸른 별똥별 수십 개가 쏟아진다 (5.5초). */
 function fxMeteorStorm() {
   natRun('meteor', 5.5, () => {
     let M = [], stars = null, due = 0;
@@ -1097,7 +1097,7 @@ function fxMeteorStorm() {
   });
 }
 
-/** ✨ 반딧불이 — 주위가 여름밤처럼 어두워지고, 반딧불이 수십 마리가 은은하게 깜빡이며
+/** 반딧불이 — 주위가 여름밤처럼 어두워지고, 반딧불이 수십 마리가 은은하게 깜빡이며
     떠다닌다. 가끔 물결처럼 한꺼번에 불이 켜진다 (7초). */
 function fxFireflies() {
   natRun('fireflies', 7, () => {
