@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "지도\/위치 추가",
+  "currentStage" : "배경음 & 검수",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -294,10 +294,17 @@
       "memo" : "지금 편집앱 대개편중 포켓몬도 추가하고 메이플 몬스터도 추가함 ㅋㅋ",
       "timestamp" : "2026-09-27T18:03:04Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "18분",
+      "timestamp" : "2026-09-27T18:21:52Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 27,
-  "lastUpdate" : "2026-09-27T18:03:18Z",
+  "entryCount" : 28,
+  "lastUpdate" : "2026-09-27T18:21:57Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
