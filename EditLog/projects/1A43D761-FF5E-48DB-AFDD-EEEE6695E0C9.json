@@ -315,10 +315,17 @@
       "elapsed" : "55분",
       "timestamp" : "2026-09-28T14:09:55Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "28분",
+      "timestamp" : "2026-09-28T14:38:35Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 30,
-  "lastUpdate" : "2026-09-28T14:09:55Z",
+  "entryCount" : 31,
+  "lastUpdate" : "2026-09-28T14:38:35Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
