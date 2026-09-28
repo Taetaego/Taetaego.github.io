@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-09-20T12:29:35Z",
-  "currentStage" : "배경음 & 검수",
+  "currentStage" : "최종 검수",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "18",
@@ -329,10 +329,17 @@
       "elapsed" : "20분",
       "timestamp" : "2026-09-28T14:59:05Z",
       "videoLength" : "8"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "41분",
+      "timestamp" : "2026-09-28T15:40:24Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 32,
-  "lastUpdate" : "2026-09-28T14:59:07Z",
+  "entryCount" : 33,
+  "lastUpdate" : "2026-09-28T15:40:28Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
