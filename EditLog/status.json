@@ -366,10 +366,17 @@
       "memo" : "영차 영차",
       "timestamp" : "2026-09-29T10:42:27Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "31분",
+      "timestamp" : "2026-09-29T11:14:25Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 37,
-  "lastUpdate" : "2026-09-29T10:42:45Z",
+  "entryCount" : 38,
+  "lastUpdate" : "2026-09-29T11:14:26Z",
   "originalLength" : "6:05",
   "previewImage" : "previews\/1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9.jpg",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
