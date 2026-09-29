@@ -1,14 +1,19 @@
 {
   "currentId" : "1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9",
-  "lastUpdate" : "2026-09-29T11:14:26Z",
+  "lastUpdate" : "2026-09-29T12:24:57Z",
   "projects" : [
     {
+      "completedAt" : "2026-09-29T12:24:57Z",
       "createdAt" : "2026-09-20T12:29:35Z",
-      "entryCount" : 38,
+      "daysSincePreviousCompletion" : 14,
+      "entryCount" : 39,
+      "finalLength" : "18",
+      "finalRatioVsOriginal" : 4.931506849315069,
       "id" : "1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9",
       "originalLength" : "6:05",
-      "status" : "in_progress",
-      "topic" : "페루 친구들과 3500미터 1박 2일 캠핑"
+      "status" : "completed",
+      "topic" : "페루 친구들과 3500미터 1박 2일 캠핑",
+      "totalDuration" : 777321.6168509722
     },
     {
       "completedAt" : "2026-09-15T04:55:56Z",
