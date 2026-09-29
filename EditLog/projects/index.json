@@ -1,20 +1,7 @@
 {
-  "currentId" : "34564D83-C96D-49E2-8A93-732096F300DF",
-  "lastUpdate" : "2026-09-29T16:52:32Z",
+  "currentId" : "1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9",
+  "lastUpdate" : "2026-09-29T16:53:20Z",
   "projects" : [
-    {
-      "completedAt" : "2026-09-29T16:51:22Z",
-      "createdAt" : "2026-09-29T16:45:19Z",
-      "daysSincePreviousCompletion" : 1,
-      "entryCount" : 2,
-      "finalLength" : "23",
-      "finalRatioVsOriginal" : 14.743589743589745,
-      "id" : "34564D83-C96D-49E2-8A93-732096F300DF",
-      "originalLength" : "2:36",
-      "status" : "completed",
-      "topic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",
-      "totalDuration" : 362.5681029558182
-    },
     {
       "completedAt" : "2026-09-29T12:24:57Z",
       "createdAt" : "2026-09-20T12:29:35Z",

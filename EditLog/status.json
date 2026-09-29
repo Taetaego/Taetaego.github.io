@@ -92,33 +92,304 @@
       "weight" : 2
     }
   ],
-  "completedAt" : "2026-09-29T16:51:22Z",
-  "createdAt" : "2026-09-29T16:45:19Z",
+  "completedAt" : "2026-09-29T12:24:57Z",
+  "createdAt" : "2026-09-20T12:29:35Z",
   "currentStage" : "완료",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
+  "detailCutLength" : "18",
+  "detailCutRatio" : 4.931506849315069,
   "entries" : [
     {
-      "category" : "자막 추출",
-      "categorySymbol" : "flag",
+      "category" : "자막 추출 & AI",
+      "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
-      "timestamp" : "2026-09-29T16:45:19Z",
+      "timestamp" : "2026-09-20T12:29:35Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 추출 & AI",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "3시간 22분",
+      "timestamp" : "2026-09-20T15:52:34Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 추출 & AI",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "19시간 29분",
+      "timestamp" : "2026-09-21T11:21:39Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "11분",
+      "timestamp" : "2026-09-21T11:33:23Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1시간 30분",
+      "timestamp" : "2026-09-21T13:03:44Z",
+      "videoLength" : "7"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "55분",
+      "timestamp" : "2026-09-21T13:59:11Z",
+      "videoLength" : "17"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1시간 50분",
+      "timestamp" : "2026-09-21T15:49:30Z",
+      "videoLength" : "23"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "39분",
+      "timestamp" : "2026-09-21T16:29:23Z",
+      "videoLength" : "34"
+    },
+    {
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "8시간 52분",
+      "timestamp" : "2026-09-22T01:22:18Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "2차 세부 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "7시간 58분",
+      "timestamp" : "2026-09-22T09:20:23Z",
+      "videoLength" : "10"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "2시간 56분",
+      "timestamp" : "2026-09-22T12:17:01Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 5분",
+      "memo" : "자막 디자인 개편중",
+      "timestamp" : "2026-09-22T13:22:48Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1일 1시간 42분",
+      "timestamp" : "2026-09-23T15:04:49Z",
+      "videoLength" : "3"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1시간 29분",
+      "memo" : "고도에 대한 데이터를 디자인적으로 시각화하는데 집중. 사실 이 영상에서는 별로 중요하지 않지만, 추후 히말라야 등산에 유의미하게 쓰일걸로 추정",
+      "timestamp" : "2026-09-23T16:34:05Z",
+      "videoLength" : "4"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "23시간 8분",
+      "timestamp" : "2026-09-24T15:42:30Z",
+      "videoLength" : "9"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "22시간 21분",
+      "timestamp" : "2026-09-25T14:03:54Z",
+      "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "51분",
+      "timestamp" : "2026-09-25T14:55:23Z",
+      "videoLength" : "13"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "35분",
+      "memo" : "끝나는게 어색해서 영상 더붙여서 컷편집하고 자막작업 진행",
+      "timestamp" : "2026-09-25T15:30:46Z",
+      "videoLength" : "15"
+    },
+    {
+      "category" : "추가 영상 삽입",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "31분",
+      "timestamp" : "2026-09-25T16:02:12Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "맞춤법 검사",
+      "categorySymbol" : "text.badge.checkmark",
+      "elapsed" : "25분",
+      "timestamp" : "2026-09-25T16:27:41Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "9분",
+      "timestamp" : "2026-09-25T16:36:43Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "하이라이트 배치",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "48분",
+      "memo" : "웹페이지 대개편 ㅋㅋ",
+      "timestamp" : "2026-09-25T17:24:56Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "52분",
+      "timestamp" : "2026-09-25T18:17:05Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "1시간 39분",
+      "memo" : "인트로 개편중..",
+      "timestamp" : "2026-09-25T19:57:05Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "58분",
+      "memo" : "디자인 개편중..",
+      "timestamp" : "2026-09-25T20:55:51Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "1일 17시간 31분",
+      "timestamp" : "2026-09-27T14:27:05Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "지도\/위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "3시간 35분",
+      "memo" : "지금 편집앱 대개편중 포켓몬도 추가하고 메이플 몬스터도 추가함 ㅋㅋ",
+      "timestamp" : "2026-09-27T18:03:04Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "18분",
+      "timestamp" : "2026-09-27T18:21:52Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "18시간 52분",
+      "timestamp" : "2026-09-28T13:14:31Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "55분",
+      "timestamp" : "2026-09-28T14:09:55Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "28분",
+      "timestamp" : "2026-09-28T14:38:35Z",
+      "videoLength" : "4"
+    },
+    {
+      "category" : "배경음 & 검수",
+      "categorySymbol" : "music.note",
+      "elapsed" : "20분",
+      "timestamp" : "2026-09-28T14:59:05Z",
+      "videoLength" : "8"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "41분",
+      "timestamp" : "2026-09-28T15:40:24Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "0분",
+      "timestamp" : "2026-09-28T15:41:02Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "최종 검수",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "15시간 49분",
+      "memo" : "자 오늘 업로드 할 수 있을까???",
+      "timestamp" : "2026-09-29T07:30:41Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "30분",
+      "timestamp" : "2026-09-29T08:01:36Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "2시간 40분",
+      "memo" : "영차 영차",
+      "timestamp" : "2026-09-29T10:42:27Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 & 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "31분",
+      "timestamp" : "2026-09-29T11:14:25Z",
       "videoLength" : ""
     },
     {
       "category" : "완료",
       "categorySymbol" : "flag",
-      "elapsed" : "6분",
-      "timestamp" : "2026-09-29T16:51:22Z",
-      "videoLength" : "23"
+      "elapsed" : "1시간 10분",
+      "timestamp" : "2026-09-29T12:24:57Z",
+      "videoLength" : "18"
     }
   ],
-  "entryCount" : 2,
-  "finalLength" : "23",
-  "finalRatioVsOriginal" : 14.743589743589745,
-  "lastUpdate" : "2026-09-29T16:52:32Z",
-  "originalLength" : "2:36",
-  "previewImage" : "previews\/34564D83-C96D-49E2-8A93-732096F300DF.jpg",
-  "projectTopic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",
-  "status" : "completed"
+  "entryCount" : 39,
+  "finalLength" : "18",
+  "finalRatioVsDetailCut" : 100,
+  "finalRatioVsOriginal" : 4.931506849315069,
+  "lastUpdate" : "2026-09-29T16:53:20Z",
+  "originalLength" : "6:05",
+  "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
+  "status" : "completed",
+  "youtubeId" : "7Git0OOPaEM"
 }
