@@ -16,6 +16,13 @@
     },
     {
       "group" : "컷 편집",
+      "name" : "폴더 정리",
+      "symbolName" : "folder",
+      "tracksLength" : true,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
       "name" : "1차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
@@ -314,7 +321,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-29T16:47:56Z",
+  "lastUpdate" : "2026-09-29T16:48:10Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

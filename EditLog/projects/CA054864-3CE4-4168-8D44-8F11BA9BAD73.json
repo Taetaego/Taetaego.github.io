@@ -16,6 +16,13 @@
     },
     {
       "group" : "컷 편집",
+      "name" : "폴더 정리",
+      "symbolName" : "folder",
+      "tracksLength" : true,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
       "name" : "1차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
@@ -289,7 +296,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-29T16:47:56Z",
+  "lastUpdate" : "2026-09-29T16:48:10Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
