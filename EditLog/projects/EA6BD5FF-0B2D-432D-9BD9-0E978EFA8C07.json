@@ -18,7 +18,7 @@
       "group" : "컷 편집",
       "name" : "폴더 정리",
       "symbolName" : "folder",
-      "tracksLength" : true,
+      "tracksLength" : false,
       "weight" : 1
     },
     {
@@ -321,7 +321,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-29T16:48:10Z",
+  "lastUpdate" : "2026-09-29T16:48:24Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
