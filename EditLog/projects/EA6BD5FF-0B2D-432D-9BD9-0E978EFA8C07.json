@@ -23,7 +23,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "2차 세부 컷편집",
+      "name" : "2차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
       "weight" : 2
@@ -150,14 +150,14 @@
       "videoLength" : "34"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "11분",
       "timestamp" : "2026-09-12T14:44:56Z",
       "videoLength" : "0"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "1시간 15분",
       "timestamp" : "2026-09-12T16:00:18Z",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:54:49Z",
+  "lastUpdate" : "2026-09-30T02:55:51Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

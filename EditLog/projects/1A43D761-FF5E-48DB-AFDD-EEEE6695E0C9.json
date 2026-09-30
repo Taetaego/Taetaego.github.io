@@ -23,7 +23,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "2차 세부 컷편집",
+      "name" : "2차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
       "weight" : 2
@@ -157,14 +157,14 @@
       "videoLength" : "34"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "8시간 52분",
       "timestamp" : "2026-09-22T01:22:18Z",
       "videoLength" : "0"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "7시간 58분",
       "timestamp" : "2026-09-22T09:20:23Z",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:54:49Z",
+  "lastUpdate" : "2026-09-30T02:55:51Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",

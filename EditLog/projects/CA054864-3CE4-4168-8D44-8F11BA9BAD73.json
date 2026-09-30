@@ -23,7 +23,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "2차 세부 컷편집",
+      "name" : "2차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
       "weight" : 2
@@ -129,14 +129,14 @@
       "videoLength" : "11"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "2시간 14분",
       "timestamp" : "2026-08-31T12:20:56Z",
       "videoLength" : "0"
     },
     {
-      "category" : "2차 세부 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
       "elapsed" : "1시간 20분",
       "timestamp" : "2026-08-31T13:41:07Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T02:54:49Z",
+  "lastUpdate" : "2026-09-30T02:55:51Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
