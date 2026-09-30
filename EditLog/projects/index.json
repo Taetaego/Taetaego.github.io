@@ -1,6 +1,6 @@
 {
-  "currentId" : "1A43D761-FF5E-48DB-AFDD-EEEE6695E0C9",
-  "lastUpdate" : "2026-09-30T18:00:30Z",
+  "currentId" : "CA054864-3CE4-4168-8D44-8F11BA9BAD73",
+  "lastUpdate" : "2026-09-30T18:00:41Z",
   "projects" : [
     {
       "createdAt" : "2026-09-29T16:57:18Z",
@@ -45,7 +45,7 @@
       "id" : "CA054864-3CE4-4168-8D44-8F11BA9BAD73",
       "originalLength" : "4:33",
       "status" : "completed",
-      "topic" : "페루 나스카 경비행기 & 무덤",
+      "topic" : "나스카 경비행기 & 무덤",
       "totalDuration" : 682092.0483269691
     }
   ]
