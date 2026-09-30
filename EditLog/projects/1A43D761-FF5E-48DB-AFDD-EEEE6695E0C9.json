@@ -58,7 +58,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "하이라이트 배치",
+      "name" : "오프닝",
       "symbolName" : "star.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -251,7 +251,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "하이라이트 배치",
+      "category" : "오프닝",
       "categorySymbol" : "star.bubble",
       "elapsed" : "48분",
       "memo" : "웹페이지 대개편 ㅋㅋ",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:56:10Z",
+  "lastUpdate" : "2026-09-30T02:56:22Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",

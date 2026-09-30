@@ -58,7 +58,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "하이라이트 배치",
+      "name" : "오프닝",
       "symbolName" : "star.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -217,7 +217,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "하이라이트 배치",
+      "category" : "오프닝",
       "categorySymbol" : "star.bubble",
       "elapsed" : "3분",
       "timestamp" : "2026-09-13T11:06:49Z",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:56:10Z",
+  "lastUpdate" : "2026-09-30T02:56:22Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

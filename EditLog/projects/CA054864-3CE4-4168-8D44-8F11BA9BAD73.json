@@ -58,7 +58,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "하이라이트 배치",
+      "name" : "오프닝",
       "symbolName" : "star.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -214,7 +214,7 @@
       "videoLength" : "0"
     },
     {
-      "category" : "하이라이트 배치",
+      "category" : "오프닝",
       "categorySymbol" : "star.bubble",
       "elapsed" : "37분",
       "timestamp" : "2026-09-02T18:18:27Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T02:56:10Z",
+  "lastUpdate" : "2026-09-30T02:56:22Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
