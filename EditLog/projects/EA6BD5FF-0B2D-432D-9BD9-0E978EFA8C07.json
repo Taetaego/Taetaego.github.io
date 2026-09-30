@@ -19,7 +19,7 @@
       "name" : "1차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
-      "weight" : 8
+      "weight" : 10
     },
     {
       "group" : "컷 편집",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T03:02:05Z",
+  "lastUpdate" : "2026-09-30T03:02:30Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

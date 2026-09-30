@@ -19,7 +19,7 @@
       "name" : "1차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
-      "weight" : 8
+      "weight" : 10
     },
     {
       "group" : "컷 편집",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T03:02:05Z",
+  "lastUpdate" : "2026-09-30T03:02:30Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",
