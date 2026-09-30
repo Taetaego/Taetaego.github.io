@@ -26,7 +26,7 @@
       "name" : "2차 컷편집",
       "symbolName" : "scissors",
       "tracksLength" : true,
-      "weight" : 4
+      "weight" : 3
     },
     {
       "group" : "중간 작업",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T03:01:34Z",
+  "lastUpdate" : "2026-09-30T03:01:43Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
