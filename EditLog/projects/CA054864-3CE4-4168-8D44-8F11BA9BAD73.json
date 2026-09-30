@@ -33,7 +33,7 @@
       "name" : "자막 입력",
       "symbolName" : "captions.bubble",
       "tracksLength" : true,
-      "weight" : 5
+      "weight" : 6
     },
     {
       "group" : "중간 작업",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T03:00:08Z",
+  "lastUpdate" : "2026-09-30T03:00:19Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
