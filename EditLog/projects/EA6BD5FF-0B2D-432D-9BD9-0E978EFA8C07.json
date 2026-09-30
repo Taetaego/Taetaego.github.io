@@ -86,7 +86,7 @@
     },
     {
       "group" : "마무리 작업",
-      "name" : "썸네일 & 업로드",
+      "name" : "썸네일 · 업로드",
       "symbolName" : "text.below.photo",
       "tracksLength" : false,
       "weight" : 2
@@ -282,21 +282,21 @@
       "videoLength" : "0"
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "1시간 12분",
       "timestamp" : "2026-09-14T18:32:24Z",
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "7시간 10분",
       "timestamp" : "2026-09-15T01:43:16Z",
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "2시간 15분",
       "timestamp" : "2026-09-15T03:58:35Z",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:57:14Z",
+  "lastUpdate" : "2026-09-30T02:57:25Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

@@ -86,7 +86,7 @@
     },
     {
       "group" : "마무리 작업",
-      "name" : "썸네일 & 업로드",
+      "name" : "썸네일 · 업로드",
       "symbolName" : "text.below.photo",
       "tracksLength" : false,
       "weight" : 2
@@ -354,14 +354,14 @@
       "videoLength" : "0"
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "30분",
       "timestamp" : "2026-09-29T08:01:36Z",
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "2시간 40분",
       "memo" : "영차 영차",
@@ -369,7 +369,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "31분",
       "timestamp" : "2026-09-29T11:14:25Z",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:57:14Z",
+  "lastUpdate" : "2026-09-30T02:57:25Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",

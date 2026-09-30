@@ -86,7 +86,7 @@
     },
     {
       "group" : "마무리 작업",
-      "name" : "썸네일 & 업로드",
+      "name" : "썸네일 · 업로드",
       "symbolName" : "text.below.photo",
       "tracksLength" : false,
       "weight" : 2
@@ -257,21 +257,21 @@
       "videoLength" : "0"
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "28분",
       "timestamp" : "2026-09-03T16:36:44Z",
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "13시간 3분",
       "timestamp" : "2026-09-04T05:40:10Z",
       "videoLength" : ""
     },
     {
-      "category" : "썸네일 & 업로드",
+      "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
       "elapsed" : "4시간 35분",
       "timestamp" : "2026-09-04T10:15:16Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T02:57:14Z",
+  "lastUpdate" : "2026-09-30T02:57:25Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
