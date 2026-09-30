@@ -68,7 +68,7 @@
       "name" : "지도 · 위치 추가",
       "symbolName" : "map",
       "tracksLength" : false,
-      "weight" : 1
+      "weight" : 2
     },
     {
       "group" : "후반 작업",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T03:01:52Z",
+  "lastUpdate" : "2026-09-30T03:02:05Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",

@@ -68,7 +68,7 @@
       "name" : "지도 · 위치 추가",
       "symbolName" : "map",
       "tracksLength" : false,
-      "weight" : 1
+      "weight" : 2
     },
     {
       "group" : "후반 작업",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T03:01:52Z",
+  "lastUpdate" : "2026-09-30T03:02:05Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
