@@ -79,7 +79,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "최종 검수",
+      "name" : "마지막 점검",
       "symbolName" : "checkmark.seal",
       "tracksLength" : true,
       "weight" : 1
@@ -275,7 +275,7 @@
       "videoLength" : "12"
     },
     {
-      "category" : "최종 검수",
+      "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
       "elapsed" : "57분",
       "timestamp" : "2026-09-14T17:20:05Z",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:56:22Z",
+  "lastUpdate" : "2026-09-30T02:57:14Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

@@ -79,7 +79,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "최종 검수",
+      "name" : "마지막 점검",
       "symbolName" : "checkmark.seal",
       "tracksLength" : true,
       "weight" : 1
@@ -250,7 +250,7 @@
       "videoLength" : "8"
     },
     {
-      "category" : "최종 검수",
+      "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
       "elapsed" : "43분",
       "timestamp" : "2026-09-03T16:08:41Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T02:56:22Z",
+  "lastUpdate" : "2026-09-30T02:57:14Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",

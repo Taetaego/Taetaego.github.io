@@ -79,7 +79,7 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "최종 검수",
+      "name" : "마지막 점검",
       "symbolName" : "checkmark.seal",
       "tracksLength" : true,
       "weight" : 1
@@ -332,21 +332,21 @@
       "videoLength" : "8"
     },
     {
-      "category" : "최종 검수",
+      "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
       "elapsed" : "41분",
       "timestamp" : "2026-09-28T15:40:24Z",
       "videoLength" : "0"
     },
     {
-      "category" : "최종 검수",
+      "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
       "elapsed" : "0분",
       "timestamp" : "2026-09-28T15:41:02Z",
       "videoLength" : "0"
     },
     {
-      "category" : "최종 검수",
+      "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
       "elapsed" : "15시간 49분",
       "memo" : "자 오늘 업로드 할 수 있을까???",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:56:22Z",
+  "lastUpdate" : "2026-09-30T02:57:14Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",
