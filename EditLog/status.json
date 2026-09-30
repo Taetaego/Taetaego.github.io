@@ -142,10 +142,17 @@
       "elapsed" : "8시간 1분",
       "timestamp" : "2026-09-30T14:25:28Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1시간 11분",
+      "timestamp" : "2026-09-30T15:36:46Z",
+      "videoLength" : "10"
     }
   ],
-  "entryCount" : 6,
-  "lastUpdate" : "2026-09-30T14:25:45Z",
+  "entryCount" : 7,
+  "lastUpdate" : "2026-09-30T15:36:50Z",
   "originalLength" : "2:36",
   "previewImage" : "previews\/42E87D11-D242-4727-92D4-D8DB060687D8.jpg",
   "projectTopic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",
