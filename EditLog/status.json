@@ -9,14 +9,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "자막 추출",
-      "symbolName" : "captions.bubble",
-      "tracksLength" : true,
-      "weight" : 1
-    },
-    {
-      "group" : "컷 편집",
-      "name" : "자막 추출 & AI",
+      "name" : "AI 편집점",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -72,14 +65,14 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "지도\/위치 추가",
+      "name" : "지도 · 위치 추가",
       "symbolName" : "map",
       "tracksLength" : false,
       "weight" : 1
     },
     {
       "group" : "후반 작업",
-      "name" : "배경음 & 검수",
+      "name" : "배경음 · 수정",
       "symbolName" : "music.note",
       "tracksLength" : true,
       "weight" : 3
@@ -100,19 +93,19 @@
     }
   ],
   "createdAt" : "2026-09-29T16:57:18Z",
-  "currentStage" : "자막 추출 & AI",
+  "currentStage" : "AI 편집점",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
     {
       "category" : "자막 추출",
-      "categorySymbol" : "captions.bubble",
+      "categorySymbol" : "flag",
       "elapsed" : "0분",
       "timestamp" : "2026-09-29T16:57:18Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "5분",
       "memo" : "지금 원래 macwhisper이란 프로그램을 사용하고있었는데, 갑자기 클로드로 자막추출 프로그램을 만들수있을것같다는 생각이 들어서 만드려고함",
@@ -121,7 +114,7 @@
     }
   ],
   "entryCount" : 2,
-  "lastUpdate" : "2026-09-30T02:35:35Z",
+  "lastUpdate" : "2026-09-30T02:44:20Z",
   "originalLength" : "2:36",
   "previewImage" : "previews\/42E87D11-D242-4727-92D4-D8DB060687D8.jpg",
   "projectTopic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",

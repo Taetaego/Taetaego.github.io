@@ -9,14 +9,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "자막 추출",
-      "symbolName" : "captions.bubble",
-      "tracksLength" : true,
-      "weight" : 1
-    },
-    {
-      "group" : "컷 편집",
-      "name" : "자막 추출 & AI",
+      "name" : "AI 편집점",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -72,14 +65,14 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "지도\/위치 추가",
+      "name" : "지도 · 위치 추가",
       "symbolName" : "map",
       "tracksLength" : false,
       "weight" : 1
     },
     {
       "group" : "후반 작업",
-      "name" : "배경음 & 검수",
+      "name" : "배경음 · 수정",
       "symbolName" : "music.note",
       "tracksLength" : true,
       "weight" : 3
@@ -108,14 +101,14 @@
   "detailCutRatio" : 6.539509536784741,
   "entries" : [
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
       "timestamp" : "2026-09-07T22:51:20Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "11시간 56분",
       "timestamp" : "2026-09-08T10:47:39Z",
@@ -231,21 +224,21 @@
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "3시간 22분",
       "timestamp" : "2026-09-13T14:29:47Z",
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "2시간 1분",
       "timestamp" : "2026-09-13T16:31:27Z",
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "56분",
       "memo" : "후.. 버전 다운그레이드해서 인트로 다시만듬 근데 더 업그레이드된듯 ㅋ",
@@ -253,21 +246,21 @@
       "videoLength" : ""
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "0분",
       "timestamp" : "2026-09-13T17:28:48Z",
       "videoLength" : "0"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "19시간 36분",
       "timestamp" : "2026-09-14T13:04:49Z",
       "videoLength" : "5"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "1시간 12분",
       "memo" : "농떙이",
@@ -275,7 +268,7 @@
       "videoLength" : "5"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "2시간 4분",
       "timestamp" : "2026-09-14T16:22:11Z",
@@ -321,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:35:35Z",
+  "lastUpdate" : "2026-09-30T02:44:20Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",

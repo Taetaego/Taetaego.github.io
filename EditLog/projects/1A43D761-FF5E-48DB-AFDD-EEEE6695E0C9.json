@@ -9,14 +9,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "자막 추출",
-      "symbolName" : "captions.bubble",
-      "tracksLength" : true,
-      "weight" : 1
-    },
-    {
-      "group" : "컷 편집",
-      "name" : "자막 추출 & AI",
+      "name" : "AI 편집점",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -72,14 +65,14 @@
     },
     {
       "group" : "후반 작업",
-      "name" : "지도\/위치 추가",
+      "name" : "지도 · 위치 추가",
       "symbolName" : "map",
       "tracksLength" : false,
       "weight" : 1
     },
     {
       "group" : "후반 작업",
-      "name" : "배경음 & 검수",
+      "name" : "배경음 · 수정",
       "symbolName" : "music.note",
       "tracksLength" : true,
       "weight" : 3
@@ -108,21 +101,21 @@
   "detailCutRatio" : 4.931506849315069,
   "entries" : [
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
       "timestamp" : "2026-09-20T12:29:35Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "3시간 22분",
       "timestamp" : "2026-09-20T15:52:34Z",
       "videoLength" : ""
     },
     {
-      "category" : "자막 추출 & AI",
+      "category" : "AI 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "19시간 29분",
       "timestamp" : "2026-09-21T11:21:39Z",
@@ -266,14 +259,14 @@
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "52분",
       "timestamp" : "2026-09-25T18:17:05Z",
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "1시간 39분",
       "memo" : "인트로 개편중..",
@@ -281,7 +274,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "58분",
       "memo" : "디자인 개편중..",
@@ -289,14 +282,14 @@
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "1일 17시간 31분",
       "timestamp" : "2026-09-27T14:27:05Z",
       "videoLength" : ""
     },
     {
-      "category" : "지도\/위치 추가",
+      "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
       "elapsed" : "3시간 35분",
       "memo" : "지금 편집앱 대개편중 포켓몬도 추가하고 메이플 몬스터도 추가함 ㅋㅋ",
@@ -304,35 +297,35 @@
       "videoLength" : ""
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "18분",
       "timestamp" : "2026-09-27T18:21:52Z",
       "videoLength" : "0"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "18시간 52분",
       "timestamp" : "2026-09-28T13:14:31Z",
       "videoLength" : "0"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "55분",
       "timestamp" : "2026-09-28T14:09:55Z",
       "videoLength" : "0"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "28분",
       "timestamp" : "2026-09-28T14:38:35Z",
       "videoLength" : "4"
     },
     {
-      "category" : "배경음 & 검수",
+      "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
       "elapsed" : "20분",
       "timestamp" : "2026-09-28T14:59:05Z",
@@ -394,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:35:35Z",
+  "lastUpdate" : "2026-09-30T02:44:20Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",
