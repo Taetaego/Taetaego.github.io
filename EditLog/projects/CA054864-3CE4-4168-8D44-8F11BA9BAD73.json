@@ -2,15 +2,22 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "자막 추출 & AI",
-      "symbolName" : "captions.bubble",
+      "name" : "영상 정리",
+      "symbolName" : "folder",
       "tracksLength" : false,
       "weight" : 1
     },
     {
       "group" : "컷 편집",
-      "name" : "영상 정리",
-      "symbolName" : "folder",
+      "name" : "자막 추출",
+      "symbolName" : "captions.bubble",
+      "tracksLength" : true,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
+      "name" : "자막 추출 & AI",
+      "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
     },
@@ -289,7 +296,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-29T17:04:10Z",
+  "lastUpdate" : "2026-09-30T02:35:32Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
