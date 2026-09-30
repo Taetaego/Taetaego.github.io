@@ -37,7 +37,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "추가 영상 삽입",
+      "name" : "자료 화면 넣기",
       "symbolName" : "photo.on.rectangle",
       "tracksLength" : false,
       "weight" : 1
@@ -193,7 +193,7 @@
       "videoLength" : "13"
     },
     {
-      "category" : "추가 영상 삽입",
+      "category" : "자료 화면 넣기",
       "categorySymbol" : "photo.on.rectangle",
       "elapsed" : "1시간 55분",
       "timestamp" : "2026-09-02T17:20:05Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-09-30T02:55:51Z",
+  "lastUpdate" : "2026-09-30T02:56:10Z",
   "originalLength" : "4:33",
   "projectTopic" : "페루 나스카 경비행기 & 무덤",
   "status" : "completed",
