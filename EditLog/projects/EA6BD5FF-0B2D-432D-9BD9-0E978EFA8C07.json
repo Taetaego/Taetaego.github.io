@@ -2,7 +2,7 @@
   "allCategories" : [
     {
       "group" : "컷 편집",
-      "name" : "소스 정리",
+      "name" : "촬영본 정리",
       "symbolName" : "folder",
       "tracksLength" : false,
       "weight" : 1
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T02:46:30Z",
+  "lastUpdate" : "2026-09-30T02:54:49Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
