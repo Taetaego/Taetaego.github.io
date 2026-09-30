@@ -40,7 +40,7 @@
       "name" : "자료 화면 넣기",
       "symbolName" : "photo.on.rectangle",
       "tracksLength" : false,
-      "weight" : 1
+      "weight" : 2
     },
     {
       "group" : "중간 작업",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-09-30T03:00:19Z",
+  "lastUpdate" : "2026-09-30T03:00:42Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
