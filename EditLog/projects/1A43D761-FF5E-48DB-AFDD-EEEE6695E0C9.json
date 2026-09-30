@@ -9,7 +9,7 @@
     },
     {
       "group" : "컷 편집",
-      "name" : "AI 편집점",
+      "name" : "자막 · 편집점",
       "symbolName" : "captions.bubble",
       "tracksLength" : false,
       "weight" : 1
@@ -101,21 +101,21 @@
   "detailCutRatio" : 4.931506849315069,
   "entries" : [
     {
-      "category" : "AI 편집점",
+      "category" : "자막 · 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "0분",
       "timestamp" : "2026-09-20T12:29:35Z",
       "videoLength" : ""
     },
     {
-      "category" : "AI 편집점",
+      "category" : "자막 · 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "3시간 22분",
       "timestamp" : "2026-09-20T15:52:34Z",
       "videoLength" : ""
     },
     {
-      "category" : "AI 편집점",
+      "category" : "자막 · 편집점",
       "categorySymbol" : "captions.bubble",
       "elapsed" : "19시간 29분",
       "timestamp" : "2026-09-21T11:21:39Z",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-09-30T02:44:20Z",
+  "lastUpdate" : "2026-09-30T02:45:17Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 친구들과 3500미터 1박 2일 캠핑",
   "status" : "completed",
