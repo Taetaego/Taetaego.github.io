@@ -217,10 +217,18 @@
       "elapsed" : "1일 13시간 5분",
       "timestamp" : "2026-10-04T05:23:43Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1분",
+      "memo" : "테스트",
+      "timestamp" : "2026-10-04T05:24:59Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 16,
-  "lastUpdate" : "2026-10-04T05:23:59Z",
+  "entryCount" : 17,
+  "lastUpdate" : "2026-10-04T05:25:18Z",
   "originalLength" : "2:36",
   "previewImage" : "previews\/42E87D11-D242-4727-92D4-D8DB060687D8.jpg",
   "projectTopic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",
