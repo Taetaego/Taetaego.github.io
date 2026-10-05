@@ -111,10 +111,18 @@
       "memo" : "찍은영상 한국까지 분류함, 분류하는와중 고프로 영상이 utc 기준으로 촬영되어있다는걸 꺠달음 이건 큰 꺠달음",
       "timestamp" : "2026-10-05T14:15:09Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "1시간 13분",
+      "memo" : "영상정리 힘들",
+      "timestamp" : "2026-10-05T15:28:38Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 2,
-  "lastUpdate" : "2026-10-05T14:15:47Z",
+  "entryCount" : 3,
+  "lastUpdate" : "2026-10-05T15:28:54Z",
   "originalLength" : "",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
