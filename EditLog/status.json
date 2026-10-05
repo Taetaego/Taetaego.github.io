@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "촬영본 정리",
+  "currentStage" : "자막 · 컷 계획",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -119,10 +119,18 @@
       "memo" : "영상정리 너무많네",
       "timestamp" : "2026-10-05T15:28:38Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 · 컷 계획",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "28분",
+      "memo" : "일단 디즈니월드 16시간 유니버셜 6시간나옴 디즈니월드 한편 올란도 한편 해야하나 모르겠네 그리고 클로드 사용량 다써서 수요일 되어야 편집 시작할수있을",
+      "timestamp" : "2026-10-05T15:56:57Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 3,
-  "lastUpdate" : "2026-10-05T15:29:12Z",
+  "entryCount" : 4,
+  "lastUpdate" : "2026-10-05T15:57:56Z",
   "originalLength" : "",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
