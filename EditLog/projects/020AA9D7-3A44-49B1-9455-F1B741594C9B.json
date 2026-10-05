@@ -103,10 +103,18 @@
       "elapsed" : "0분",
       "timestamp" : "2026-10-05T13:57:41Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "17분",
+      "memo" : "찍은영상 한국까지 분류함, 분류하는와중 고프로 영상이 utc 기준으로 촬영되어있다는걸 꺠달음 이건 큰 꺠달음",
+      "timestamp" : "2026-10-05T14:15:09Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-10-05T13:57:45Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-10-05T14:15:47Z",
   "originalLength" : "",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
