@@ -364,13 +364,21 @@
       "memo" : "썸네일 작업은 항상 머리아프",
       "timestamp" : "2026-10-05T11:57:36Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 · 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "24분",
+      "memo" : "이제 곧...!",
+      "timestamp" : "2026-10-05T12:22:19Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 36,
+  "entryCount" : 37,
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 90.9090909090909,
   "finalRatioVsOriginal" : 12.82051282051282,
-  "lastUpdate" : "2026-10-05T11:57:47Z",
+  "lastUpdate" : "2026-10-05T12:22:29Z",
   "originalLength" : "2:36",
   "previewImage" : "previews\/42E87D11-D242-4727-92D4-D8DB060687D8.jpg",
   "projectTopic" : "VIP 라운지 그리고 디즈니월드 전날의 호텔 저녁식사까지",
