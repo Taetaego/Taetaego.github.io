@@ -439,7 +439,7 @@
   .pastRow:active { transform: scale(.985); }
   .pastRow.current { border-color: transparent;
     background: linear-gradient(var(--surface2), var(--surface2)) padding-box, var(--grad) border-box; }
-  .pastCover { position: relative; display: block; width: 100%; align-self: start; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden;
+  .pastCover { position: relative; display: block; width: 100%; align-self: start; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
                background: linear-gradient(135deg, color-mix(in srgb, var(--grp-2) 30%, var(--surface)), color-mix(in srgb, var(--grp-3) 30%, var(--surface))); }
   .pastCover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease, opacity .4s ease; opacity: 0; }
   .pastCover img.ok { opacity: 1; }
@@ -1422,16 +1422,18 @@
           padding: 18px 18px 20px; border-radius: 24px;
           box-shadow: 0 18px 50px color-mix(in srgb, var(--mood, var(--accent)) 22%, transparent); }
   #summaryCard.hero.hasWave { padding-bottom: 50px; }
-  /* 흐린 판 전체 + 오른쪽 선명한 원본(천천히 다가가는 줌) */
+  /* 흐린 판 전체 + 그 위에 선명한 원본 — 원본은 16:9 그대로 카드 폭에 맞춰 위아래가 잘리지 않게 */
   .heroBg { inset: -10%; filter: blur(28px) saturate(1.5); }
   .hero.hasBg .heroBg { opacity: .55; }
-  .heroShot { position: absolute; z-index: -2; top: 0; right: 0; bottom: 0; width: 64%; pointer-events: none;
-              background: var(--heroFull, none) center / cover no-repeat; opacity: 0; transition: opacity .8s ease;
-              -webkit-mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.85) 55%, #000);
-                      mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.85) 55%, #000);
-              animation: kenBurns 26s ease-in-out infinite alternate; }
+  .heroShot { position: absolute; z-index: -2; inset: 0; display: flex; align-items: center; pointer-events: none;
+              opacity: 0; transition: opacity .8s ease; }
+  /* 유튜브 hq 썸네일은 4:3 안에 검은 띠가 있다 — 16:9 칸에 cover로 넣으면 띠만 정확히 빠진다. */
+  .heroShot i { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--heroFull, none) center / cover no-repeat;
+                -webkit-mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+                -webkit-mask-composite: source-in;
+                        mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, transparent, #000 14%, #000 86%, transparent);
+                        mask-composite: intersect; }
   .hero.hasBg .heroShot { opacity: .8; }
-  @keyframes kenBurns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.14) translate(-2%, -1.5%); } }
   /* 글자 쪽은 눌러서 읽히게 + 링 뒤로 분위기 색이 번진다 */
   .hero::after, .hero.hasBg::after { opacity: 1;
     background:
@@ -1478,7 +1480,6 @@
     .hero { flex-direction: column; align-items: stretch; }
     .topic { font-size: 23px; }
   }
-  @media (prefers-reduced-motion: reduce) { .heroShot { animation: none; } }
 
   /* ===== 작업 기록 — 날짜 알약(날마다 다른 그라데이션) · 그룹 색 아이콘 타일 (앱과 같다) ===== */
   .logDay { display: flex; align-items: center; gap: 8px; padding: 16px 0 8px; font-size: 11.5px; font-weight: 800;
@@ -1550,6 +1551,101 @@
   .brand { display: inline-flex; align-items: center; gap: 8px; }
   .brandIcon { flex: none; width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
   .heatCard > .cardHead:first-child { margin-bottom: -2px; }
+  /* ===== 쇼츠 — 에피소드와 따로 노는 '예전 영상에서 쇼츠 뽑기' 작업 (앱의 쇼츠 화면과 같은 빨강) ===== */
+  .modeSwitch { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface2); border: 1px solid var(--line); }
+  .modeSwitch[hidden] { display: none; }
+  .modeSwitch button { flex: 1; position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border: 0; background: transparent; color: var(--ink3); font: inherit; font-size: 12.5px; font-weight: 700; padding: 8px 14px;
+    border-radius: 10px; cursor: pointer; transition: color .2s ease, background-color .2s ease, box-shadow .2s ease; }
+  .modeSwitch button .ico { font-size: 15px; }
+  .modeSwitch button.active { color: #fff; background: linear-gradient(135deg, var(--grp-1), var(--grp-3));
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--grp-2) 35%, transparent); }
+  .modeSwitch button[data-mode="shorts"].active { background: linear-gradient(135deg, #ff3b5c, #ff8a4f); box-shadow: 0 4px 14px rgba(255,59,92,.35); }
+  @media (hover: hover) { .modeSwitch button:not(.active):hover { color: var(--ink); } }
+  .modeLive { width: 6px; height: 6px; border-radius: 50%; background: #ff3b5c; box-shadow: 0 0 6px #ff3b5c; animation: labelFade 1.8s ease-in-out infinite; }
+  .modeSwitch button.active .modeLive { background: #fff; box-shadow: 0 0 6px #fff; }
+  .modeLive[hidden] { display: none; }
+  body.shortsMode .colLeft, body.shortsMode .colRight { display: none !important; }
+
+  .shortsView { --sh1: #ff3b5c; --sh2: #ff8a4f; display: flex; flex-direction: column; gap: var(--cardGap); }
+  .shortsView[hidden] { display: none; }
+  .shCol { display: flex; flex-direction: column; gap: var(--cardGap); min-width: 0; }
+  .shortsView .card { animation: shIn .45s cubic-bezier(.2,.8,.3,1) backwards; }
+  .shortsView .shCol:last-child .card { animation-delay: .06s; }
+  @keyframes shIn { from { opacity: 0; transform: translateY(10px); } }
+
+  .shHero { position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 24px;
+    box-shadow: 0 18px 50px rgba(255,59,92,.18); }
+  .shHero.done { box-shadow: 0 18px 50px color-mix(in srgb, var(--gold) 20%, transparent); }
+  .shBg { position: absolute; inset: -12%; z-index: -2; background: var(--shImg, none) center / cover no-repeat; filter: blur(22px) saturate(1.4); opacity: .5; }
+  .shHero::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(260px circle at 18% 12%, rgba(255,59,92,.22), transparent 70%),
+                linear-gradient(180deg, color-mix(in srgb, var(--heroInk) 40%, transparent), color-mix(in srgb, var(--heroInk) 90%, transparent)); }
+  .shHero.done::after { background: radial-gradient(260px circle at 18% 12%, color-mix(in srgb, var(--gold) 22%, transparent), transparent 70%),
+                linear-gradient(180deg, color-mix(in srgb, var(--heroInk) 40%, transparent), color-mix(in srgb, var(--heroInk) 90%, transparent)); }
+  .shTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .shChip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; font: 800 10.5px/1 'JetBrains Mono', monospace;
+    letter-spacing: .14em; color: var(--sh1); background: var(--tileBg); border: 1px solid rgba(255,59,92,.4); }
+  .shChip i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 6px currentColor; animation: labelFade 1.8s ease-in-out infinite; }
+  .shHero.done .shChip { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 40%, transparent); }
+  .shHero.done .shChip i { animation: none; }
+  .shAgo { font-size: 11px; font-weight: 600; color: var(--ink3); }
+  .shSource { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: var(--surface2);
+    border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.3); transition: transform .2s ease; }
+  .shSource img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  @media (hover: hover) { .shSource:hover { transform: translateY(-2px); } }
+  .shSrcTag, .shDone { position: absolute; z-index: 1; display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 99px;
+    font-size: 11px; font-weight: 700; }
+  .shSrcTag { right: 8px; top: 8px; color: #fff; background: rgba(0,0,0,.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .shDone { left: 8px; top: 8px; color: #1a1300; background: var(--gold); }
+  .shTopic { font-size: 22px; font-weight: 800; line-height: 1.3; letter-spacing: -0.03em; word-break: keep-all; }
+  html[data-theme="dark"] .shTopic { text-shadow: 0 2px 14px rgba(0,0,0,.6); }
+  .shStats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .shStat { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .shStat b { font-size: 19px; font-weight: 800; letter-spacing: -0.03em; color: var(--c, var(--ink)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shStat b.sm { font-size: 13.5px; line-height: 23px; }
+  .shStat span { font-size: 10.5px; font-weight: 600; color: var(--ink3); letter-spacing: .04em; }
+
+  .shIcon { --ic: #ff3b5c; }
+  .shList .cardHead { margin-bottom: 4px; }
+  .shDay { display: flex; align-items: center; gap: 8px; padding: 12px 0 6px; font-size: 11.5px; font-weight: 800; color: var(--ink); }
+  .shDay .cnt { font: 700 10px/1 'JetBrains Mono', monospace; padding: 3px 6px; border-radius: 99px; color: #fff; background: linear-gradient(135deg, var(--sh1), var(--sh2)); }
+  .shDay i { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,59,92,.45), transparent); }
+  .shRow { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 9px 4px; border-top: 1px solid var(--line);
+    animation: shIn .4s ease backwards; animation-delay: calc(var(--k, 0) * 30ms + 120ms); }
+  .shDay + .shRow { border-top: 0; }
+  .shNum { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font: 800 12px/1 'JetBrains Mono', monospace; color: #fff;
+    background: linear-gradient(135deg, var(--sh1), var(--sh2)); box-shadow: 0 4px 12px rgba(255,59,92,.25); }
+  .shMain { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .shMain b { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shMain small { font-size: 11px; color: var(--ink3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shWhen { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
+  .shWhen span { font: 600 12px/1.2 'JetBrains Mono', monospace; color: var(--ink2); }
+  .shWhen small { font-size: 10.5px; color: var(--ink3); }
+  .shRow.latest .shMain b { color: var(--sh1); }
+  .shCommon { font-size: 11px; color: var(--ink3); margin: -2px 0 2px; }
+  .shEmpty { padding: 22px 0; text-align: center; font-size: 12.5px; color: var(--ink3); }
+
+  .shProj { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 12px;
+    border: 1px solid transparent; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .2s ease, border-color .2s ease; }
+  .shProj + .shProj { margin-top: 4px; }
+  .shProj.on { border-color: rgba(255,59,92,.45); background: rgba(255,59,92,.08); }
+  @media (hover: hover) { .shProj:not(.on):hover { background: var(--surface2); } }
+  .shProj img { width: 64px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 7px; background: var(--surface2); display: block; }
+  .shProj b { display: block; font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shProj small { font-size: 11px; color: var(--ink3); }
+  .shProj em { font-style: normal; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px; background: rgba(255,59,92,.14); color: var(--sh1); }
+  .shProj em.done { background: var(--gold-soft); color: var(--gold); }
+
+  @media (max-width: 380px) { .shStats { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 12px; } }
+  @media (min-width: 900px) {
+    .page { grid-template-areas: "topbar topbar" "mode mode" "left right" "fire fire"; }
+    .modeSwitch { grid-area: mode; justify-self: center; width: min(340px, 100%); }
+    .shortsView { grid-column: 1 / -1; grid-row: 3; display: grid; grid-template-columns: minmax(320px, 400px) 1fr; align-items: start; }
+    .shortsView[hidden] { display: none; }
+    .shTopic { font-size: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .shortsView .card, .shRow { animation: none; } }
 </style>
 </head>
 <body>
@@ -1566,6 +1662,13 @@
         </div>
       </div>
     </div>
+
+    <!-- 에피소드 / 쇼츠 보기 — 쇼츠 데이터가 있을 때만 보인다 -->
+    <div class="modeSwitch" id="modeSwitch" role="tablist" aria-label="보기" hidden>
+      <button type="button" role="tab" data-mode="episode" aria-selected="true" class="active"><span data-ico="film" style="display:flex"></span>에피소드</button>
+      <button type="button" role="tab" data-mode="shorts" aria-selected="false"><span data-ico="shorts" style="display:flex"></span>쇼츠<i class="modeLive" hidden></i></button>
+    </div>
+    <div class="shortsView" id="shortsView" hidden></div>
 
     <div class="colLeft">
       <div class="card hero" id="summaryCard" style="display:none"></div>
@@ -1962,6 +2065,14 @@ function initSfxBtn() {
   btn.addEventListener('click', () => { Sfx.toggle(); paint(); });
 }
 
+// 쇼츠 보기 상태 — main()이 처음부터 쓰므로 여기서 선언한다 (아래 '쇼츠' 묶음 참고).
+let shortsData = null;        // shorts.json (없으면 쇼츠 단추째 숨긴다)
+let shortsSig = '';
+let shortsMode = false;
+let shortsPick = null;        // 목록에서 고른 쇼츠 프로젝트 id (없으면 지금 하는 것)
+let modeChosen = false;       // 사람이 직접 고른 뒤엔 자동 전환하지 않는다
+let episodeLastUpdate = null; // 에피소드 쪽 마지막 기록 — 어느 쪽을 먼저 보여줄지 정할 때 쓴다
+
 async function main() {
   paintIcons();
   reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1982,8 +2093,16 @@ async function main() {
 
   initPastProjects();
 
+  initModeSwitch();
+  // 쇼츠는 따로 받아 둔다 — 없거나 실패해도 에피소드 화면은 그대로.
+  const shortsReq = fetchData('shorts.json').catch(() => null);
+
   try {
     const data = await fetchData('status.json');
+    episodeLastUpdate = data.lastUpdate || null;
+    // 첫 화면을 그리기 전에 어느 쪽을 보여줄지 정한다 (쇼츠 화면이면 에피소드 축포는 터뜨리지 않는다).
+    applyShorts(await shortsReq);
+    if (location.hash === '#shorts' && shortsData && !shortsMode) setMode(true);
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initDayBandReplay();
     setInterval(() => { updateDayNow(); updateSinceStart(); updateLive(); }, 60000);
@@ -2017,13 +2136,14 @@ async function main() {
     // 폭죽은 페이지를 처음 열었을 때 완료 상태인 경우에만. 목록에서 골라 들어간
     // 프로젝트가 완료됐다고 해서 다시 터지지는 않는다.
     shownSignature = snapshotSignature(data);
-    renderProject(data, { fireworks: true });
+    renderProject(data, { fireworks: !shortsMode });
     initHeat();
     loadActivity();
     initAutoRefresh();
   } catch (e) {
     summaryCard.style.display = '';
     summaryCard.innerHTML = '<div class="empty">아직 기록된 작업이 없어요</div>';
+    applyShorts(await shortsReq);
   } finally {
     // 카드 배치가 끝난 뒤에 꺼내야 버튼·푸터가 제자리에서 나타난다.
     document.getElementById('fxBar').style.display = '';
@@ -2107,6 +2227,7 @@ async function refreshCurrentProject() {
   refreshing = true;
   try {
     const data = await fetchData('status.json');
+    episodeLastUpdate = data.lastUpdate || episodeLastUpdate;
     const sig = snapshotSignature(data);
     // 받아오는 사이에 지난 프로젝트를 열었을 수도 있다.
     if (sig === shownSignature || pastCurrentId) return;
@@ -2124,12 +2245,14 @@ async function refreshCurrentProject() {
 }
 
 function initAutoRefresh() {
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshCurrentProject(); });
+  // 에피소드를 먼저 받아야 쇼츠 쪽이 '어느 게 마지막 작업인지'를 새 기록으로 비교한다.
+  const refresh = async () => { await refreshCurrentProject(); refreshShorts(); };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   // 뒤로가기 캐시에서 되살아난 경우엔 visibilitychange가 오지 않을 때가 있다.
-  window.addEventListener('pageshow', (ev) => { if (ev.persisted) refreshCurrentProject(); });
+  window.addEventListener('pageshow', (ev) => { if (ev.persisted) refresh(); });
   // 데스크톱은 다른 창에 갔다 와도 탭이 계속 '보이는' 상태라 창 포커스로도 확인한다.
-  window.addEventListener('focus', refreshCurrentProject);
-  setInterval(refreshCurrentProject, 60000);
+  window.addEventListener('focus', refresh);
+  setInterval(refresh, 60000);
 }
 
 /* ===== 편집 잔디 (채널 전체) ===== */
@@ -2588,6 +2711,8 @@ async function openProject(id) {
     pastCurrentId = isCurrent ? null : id;
     if (isCurrent) shownSignature = snapshotSignature(data);
     renderProject(data, { fireworks: false });
+    // 쇼츠 화면에서 지난 에피소드를 골랐으면 에피소드 화면으로 넘어간다.
+    if (shortsMode) { modeChosen = true; setMode(false, { user: true }); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {
     console.warn('프로젝트를 불러오지 못했습니다', e);
@@ -2836,6 +2961,7 @@ const UI_SVG = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.8v2.2M12 19v2.2M2.8 12H5M19 12h2.2M5.5 5.5l1.6 1.6M16.9 16.9l1.6 1.6M18.5 5.5l-1.6 1.6M7.1 16.9l-1.6 1.6"/>',
   moon: '<path d="M19.5 14.8A8 8 0 0 1 9.2 4.5a8 8 0 1 0 10.3 10.3z"/>',
   halfMoon: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>',
+  shorts: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/><path d="M10.4 9.2v5.6l4.6-2.8z"/>',
   film: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M7.5 3.5v17M16.5 3.5v17M3.5 8h4M3.5 12h4M3.5 16h4M16.5 8h4M16.5 12h4M16.5 16h4"/>',
   mountain: '<path d="M2.5 19.5 9 8.5l3.5 5.5 2.5-3.5 6.5 9z"/><path d="M6.8 12.2l2.2 1.3 1.9-1.4"/>',
   diamond: '<path d="M6.5 4.5h11L21 9l-9 11L3 9z"/><path d="M3 9h18M9.5 4.5 8 9l4 11 4-11-1.5-4.5"/>',
@@ -3087,7 +3213,7 @@ function renderSummary(cardEl, data) {
   cardEl.style.display = '';
   cardEl.innerHTML = `
     <span class="heroBg" aria-hidden="true"></span>
-    <span class="heroShot" aria-hidden="true"></span>
+    <span class="heroShot" aria-hidden="true"><i></i></span>
     <div class="heroTop">
       <div class="chipRow">
         <span class="statusChip${isCompleted ? ' done' : ' wip'}"><i></i>${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
@@ -3171,9 +3297,16 @@ function setHeroBackdrop(card, data) {
       } catch (e) { /* 줄이지 못하면 원본 그대로 */ }
     }
     card.style.setProperty('--heroImg', `url("${url}")`);
-    // 오른쪽엔 선명한 원본을 깔고 왼쪽으로 스르르 사라지게 (앱 히어로와 같은 구성).
+    // 선명한 원본을 깔고 왼쪽으로 스르르 사라지게 (앱 히어로와 같은 구성).
     card.style.setProperty('--heroFull', `url("${src}")`);
     card.classList.add('hasBg');
+    // 넓은 화면은 카드가 커서 hq(480px)가 흐릿하다 — maxres가 있으면 바꿔 끼운다 (없으면 120px 자리표가 온다).
+    if (yt && matchMedia('(min-width: 900px)').matches) {
+      const big = new Image();
+      const bigSrc = `https://img.youtube.com/vi/${encodeURIComponent(yt)}/maxresdefault.jpg`;
+      big.onload = () => { if (card._bgSrc === src && big.naturalWidth > 121) card.style.setProperty('--heroFull', `url("${bigSrc}")`); };
+      big.src = bigSrc;
+    }
   };
   img.src = src;
 }
@@ -4993,6 +5126,172 @@ function initFxButtons() {
 }
 
 main();
+
+/* ===== 쇼츠 =====
+   앱의 쇼츠 프로젝트(예전에 올린 영상 하나에서 쇼츠를 뽑아내는 작업)를 따로 보여준다. 에피소드와 섞지 않는다.
+   마지막으로 한 일이 쇼츠면 — 쇼츠 쪽 가장 늦은 기록이 에피소드 마지막 기록보다 늦으면 — 처음부터 쇼츠 화면이 뜬다.
+   위쪽 '에피소드 / 쇼츠' 단추로 직접 고르면 그 뒤로는 자동으로 바꾸지 않는다 (주소 끝 #shorts로 바로 열 수도 있다). */
+
+const tsOf = (iso) => (iso ? new Date(iso).getTime() : 0);
+function shortsLastActivity(p) {
+  return Math.max(tsOf(p.createdAt), tsOf(p.completedAt), ...(p.shorts || []).map(x => tsOf(x.timestamp)));
+}
+/** 지금 하는 쇼츠 프로젝트 — 뽑는 중인 게 먼저, 그다음 최근에 손댄 순. */
+function currentShortsProject() {
+  const ps = shortsData?.projects || [];
+  if (!ps.length) return null;
+  const picked = shortsPick && ps.find(p => p.id === shortsPick);
+  if (picked) return picked;
+  return [...ps].sort((a, b) => (a.isCompleted - b.isCompleted) || (shortsLastActivity(b) - shortsLastActivity(a)))[0];
+}
+function shortsIsLatest() {
+  const ps = shortsData?.projects || [];
+  if (!ps.length) return false;
+  return Math.max(...ps.map(shortsLastActivity)) > tsOf(episodeLastUpdate);
+}
+
+/** 쇼츠 데이터를 반영한다 — 처음 열 때와 자동 갱신 때 같은 길로. */
+function applyShorts(data) {
+  const sig = data ? JSON.stringify(data) : '';
+  const changed = sig !== shortsSig;
+  shortsSig = sig;
+  shortsData = data && Array.isArray(data.projects) && data.projects.length ? data : null;
+  const sw = document.getElementById('modeSwitch');
+  sw.hidden = !shortsData;
+  sw.querySelector('.modeLive').hidden = !(shortsData && shortsData.projects.some(p => !p.isCompleted));
+  if (!shortsData) { if (shortsMode) setMode(false); return; }
+  const want = modeChosen ? shortsMode : shortsIsLatest();
+  if (want !== shortsMode) setMode(want);
+  else if (changed && shortsMode) renderShorts();
+}
+
+function setMode(on, { user = false } = {}) {
+  shortsMode = !!(on && shortsData);
+  document.body.classList.toggle('shortsMode', shortsMode);
+  document.getElementById('shortsView').hidden = !shortsMode;
+  document.querySelectorAll('#modeSwitch button').forEach(b => {
+    const active = (b.dataset.mode === 'shorts') === shortsMode;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-selected', String(active));
+  });
+  if (shortsMode) renderShorts();
+  if (user) {
+    try { history.replaceState(null, '', shortsMode ? '#shorts' : location.pathname + location.search); } catch (e) {}
+  }
+}
+
+function initModeSwitch() {
+  if (location.hash === '#shorts' || location.hash === '#episode') modeChosen = true;
+  document.getElementById('modeSwitch').addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-mode]');
+    if (!b) return;
+    const on = b.dataset.mode === 'shorts';
+    modeChosen = true;
+    if (on === shortsMode) return;
+    sfx('tap');
+    setMode(on, { user: true });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  document.getElementById('shortsView').addEventListener('click', (ev) => {
+    const b = ev.target.closest('.shProj[data-id]');
+    if (!b) return;
+    sfx('tap');
+    shortsPick = b.dataset.id;
+    renderShorts();
+  });
+}
+
+async function refreshShorts() {
+  if (document.hidden) return;
+  try { applyShorts(await fetchData('shorts.json')); } catch (e) { /* 다음 기회에 */ }
+}
+
+/** "20250823-3_와이나 포토시_팔린카[세계여행115]" → 제목 '팔린카', 아래 줄 '와이나 포토시 · 세계여행115 · 촬영 2025.8.23'.
+    이 꼴이 아니면 적은 그대로 보여준다. */
+function splitShortsTitle(t) {
+  const m = /^(\d{4})(\d{2})(\d{2})-\d+_(.+?)_(.+?)\s*(?:\[(.+)\])?$/.exec(t || '');
+  if (!m) return { main: t || '', sub: '' };
+  return { main: m[5], sub: [m[4], m[6], `촬영 ${m[1]}.${+m[2]}.${+m[3]}`].filter(Boolean).join(' · ') };
+}
+
+function renderShorts() {
+  const el = document.getElementById('shortsView');
+  const p = currentShortsProject();
+  if (!p) { el.innerHTML = ''; return; }
+  const list = [...(p.shorts || [])].sort((a, b) => tsOf(a.timestamp) - tsOf(b.timestamp));
+  const done = !!p.isCompleted;
+  const last = list.length ? list[list.length - 1].timestamp : null;
+  const todayKey = new Date().toDateString();
+  const today = list.filter(x => new Date(x.timestamp).toDateString() === todayKey).length;
+  const vid = p.youtubeId;
+  const thumb = vid ? `https://img.youtube.com/vi/${encodeURIComponent(vid)}/hqdefault.jpg` : '';
+  const span = ((done && p.completedAt ? tsOf(p.completedAt) : Date.now()) - tsOf(p.createdAt)) / 1000;
+  const stat = (v, k, c, sm) => `<div class="shStat"><b class="${sm ? 'sm' : ''}" style="${c ? `--c:${c}` : ''}">${escapeHtml(String(v))}</b><span>${k}</span></div>`;
+
+  const source = vid
+    ? `<a class="shSource" href="https://www.youtube.com/watch?v=${encodeURIComponent(vid)}" target="_blank" rel="noopener noreferrer">
+         <img src="${thumb}" alt="원본 영상 썸네일" loading="lazy" decoding="async">
+         <span class="shSrcTag">${uiIcon('video')} 원본 영상</span>${done ? `<span class="shDone">${uiIcon('trophy')} 완료</span>` : ''}
+       </a>` : '';
+  const hero = `
+    <div class="card shHero${done ? ' done' : ''}" style="${thumb ? `--shImg:url('${thumb}')` : ''}">
+      <span class="shBg" aria-hidden="true"></span>
+      <div class="shTop"><span class="shChip"><i></i>SHORTS · ${done ? '완료' : '뽑는 중'}</span><span class="shAgo">${relativeTime(last || p.createdAt)}</span></div>
+      ${source}
+      <div class="shTopic">${escapeHtml(p.topic || '쇼츠')}</div>
+      <div class="shStats">
+        ${stat(`${list.length}개`, '만든 쇼츠', 'var(--sh1)')}
+        ${stat(`${today}개`, '오늘', 'var(--gold)')}
+        ${stat(formatSpan(span), done ? '작업 기간' : '시작 후', '', true)}
+        ${stat(formatDayLabel(p.createdAt).replace(/ \(.\)$/, ''), '시작', '', true)}
+      </div>
+    </div>`;
+
+  // 만든 쇼츠 — 최근 것이 위로, 날짜마다 묶는다. 오른쪽엔 시각과 앞 기록(첫 개는 프로젝트 시작)으로부터 걸린 시간.
+  // 제목 아래 줄(원본 · 태그 · 촬영일)이 전부 같으면 줄마다 되풀이하지 않고 머리에 한 번만 쓴다.
+  const subs = list.map(x => splitShortsTitle(x.title).sub);
+  const common = subs.length > 1 && subs[0] && subs.every(v => v === subs[0]) ? subs[0] : '';
+  let rows = '', day = null, k = 0;
+  const byDay = new Map();
+  list.forEach(x => { const d = new Date(x.timestamp).toDateString(); byDay.set(d, (byDay.get(d) || 0) + 1); });
+  for (let i = list.length - 1; i >= 0; i--) {
+    const x = list[i];
+    const d = new Date(x.timestamp).toDateString();
+    if (d !== day) {
+      day = d;
+      rows += `<div class="shDay"><span>${formatDayLabel(x.timestamp)}</span><span class="cnt">${byDay.get(d)}</span><i></i></div>`;
+    }
+    const prev = i > 0 ? list[i - 1].timestamp : p.createdAt;
+    const gap = (tsOf(x.timestamp) - tsOf(prev)) / 1000;
+    const { main } = splitShortsTitle(x.title);
+    const sub = common ? '' : splitShortsTitle(x.title).sub;
+    rows += `<div class="shRow${i === list.length - 1 && !done ? ' latest' : ''}" style="--k:${Math.min(k++, 20)}" title="${escapeHtml(x.title)}">
+      <span class="shNum">${i + 1}</span>
+      <span class="shMain"><b>${escapeHtml(main)}</b>${sub ? `<small>${escapeHtml(sub)}</small>` : ''}</span>
+      <span class="shWhen"><span>${formatTimeOnly(x.timestamp)}</span><small>${i > 0 ? `+${formatSpan(gap)}` : `시작 후 ${formatSpan(gap)}`}</small></span>
+    </div>`;
+  }
+  const listCard = `
+    <div class="card shList">
+      <div class="cardHead"><span class="cardTitle"><span class="cardIcon shIcon" aria-hidden="true">${uiIcon('shorts')}</span>만든 쇼츠</span><span class="cardMeta mono">${list.length}개</span></div>
+      ${common ? `<div class="shCommon">${escapeHtml(common)}</div>` : ''}
+      ${rows || '<div class="shEmpty">아직 만든 쇼츠가 없어요</div>'}
+    </div>`;
+
+  const ps = shortsData.projects;
+  const others = ps.length > 1 ? `
+    <div class="card shOthers">
+      <div class="cardHead"><span class="cardTitle"><span class="cardIcon shIcon" aria-hidden="true">${uiIcon('folder')}</span>쇼츠 프로젝트</span><span class="cardMeta mono">${ps.length}개</span></div>
+      ${[...ps].sort((a, b) => shortsLastActivity(b) - shortsLastActivity(a)).map(q => `
+        <button type="button" class="shProj${q.id === p.id ? ' on' : ''}" data-id="${escapeHtml(q.id)}">
+          ${q.youtubeId ? `<img src="https://img.youtube.com/vi/${encodeURIComponent(q.youtubeId)}/mqdefault.jpg" alt="" loading="lazy">` : '<img alt="">'}
+          <span><b>${escapeHtml(q.topic || '쇼츠')}</b><small>쇼츠 ${(q.shorts || []).length}개 · ${relativeTime(new Date(shortsLastActivity(q)).toISOString())}</small></span>
+          <em class="${q.isCompleted ? 'done' : ''}">${q.isCompleted ? '완료' : '뽑는 중'}</em>
+        </button>`).join('')}
+    </div>` : '';
+
+  el.innerHTML = `<div class="shCol">${hero}${others}</div><div class="shCol">${listCard}</div>`;
+}
 
 /* ===== 여행 명언 카드 =====
    페이지에 들어오면 업적 달성 알림처럼 위에서 한 장 떨어진다. 4.5초 뒤(또는 누르면) 올라간다. */
