@@ -149,10 +149,17 @@
       "memo" : "후........... 드디어 시작합니",
       "timestamp" : "2026-10-11T14:55:15Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "3시간 9분",
+      "timestamp" : "2026-10-11T18:04:55Z",
+      "videoLength" : "18"
     }
   ],
-  "entryCount" : 7,
-  "lastUpdate" : "2026-10-11T15:33:40Z",
+  "entryCount" : 8,
+  "lastUpdate" : "2026-10-11T18:05:00Z",
   "originalLength" : "13:50",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
