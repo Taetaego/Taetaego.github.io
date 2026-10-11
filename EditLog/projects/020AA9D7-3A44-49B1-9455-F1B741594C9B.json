@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "자막 · 컷 계획",
+  "currentStage" : "1차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -141,10 +141,18 @@
       "elapsed" : "0분",
       "timestamp" : "2026-10-11T04:27:44Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "10시간 27분",
+      "memo" : "후........... 드디어 시작합니",
+      "timestamp" : "2026-10-11T14:55:15Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 6,
-  "lastUpdate" : "2026-10-11T04:27:49Z",
+  "entryCount" : 7,
+  "lastUpdate" : "2026-10-11T14:55:29Z",
   "originalLength" : "",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
