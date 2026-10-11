@@ -3245,7 +3245,7 @@ function renderSummary(cardEl, data) {
     ? (data.completedAt ?? data.lastUpdate)
     : (lastEntryTime ?? data.lastUpdate);
 
-  // ② 마지막 기록이 90분 안이면 LIVE. 1분마다 updateLive()가 다시 본다.
+  // ② 마지막 기록이 90분 안이면 '편집 중' 표시(예전 이름 LIVE — 2026-10-12 사용자가 바꿨다. '편집 중 · 2시간 전' 칩은 뺐다). 1분마다 updateLive()가 다시 본다.
   const liveSince = !isCompleted && lastEntryTime ? lastEntryTime : '';
 
   // 완료된 회차는 오른쪽이 휑하지 않게 총 소요·완성 길이를 올린다.
@@ -3270,8 +3270,8 @@ function renderSummary(cardEl, data) {
     <span class="heroShot" aria-hidden="true"><i></i></span>
     <div class="heroTop">
       <div class="chipRow">
-        <span class="statusChip${isCompleted ? ' done' : ' wip'}"><i></i>${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>
-        <span class="liveBadge" data-since="${escapeHtml(liveSince)}" data-session="${escapeHtml(sessionStart(entries))}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>LIVE <span class="rec">${recCode(sessionStart(entries))}</span></span>
+        ${isCompleted ? `<span class="statusChip done"><i></i>${statusLabel}${chipTime ? ` · ${relativeTime(chipTime)}` : ''}</span>` : ''}
+        <span class="liveBadge" data-since="${escapeHtml(liveSince)}" data-session="${escapeHtml(sessionStart(entries))}" ${isLive(liveSince) ? '' : 'hidden'}><i></i>편집 중 <span class="rec">${recCode(sessionStart(entries))}</span></span>
       </div>
     </div>
     <div class="heroMain">
@@ -5309,7 +5309,7 @@ function renderShorts() {
   const hero = `
     <div class="card shHero${done ? ' done' : ''}" style="${thumb ? `--shImg:url('${thumb}')` : ''}">
       <span class="shBg" aria-hidden="true"></span>
-      <div class="shTop"><span class="shChip"><i></i>SHORTS · ${done ? '완료' : '뽑는 중'}</span><span class="liveBadge" data-since="${done ? '' : escapeHtml(last || '')}" ${!done && isLive(last) ? '' : 'hidden'}><i></i>LIVE · 편집 중</span><span class="shAgo">${relativeTime(last || p.createdAt)}</span></div>
+      <div class="shTop"><span class="shChip"><i></i>SHORTS · ${done ? '완료' : '뽑는 중'}</span><span class="liveBadge" data-since="${done ? '' : escapeHtml(last || '')}" data-session="${done ? '' : escapeHtml(sessionStart(list))}" ${!done && isLive(last) ? '' : 'hidden'}><i></i>편집 중 <span class="rec">${done ? '' : recCode(sessionStart(list))}</span></span><span class="shAgo">${relativeTime(last || p.createdAt)}</span></div>
       ${source}
       <div class="shTopic">${escapeHtml(p.topic || '쇼츠')}</div>
       <div class="shStats">
