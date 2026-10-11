@@ -134,10 +134,17 @@
       "elapsed" : "5일 12시간 29분",
       "timestamp" : "2026-10-11T04:26:45Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 · 컷 계획",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "0분",
+      "timestamp" : "2026-10-11T04:27:44Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 5,
-  "lastUpdate" : "2026-10-11T04:26:51Z",
+  "entryCount" : 6,
+  "lastUpdate" : "2026-10-11T04:27:49Z",
   "originalLength" : "",
   "projectTopic" : "디즈니월드!!",
   "status" : "in_progress"
