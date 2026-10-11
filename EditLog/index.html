@@ -7,16 +7,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="description" content="영상 편집 진행 상황을 단계별로 기록하고 공개하는 태태고의 편집실 로그.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="태태고 편집실">
 <meta property="og:title" content="태태고 편집실">
 <meta property="og:description" content="영상 편집 진행 상황을 단계별로 기록하고 공개하는 태태고의 편집실 로그.">
-<meta property="og:image" content="https://taetaego.github.io/EditLog/favicon-512.png">
+<meta property="og:image" content="https://taetaego.github.io/EditLog/favicon-512.png?v=2">
 <meta property="og:url" content="https://taetaego.github.io/EditLog/">
 <meta name="twitter:card" content="summary">
 <title>태태고 편집실</title>
@@ -1565,6 +1565,7 @@
   .modeLive { width: 6px; height: 6px; border-radius: 50%; background: #ff3b5c; box-shadow: 0 0 6px #ff3b5c; animation: labelFade 1.8s ease-in-out infinite; }
   .modeSwitch button.active .modeLive { background: #fff; box-shadow: 0 0 6px #fff; }
   .modeLive[hidden] { display: none; }
+  .modeLive.still { animation: none; opacity: .7; box-shadow: none; }
   body.shortsMode .colLeft, body.shortsMode .colRight { display: none !important; }
 
   .shortsView { --sh1: #ff3b5c; --sh2: #ff8a4f; display: flex; flex-direction: column; gap: var(--cardGap); }
@@ -1583,6 +1584,7 @@
                 linear-gradient(180deg, color-mix(in srgb, var(--heroInk) 40%, transparent), color-mix(in srgb, var(--heroInk) 90%, transparent)); }
   .shHero.done::after { background: radial-gradient(260px circle at 18% 12%, color-mix(in srgb, var(--gold) 22%, transparent), transparent 70%),
                 linear-gradient(180deg, color-mix(in srgb, var(--heroInk) 40%, transparent), color-mix(in srgb, var(--heroInk) 90%, transparent)); }
+  .shTop .shAgo { margin-left: auto; }
   .shTop { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .shChip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; font: 800 10.5px/1 'JetBrains Mono', monospace;
     letter-spacing: .14em; color: var(--sh1); background: var(--tileBg); border: 1px solid rgba(255,59,92,.4); }
@@ -1652,7 +1654,7 @@
   <canvas id="fxCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
   <div class="page">
     <div class="topbar">
-      <div class="brand"><img class="brandIcon" src="favicon-192.png" alt="" width="26" height="26">태태고 편집실</div>
+      <div class="brand"><img class="brandIcon" src="favicon-192.png?v=2" alt="" width="26" height="26">태태고 편집실</div>
       <div class="topRight">
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false"></button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드"><span data-ico="folder" style="display:flex"></span><span class="pastBtnText">지난 에피소드</span></button>
@@ -1665,7 +1667,7 @@
 
     <!-- 에피소드 / 쇼츠 보기 — 쇼츠 데이터가 있을 때만 보인다 -->
     <div class="modeSwitch" id="modeSwitch" role="tablist" aria-label="보기" hidden>
-      <button type="button" role="tab" data-mode="episode" aria-selected="true" class="active"><span data-ico="film" style="display:flex"></span>에피소드</button>
+      <button type="button" role="tab" data-mode="episode" aria-selected="true" class="active"><span data-ico="film" style="display:flex"></span>에피소드<i class="modeLive" hidden></i></button>
       <button type="button" role="tab" data-mode="shorts" aria-selected="false"><span data-ico="shorts" style="display:flex"></span>쇼츠<i class="modeLive" hidden></i></button>
     </div>
     <div class="shortsView" id="shortsView" hidden></div>
@@ -1793,7 +1795,7 @@
     <div class="madeBy" id="madeBy" style="display:none">Made by Taetaego</div>
   </div>
 
-  <!-- 지난 프로젝트 목록. 여기 쓰이는 projects/index.json은 이 창을 처음 열 때만 받아온다. -->
+  <!-- 지난 목록 — 에피소드 화면에선 지난 에피소드(projects/index.json — 이 창을 처음 열 때만 받아온다), 쇼츠 화면에선 지난 쇼츠 프로젝트. -->
   <div class="modalBack" id="pastModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-label="지난 에피소드">
       <div class="modalHead">
@@ -2071,7 +2073,15 @@ let shortsSig = '';
 let shortsMode = false;
 let shortsPick = null;        // 목록에서 고른 쇼츠 프로젝트 id (없으면 지금 하는 것)
 let modeChosen = false;       // 사람이 직접 고른 뒤엔 자동 전환하지 않는다
-let episodeLastUpdate = null; // 에피소드 쪽 마지막 기록 — 어느 쪽을 먼저 보여줄지 정할 때 쓴다
+let episodeLastUpdate = null; // 에피소드 쪽에서 마지막으로 한 일의 시각 — 어느 쪽을 먼저 보여줄지 정할 때 쓴다
+let episodeWip = false;       // 지금 에피소드가 편집 중인가
+/** 에피소드에서 마지막으로 한 일 — 마지막 기록 · 시작 · 완료 중 가장 늦은 때.
+    (data.lastUpdate는 '발행한 때'다 — 쇼츠만 해도 같이 다시 발행돼서 늘 방금이 된다. 그걸로 견주면 쇼츠를 하는 중에도 에피소드 화면이 먼저 떴다.) */
+function episodeActivity(data) {
+  const es = data.entries || [];
+  const t = Math.max(tsOf(es.length ? es[es.length - 1].timestamp : null), tsOf(data.createdAt), tsOf(data.completedAt));
+  return t ? new Date(t).toISOString() : (data.lastUpdate || null);
+}
 
 async function main() {
   paintIcons();
@@ -2099,13 +2109,14 @@ async function main() {
 
   try {
     const data = await fetchData('status.json');
-    episodeLastUpdate = data.lastUpdate || null;
+    episodeLastUpdate = episodeActivity(data);
+    episodeWip = data.status !== 'completed';
     // 첫 화면을 그리기 전에 어느 쪽을 보여줄지 정한다 (쇼츠 화면이면 에피소드 축포는 터뜨리지 않는다).
     applyShorts(await shortsReq);
     if (location.hash === '#shorts' && shortsData && !shortsMode) setMode(true);
     // 한 번만 걸면 되는 것들 — 여기서 붙여둬야 프로젝트를 바꿔도 중복으로 안 걸린다.
     initDayBandReplay();
-    setInterval(() => { updateDayNow(); updateSinceStart(); updateLive(); }, 60000);
+    setInterval(() => { updateDayNow(); updateSinceStart(); updateLive(); updateWorking(); }, 60000);
     initRowPulse();
     initSlate();
     initRewind();
@@ -2227,7 +2238,9 @@ async function refreshCurrentProject() {
   refreshing = true;
   try {
     const data = await fetchData('status.json');
-    episodeLastUpdate = data.lastUpdate || episodeLastUpdate;
+    episodeLastUpdate = episodeActivity(data) || episodeLastUpdate;
+    episodeWip = data.status !== 'completed';
+    updateWorking();
     const sig = snapshotSignature(data);
     // 받아오는 사이에 지난 프로젝트를 열었을 수도 있다.
     if (sig === shownSignature || pastCurrentId) return;
@@ -2610,6 +2623,9 @@ function initPastProjects() {
   const open = async () => {
     sfx('whoosh');
     back.hidden = false;
+    document.querySelector('#pastModal .modalTitle').textContent = shortsMode ? '지난 프로젝트' : '지난 에피소드';
+    document.querySelector('#pastModal .modal').setAttribute('aria-label', shortsMode ? '지난 프로젝트' : '지난 에피소드');
+    if (shortsMode) { renderPastShorts(); return; }   // 쇼츠 화면에선 쇼츠 프로젝트만 — 에피소드와 섞지 않는다
     if (!pastIndex) {
       document.getElementById('pastBody').innerHTML = '<div class="empty">불러오는 중…</div>';
       try {
@@ -2629,11 +2645,51 @@ function initPastProjects() {
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !back.hidden) shut(); });
 
   document.getElementById('pastBody').addEventListener('click', async (ev) => {
+    const proj = ev.target.closest('.shProj[data-id]');
+    if (proj) {   // 쇼츠 프로젝트를 골랐다
+      sfx('tap'); shut();
+      shortsPick = proj.dataset.id;
+      renderShorts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     const row = ev.target.closest('.pastRow');
     if (!row) return;
     shut();
     await openProject(row.dataset.id);
   });
+}
+
+/** 위쪽 단추 이름 — 에피소드 화면에선 '지난 에피소드', 쇼츠 화면에선 '지난 프로젝트'. */
+function updatePastBtn() {
+  const btn = document.getElementById('pastBtn');
+  if (!btn) return;
+  const label = shortsMode ? '지난 프로젝트' : '지난 에피소드';
+  btn.title = label + ' 보기';
+  btn.setAttribute('aria-label', label);
+  const t = btn.querySelector('.pastBtnText');
+  if (t) t.textContent = label;
+}
+
+/** 쇼츠 프로젝트 목록 (쇼츠 화면에서 위쪽 단추를 눌렀을 때) — 최근에 손댄 순. */
+function renderPastShorts() {
+  const ps = shortsData?.projects || [];
+  const cur = currentShortsProject();
+  document.getElementById('pastMeta').textContent = `${ps.length}개`;
+  const done = ps.filter(p => p.isCompleted);
+  const made = ps.reduce((a, p) => a + (p.shorts || []).length, 0);
+  document.getElementById('pastBody').innerHTML = !ps.length ? '<div class="empty">아직 쇼츠 프로젝트가 없어요</div>' : `
+    <div class="pastSum">
+      <div><span>완료</span><b>${done.length}개</b></div>
+      <div><span>뽑는 중</span><b>${ps.length - done.length}개</b></div>
+      <div><span>만든 쇼츠 합계</span><b>${made}개</b></div>
+    </div>
+    <div class="pastShorts">` + [...ps].sort((a, b) => shortsLastActivity(b) - shortsLastActivity(a)).map(q => `
+      <button type="button" class="shProj${cur && q.id === cur.id ? ' on' : ''}" data-id="${escapeHtml(q.id)}">
+        ${q.youtubeId ? `<img src="https://img.youtube.com/vi/${encodeURIComponent(q.youtubeId)}/mqdefault.jpg" alt="" loading="lazy">` : '<img alt="">'}
+        <span><b>${escapeHtml(q.topic || '쇼츠')}</b><small>쇼츠 ${(q.shorts || []).length}개 · ${relativeTime(new Date(shortsLastActivity(q)).toISOString())}</small></span>
+        <em class="${q.isCompleted ? 'done' : ''}">${q.isCompleted ? '완료' : '뽑는 중'}</em>
+      </button>`).join('') + '</div>';
 }
 
 const pastCovers = new Map();   // 프로젝트 id → 썸네일 주소 (각 회차 파일에서 한 번만 알아낸다)
@@ -2711,8 +2767,6 @@ async function openProject(id) {
     pastCurrentId = isCurrent ? null : id;
     if (isCurrent) shownSignature = snapshotSignature(data);
     renderProject(data, { fireworks: false });
-    // 쇼츠 화면에서 지난 에피소드를 골랐으면 에피소드 화면으로 넘어간다.
-    if (shortsMode) { modeChosen = true; setMode(false, { user: true }); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {
     console.warn('프로젝트를 불러오지 못했습니다', e);
@@ -5158,11 +5212,29 @@ function applyShorts(data) {
   shortsData = data && Array.isArray(data.projects) && data.projects.length ? data : null;
   const sw = document.getElementById('modeSwitch');
   sw.hidden = !shortsData;
-  sw.querySelector('.modeLive').hidden = !(shortsData && shortsData.projects.some(p => !p.isCompleted));
+  updateWorking();
   if (!shortsData) { if (shortsMode) setMode(false); return; }
   const want = modeChosen ? shortsMode : shortsIsLatest();
   if (want !== shortsMode) setMode(want);
   else if (changed && shortsMode) renderShorts();
+}
+
+/** 지금 작업 중인 쪽 단추에 점을 찍는다 — 마지막으로 한 일이 더 늦고 아직 끝나지 않은 쪽. 90분 안에 한 일이면 깜빡인다(LIVE). */
+function updateWorking() {
+  const sw = document.getElementById('modeSwitch');
+  if (!sw) return;
+  const ps = shortsData?.projects || [];
+  const shortsLast = ps.length ? Math.max(...ps.map(shortsLastActivity)) : 0;
+  const onShorts = shortsIsLatest();
+  const wip = onShorts ? ps.some(p => !p.isCompleted) : episodeWip;
+  const live = isLive(onShorts ? new Date(shortsLast).toISOString() : episodeLastUpdate);
+  sw.querySelectorAll('button[data-mode]').forEach(b => {
+    const dot = b.querySelector('.modeLive');
+    const mine = (b.dataset.mode === 'shorts') === onShorts;
+    dot.hidden = !(mine && wip);
+    dot.classList.toggle('still', !live);
+    b.title = mine && wip ? (live ? '지금 편집 중' : '요즘 작업 중') : '';
+  });
 }
 
 function setMode(on, { user = false } = {}) {
@@ -5175,6 +5247,7 @@ function setMode(on, { user = false } = {}) {
     b.setAttribute('aria-selected', String(active));
   });
   if (shortsMode) renderShorts();
+  updatePastBtn();
   if (user) {
     try { history.replaceState(null, '', shortsMode ? '#shorts' : location.pathname + location.search); } catch (e) {}
   }
@@ -5236,7 +5309,7 @@ function renderShorts() {
   const hero = `
     <div class="card shHero${done ? ' done' : ''}" style="${thumb ? `--shImg:url('${thumb}')` : ''}">
       <span class="shBg" aria-hidden="true"></span>
-      <div class="shTop"><span class="shChip"><i></i>SHORTS · ${done ? '완료' : '뽑는 중'}</span><span class="shAgo">${relativeTime(last || p.createdAt)}</span></div>
+      <div class="shTop"><span class="shChip"><i></i>SHORTS · ${done ? '완료' : '뽑는 중'}</span><span class="liveBadge" data-since="${done ? '' : escapeHtml(last || '')}" ${!done && isLive(last) ? '' : 'hidden'}><i></i>LIVE · 편집 중</span><span class="shAgo">${relativeTime(last || p.createdAt)}</span></div>
       ${source}
       <div class="shTopic">${escapeHtml(p.topic || '쇼츠')}</div>
       <div class="shStats">
@@ -5278,19 +5351,8 @@ function renderShorts() {
       ${rows || '<div class="shEmpty">아직 만든 쇼츠가 없어요</div>'}
     </div>`;
 
-  const ps = shortsData.projects;
-  const others = ps.length > 1 ? `
-    <div class="card shOthers">
-      <div class="cardHead"><span class="cardTitle"><span class="cardIcon shIcon" aria-hidden="true">${uiIcon('folder')}</span>쇼츠 프로젝트</span><span class="cardMeta mono">${ps.length}개</span></div>
-      ${[...ps].sort((a, b) => shortsLastActivity(b) - shortsLastActivity(a)).map(q => `
-        <button type="button" class="shProj${q.id === p.id ? ' on' : ''}" data-id="${escapeHtml(q.id)}">
-          ${q.youtubeId ? `<img src="https://img.youtube.com/vi/${encodeURIComponent(q.youtubeId)}/mqdefault.jpg" alt="" loading="lazy">` : '<img alt="">'}
-          <span><b>${escapeHtml(q.topic || '쇼츠')}</b><small>쇼츠 ${(q.shorts || []).length}개 · ${relativeTime(new Date(shortsLastActivity(q)).toISOString())}</small></span>
-          <em class="${q.isCompleted ? 'done' : ''}">${q.isCompleted ? '완료' : '뽑는 중'}</em>
-        </button>`).join('')}
-    </div>` : '';
-
-  el.innerHTML = `<div class="shCol">${hero}${others}</div><div class="shCol">${listCard}</div>`;
+  // 다른 쇼츠 프로젝트 목록은 위쪽 '지난 프로젝트' 단추로 올렸다 (renderPastShorts)
+  el.innerHTML = `<div class="shCol">${hero}</div><div class="shCol">${listCard}</div>`;
 }
 
 /* ===== 여행 명언 카드 =====
