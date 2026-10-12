@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "1차 컷편집",
+  "currentStage" : "2차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -177,10 +177,17 @@
       "elapsed" : "24분",
       "timestamp" : "2026-10-12T09:43:19Z",
       "videoLength" : "48"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "13분",
+      "timestamp" : "2026-10-12T09:56:28Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 11,
-  "lastUpdate" : "2026-10-12T09:43:24Z",
+  "entryCount" : 12,
+  "lastUpdate" : "2026-10-12T09:56:34Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
