@@ -198,10 +198,17 @@
       "elapsed" : "34분",
       "timestamp" : "2026-10-12T11:08:35Z",
       "videoLength" : "22"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "30분",
+      "timestamp" : "2026-10-12T11:38:57Z",
+      "videoLength" : "35"
     }
   ],
-  "entryCount" : 14,
-  "lastUpdate" : "2026-10-12T11:08:39Z",
+  "entryCount" : 15,
+  "lastUpdate" : "2026-10-12T11:39:02Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
