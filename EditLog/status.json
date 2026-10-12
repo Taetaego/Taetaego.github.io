@@ -156,10 +156,17 @@
       "elapsed" : "3시간 9분",
       "timestamp" : "2026-10-11T18:04:55Z",
       "videoLength" : "18"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "14시간 19분",
+      "timestamp" : "2026-10-12T08:24:26Z",
+      "videoLength" : "27"
     }
   ],
-  "entryCount" : 8,
-  "lastUpdate" : "2026-10-11T18:24:24Z",
+  "entryCount" : 9,
+  "lastUpdate" : "2026-10-12T08:24:35Z",
   "originalLength" : "13:50",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!!",
