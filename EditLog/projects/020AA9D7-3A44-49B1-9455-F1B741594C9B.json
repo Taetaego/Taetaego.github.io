@@ -235,10 +235,17 @@
       "elapsed" : "47분",
       "timestamp" : "2026-10-13T14:50:53Z",
       "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "33분",
+      "timestamp" : "2026-10-13T15:24:38Z",
+      "videoLength" : "17"
     }
   ],
-  "entryCount" : 19,
-  "lastUpdate" : "2026-10-13T14:51:06Z",
+  "entryCount" : 20,
+  "lastUpdate" : "2026-10-13T15:24:45Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
