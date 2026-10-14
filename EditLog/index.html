@@ -120,7 +120,7 @@
   body {
     margin: 0; min-height: 100vh; overflow-x: clip; background: var(--bg); color: var(--ink);
     font-family: 'Pretendard Variable', Pretendard, 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex; justify-content: center; padding: 10px 12px 96px;   /* 아래 명언 버튼에 마지막 내용이 가리지 않게 */
+    display: flex; justify-content: center; padding: 10px 12px 76px;   /* 아래 명언 버튼에 마지막 내용이 가리지 않게 */
     -webkit-font-smoothing: antialiased;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
@@ -1317,6 +1317,12 @@
                      animation: fabPing 2.6s ease-out 2s 3; }
   @media (hover: hover) { .quoteFab:hover { transform: translateY(-2px) scale(1.04); } }
   .quoteFab:active { transform: scale(.92); }
+  /* 휴대폰에선 화면에 비해 커서 작게 (2026-10-14 사용자 — 넓은 화면은 그대로) */
+  @media (max-width: 560px) {
+    .quoteFab { height: 42px; min-width: 42px; padding: 0 12px; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
+                box-shadow: 0 6px 16px color-mix(in srgb, var(--grp-3) 40%, transparent), inset 0 1px 0 rgba(255,255,255,.35); }
+    .quoteFab svg { width: 18px; height: 18px; }
+  }
   @media (min-width: 561px) { .quoteFab { right: 24px; bottom: 24px; padding: 0 20px 0 16px; } .quoteFabText { display: inline; } }
   @keyframes fabIn { from { opacity: 0; transform: translateY(30px) scale(.6); } }
   @keyframes fabPing { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--grp-2) 60%, transparent); } 80%, 100% { box-shadow: 0 0 0 14px transparent; } }
@@ -2953,10 +2959,15 @@ function placeStatsCard(data) {
   const done = document.getElementById('doneCard');
   const right = document.querySelector('.colRight');
   if (!stats || !done || !right) return;
+  const day = document.getElementById('dayCard');
   if (data.status === 'completed') {
     if (done.nextElementSibling !== stats) done.after(stats);
-  } else if (right.firstElementChild !== stats) {
-    right.prepend(stats);
+    if (day && right.firstElementChild !== day) right.prepend(day);
+  } else {
+    // 편집 중엔 영상 길이 · 작업 시간대를 진행률(+진행 단계) 카드 바로 밑에 (2026-10-14 사용자)
+    const pack = document.getElementById('heroPack');
+    if (pack && pack.nextElementSibling !== stats) pack.after(stats);
+    if (day && stats.nextElementSibling !== day) stats.after(day);
   }
 }
 
