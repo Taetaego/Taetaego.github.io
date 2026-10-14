@@ -177,6 +177,17 @@
                        12%, 85% { opacity: 1; transform: translate(-50%, 0) scale(1); }
                        100% { opacity: 0; transform: translate(-50%, -6px) scale(.95); } }
   .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
+  /* 막대는 바닥의 하늘 띠(0~24시 낮밤 색) 위에 선다 — 높이 = 그 30분에 남긴 기록 수 (2026-10-14, 흰 점 대신) */
+  #dayCard .dayBand { height: 34px; background: none; border-radius: 0; }
+  .daySky { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 99px; }
+  .dayBar { position: absolute; bottom: 6px; width: calc(100% / 48 - 2px); margin-left: 1px; border-radius: 2px 2px 1px 1px;
+            transform-origin: bottom;
+            background: linear-gradient(180deg, var(--grp-2), color-mix(in srgb, var(--grp-2) 25%, transparent));
+            animation: dayBarIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes dayBarIn { from { transform: scaleY(0); opacity: 0; } }
+  #dayCard .dayNow { top: -4px; bottom: 0; width: 1.5px; background: var(--ink); opacity: .6; box-shadow: none; }
+  #dayCard .dayNow::before { content: ''; position: absolute; top: -2px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px;
+                             border-radius: 50%; background: var(--ink); }
   .daySpot {
     position: absolute; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px;
     border-radius: 50%; background: rgba(255,255,255,0.92);
@@ -1468,6 +1479,8 @@
   .heroStat .stageLabel { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--ink3); }
   .heroStat b { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
   .heroStat b.goldVal { color: var(--gold); }
+  .heroMeta { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 4px; }
+  .heroMeta .heroStat { gap: 2px; }
   .stageTile .stageName { font-size: 14px; font-weight: 700; color: var(--tc, var(--accent2)); gap: 5px; min-width: 0; }
   .stageTile .stageText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .stageTile .stageIcon { width: 14px; height: 14px; }
@@ -1648,6 +1661,53 @@
     .shTopic { font-size: 24px; }
   }
   @media (prefers-reduced-motion: reduce) { .shortsView .card, .shRow { animation: none; } }
+
+  /* ===== 진행률 + 진행 단계 한 장 (2026-10-14) =====
+     틀(.heroPack)이 테두리 · 둥근 모서리 · 그림자를 맡고, 안의 두 카드는 틀을 벗는다.
+     사진(흐린 판 · 선명한 원본)은 진행 단계 쪽으로 아래까지 옅게 번진다. */
+  .heroPack { display: contents; }
+  body.pipeMerged .heroPack {
+    display: flex; flex-direction: column; position: relative; isolation: isolate; overflow: hidden;
+    border-radius: 24px; background: var(--surface); border: 1px solid var(--line);
+    box-shadow: 0 18px 50px color-mix(in srgb, var(--mood, var(--accent)) 22%, transparent);
+    animation: cardIn .5s ease backwards;
+  }
+  body.pipeMerged .heroPack::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 3; pointer-events: none;
+    background:
+      conic-gradient(from var(--orbit), transparent 0 52%, var(--grp-1) 64%, var(--grp-2) 74%, var(--grp-3) 84%, var(--grp-4) 93%, transparent 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--grp-1) 45%, transparent), color-mix(in srgb, var(--grp-3) 40%, transparent), color-mix(in srgb, var(--grp-4) 35%, transparent));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: heroOrbit 6s linear infinite;
+  }
+  @media (max-width: 899px), (prefers-reduced-motion: reduce) {
+    body.pipeMerged .heroPack::before { animation: none; opacity: .7;
+      background: linear-gradient(120deg, var(--grp-1), var(--grp-2), var(--grp-3), var(--grp-4)); }
+  }
+  body.pipeMerged #summaryCard.card, body.pipeMerged #pipelineCard.card {
+    border: 0; border-radius: 0; box-shadow: none; background: transparent; animation: none; transform: none; }
+  body.pipeMerged #summaryCard.card::before { content: none; }
+  body.pipeMerged #summaryCard { overflow: visible; z-index: 0; }
+  body.pipeMerged #pipelineCard { position: relative; z-index: 1; padding-top: 4px; }
+  body.pipeMerged #pipelineCard > .cardHead { display: none; }
+  /* 사진이 아래로 번진다 — 흐린 판은 카드 아래 340px까지 늘려 서서히 사라지게, 선명한 원본은 위에 붙여 아래로 녹인다 */
+  body.pipeMerged #summaryCard .heroBg { inset: -10% -10% -340px -10%;
+    -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
+  body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .42; }
+  body.pipeMerged #summaryCard .heroShot { bottom: -120px; align-items: flex-start; }
+  body.pipeMerged #summaryCard .heroShot i {
+    -webkit-mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, #000 55%, transparent);
+            mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, #000 55%, transparent); }
+  /* 글자 덮개도 같이 아래로 — 목록 글자가 사진 위에서도 읽히게 점점 짙게 */
+  body.pipeMerged #summaryCard.hero::after { bottom: -340px;
+    background:
+      radial-gradient(260px circle at 16% 22%, color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent), transparent 70%),
+      linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 90%, transparent) 0%,
+                             color-mix(in srgb, var(--heroInk) 66%, transparent) 42%,
+                             color-mix(in srgb, var(--heroInk) 12%, transparent) 88%),
+      linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--heroInk) 80%, transparent) 62%, var(--surface) 100%); }
+  @media (hover: hover) { body.pipeMerged #summaryCard:hover, body.pipeMerged #pipelineCard:hover { transform: none; box-shadow: none; } }
 </style>
 </head>
 <body>
@@ -1673,6 +1733,8 @@
     <div class="shortsView" id="shortsView" hidden></div>
 
     <div class="colLeft">
+      <!-- 편집 중엔 진행률 + 진행 단계를 한 장으로 (body.pipeMerged — 테두리 · 배경은 이 틀이 맡는다). 완료 회차는 틀 없이 그대로 -->
+      <div class="heroPack" id="heroPack">
       <div class="card hero" id="summaryCard" style="display:none"></div>
 
       <!-- 완성 영상 썸네일. 편집 중엔 캡처가 히어로 배경에 깔려 있으니 이 카드는 접어둔다. -->
@@ -1693,6 +1755,7 @@
         </div>
         <div id="pipelineBody"></div>
       </div>
+      </div>
     </div>
 
     <div class="colRight">
@@ -1705,7 +1768,7 @@
           <span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-2)" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg></span>작업 시간대</span>
           <span class="cardMeta mono" id="dayMeta"></span>
         </div>
-        <div class="dayBand" id="dayBand"><span class="dayNow" id="dayNow"></span></div>
+        <div class="dayBand" id="dayBand"><span class="daySky" id="daySky"></span><span class="dayNow" id="dayNow"></span></div>
         <div class="dayAxis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
       </div>
 
@@ -3287,26 +3350,21 @@ function renderSummary(cardEl, data) {
       <div class="heroRight">
         <span class="heroKicker mono">${isCompleted ? 'EPISODE COMPLETE' : 'NOW EDITING'}</span>
         <span class="topic">${escapeHtml(data.projectTopic ?? '제목 없음')}</span>
-      </div>
-    </div>
-    <div class="heroStats">
-      ${stageText ? `
-        <div class="heroStat stageTile" style="--tc:${mood}">
-          <span class="stageLabel">현재 단계</span>
-          <span class="stageName"><span class="stageIcon">${stageIcon}</span><span class="stageText">${escapeHtml(stageText)}</span></span>
-        </div>` : ''}
+        ${/* 편집 시작 후 · 연속 작업 — 제목 바로 밑 (2026-10-14 사용자: 현재 단계는 진행 단계 카드가 보여 주니 뺐다) */''}
+        <div class="heroMeta">
       ${sinceIso ? `
         <div class="sinceBlock heroStat" title="${escapeHtml(formatDateTime(sinceIso))} 시작">
-          <span class="stageLabel">에피소드 편집 시작 후</span>
+          <span class="stageLabel">편집 시작 후</span>
           <b class="sinceVal" data-count="${elapsedMinutes(sinceIso)}" data-fmt="span" data-since="${escapeHtml(sinceIso)}">${elapsedText(sinceIso)}</b>
         </div>
         ${/* 연속 작업은 잔디 데이터가 도착한 뒤에 채워진다 — 자리를 미리 투명하게 잡아 둬서 카드가 늦게 커지지 않게 */''}
         <div class="heroStat streakTile pending" id="streakTile"><span class="stageLabel">연속 작업</span><b>${uiIcon('flame')}0일</b></div>` : ''}
-      ${doneStats}
+        </div>
+      </div>
     </div>
-    ${entries.length >= 2 ? `<span class="heroWave" title="편집 파형 — 이번 에피소드를 시간순으로 펼친 것. 작업 기록이 몰린 때일수록 크게 솟아요" role="img" aria-label="편집 파형">${waveSvg(entries.map(e => e.timestamp), data.createdAt, isCompleted ? (data.completedAt ?? lastEntryTime) : new Date().toISOString())}</span>` : ''}
+    ${doneStats ? `<div class="heroStats">${doneStats}</div>` : ''}
   `;
-  cardEl.classList.toggle('hasWave', entries.length >= 2);
+  cardEl.classList.remove('hasWave');   // 편집 파형은 뺐다 (2026-10-14)
   setHeroBackdrop(cardEl, data);
   renderMomentum();
 }
@@ -3490,6 +3548,12 @@ function renderPipeline(data) {
   document.getElementById('pipelineBody').innerHTML = html;
   document.getElementById('pipelineMeta').textContent = `${progress.done}/${progress.total} 완료`;
   document.getElementById('pipelineCard').style.display = '';
+  // 편집 중엔 진행률 카드와 한 장으로 붙인다 (완료 회차는 썸네일 · 완료 카드가 사이에 오므로 따로)
+  const merged = data.status !== 'completed';
+  document.body.classList.toggle('pipeMerged', merged);
+  const pack = document.getElementById('heroPack');
+  const mood = document.getElementById('summaryCard').style.getPropertyValue('--mood');
+  if (pack && mood) pack.style.setProperty('--mood', mood);
 }
 
 /** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
@@ -4068,16 +4132,21 @@ function renderDayBand(data) {
     const t = new Date(base.getTime() + m * 60000);
     stops.push(`${sunTint(t.toISOString(), SKY_TRUE).color} ${(m / 14.4).toFixed(2)}%`);
   }
-  band.style.background = `linear-gradient(90deg, ${stops.join(',')})`;
+  document.getElementById('daySky').style.background = `linear-gradient(90deg, ${stops.join(',')})`;
 
   const frac = (d) => (d.getHours() * 60 + d.getMinutes()) / 1440;
   // 프로젝트를 바꾸면 이 함수가 다시 불린다 — 앞 프로젝트의 점을 먼저 치워야
   // 새 점이 그 위에 얹혀 두 프로젝트가 섞인 채로 보이지 않는다.
-  band.querySelectorAll('.daySpot').forEach(el => el.remove());
-  band.insertAdjacentHTML('beforeend', entries.map((e, i) => {
-    const d = new Date(e.timestamp);
-    const label = `${e.category || '체크포인트'} · ${formatTimeOnly(e.timestamp)}`;
-    return `<span class="daySpot" style="left:${(frac(d) * 100).toFixed(2)}%;animation-delay:${i * 45}ms" title="${escapeHtml(label)}"></span>`;
+  // 흰 점 대신 30분 칸마다 막대 — 그 시간대에 기록이 많을수록 높다 (2026-10-14 사용자: 점이 촌스럽다)
+  band.querySelectorAll('.dayBar').forEach(el => el.remove());
+  const bins = new Array(48).fill(0);
+  for (const e of entries) bins[Math.min(47, Math.floor(frac(new Date(e.timestamp)) * 48))]++;
+  const peak = Math.max(...bins);
+  band.insertAdjacentHTML('beforeend', bins.map((c, i) => {
+    if (!c) return '';
+    const h = 28 + 72 * Math.sqrt(c / peak);
+    const hh = String(Math.floor(i / 2)).padStart(2, '0'), mm = i % 2 ? '30' : '00';
+    return `<span class="dayBar" style="left:${(i / 48 * 100).toFixed(3)}%;height:calc((100% - 6px) * ${(h / 100).toFixed(2)});animation-delay:${i * 18}ms" title="${hh}:${mm} · 기록 ${c}개"></span>`;
   }).join(''));
 
   // 해가 진 뒤~뜨기 전에 시작한 기록의 비율
@@ -4217,13 +4286,13 @@ function initDayBandReplay() {
   if (!card) return;
   card.addEventListener('click', () => {
     if (reducedMotion) return;
-    const spots = [...card.querySelectorAll('.daySpot')];
+    const spots = [...card.querySelectorAll('.dayBar')];
     // 애니메이션을 껐다 켜면서 리플로우를 강제해야 처음부터 다시 돈다.
     spots.forEach(s => { s.style.animation = 'none'; });
     void card.offsetWidth;
     spots.forEach((s, i) => {
       s.style.animation = '';
-      s.style.animationDelay = `${i * 45}ms`;
+      s.style.animationDelay = `${i * 18}ms`;
     });
     daySweep(card);
   });
