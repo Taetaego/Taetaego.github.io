@@ -120,7 +120,7 @@
   body {
     margin: 0; min-height: 100vh; overflow-x: clip; background: var(--bg); color: var(--ink);
     font-family: 'Pretendard Variable', Pretendard, 'IBM Plex Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex; justify-content: center; padding: 10px 12px 76px;   /* 아래 명언 버튼에 마지막 내용이 가리지 않게 */
+    display: flex; justify-content: center; padding: 10px 12px 96px;   /* 아래 명언 버튼에 마지막 내용이 가리지 않게 */
     -webkit-font-smoothing: antialiased;
   }
   .mono { font-family: 'JetBrains Mono', monospace; }
@@ -1317,12 +1317,6 @@
                      animation: fabPing 2.6s ease-out 2s 3; }
   @media (hover: hover) { .quoteFab:hover { transform: translateY(-2px) scale(1.04); } }
   .quoteFab:active { transform: scale(.92); }
-  /* 휴대폰에선 화면에 비해 커서 작게 (2026-10-14 사용자 — 넓은 화면은 그대로) */
-  @media (max-width: 560px) {
-    .quoteFab { height: 42px; min-width: 42px; padding: 0 12px; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
-                box-shadow: 0 6px 16px color-mix(in srgb, var(--grp-3) 40%, transparent), inset 0 1px 0 rgba(255,255,255,.35); }
-    .quoteFab svg { width: 18px; height: 18px; }
-  }
   @media (min-width: 561px) { .quoteFab { right: 24px; bottom: 24px; padding: 0 20px 0 16px; } .quoteFabText { display: inline; } }
   @keyframes fabIn { from { opacity: 0; transform: translateY(30px) scale(.6); } }
   @keyframes fabPing { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--grp-2) 60%, transparent); } 80%, 100% { box-shadow: 0 0 0 14px transparent; } }
@@ -1339,10 +1333,16 @@
   }
   .quoteToast.show { transform: translate(-50%, 0) scale(1); opacity: 1; }
   .quoteToast.hide { transform: translate(-50%, -140%) scale(.9); opacity: 0; transition-duration: .4s; }
-  /* 폰에서는 위에서 떨어지면 첫 카드를 가리므로, 아래(명언 버튼 바로 위)에서 올라오게 한다. */
+  /* 폰에서도 위에서 떨어진다 — 제목 · 에피소드/쇼츠 줄을 덮고 진행률 카드 위에서 멈추게 작게 (2026-10-15 사용자:
+     아래에서 올라오면 화면을 많이 가린다) */
   @media (max-width: 560px) {
-    .quoteToast { top: auto; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translate(-50%, 200%) scale(.7); }
-    .quoteToast.hide { transform: translate(-50%, 200%) scale(.9); }
+    .quoteToast { top: calc(8px + env(safe-area-inset-top)); width: calc(100% - 20px); gap: 11px;
+                  padding: 10px 14px 10px 10px; border-radius: 16px; }
+    .quoteToast .quoteBadge { width: 38px; height: 42px; }
+    .quoteToast .quoteBadge .ico { font-size: 19px; }
+    .quoteToast .quoteBody { gap: 3px; }
+    .quoteToast .quoteBody .q { font-size: 13px; line-height: 1.4; }
+    .quoteToast .quoteBody .by { font-size: 10.5px; }
   }
   .quoteToast::before {
     content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none;
@@ -1674,9 +1674,9 @@
   .heroPack { display: contents; }
   body.pipeMerged .heroPack {
     display: flex; flex-direction: column; position: relative; isolation: isolate; overflow: hidden;
-    border-radius: 24px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 24px; background: linear-gradient(180deg, var(--glassTop), transparent 42%), var(--glass); border: 1px solid var(--glassLine, var(--line));
     box-shadow: 0 18px 50px color-mix(in srgb, var(--mood, var(--accent)) 22%, transparent);
-    animation: cardIn .5s ease backwards;
+    animation: cardIn .5s ease backwards; transition: transform .18s ease, box-shadow .18s ease;
   }
   body.pipeMerged .heroPack::before {
     content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 3; pointer-events: none;
@@ -1698,22 +1698,26 @@
   body.pipeMerged #pipelineCard { position: relative; z-index: 1; padding-top: 4px; }
   body.pipeMerged #pipelineCard > .cardHead { display: none; }
   /* 사진이 아래로 번진다 — 흐린 판은 카드 아래 340px까지 늘려 서서히 사라지게, 선명한 원본은 위에 붙여 아래로 녹인다 */
-  body.pipeMerged #summaryCard .heroBg { inset: -10% -10% -340px -10%;
-    -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent); mask-image: linear-gradient(180deg, #000 45%, transparent); }
-  body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .42; }
-  body.pipeMerged #summaryCard .heroShot { bottom: -120px; align-items: flex-start; }
-  body.pipeMerged #summaryCard .heroShot i {
-    -webkit-mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, #000 55%, transparent);
-            mask-image: linear-gradient(90deg, transparent, rgba(0,0,0,.75) 45%, #000), linear-gradient(180deg, #000 55%, transparent); }
+  body.pipeMerged #summaryCard .heroBg { inset: -10% -10% -1200px -10%;
+    -webkit-mask-image: linear-gradient(180deg, #000 0 220px, transparent 620px); mask-image: linear-gradient(180deg, #000 0 220px, transparent 620px); }
+  body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .55; }
+  body.pipeMerged #summaryCard.hasBg .heroShot { opacity: 1; }
   /* 글자 덮개도 같이 아래로 — 목록 글자가 사진 위에서도 읽히게 점점 짙게 */
-  body.pipeMerged #summaryCard.hero::after { bottom: -340px;
+  /* 끝은 투명으로 — 틀의 유리 바탕과 이음매 없이 이어진다. 사진이 더 보이게 왼쪽 글자 쪽만 눌러 준다 */
+  body.pipeMerged #summaryCard.hero::after { bottom: -1200px;
     background:
-      radial-gradient(260px circle at 16% 22%, color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent), transparent 70%),
-      linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 90%, transparent) 0%,
-                             color-mix(in srgb, var(--heroInk) 66%, transparent) 42%,
-                             color-mix(in srgb, var(--heroInk) 12%, transparent) 88%),
-      linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--heroInk) 80%, transparent) 62%, var(--surface) 100%); }
-  @media (hover: hover) { body.pipeMerged #summaryCard:hover, body.pipeMerged #pipelineCard:hover { transform: none; box-shadow: none; } }
+      radial-gradient(240px circle at 16% 100px, color-mix(in srgb, var(--mood, var(--accent)) 26%, transparent), transparent 70%),
+      linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 84%, transparent) 0%,
+                             color-mix(in srgb, var(--heroInk) 52%, transparent) 42%,
+                             transparent 88%),
+      linear-gradient(180deg, transparent 0 150px, color-mix(in srgb, var(--heroInk) 60%, transparent) 300px, transparent 640px); }
+  /* 한 장처럼 움직인다 — 어디에 올려도 틀째로 뜨고, 누를 때 위쪽만 눌리지 않게 */
+  @media (hover: hover) {
+    body.pipeMerged #summaryCard:hover, body.pipeMerged #pipelineCard:hover { transform: none; box-shadow: none; }
+    body.pipeMerged .heroPack:hover { transform: translateY(-2px);
+      box-shadow: 0 22px 56px color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent); }
+  }
+  body.pipeMerged .hero:active { transform: none; }
 </style>
 </head>
 <body>
