@@ -286,10 +286,17 @@
       "elapsed" : "14분",
       "timestamp" : "2026-10-14T16:29:14Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "21분",
+      "timestamp" : "2026-10-14T16:50:56Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 26,
-  "lastUpdate" : "2026-10-14T16:29:22Z",
+  "entryCount" : 27,
+  "lastUpdate" : "2026-10-14T16:51:03Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
