@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "맞춤법 검사",
+  "currentStage" : "자막 디자인",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -279,10 +279,17 @@
       "memo" : "지금이 사실 자료화면을 넣는",
       "timestamp" : "2026-10-14T16:14:54Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "14분",
+      "timestamp" : "2026-10-14T16:29:14Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 25,
-  "lastUpdate" : "2026-10-14T16:15:07Z",
+  "entryCount" : 26,
+  "lastUpdate" : "2026-10-14T16:29:22Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
