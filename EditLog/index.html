@@ -1699,7 +1699,7 @@
   body.pipeMerged #pipelineCard > .cardHead { display: none; }
   /* 사진이 아래로 번진다 — 흐린 판은 카드 아래 340px까지 늘려 서서히 사라지게, 선명한 원본은 위에 붙여 아래로 녹인다 */
   body.pipeMerged #summaryCard .heroBg { inset: -10% -10% -1200px -10%;
-    -webkit-mask-image: linear-gradient(180deg, #000 0 220px, transparent 620px); mask-image: linear-gradient(180deg, #000 0 220px, transparent 620px); }
+    -webkit-mask-image: linear-gradient(180deg, #000 0 190px, transparent 420px); mask-image: linear-gradient(180deg, #000 0 190px, transparent 420px); }
   body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .55; }
   body.pipeMerged #summaryCard.hasBg .heroShot { opacity: 1; }
   /* 글자 덮개도 같이 아래로 — 목록 글자가 사진 위에서도 읽히게 점점 짙게 */
@@ -1710,14 +1710,22 @@
       linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 84%, transparent) 0%,
                              color-mix(in srgb, var(--heroInk) 52%, transparent) 42%,
                              transparent 88%),
-      linear-gradient(180deg, transparent 0 150px, color-mix(in srgb, var(--heroInk) 60%, transparent) 300px, transparent 640px); }
+      linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--heroInk) 35%, transparent));
+    /* 덮개는 사진 자리에서만 — 아래로 부드럽게 사라져 목록은 다른 카드처럼 알록달록한 바탕이 비친다 */
+    -webkit-mask-image: linear-gradient(180deg, #000 0 190px, transparent 300px);
+            mask-image: linear-gradient(180deg, #000 0 190px, transparent 300px); }
   /* 한 장처럼 움직인다 — 어디에 올려도 틀째로 뜨고, 누를 때 위쪽만 눌리지 않게 */
   @media (hover: hover) {
     body.pipeMerged #summaryCard:hover, body.pipeMerged #pipelineCard:hover { transform: none; box-shadow: none; }
     body.pipeMerged .heroPack:hover { transform: translateY(-2px);
-      box-shadow: 0 22px 56px color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent); }
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--grp-2) 45%, transparent),
+                  0 22px 56px color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent); }
   }
   body.pipeMerged .hero:active { transform: none; }
+  /* 마우스 따라오는 빛도 틀 하나에만 (두 카드 각자의 빛은 끈다) */
+  body.pipeMerged #summaryCard > .spotLayer, body.pipeMerged #pipelineCard > .spotLayer { display: none; }
+  .heroPack > .spotLayer { display: none; z-index: 2; }
+  body.pipeMerged .heroPack > .spotLayer { display: block; }
 </style>
 </head>
 <body>
@@ -4908,7 +4916,7 @@ function hexAlpha(hex, a) {
 
 function initSpotlight() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
-  document.querySelectorAll('.card, .statTile').forEach((card) => {
+  document.querySelectorAll('.card, .statTile, .heroPack').forEach((card) => {
     if (card._spotLayer) return;
     const layer = document.createElement('span');
     layer.className = 'spotLayer';
