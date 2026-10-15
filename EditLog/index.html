@@ -1668,64 +1668,26 @@
   }
   @media (prefers-reduced-motion: reduce) { .shortsView .card, .shRow { animation: none; } }
 
-  /* ===== 진행률 + 진행 단계 한 장 (2026-10-14) =====
-     틀(.heroPack)이 테두리 · 둥근 모서리 · 그림자를 맡고, 안의 두 카드는 틀을 벗는다.
-     사진(흐린 판 · 선명한 원본)은 진행 단계 쪽으로 아래까지 옅게 번진다. */
-  .heroPack { display: contents; }
-  body.pipeMerged .heroPack {
-    display: flex; flex-direction: column; position: relative; isolation: isolate; overflow: hidden;
-    border-radius: 24px; background: linear-gradient(180deg, var(--glassTop), transparent 42%), var(--glass); border: 1px solid var(--glassLine, var(--line));
-    box-shadow: 0 18px 50px color-mix(in srgb, var(--mood, var(--accent)) 22%, transparent);
-    animation: cardIn .5s ease backwards; transition: transform .18s ease, box-shadow .18s ease;
-  }
-  body.pipeMerged .heroPack::before {
-    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; z-index: 3; pointer-events: none;
-    background:
-      conic-gradient(from var(--orbit), transparent 0 52%, var(--grp-1) 64%, var(--grp-2) 74%, var(--grp-3) 84%, var(--grp-4) 93%, transparent 100%),
-      linear-gradient(90deg, color-mix(in srgb, var(--grp-1) 45%, transparent), color-mix(in srgb, var(--grp-3) 40%, transparent), color-mix(in srgb, var(--grp-4) 35%, transparent));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: heroOrbit 6s linear infinite;
-  }
-  @media (max-width: 899px), (prefers-reduced-motion: reduce) {
-    body.pipeMerged .heroPack::before { animation: none; opacity: .7;
-      background: linear-gradient(120deg, var(--grp-1), var(--grp-2), var(--grp-3), var(--grp-4)); }
-  }
-  body.pipeMerged #summaryCard.card, body.pipeMerged #pipelineCard.card {
-    border: 0; border-radius: 0; box-shadow: none; background: transparent; animation: none; transform: none; }
-  body.pipeMerged #summaryCard.card::before { content: none; }
-  body.pipeMerged #summaryCard { overflow: visible; z-index: 0; }
-  body.pipeMerged #pipelineCard { position: relative; z-index: 1; padding-top: 4px; }
-  body.pipeMerged #pipelineCard > .cardHead { display: none; }
-  /* 사진이 아래로 번진다 — 흐린 판은 카드 아래 340px까지 늘려 서서히 사라지게, 선명한 원본은 위에 붙여 아래로 녹인다 */
-  body.pipeMerged #summaryCard .heroBg { inset: -10% -10% -1200px -10%;
-    -webkit-mask-image: linear-gradient(180deg, #000 0 190px, transparent 420px); mask-image: linear-gradient(180deg, #000 0 190px, transparent 420px); }
-  body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .55; }
+  /* ===== 진행률 + 진행 단계 = 진짜 카드 한 장 (2026-10-15) =====
+     편집 중엔 진행 단계 목록(#pipelineBody)을 진행률 카드(#summaryCard) 안으로 옮긴다 (renderPipeline).
+     카드가 하나라 떠오름 · 테두리 빛 · 마우스 빛 · 등장이 저절로 한 장. 완료 회차는 예전처럼 따로.
+     사진은 위쪽(도넛 · 제목, 높이 --topH) 자리에 두고 목록 쪽으로 옅게 번진다. */
+  body.pipeMerged #summaryCard #pipelineBody { position: relative; z-index: 1; align-self: stretch; width: 100%; cursor: default; }
+  body.pipeMerged #summaryCard .heroShot { bottom: auto; height: var(--topH, 230px); }
   body.pipeMerged #summaryCard.hasBg .heroShot { opacity: 1; }
-  /* 글자 덮개도 같이 아래로 — 목록 글자가 사진 위에서도 읽히게 점점 짙게 */
-  /* 끝은 투명으로 — 틀의 유리 바탕과 이음매 없이 이어진다. 사진이 더 보이게 왼쪽 글자 쪽만 눌러 준다 */
-  body.pipeMerged #summaryCard.hero::after { bottom: -1200px;
+  body.pipeMerged #summaryCard .heroBg { inset: -30px -30px auto -30px; height: calc(var(--topH, 230px) + 280px);
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 300px), transparent);
+            mask-image: linear-gradient(180deg, #000 calc(100% - 300px), transparent); }
+  body.pipeMerged #summaryCard.hasBg .heroBg { opacity: .55; }
+  body.pipeMerged #summaryCard.hero::after { bottom: auto; height: calc(var(--topH, 230px) + 90px);
     background:
       radial-gradient(240px circle at 16% 100px, color-mix(in srgb, var(--mood, var(--accent)) 26%, transparent), transparent 70%),
       linear-gradient(90deg, color-mix(in srgb, var(--heroInk) 84%, transparent) 0%,
                              color-mix(in srgb, var(--heroInk) 52%, transparent) 42%,
                              transparent 88%),
       linear-gradient(180deg, transparent 45%, color-mix(in srgb, var(--heroInk) 35%, transparent));
-    /* 덮개는 사진 자리에서만 — 아래로 부드럽게 사라져 목록은 다른 카드처럼 알록달록한 바탕이 비친다 */
-    -webkit-mask-image: linear-gradient(180deg, #000 0 190px, transparent 300px);
-            mask-image: linear-gradient(180deg, #000 0 190px, transparent 300px); }
-  /* 한 장처럼 움직인다 — 어디에 올려도 틀째로 뜨고, 누를 때 위쪽만 눌리지 않게 */
-  @media (hover: hover) {
-    body.pipeMerged #summaryCard:hover, body.pipeMerged #pipelineCard:hover { transform: none; box-shadow: none; }
-    body.pipeMerged .heroPack:hover { transform: translateY(-2px);
-      box-shadow: 0 0 0 1px color-mix(in srgb, var(--grp-2) 45%, transparent),
-                  0 22px 56px color-mix(in srgb, var(--mood, var(--accent)) 30%, transparent); }
-  }
-  body.pipeMerged .hero:active { transform: none; }
-  /* 마우스 따라오는 빛도 틀 하나에만 (두 카드 각자의 빛은 끈다) */
-  body.pipeMerged #summaryCard > .spotLayer, body.pipeMerged #pipelineCard > .spotLayer { display: none; }
-  .heroPack > .spotLayer { display: none; z-index: 2; }
-  body.pipeMerged .heroPack > .spotLayer { display: block; }
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 110px), transparent);
+            mask-image: linear-gradient(180deg, #000 calc(100% - 110px), transparent); }
 </style>
 </head>
 <body>
@@ -1751,8 +1713,6 @@
     <div class="shortsView" id="shortsView" hidden></div>
 
     <div class="colLeft">
-      <!-- 편집 중엔 진행률 + 진행 단계를 한 장으로 (body.pipeMerged — 테두리 · 배경은 이 틀이 맡는다). 완료 회차는 틀 없이 그대로 -->
-      <div class="heroPack" id="heroPack">
       <div class="card hero" id="summaryCard" style="display:none"></div>
 
       <!-- 완성 영상 썸네일. 편집 중엔 캡처가 히어로 배경에 깔려 있으니 이 카드는 접어둔다. -->
@@ -1772,7 +1732,6 @@
           <span class="cardMeta mono" id="pipelineMeta"></span>
         </div>
         <div id="pipelineBody"></div>
-      </div>
       </div>
     </div>
 
@@ -2217,6 +2176,7 @@ async function main() {
     });
     summaryCard.addEventListener('click', (ev) => {
       // 도넛을 누른 건 게이지를 다시 채워보려는 것이지 축하해달라는 게 아니다.
+      if (ev.target.closest('#pipelineBody')) return;   // 한 장 카드의 진행 단계 목록은 제 반응만
       if (ev.target.closest('#donutGauge')) { sfx('fill'); runGauge(heroPct, false, true); return; }
       const since = ev.target.closest('.sinceBlock');
       if (since) { sfx('count'); animateCounter(since.querySelector('.sinceVal')); return; }
@@ -2977,8 +2937,8 @@ function placeStatsCard(data) {
     if (day && right.firstElementChild !== day) right.prepend(day);
   } else {
     // 편집 중엔 영상 길이 · 작업 시간대를 진행률(+진행 단계) 카드 바로 밑에 (2026-10-14 사용자)
-    const pack = document.getElementById('heroPack');
-    if (pack && pack.nextElementSibling !== stats) pack.after(stats);
+    const pipe = document.getElementById('pipelineCard');
+    if (pipe && pipe.nextElementSibling !== stats) pipe.after(stats);
     if (day && stats.nextElementSibling !== day) stats.after(day);
   }
 }
@@ -3309,6 +3269,9 @@ function donutTicks(progress) {
 }
 
 function renderSummary(cardEl, data) {
+  // 한 장 카드일 때 안에 옮겨 둔 진행 단계 목록은 카드를 다시 그리기 전에 제자리로 돌려놓는다
+  const pipeBody = document.getElementById('pipelineBody');
+  if (pipeBody && pipeBody.parentElement === cardEl) document.getElementById('pipelineCard').appendChild(pipeBody);
   const isCompleted = data.status === 'completed';
   const progress = pipelineProgress(data);
   const pct = progress ? progress.pct : 0;
@@ -3570,14 +3533,25 @@ function renderPipeline(data) {
 
   document.getElementById('pipelineBody').innerHTML = html;
   document.getElementById('pipelineMeta').textContent = `${progress.done}/${progress.total} 완료`;
-  document.getElementById('pipelineCard').style.display = '';
-  // 편집 중엔 진행률 카드와 한 장으로 붙인다 (완료 회차는 썸네일 · 완료 카드가 사이에 오므로 따로)
+  // 편집 중엔 목록을 진행률 카드 안으로 옮겨 카드 한 장으로 (완료 회차는 썸네일 · 완료 카드가 사이에 오므로 따로).
+  // 노드째 옮겨서 단계 누르기 같은 리스너가 그대로 따라간다.
   const merged = data.status !== 'completed';
+  const pipeCard = document.getElementById('pipelineCard');
+  const pipeBody = document.getElementById('pipelineBody');
+  const hero = document.getElementById('summaryCard');
   document.body.classList.toggle('pipeMerged', merged);
-  const pack = document.getElementById('heroPack');
-  const mood = document.getElementById('summaryCard').style.getPropertyValue('--mood');
-  if (pack && mood) pack.style.setProperty('--mood', mood);
+  if (merged) { hero.appendChild(pipeBody); pipeCard.style.display = 'none'; measureHeroTop(); }
+  else { pipeCard.appendChild(pipeBody); pipeCard.style.display = ''; }
 }
+
+/** 한 장 카드에서 사진이 덮을 위쪽 높이(도넛 · 제목까지) — 목록이 시작하는 자리. */
+function measureHeroTop() {
+  const hero = document.getElementById('summaryCard');
+  const body = document.getElementById('pipelineBody');
+  if (!hero || !body || body.parentElement !== hero) return;
+  hero.style.setProperty('--topH', `${body.offsetTop}px`);
+}
+window.addEventListener('resize', () => measureHeroTop());
 
 /** count: {n, fmt} 를 주면 로드 시 0에서 n까지 올라가는 카운트업이 붙는다. */
 /** 그 시각부터 지금까지 — "3일 5시간"처럼. */
@@ -4916,7 +4890,7 @@ function hexAlpha(hex, a) {
 
 function initSpotlight() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
-  document.querySelectorAll('.card, .statTile, .heroPack').forEach((card) => {
+  document.querySelectorAll('.card, .statTile').forEach((card) => {
     if (card._spotLayer) return;
     const layer = document.createElement('span');
     layer.className = 'spotLayer';
