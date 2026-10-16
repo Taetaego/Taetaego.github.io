@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "오프닝",
+  "currentStage" : "자막 디자인",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -308,10 +308,18 @@
       "memo" : "AI로 드립을 추가할수 있다는 엄청난 사실을 깨달아버렸",
       "timestamp" : "2026-10-16T13:15:22Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "1시간 1분",
+      "memo" : "자막 디자인으로 역행해벌",
+      "timestamp" : "2026-10-16T14:16:30Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 29,
-  "lastUpdate" : "2026-10-16T14:16:11Z",
+  "entryCount" : 30,
+  "lastUpdate" : "2026-10-16T14:16:43Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
