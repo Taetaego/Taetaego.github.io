@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "배경음 · 수정",
+  "currentStage" : "마지막 점검",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -364,10 +364,17 @@
       "memo" : "자기전에 끝낼수 있을까?",
       "timestamp" : "2026-10-16T17:38:04Z",
       "videoLength" : "1"
+    },
+    {
+      "category" : "마지막 점검",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "1시간 30분",
+      "timestamp" : "2026-10-16T19:08:17Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 36,
-  "lastUpdate" : "2026-10-16T17:38:17Z",
+  "entryCount" : 37,
+  "lastUpdate" : "2026-10-16T19:08:23Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
