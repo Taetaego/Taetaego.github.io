@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "지도 · 위치 추가",
+  "currentStage" : "배경음 · 수정",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -356,10 +356,18 @@
       "memo" : "아 오늘 왤케 피곤하",
       "timestamp" : "2026-10-16T17:23:48Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "배경음 · 수정",
+      "categorySymbol" : "music.note",
+      "elapsed" : "14분",
+      "memo" : "자기전에 끝낼수 있을까?",
+      "timestamp" : "2026-10-16T17:38:04Z",
+      "videoLength" : "1"
     }
   ],
-  "entryCount" : 35,
-  "lastUpdate" : "2026-10-16T17:23:57Z",
+  "entryCount" : 36,
+  "lastUpdate" : "2026-10-16T17:38:17Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
