@@ -324,10 +324,18 @@
       "memo" : "자막 디자인작업 다시하는중....",
       "timestamp" : "2026-10-16T15:21:53Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "0분",
+      "memo" : "뭐지 기록테스",
+      "timestamp" : "2026-10-16T15:22:14Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 31,
-  "lastUpdate" : "2026-10-16T15:22:02Z",
+  "entryCount" : 32,
+  "lastUpdate" : "2026-10-16T15:22:21Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
