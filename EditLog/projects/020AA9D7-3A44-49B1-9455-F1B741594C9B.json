@@ -348,10 +348,18 @@
       "memo" : "템플릿 하나 추가했는데.. 괜찮을까?",
       "timestamp" : "2026-10-16T16:31:30Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "지도 · 위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "52분",
+      "memo" : "아 오늘 왤케 피곤하",
+      "timestamp" : "2026-10-16T17:23:48Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 34,
-  "lastUpdate" : "2026-10-16T16:31:46Z",
+  "entryCount" : 35,
+  "lastUpdate" : "2026-10-16T17:23:57Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
