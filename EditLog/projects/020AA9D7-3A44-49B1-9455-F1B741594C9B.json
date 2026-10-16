@@ -300,10 +300,18 @@
       "elapsed" : "1일 19시간 34분",
       "timestamp" : "2026-10-16T12:25:25Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "오프닝",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "49분",
+      "memo" : "AI로 드립을 추가할수 있다는 엄청난 사실을 깨달아버렸",
+      "timestamp" : "2026-10-16T13:15:22Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 28,
-  "lastUpdate" : "2026-10-16T12:25:31Z",
+  "entryCount" : 29,
+  "lastUpdate" : "2026-10-16T13:15:37Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
