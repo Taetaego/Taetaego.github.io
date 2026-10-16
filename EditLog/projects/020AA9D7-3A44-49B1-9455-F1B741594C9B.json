@@ -44,7 +44,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "맞춤법 검사",
+      "name" : "자막 다듬기",
       "symbolName" : "text.badge.checkmark",
       "tracksLength" : false,
       "weight" : 1
@@ -273,7 +273,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "맞춤법 검사",
+      "category" : "자막 다듬기",
       "categorySymbol" : "text.badge.checkmark",
       "elapsed" : "33분",
       "memo" : "지금이 사실 자료화면을 넣는",
@@ -311,7 +311,7 @@
     }
   ],
   "entryCount" : 29,
-  "lastUpdate" : "2026-10-16T13:15:37Z",
+  "lastUpdate" : "2026-10-16T14:16:11Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",

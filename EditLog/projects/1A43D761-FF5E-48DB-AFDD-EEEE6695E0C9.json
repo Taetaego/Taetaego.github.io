@@ -44,7 +44,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "맞춤법 검사",
+      "name" : "자막 다듬기",
       "symbolName" : "text.badge.checkmark",
       "tracksLength" : false,
       "weight" : 1
@@ -237,7 +237,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "맞춤법 검사",
+      "category" : "자막 다듬기",
       "categorySymbol" : "text.badge.checkmark",
       "elapsed" : "25분",
       "timestamp" : "2026-09-25T16:27:41Z",
@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-10-16T13:15:37Z",
+  "lastUpdate" : "2026-10-16T14:16:11Z",
   "originalLength" : "6:05",
   "projectTopic" : "페루 3500m 캠핑",
   "status" : "completed",

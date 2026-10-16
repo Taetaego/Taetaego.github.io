@@ -44,7 +44,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "맞춤법 검사",
+      "name" : "자막 다듬기",
       "symbolName" : "text.badge.checkmark",
       "tracksLength" : false,
       "weight" : 1
@@ -200,7 +200,7 @@
       "videoLength" : "0"
     },
     {
-      "category" : "맞춤법 검사",
+      "category" : "자막 다듬기",
       "categorySymbol" : "text.badge.checkmark",
       "elapsed" : "10분",
       "timestamp" : "2026-09-02T17:31:02Z",
@@ -289,7 +289,7 @@
   "finalLength" : "22",
   "finalRatioVsDetailCut" : 91.66666666666666,
   "finalRatioVsOriginal" : 8.058608058608058,
-  "lastUpdate" : "2026-10-16T13:15:37Z",
+  "lastUpdate" : "2026-10-16T14:16:11Z",
   "originalLength" : "4:33",
   "projectTopic" : "나스카 경비행기 & 무덤",
   "status" : "completed",

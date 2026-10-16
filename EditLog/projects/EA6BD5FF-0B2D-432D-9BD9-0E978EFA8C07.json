@@ -44,7 +44,7 @@
     },
     {
       "group" : "중간 작업",
-      "name" : "맞춤법 검사",
+      "name" : "자막 다듬기",
       "symbolName" : "text.badge.checkmark",
       "tracksLength" : false,
       "weight" : 1
@@ -202,7 +202,7 @@
       "videoLength" : ""
     },
     {
-      "category" : "맞춤법 검사",
+      "category" : "자막 다듬기",
       "categorySymbol" : "text.badge.checkmark",
       "elapsed" : "24분",
       "memo" : "프리미어 프로 버전을 낮췄더니 유튜브 템플릿이 작동을 안해서 다시 옛날 auto save 불러와서 고침",
@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-10-16T13:15:37Z",
+  "lastUpdate" : "2026-10-16T14:16:11Z",
   "originalLength" : "6:07",
   "projectTopic" : "와카치나",
   "status" : "completed",
