@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "마지막 점검",
+  "currentStage" : "썸네일 · 업로드",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -371,10 +371,18 @@
       "elapsed" : "1시간 30분",
       "timestamp" : "2026-10-16T19:08:17Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "썸네일 · 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "42분",
+      "memo" : "후후후........",
+      "timestamp" : "2026-10-16T19:50:26Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 37,
-  "lastUpdate" : "2026-10-16T19:08:23Z",
+  "entryCount" : 38,
+  "lastUpdate" : "2026-10-16T19:50:38Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
