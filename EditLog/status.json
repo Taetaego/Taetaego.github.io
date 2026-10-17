@@ -379,10 +379,18 @@
       "memo" : "후후후........",
       "timestamp" : "2026-10-16T19:50:26Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "썸네일 · 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "18시간 51분",
+      "memo" : "이제 끝까지 갑니",
+      "timestamp" : "2026-10-17T14:41:46Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 38,
-  "lastUpdate" : "2026-10-16T19:50:38Z",
+  "entryCount" : 39,
+  "lastUpdate" : "2026-10-17T14:41:59Z",
   "originalLength" : "3:43",
   "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
