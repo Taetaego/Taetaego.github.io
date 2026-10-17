@@ -92,8 +92,9 @@
       "weight" : 2
     }
   ],
+  "completedAt" : "2026-10-17T16:41:45Z",
   "createdAt" : "2026-10-05T13:57:41Z",
-  "currentStage" : "썸네일 · 업로드",
+  "currentStage" : "완료",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "35",
@@ -387,15 +388,22 @@
       "memo" : "이제 끝까지 갑니",
       "timestamp" : "2026-10-17T14:41:46Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "1시간 59분",
+      "timestamp" : "2026-10-17T16:41:45Z",
+      "videoLength" : "34"
     }
   ],
-  "entryCount" : 39,
+  "entryCount" : 40,
   "finalLength" : "34",
   "finalRatioVsDetailCut" : 97.14285714285714,
   "finalRatioVsOriginal" : 15.246636771300448,
-  "lastUpdate" : "2026-10-17T16:41:35Z",
+  "lastUpdate" : "2026-10-17T16:41:48Z",
   "originalLength" : "3:43",
-  "previewImage" : "previews\/020AA9D7-3A44-49B1-9455-F1B741594C9B.jpg",
   "projectTopic" : "디즈니월드!! 에콧",
-  "status" : "in_progress"
+  "status" : "completed",
+  "youtubeId" : "6qBVXDTJimk"
 }
