@@ -180,6 +180,17 @@
   .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
   /* 막대는 바닥의 하늘 띠(0~24시 낮밤 색) 위에 선다 — 높이 = 그 30분에 남긴 기록 수 (2026-10-14, 흰 점 대신) */
   #dayCard .dayBand { height: 46px; background: none; border-radius: 0; }
+  /* 막대 대신 하늘색 곡선 (2026-10-18 사용자가 시안으로 고름) — 카드 양옆 · 바닥 끝까지 꽉, 아래로 갈수록 사라지고,
+     기록 없는 시간대는 선도 채움도 없이 비운다. 시간 글자는 곡선 위에 얹는다 */
+  #dayCard { overflow: hidden; }
+  #dayCard .dayBand { height: 128px; margin: 2px -16px -18px; }
+  #dayCard .daySky { display: none; }
+  .dayCanvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block;
+               animation: dayCurveIn 1.1s cubic-bezier(.3,.8,.3,1) both; }
+  @keyframes dayCurveIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  #dayCard .dayAxis { position: absolute; z-index: 2; left: 10px; right: 10px; bottom: 9px; color: var(--ink); }
+  #dayCard .dayNow { background: none; opacity: .5; border-left: 1.5px dashed var(--ink); width: 0; bottom: 24px; }
+  #dayCard .dayNow::before { display: none; }
   .daySky { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 99px; }
   .dayBar { position: absolute; bottom: 6px; width: calc(100% / 48 - 2px); margin-left: 1px; border-radius: 2px 2px 1px 1px;
             transform-origin: bottom;
@@ -4413,17 +4424,56 @@ function renderDayBand(data) {
   // 프로젝트를 바꾸면 이 함수가 다시 불린다 — 앞 프로젝트의 점을 먼저 치워야
   // 새 점이 그 위에 얹혀 두 프로젝트가 섞인 채로 보이지 않는다.
   // 흰 점 대신 30분 칸마다 막대 — 그 시간대에 기록이 많을수록 높다 (2026-10-14 사용자: 점이 촌스럽다)
-  band.querySelectorAll('.dayBar').forEach(el => el.remove());
-  const bins = new Array(48).fill(0);
-  for (const e of entries) bins[Math.min(47, Math.floor(frac(new Date(e.timestamp)) * 48))]++;
-  const peak = Math.max(...bins);
-  band.insertAdjacentHTML('beforeend', bins.map((c, i) => {
-    if (!c) return '';
-    // 높이 = 기록 수에 정비례, 적은 칸은 흐리게 — 예전엔 28% 바닥에 제곱근이라 1개와 5개가 비슷해 보였다 (2026-10-16 사용자)
-    const h = 8 + 92 * (c / peak), k = (0.35 + 0.65 * (c / peak)).toFixed(2);
-    const hh = String(Math.floor(i / 2)).padStart(2, '0'), mm = i % 2 ? '30' : '00';
-    return `<span class="dayBar" style="left:${(i / 48 * 100).toFixed(3)}%;height:calc((100% - 6px) * ${(h / 100).toFixed(2)});--k:${k};animation-delay:${i * 18}ms" title="${hh}:${mm} · 기록 ${c}개"></span>`;
-  }).join(''));
+  band.querySelectorAll('.dayBar, .dayCanvas').forEach(el => el.remove());
+  // 한 시간 칸마다 기록 수 → 매끄러운 곡선. 0시가 왼쪽 끝, 23시가 오른쪽 끝에 닿고, 그 바깥은 반대쪽 끝 칸을 이어 붙여
+  // 하루가 이어지는 것처럼 (양 끝이 바닥으로 뚝 떨어지지 않게). 색은 그 시각 하늘색 — 진짜 밤 남색은 어두운 카드에서 안 보여 연보라로 끌어올린다
+  const bins = new Array(24).fill(0);
+  for (const e of entries) bins[new Date(e.timestamp).getHours()]++;
+  const lift = (c) => {
+    const m = c.match(/\d+(\.\d+)?/g); if (!m || m.length < 3) return c;
+    const rgb = m.slice(0, 3).map(Number), L = (0.3 * rgb[0] + 0.59 * rgb[1] + 0.11 * rgb[2]) / 255;
+    const t = Math.max(0, (0.55 - L) / 0.55) * 0.8, to = [150, 162, 255];
+    return `rgb(${rgb.map((v, i) => Math.round(v + (to[i] - v) * t)).join(',')})`;
+  };
+  const skyStops = stops.map(st => { const k = st.lastIndexOf(' '); return [parseFloat(st.slice(k + 1)) / 100, lift(st.slice(0, k))]; });
+  const cv = document.createElement('canvas');
+  cv.className = 'dayCanvas';
+  band.prepend(cv);
+  const draw = () => {
+    const W = band.clientWidth, H = band.clientHeight, r = devicePixelRatio || 1;
+    if (!W || !H) return;
+    cv.width = Math.round(W * r); cv.height = Math.round(H * r);
+    const g = cv.getContext('2d');
+    g.setTransform(r, 0, 0, r, 0, 0); g.clearRect(0, 0, W, H);
+    const peak = Math.max(1, ...bins), fl = H - 28, cl = 6;
+    const y = (c) => fl - (fl - cl) * c / peak;
+    const P = bins.map((c, h) => [h / 23 * W, y(c)]);
+    P.unshift([-W / 23, y(bins[23])]); P.push([W + W / 23, y(bins[0])]);
+    const path = () => {
+      g.moveTo(P[1][0], P[1][1]);
+      for (let i = 1; i < P.length - 2; i++) {
+        const [a, p1, p2, d] = [P[i - 1], P[i], P[i + 1], P[i + 2]];
+        g.bezierCurveTo(p1[0] + (p2[0] - a[0]) / 6, Math.min(fl, p1[1] + (p2[1] - a[1]) / 6),
+                        p2[0] - (d[0] - p1[0]) / 6, Math.min(fl, p2[1] - (d[1] - p1[1]) / 6), p2[0], p2[1]);
+      }
+    };
+    const sky = g.createLinearGradient(0, 0, W, 0);
+    for (const [o, c] of skyStops) sky.addColorStop(Math.min(1, Math.max(0, o)), c);
+    // 채움 — 곡선 아래, 아래로 갈수록 사라진다 (기록 없는 시간은 높이가 0이라 아무것도 안 남는다)
+    g.save(); g.beginPath(); path(); g.lineTo(W, H); g.lineTo(0, H); g.closePath(); g.clip();
+    g.fillStyle = sky; g.fillRect(0, 0, W, fl - 0.5);
+    g.globalCompositeOperation = 'destination-in';
+    const fade = g.createLinearGradient(0, 0, 0, fl);
+    fade.addColorStop(0.3, 'rgba(0,0,0,.9)'); fade.addColorStop(0.75, 'rgba(0,0,0,.35)'); fade.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = fade; g.fillRect(0, 0, W, H); g.restore();
+    // 선 — 바닥에 깔린 부분(기록 없는 시간)은 그리지 않는다
+    g.save(); g.beginPath(); g.rect(0, 0, W, fl - 1.5); g.clip();
+    g.beginPath(); path(); g.strokeStyle = sky; g.lineWidth = 2.5; g.lineCap = 'round'; g.stroke(); g.restore();
+  };
+  draw();
+  if (!band._dayRO && 'ResizeObserver' in window) { band._dayRO = new ResizeObserver(() => band._dayDraw && band._dayDraw()); band._dayRO.observe(band); }
+  band._dayDraw = draw;
+  cv.title = bins.map((c, h) => c ? `${h}시 ${c}개` : '').filter(Boolean).join(' · ');
 
   // 해가 진 뒤~뜨기 전에 시작한 기록의 비율
   let night = 0;
@@ -4562,13 +4612,13 @@ function initDayBandReplay() {
   if (!card) return;
   card.addEventListener('click', () => {
     if (reducedMotion) return;
-    const spots = [...card.querySelectorAll('.dayBar')];
+    const spots = [...card.querySelectorAll('.dayBar, .dayCanvas')];
     // 애니메이션을 껐다 켜면서 리플로우를 강제해야 처음부터 다시 돈다.
     spots.forEach(s => { s.style.animation = 'none'; });
     void card.offsetWidth;
     spots.forEach((s, i) => {
       s.style.animation = '';
-      s.style.animationDelay = `${i * 18}ms`;
+      if (s.classList.contains('dayBar')) s.style.animationDelay = `${i * 18}ms`;
     });
     daySweep(card);
   });
