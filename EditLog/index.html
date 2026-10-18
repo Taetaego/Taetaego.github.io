@@ -5188,26 +5188,28 @@ function initThumbLike() {
 
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
-  const cards = [
-    ...['summaryCard', 'pipelineCard', 'dayCard', 'raceCard', 'heatCard', 'logCard']
-      .map(id => document.getElementById(id)).filter(Boolean),
-    ...document.querySelectorAll('.statTile'),   // 통계 타일도 같이 기울어지게
-  ];
-
-  for (const el of cards) {
-    el.addEventListener('pointermove', (ev) => {
-      const r = el.getBoundingClientRect();
-      const nx = (ev.clientX - r.left) / r.width - 0.5;
-      const ny = (ev.clientY - r.top) / r.height - 0.5;
-      el.style.transition = 'transform .12s ease, box-shadow .18s ease';
-      el.style.transform =
-        `perspective(900px) rotateX(${(-ny * 6).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg) translateY(-2px)`;
-    });
-    el.addEventListener('pointerleave', () => {
-      el.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), box-shadow .18s ease';
-      el.style.transform = '';
-    });
-  }
+  // 카드는 프로젝트를 바꿀 때마다 다시 그려진다(통계 타일 · 영상 길이 · 완료 카드) — 그래서 하나하나 붙이지 않고
+  // 문서에서 한 번만 받아, 포인터 밑에 있는 카드를 그때그때 찾는다. 처음에 없던 카드도 기울어진다.
+  const SEL = '#summaryCard, #ytThumb, #doneCard, #pipelineCard, #dayCard, #raceCard, #heatCard, #logCard, .statTile';
+  let cur = null;
+  const release = (el) => {
+    el.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), box-shadow .18s ease';
+    el.style.transform = '';
+  };
+  document.addEventListener('pointermove', (ev) => {
+    if (ev.pointerType !== 'mouse') return;
+    const el = ev.target.closest && ev.target.closest(SEL);
+    if (el !== cur) { if (cur) release(cur); cur = el; }
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const nx = (ev.clientX - r.left) / r.width - 0.5;
+    const ny = (ev.clientY - r.top) / r.height - 0.5;
+    el.style.transition = 'transform .12s ease, box-shadow .18s ease';
+    el.style.transform =
+      `perspective(900px) rotateX(${(-ny * 6).toFixed(2)}deg) rotateY(${(nx * 8).toFixed(2)}deg) translateY(-2px)`;
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { if (cur) { release(cur); cur = null; } });
+  document.documentElement.addEventListener('mouseleave', () => { if (cur) { release(cur); cur = null; } });
 }
 
 /** 지금이 해가 진 뒤인지. */
