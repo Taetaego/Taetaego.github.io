@@ -128,7 +128,7 @@
   .page { position: relative; z-index: 1; width: 100%; max-width: 390px; display: flex; flex-direction: column; --cardGap: 12px; gap: var(--cardGap); }
   .colLeft, .colRight { display: contents; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 18px 16px; cursor: default; }
-  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #dayCard.card, #heatCard.card, #logCard.card {
+  #summaryCard.card, #ytThumb.card, #doneCard.card, #pipelineCard.card, #statsWrap, #dayCard.card, #raceCard.card, #heatCard.card, #logCard.card {
     /* both가 아니라 backwards여야 등장이 끝난 뒤 transform이 풀려서 hover로 카드를
        띄울 수 있다. 지연 동안의 opacity:0은 backwards가 알아서 처리한다. */
     animation: cardIn .5s ease backwards;
@@ -140,6 +140,7 @@
   #pipelineCard.card { animation-delay: .12s; }
   #statsWrap { animation-delay: .16s; }
   #dayCard.card { animation-delay: .2s; }
+  #raceCard.card { animation-delay: .22s; }
   #heatCard.card { animation-delay: .24s; }
   #logCard.card { animation-delay: .28s; }
   /* 카드들이 display:none으로 시작하므로, 버튼도 렌더가 끝난 뒤 같이 나타나야
@@ -178,13 +179,14 @@
                        100% { opacity: 0; transform: translate(-50%, -6px) scale(.95); } }
   .dayBand { position: relative; height: 22px; border-radius: 7px; background: var(--surface2); }
   /* 막대는 바닥의 하늘 띠(0~24시 낮밤 색) 위에 선다 — 높이 = 그 30분에 남긴 기록 수 (2026-10-14, 흰 점 대신) */
-  #dayCard .dayBand { height: 34px; background: none; border-radius: 0; }
+  #dayCard .dayBand { height: 46px; background: none; border-radius: 0; }
   .daySky { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 99px; }
   .dayBar { position: absolute; bottom: 6px; width: calc(100% / 48 - 2px); margin-left: 1px; border-radius: 2px 2px 1px 1px;
             transform-origin: bottom;
             background: linear-gradient(180deg, var(--grp-2), color-mix(in srgb, var(--grp-2) 25%, transparent));
+            opacity: var(--k, 1);
             animation: dayBarIn .5s cubic-bezier(.34,1.56,.64,1) both; }
-  @keyframes dayBarIn { from { transform: scaleY(0); opacity: 0; } }
+  @keyframes dayBarIn { from { transform: scaleY(0); opacity: 0; } to { opacity: var(--k, 1); } }
   #dayCard .dayNow { top: -4px; bottom: 0; width: 1.5px; background: var(--ink); opacity: .6; box-shadow: none; }
   #dayCard .dayNow::before { content: ''; position: absolute; top: -2px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px;
                              border-radius: 50%; background: var(--ink); }
@@ -298,10 +300,10 @@
      그래서 hover 스타일은 hover가 되는 기기에서만 적용한다. */
   @media (hover: hover) {
     /* 마우스를 올리면 카드가 2px 떠오른다 (터치 기기에선 hover가 남아 적용하지 않는다) */
-    #summaryCard, #pipelineCard, #dayCard, #heatCard, #logCard, .statTile {
+    #summaryCard, #pipelineCard, #dayCard, #raceCard, #heatCard, #logCard, .statTile {
       transition: transform .18s ease, box-shadow .18s ease;
     }
-    #summaryCard:hover, #pipelineCard:hover, #dayCard:hover, #heatCard:hover, #logCard:hover, .statTile:hover {
+    #summaryCard:hover, #pipelineCard:hover, #dayCard:hover, #raceCard:hover, #heatCard:hover, #logCard:hover, .statTile:hover {
       transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.26);
     }
   }
@@ -399,6 +401,49 @@
     }
   }
   .pastBtn:active { transform: scale(0.97); }
+  .pastBtn[hidden] { display: none; }
+  /* ===== 과거의 나와 속도 비교 (앱 GhostRaceCard) ===== */
+  .raceCard { display: flex; flex-direction: column; gap: 10px;
+              --race-me: #4fa8ea; --race-red: #e46a6d; --race-green: #3fb45a; }
+  .raceLead { font-size: 12.5px; color: var(--ink2); }
+  .raceLead b { color: var(--ink); font-weight: 800; }
+  .raceNow { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .raceNow .big { font-size: 24px; font-weight: 900; letter-spacing: -0.02em; color: var(--race-me); white-space: nowrap; }
+  .raceRank { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 99px; white-space: nowrap;
+              background: color-mix(in srgb, var(--ink) 10%, transparent); }
+  .raceRank.first { background: var(--gold); color: #2a1d00; }
+  .raceRank.last { background: color-mix(in srgb, var(--race-red) 32%, transparent); }
+  .raceAvg { font-size: 12px; font-weight: 800; color: var(--ink2); margin-top: -4px; }
+  .raceAvg .fast { color: var(--race-green); } .raceAvg .slow { color: var(--race-red); }
+  .raceRows { display: flex; flex-direction: column; gap: 3px; }
+  .raceRow { display: grid; grid-template-columns: 16px minmax(0, 1.1fr) minmax(40px, 1.3fr) auto auto; align-items: center;
+             gap: 8px; padding: 5px 8px; border-radius: 8px; font-size: 12.5px; }
+  .raceRow.me { background: color-mix(in srgb, var(--race-me) 14%, transparent); }
+  .raceRow .n { font-weight: 900; color: var(--ink3); text-align: center; }
+  .raceRow .n.gold { color: var(--gold); }
+  .raceRow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+  .raceRow.me .nm { color: var(--race-me); font-weight: 900; }
+  .raceRow .t { font-weight: 800; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .raceRow .d { font-size: 11px; font-weight: 800; white-space: nowrap; min-width: 74px; }
+  .raceBar { position: relative; height: 7px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  .raceBar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; min-width: 6px; }
+  .raceBar b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ink); opacity: .75; }
+  .raceNote { font-size: 10.5px; color: var(--ink3); }
+  .raceSep { height: 1px; background: var(--line); margin: 2px 0; }
+  .raceStageHead { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink3); }
+  .raceStageHead strong { font-size: 13.5px; font-weight: 900; color: var(--ink); }
+  .raceStageHead em { font-style: normal; font-weight: 800; color: var(--race-me); }
+  .raceStageHead .r { margin-left: auto; font-weight: 800; }
+  .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) auto; }
+  @media (max-width: 440px) { .raceRow .d { display: none; } .raceRow { grid-template-columns: 16px minmax(0, 1.3fr) minmax(36px, 1fr) auto; }
+                              .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) auto; } }
+
+  /* 편집 잔디 창 — 카드 하나가 그대로 창이 된다 */
+  .heatSheet { width: min(880px, 100%); max-height: 88vh; overflow: auto; border-radius: 24px;
+               box-shadow: 0 30px 80px rgba(0,0,0,0.5); animation: sheetIn .38s cubic-bezier(.2,.9,.3,1.05); }
+  .heatSheet .heatCard > .cardHead:first-child .cardMeta { margin-left: auto; }
+  .heatSheet .modalClose { margin-left: 10px; flex: none; }
+  @media (max-width: 700px) { .heatSheet { width: 100%; max-height: 90vh; border-radius: 24px 24px 0 0; } }
 
   /* 지난 프로젝트 목록 창 */
   .modalBack {
@@ -1697,6 +1742,7 @@
       <div class="brand"><img class="brandIcon" src="favicon-192.png?v=2" alt="" width="26" height="26">태태고 편집실</div>
       <div class="topRight">
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false"></button>
+        <button type="button" class="pastBtn" id="heatBtn" title="편집 잔디 보기" aria-label="편집 잔디" hidden><span data-ico="grid" style="display:flex"></span><span class="pastBtnText">편집 잔디</span></button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드"><span data-ico="folder" style="display:flex"></span><span class="pastBtnText">지난 에피소드</span></button>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
@@ -1733,6 +1779,9 @@
         </div>
         <div id="pipelineBody"></div>
       </div>
+
+      <!-- 과거의 나와 속도 비교 — 앱의 같은 카드와 같은 계산 (편집 중일 때만, 2026-10-16 사용자) -->
+      <div class="card raceCard" id="raceCard" style="display:none"></div>
     </div>
 
     <div class="colRight">
@@ -1747,32 +1796,6 @@
         </div>
         <div class="dayBand" id="dayBand"><span class="daySky" id="daySky"></span><span class="dayNow" id="dayNow"></span></div>
         <div class="dayAxis"><span>0시</span><span>6시</span><span>12시</span><span>18시</span><span>24시</span></div>
-      </div>
-
-      <!-- 채널 전체 편집 잔디 (Claude 사용량 화면처럼). 회차와 상관없이 늘 같은 내용이라
-           지난 에피소드를 열어도 바뀌지 않는다. 데이터는 앱이 올리는 projects/activity.json. -->
-      <div class="card heatCard" id="heatCard" style="display:none">
-        <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></span>편집 잔디</span><span class="cardMeta mono">채널 전체</span></div>
-        <div class="cardHead">
-          <div class="rangeToggle" id="heatTabs" role="tablist" aria-label="보기">
-            <button type="button" data-tab="overview" class="active">개요</button>
-            <button type="button" data-tab="stages">단계</button>
-          </div>
-          <div class="rangeToggle" id="heatRange" role="group" aria-label="기간">
-            <button type="button" data-range="all" class="active">전체</button>
-            <button type="button" data-range="30">30일</button>
-            <button type="button" data-range="7">7일</button>
-          </div>
-        </div>
-        <div class="heatPane" id="heatOverview">
-          <div class="heatTiles" id="heatTiles"></div>
-          <div class="heatGrid" id="heatGrid" role="img" aria-label="날짜별 작업량"></div>
-          <div class="heatFoot" id="heatFoot"></div>
-        </div>
-        <div class="heatPane" id="heatStages" hidden>
-          <div class="barChart" id="barChart" role="img" aria-label="날짜별 단계별 작업 기록"></div>
-          <div class="barLegend" id="barLegend"></div>
-        </div>
       </div>
 
       <div class="card logCard" id="logCard" style="display:none">
@@ -1833,6 +1856,38 @@
 
     <button type="button" class="quoteFab" id="quoteBtn" title="태태고 편집실 명언 보기" aria-label="명언 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6.5C6.9 7.3 4.5 9.9 4.5 13.4V18h5.8v-5.6H7.4c.1-2 1.3-3.4 3.1-4zM19.5 6.5c-3.1.8-5.5 3.4-5.5 6.9V18h5.8v-5.6h-2.9c.1-2 1.3-3.4 3.1-4z"/></svg><span class="quoteFabText">명언</span></button>
     <div class="madeBy" id="madeBy" style="display:none">Made by Taetaego</div>
+  </div>
+
+  <!-- 편집 잔디 — 카드 사이에 두지 않고 위쪽 '편집 잔디' 단추로 연다 (2026-10-16 사용자) -->
+  <div class="modalBack" id="heatModal" hidden>
+    <div class="heatSheet" role="dialog" aria-modal="true" aria-label="편집 잔디">
+      <!-- 채널 전체 편집 잔디 (Claude 사용량 화면처럼). 회차와 상관없이 늘 같은 내용이라
+             지난 에피소드를 열어도 바뀌지 않는다. 데이터는 앱이 올리는 projects/activity.json. -->
+        <div class="card heatCard" id="heatCard" style="display:none">
+          <div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-1)" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></span>편집 잔디</span><span class="cardMeta mono">채널 전체</span><button type="button" class="modalClose" id="heatClose" aria-label="닫기">✕</button></div>
+          <div class="cardHead">
+            <div class="rangeToggle" id="heatTabs" role="tablist" aria-label="보기">
+              <button type="button" data-tab="overview" class="active">개요</button>
+              <button type="button" data-tab="stages">단계</button>
+            </div>
+            <div class="rangeToggle" id="heatRange" role="group" aria-label="기간">
+              <button type="button" data-range="all" class="active">전체</button>
+              <button type="button" data-range="30">30일</button>
+              <button type="button" data-range="7">7일</button>
+            </div>
+          </div>
+          <div class="heatPane" id="heatOverview">
+            <div class="heatTiles" id="heatTiles"></div>
+            <div class="heatGrid" id="heatGrid" role="img" aria-label="날짜별 작업량"></div>
+            <div class="heatFoot" id="heatFoot"></div>
+          </div>
+          <div class="heatPane" id="heatStages" hidden>
+            <div class="barChart" id="barChart" role="img" aria-label="날짜별 단계별 작업 기록"></div>
+            <div class="barLegend" id="barLegend"></div>
+          </div>
+        </div>
+
+    </div>
   </div>
 
   <!-- 지난 목록 — 에피소드 화면에선 지난 에피소드(projects/index.json — 이 창을 처음 열 때만 받아온다), 쇼츠 화면에선 지난 쇼츠 프로젝트. -->
@@ -2238,12 +2293,13 @@ function renderProject(data, { fireworks = false } = {}) {
   renderPipeline(data);
   renderStats(data);
   renderDayBand(data);
+  renderRace(data);
   renderLog(data);
   initDoneGlow(data);
   celebrate(heroPct, heroCompleted, fireworks);
 }
 
-const OPTIONAL_CARDS = ['doneCard', 'pipelineCard', 'dayCard', 'logCard'];
+const OPTIONAL_CARDS = ['doneCard', 'pipelineCard', 'dayCard', 'raceCard', 'logCard'];
 function hideCard(id) {
   const el = document.getElementById(id);
   if (el) el.style.display = 'none';
@@ -2355,7 +2411,18 @@ function initHeat() {
   });
   const orig = renderHeat;
   renderHeat = (opts) => { lastWeeks = heatWeeks(); orig(opts); };
-  document.getElementById('heatCard').addEventListener('click', heatBurst);
+  document.getElementById('heatCard').addEventListener('click', (ev) => { if (!ev.target.closest('#heatClose')) heatBurst(ev); });
+  // 위쪽 단추로 연다 — 창이 뜬 뒤 폭에 맞춰 다시 그린다 (닫혀 있을 땐 폭이 0이라 주 수를 못 센다)
+  const back = document.getElementById('heatModal');
+  const shut = () => { back.hidden = true; };
+  document.getElementById('heatBtn').addEventListener('click', () => {
+    sfx('whoosh');
+    back.hidden = false;
+    requestAnimationFrame(() => renderHeat());
+  });
+  document.getElementById('heatClose').addEventListener('click', shut);
+  back.addEventListener('click', (ev) => { if (ev.target === back) shut(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !back.hidden) shut(); });
 }
 
 /** 잔디 위 숫자 타일은 따로 논다 — 누르면 휙 뒤집혀 뒷면의 숫자를 보여주고,
@@ -2479,7 +2546,10 @@ const dayKeyOf = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 
 function renderHeat({ animate = true } = {}) {
   const card = document.getElementById('heatCard');
-  if (!heatData || !(heatData.records || []).length) { card.style.display = 'none'; return; }
+  const has = !!(heatData && (heatData.records || []).length);
+  const hb = document.getElementById('heatBtn');
+  if (hb) hb.hidden = !has;
+  if (!has) { card.style.display = 'none'; return; }
   card.style.display = '';
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -2649,6 +2719,129 @@ function heatStreaks(perDay, today, since) {
     longest = Math.max(longest, run); prev = x;
   }
   return { current, longest };
+}
+
+/* ===== 과거의 나와 속도 비교 — 앱의 GhostRaceCard와 같은 계산 (2026-10-16 사용자: 이 카드 넣어라) =====
+   단계에 머문 시간 = 그 단계 첫 기록 ~ 다음 새 단계 첫 기록 (마지막 단계는 완료까지).
+   위: 편집 시작 → 지금 단계에 들어오기까지 걸린 시간을 끝낸 에피소드들과 순위로. 아래: 지금 단계에 머문 시간 비교. */
+const RACE_MIN = 30 * 60 * 1000;     // 30분도 안 걸린 편은 기록을 몰아 넣은 편이라 뺀다 (앱과 같다)
+const RACE_START = 15 * 60 * 1000;   // 지금 단계에 이보다 덜 머물렀으면 "시작"
+const raceProjects = new Map();      // 끝낸 에피소드 id → 데이터 (끝난 편은 안 바뀌니 한 번만 받는다)
+let raceToken = 0;
+
+function stageVisits(p) {
+  const ents = (p.entries || []).filter(e => e.category && e.category !== '완료')
+    .map(e => ({ c: e.category, t: new Date(e.timestamp).getTime() })).sort((a, b) => a.t - b.t);
+  const firsts = [], seen = new Set();
+  for (const e of ents) if (!seen.has(e.c)) { seen.add(e.c); firsts.push(e); }
+  const doneAt = p.status === 'completed' && p.completedAt ? new Date(p.completedAt).getTime() : null;
+  return firsts.map((f, i) => ({ name: f.c, start: f.t, end: i + 1 < firsts.length ? firsts[i + 1].t : doneAt }));
+}
+
+/** "3일 4시간" · "5시간" · "40분" (앱 Bottleneck.span) */
+function raceSpan(ms) {
+  const h = Math.floor(ms / 3600000);
+  if (h >= 24) return `${Math.floor(h / 24)}일` + (h % 24 ? ` ${h % 24}시간` : '');
+  if (h >= 1) return `${h}시간`;
+  return `${Math.max(1, Math.floor(ms / 60000))}분`;
+}
+
+async function renderRace(data) {
+  const card = document.getElementById('raceCard');
+  if (!card) return;
+  const my = ++raceToken;
+  const mine = stageVisits(data);
+  const cur = mine[mine.length - 1];
+  if (data.status === 'completed' || data.status === 'none' || !cur) { card.style.display = 'none'; return; }
+  let done;
+  try {
+    if (!pastIndex) pastIndex = await fetchData('projects/index.json');
+    done = (pastIndex.projects || []).filter(p => p.status === 'completed')
+      .sort((a, b) => new Date(b.completedAt || 0) - new Date(a.completedAt || 0));
+    await Promise.all(done.filter(p => !raceProjects.has(p.id))
+      .map(p => fetchData(`projects/${p.id}.json`).then(j => raceProjects.set(p.id, j)).catch(() => {})));
+  } catch (e) { if (my === raceToken) card.style.display = 'none'; return; }
+  if (my !== raceToken) return;   // 그사이 다른 프로젝트를 열었다
+  const past = done.map(p => ({ p, j: raceProjects.get(p.id) })).filter(x => x.j);
+
+  // ── 순위표
+  const myStart = mine[0].start;
+  const me = { name: '지금 이 에피소드', t: cur.start - myStart, me: true };
+  let list = [me];
+  if (mine.length > 1) {   // 첫 단계면 다들 0이라 비교할 게 없다 — 순위표 없이 단계 비교만
+    past.forEach(({ p, j }, i) => {
+      const v = stageVisits(j);
+      const hit = v.find(x => x.name === cur.name);
+      if (!hit) return;
+      const t = hit.start - v[0].start;
+      if (t >= RACE_MIN) list.push({ name: j.projectTopic || p.topic || '이름 없는 에피소드', t, me: false, recent: i < 5 });
+    });
+    list.sort((a, b) => a.t - b.t);
+  }
+  const head = `<div class="cardHead"><span class="cardTitle"><span class="cardIcon" style="--ic:var(--grp-2)" aria-hidden="true">${uiIcon('runner')}</span>과거의 나와 속도 비교</span></div>
+    <div class="raceLead">편집 시작 → <b>${escapeHtml(cur.name)}</b> 들어오기까지 걸린 시간</div>`;
+  let race;
+  if (list.length > 1) {
+    const rank = list.indexOf(me) + 1;
+    const longest = Math.max(1, ...list.map(r => r.t));
+    // 너무 길면 — 1등 · 내 앞뒤 · 꼴찌만 (최대 6줄)
+    let shown = list.map((r, i) => [i, r]);
+    if (shown.length > 6) {
+      const keep = new Set([0, rank - 2, rank - 1, rank, list.length - 1].filter(i => i >= 0 && i < list.length));
+      const out = shown.filter(([i]) => keep.has(i));
+      for (const [i, r] of shown) if (out.length < 6 && !keep.has(i) && r.recent) out.push([i, r]);
+      shown = out.sort((a, b) => a[0] - b[0]);
+    }
+    const others = list.filter(r => !r.me).map(r => r.t);
+    const avg = others.reduce((a, b) => a + b, 0) / others.length;
+    const d = me.t - avg;
+    const avgLine = Math.abs(d) < 3600000 ? '<span>평균과 거의 같아요</span>'
+      : d < 0 ? `<span class="fast">평균보다 ${raceSpan(-d)} 빨라요</span>` : `<span class="slow">평균보다 ${raceSpan(d)} 느려요</span>`;
+    race = `<div class="raceNow"><span class="big">지금 ${raceSpan(me.t)}째</span>
+        <span class="raceRank${rank === 1 ? ' first' : rank === list.length ? ' last' : ''}">${rank === 1 ? '역대 1등 페이스!' : `${list.length}편 중 ${rank}등`}</span></div>
+      <div class="raceAvg">평균 ${raceSpan(avg)} · ${avgLine}</div>
+      <div class="raceRows">${shown.map(([i, r]) => {
+        const diff = r.t - me.t;
+        const color = r.me ? 'var(--race-me)' : diff < 0 ? 'var(--race-red)' : 'var(--race-green)';
+        const note = r.me ? '<span style="color:var(--race-me)">나</span>'
+          : diff < 0 ? `<span style="color:var(--race-red)">${raceSpan(-diff)} 빨랐음</span>` : `<span style="color:var(--race-green)">${raceSpan(diff)} 느렸음</span>`;
+        return `<div class="raceRow${r.me ? ' me' : ''}"><span class="n${i === 0 ? ' gold' : ''}">${i + 1}</span>
+          <span class="nm">${escapeHtml(r.name)}</span>
+          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i></span>
+          <span class="t">${raceSpan(r.t)}</span><span class="d">${note}</span></div>`;
+      }).join('')}</div>
+      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 나보다 빨리 온 편 · 초록 = 나보다 늦게 온 편 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
+  } else {
+    race = '<div class="raceNote">견줄 끝낸 에피소드가 아직 없어요 — 기록을 한꺼번에 몰아 넣은 편은 빼고 비교해요</div>';
+  }
+
+  // ── 지금 단계 비교 — 같은 단계에 머문 시간
+  let stage = '';
+  const myTime = Math.max(0, Date.now() - cur.start);
+  const others = past.map(({ p, j }) => {
+    const v = stageVisits(j).find(x => x.name === cur.name);
+    const t = v && v.end ? v.end - v.start : 0;
+    return t > 0 ? { name: j.projectTopic || p.topic || '이름 없는 에피소드', t } : null;
+  }).filter(Boolean);
+  if (others.length) {
+    const avg = others.reduce((a, r) => a + r.t, 0) / others.length;
+    const rows = [{ name: '지금 이 에피소드', t: myTime, me: true }, ...others].sort((a, b) => a.t - b.t);
+    const longest = Math.max(1, ...rows.map(r => r.t));
+    const diff = myTime - avg;
+    const right = myTime < RACE_START ? `<span class="r">방금 시작 · 평균 ${raceSpan(avg)}</span>`
+      : diff <= 0 ? `<span class="r" style="color:var(--race-green)">평균보다 ${raceSpan(-diff)} 빠름</span>`
+      : `<span class="r" style="color:var(--race-red)">평균보다 ${raceSpan(diff)} 더</span>`;
+    stage = `<div class="raceSep"></div>
+      <div class="raceStageHead"><strong>지금 단계 비교</strong><em>${escapeHtml(cur.name)}</em><span>— 같은 단계에 머문 시간</span>${right}</div>
+      <div class="raceRows">${rows.map(r => `<div class="raceRow raceStage${r.me ? ' me' : ''}">
+          <span class="nm">${escapeHtml(r.name)}</span>
+          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${r.me ? 'var(--race-me)' : 'color-mix(in srgb, var(--ink) 35%, transparent)'}"></i><b style="left:${(avg / longest * 100).toFixed(1)}%"></b></span>
+          <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${r.me && r.t < RACE_START ? '시작' : raceSpan(r.t)}</span></div>`).join('')}</div>
+      <div class="raceNote">세로 눈금 = 끝낸 에피소드 평균 ${raceSpan(avg)} · 지금 이 에피소드는 아직 이 단계 진행 중</div>`;
+  }
+  if (list.length <= 1 && !stage) { card.style.display = 'none'; return; }
+  card.innerHTML = head + race + stage;
+  card.style.display = '';
 }
 
 /* ===== 지난 프로젝트 목록 ===== */
@@ -3031,6 +3224,8 @@ function formatDayLabel(iso) {
 const UI_SVG = {
   speakerOff: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/>',
   speakerOn: '<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6"/><path d="M18.3 6.3a8 8 0 0 1 0 11.4"/>',
+  grid: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>',
+  runner: '<circle cx="14.5" cy="4.5" r="1.8"/><path d="M9.5 21l2.6-5.6 3 2.6V22M6.5 11.5 9 8h5l2.4 3.4H20M12.6 8l-1.9 6.4"/>',
   folder: '<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M3.5 10.5h17"/>',
   clapper: '<rect x="3.5" y="9.5" width="17" height="10.5" rx="2"/><path d="M3.5 9.5 19 5.2l.9 3.1-16.4 1.2"/><path d="M8.2 8.2l2-2.6M13.2 6.8l2-2.6"/>',
   cloudSun: '<path d="M8 3.5v1.2M3.6 5.6l.9.9M2.5 10h1.2M12.4 5.6l-.9.9"/><path d="M5.3 12.6A3.6 3.6 0 1 1 11.6 9"/><path d="M8.8 20h8.7a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.4 1.2A2.9 2.9 0 0 0 8.8 20z"/>',
@@ -4141,9 +4336,10 @@ function renderDayBand(data) {
   const peak = Math.max(...bins);
   band.insertAdjacentHTML('beforeend', bins.map((c, i) => {
     if (!c) return '';
-    const h = 28 + 72 * Math.sqrt(c / peak);
+    // 높이 = 기록 수에 정비례, 적은 칸은 흐리게 — 예전엔 28% 바닥에 제곱근이라 1개와 5개가 비슷해 보였다 (2026-10-16 사용자)
+    const h = 8 + 92 * (c / peak), k = (0.35 + 0.65 * (c / peak)).toFixed(2);
     const hh = String(Math.floor(i / 2)).padStart(2, '0'), mm = i % 2 ? '30' : '00';
-    return `<span class="dayBar" style="left:${(i / 48 * 100).toFixed(3)}%;height:calc((100% - 6px) * ${(h / 100).toFixed(2)});animation-delay:${i * 18}ms" title="${hh}:${mm} · 기록 ${c}개"></span>`;
+    return `<span class="dayBar" style="left:${(i / 48 * 100).toFixed(3)}%;height:calc((100% - 6px) * ${(h / 100).toFixed(2)});--k:${k};animation-delay:${i * 18}ms" title="${hh}:${mm} · 기록 ${c}개"></span>`;
   }).join(''));
 
   // 해가 진 뒤~뜨기 전에 시작한 기록의 비율
@@ -4790,7 +4986,7 @@ function initThumbLike() {
 function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
   const cards = [
-    ...['summaryCard', 'pipelineCard', 'dayCard', 'heatCard', 'logCard']
+    ...['summaryCard', 'pipelineCard', 'dayCard', 'raceCard', 'heatCard', 'logCard']
       .map(id => document.getElementById(id)).filter(Boolean),
     ...document.querySelectorAll('.statTile'),   // 통계 타일도 같이 기울어지게
   ];
