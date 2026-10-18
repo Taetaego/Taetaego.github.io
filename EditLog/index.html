@@ -656,6 +656,29 @@
   /* 프로젝트 완료 요약 */
   /* 카드 자체는 다른 카드와 같은 색 — 금색은 제목·아이콘에만 둔다 */
   .doneCard { display: flex; flex-direction: column; gap: 12px; }
+  /* ===== 완료 카드 — 역대 비교 (편마다 단계 리본 · 지난 편 평균 점선) ===== */
+  .dcTop { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .dcBig { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+  .dcSub { font-size: 11.5px; color: var(--ink3); }
+  .dcChip { margin-left: auto; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 99px; color: var(--gold); background: var(--gold-soft); white-space: nowrap; }
+  .dcLegend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--ink2); }
+  .dcLegend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
+  .dcRows { display: grid; grid-template-columns: minmax(0, 120px) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 12.5px; }
+  .dcName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); }
+  .dcName.me { color: var(--gold); font-weight: 800; }
+  .dcLane { position: relative; height: 14px; display: flex; align-items: center; }
+  .dcRib { display: flex; gap: 2px; height: 10px; transform-origin: left; animation: dcGrow .7s cubic-bezier(.2,.9,.3,1) both; }
+  .dcRib.me { height: 14px; }
+  .dcRib span { border-radius: 3px; min-width: 2px; }
+  @keyframes dcGrow { from { transform: scaleX(0); } }
+  .dcDays { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink2); white-space: nowrap; }
+  .dcDays.me { color: var(--gold); }
+  /* 평균 점선 — 줄마다 막대 칸 안에 같은 자리로 긋고, 줄 사이 틈(10px)까지 늘려 한 줄로 이어 보이게 */
+  .dcAvg { position: absolute; top: -5px; bottom: -5px; z-index: 1; pointer-events: none;
+           border-left: 1.5px dashed color-mix(in srgb, var(--ink) 75%, transparent); }
+  .dcAvgTag { position: absolute; bottom: calc(100% + 4px); transform: translateX(-50%); font-size: 10.5px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .dcRowsWrap { padding-top: 18px; }
+
   .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--gold); }
   .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
   .doneList { display: flex; flex-direction: column; gap: 6px; }
@@ -3066,11 +3089,71 @@ function formatDuration(ms) {
 function renderCompletion(data) {
   if (data.status !== 'completed') return;
   const body = document.getElementById('doneList');
+  // 완료 시각이 있으면 역대 비교 카드로 (2026-10-18 사용자가 고른 시안: 편마다 단계 리본 + 평균 점선)
+  if (data.completedAt) { renderDoneCompare(data); return; }
   // 완료 시각이 없는 옛 기록이면 그릴 구간이 없으니 시작 시각만 적는다.
   body.innerHTML = data.completedAt
     ? completionSpanHtml(data)
     : `<div>시작 시각: ${escapeHtml(formatDateTime(data.createdAt))}</div>`;
   document.getElementById('doneCard').style.display = '';
+}
+
+/** 완료 카드 — 이번 편과 끝낸 다른 편들을 걸린 시간 순으로. 막대는 단계 묶음마다 걸린 시간만큼 칠하고(앱의 단계 묶음 · 색),
+    세로 점선은 다른 편들의 평균. 단계 시간 = 그 단계 첫 기록 ~ 다음 새 단계 첫 기록 (마지막은 완료까지) — 속도 비교 카드와 같은 셈. */
+let doneToken = 0;
+async function renderDoneCompare(data) {
+  const body = document.getElementById('doneList');
+  const card = document.getElementById('doneCard');
+  const my = ++doneToken;
+  const groupsOf = (j) => new Map((j.allCategories || []).map(c => [c.name, c.group]));
+  const order = [...new Set((data.allCategories || []).map(c => c.group))];
+  const color = (g) => `var(--grp-${(order.indexOf(g) % 4) + 1})`;
+  const run = (j) => {
+    const t0 = new Date(j.createdAt).getTime(), t1 = new Date(j.completedAt).getTime();
+    const gm = groupsOf(j), seg = new Map();
+    for (const v of stageVisits(j)) {
+      const g = gm.get(v.name); if (!g || v.end == null) continue;
+      seg.set(g, (seg.get(g) || 0) + Math.max(0, v.end - v.start));
+    }
+    return { total: Math.max(1, t1 - t0), seg, entries: (j.entries || []).length };
+  };
+  const me = { name: '이번 편', me: true, ...run(data) };
+  // 먼저 이번 편만 그려 두고, 다른 편을 받으면 다시 그린다
+  const draw = (others) => {
+    const all = [me, ...others].sort((a, b) => b.total - a.total);
+    const max = Math.max(...all.map(r => r.total));
+    const avg = others.length ? others.reduce((a, r) => a + r.total, 0) / others.length : null;
+    const rank = all.indexOf(me) + 1;
+    const mostRecords = others.length && others.every(r => r.entries < me.entries);
+    const sub = !others.length ? `작업 기록 ${me.entries}개`
+      : `${all.length}편 중 ${rank === 1 ? '가장 오래' : rank === all.length ? '가장 빨리' : `${rank}번째로 오래`}`
+        + (Math.abs(me.total - avg) < 3600000 ? ' · 평균과 거의 같아요' : ` · 평균보다 ${raceSpan(Math.abs(me.total - avg))} ${me.total > avg ? '더' : '빨리'}`);
+    const rib = (r) => {
+      const sum = [...r.seg.values()].reduce((a, b) => a + b, 0) || 1;
+      return order.filter(g => r.seg.get(g)).map(g => `<span style="flex:${(r.seg.get(g) / sum).toFixed(4)};background:${color(g)}" title="${escapeHtml(g)} ${raceSpan(r.seg.get(g))}"></span>`).join('');
+    };
+    body.innerHTML = `
+      <div class="dcTop"><span class="dcBig">${escapeHtml(formatDuration(me.total))}</span><span class="dcSub">${escapeHtml(sub)}</span>
+        ${mostRecords ? `<span class="dcChip">기록 ${me.entries}개 · 역대 최다</span>` : ''}</div>
+      <div class="dcLegend">${order.map(g => `<span><i style="background:${color(g)}"></i>${escapeHtml(g)}</span>`).join('')}</div>
+      <div class="dcRowsWrap"><div class="dcRows">
+        ${all.map((r, i) => `<span class="dcName${r.me ? ' me' : ''}">${escapeHtml(r.name)}</span>
+          <span class="dcLane">${avg ? `<i class="dcAvg" style="left:${(avg / max * 100).toFixed(1)}%"></i>${i === 0 ? `<b class="dcAvgTag" style="left:${(avg / max * 100).toFixed(1)}%">평균 ${(avg / 86400000).toFixed(1)}일</b>` : ''}` : ''}<span class="dcRib${r.me ? ' me' : ''}" style="width:${(r.total / max * 100).toFixed(1)}%;animation-delay:${(i * 0.06).toFixed(2)}s">${rib(r)}</span></span>
+          <span class="dcDays${r.me ? ' me' : ''}">${(r.total / 86400000).toFixed(1)}일</span>`).join('')}
+      </div></div>`;
+  };
+  draw([]);
+  card.style.display = '';
+  try {
+    if (!pastIndex) pastIndex = await fetchData('projects/index.json');
+    const done = (pastIndex.projects || []).filter(p => p.status === 'completed' && p.createdAt !== data.createdAt);
+    await Promise.all(done.filter(p => !raceProjects.has(p.id))
+      .map(p => fetchData(`projects/${p.id}.json`).then(j => raceProjects.set(p.id, j)).catch(() => {})));
+    if (my !== doneToken) return;
+    const others = done.map(p => ({ p, j: raceProjects.get(p.id) })).filter(x => x.j && x.j.completedAt)
+      .map(({ p, j }) => ({ name: j.projectTopic || p.topic || '이름 없는 에피소드', me: false, ...run(j) }));
+    draw(others);
+  } catch (e) { /* 목록을 못 받으면 이번 편만 */ }
 }
 
 /** 시작 → 완료 구간을 막대 하나로. 막대는 하루마다 눈금으로 끊고, 그 위에 실제로 작업을
