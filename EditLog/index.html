@@ -3509,7 +3509,19 @@ function makeGroupColorVar(data) {
   };
 }
 
+/** 진행률 — 앱이 센 값(status.json의 progress)이 있으면 그 숫자를 쓴다 (2026-10-19 구조 점검).
+    앱(Swift)과 여기(JS)가 같은 식을 따로 세면 한쪽만 고쳤을 때 두 도넛이 어긋난다. 예전 스냅샷엔 없어서 그땐 직접 센다. */
 function pipelineProgress(data) {
+  const p = pipelineProgressJS(data);
+  const a = data && data.progress;
+  if (!p || !a || typeof a.pct !== 'number') return p;
+  const idx = typeof a.currentIndex === 'number' ? a.currentIndex : (data.status === 'completed' ? p.lastTouchedIndex : -1);
+  const stage = p.stage && typeof a.stageFraction === 'number' ? { ...p.stage, frac: a.stageFraction } : p.stage;
+  return { ...p, pct: a.pct, done: a.done, total: a.total, lastTouchedIndex: idx, stage };
+}
+
+/** 앱 값이 없을 때(예전 스냅샷) 직접 세는 진행률 — 앱의 Data/PipelineProgress.swift와 같은 식 */
+function pipelineProgressJS(data) {
   const cats = data.allCategories || [];
   if (cats.length === 0) return null;
   const touchedNames = new Set((data.entries || []).map(e => e.category).filter(Boolean));
