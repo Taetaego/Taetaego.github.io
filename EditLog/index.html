@@ -11,6 +11,13 @@
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=2">
 <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png?v=2">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a0e0f" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3f6f5" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="편집실">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="영상 편집 진행 상황을 단계별로 기록하고 공개하는 태태고의 편집실 로그.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="태태고 편집실">
@@ -381,6 +388,12 @@
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.9'/></svg>");
     animation: grainShift .55s steps(4) infinite;
   }
+  /* 터치 기기에선 그레인을 움직이지 않는다 — 화면 전체를 0.14초마다 다시 그리는 게 배터리에 제일 비쌌다 (눈엔 거의 같다) */
+  @media (pointer: coarse) { .grain { animation: none; } }
+  /* 배터리 20% 이하(충전 중 아님) — 늘 도는 장식을 멈춘다 */
+  html.lowPower .grain, html.lowPower #galaxyCanvas { display: none !important; }
+  html.lowPower .statusChip i, html.lowPower .liveBadge i, html.lowPower .modeLive, html.lowPower .shChip i,
+  html.lowPower #doneCard.glowing::before, html.lowPower #doneCard.glowing::after, html.lowPower .lenRow:not(.orig) .lenFill::after, html.lowPower .logRow.done .catName { animation: none !important; }
   @keyframes grainShift {
     0% { transform: translate(0, 0); }
     25% { transform: translate(-1.4%, 1.1%); }
@@ -1242,7 +1255,13 @@
   @media (max-width: 560px) {
     .pastBtn { padding: 6px 9px; font-size: 12px; line-height: 1; }
     .pastBtn .pastBtnText { display: none; }
+    /* 공유 단추까지 다섯 개가 되니 간격과 테마 스위치를 좁혀 한 줄에 들어가게 (390px 기준) */
+    .topRight { gap: 5px; }
+    .themeToggle { padding: 2px; }
+    .themeToggle button { padding: 5px 7px; font-size: 8.5px; letter-spacing: .04em; }
+    .pastBtn { padding: 6px 7px; }
   }
+  @media (max-width: 380px) { .brand { font-size: 12.5px; gap: 6px; } .brand .brandIcon { width: 22px; height: 22px; } }
 
   @media (max-width: 420px) {
     body { padding: 8px 10px 48px; }
@@ -1677,6 +1696,22 @@
   .brand { display: inline-flex; align-items: center; gap: 8px; }
   .brandIcon { flex: none; width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
   .heatCard > .cardHead:first-child { margin-bottom: -2px; }
+  /* ===== 공유 ===== */
+  .shareModal { width: min(420px, 100%); }
+  .shareText { font-size: 13px; line-height: 1.5; color: var(--ink2); padding: 10px 12px; border-radius: 12px; background: var(--surface2); word-break: keep-all; }
+  .shareGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .shareBtn { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 12px 4px 10px; border-radius: 14px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface2); color: var(--ink2); font: inherit; font-size: 11px; font-weight: 600; text-decoration: none;
+    transition: transform .15s ease, border-color .2s ease, color .2s ease; }
+  .shareBtn i { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--sc, var(--ink3)); font-size: 18px; }
+  .shareBtn i .ico { stroke-width: 2; }
+  .shareBtn i svg.brand { width: 20px; height: 20px; fill: #fff; }
+  .shareBtn:active { transform: scale(.95); }
+  @media (hover: hover) { .shareBtn:hover { color: var(--ink); border-color: var(--line2); } }
+  .shareBtn.copied i { background: var(--grp-1); }
+  .shareHint { font-size: 11px; color: var(--ink3); text-align: center; }
+  @media (max-width: 380px) { .shareGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
   /* ===== 쇼츠 — 에피소드와 따로 노는 '예전 영상에서 쇼츠 뽑기' 작업 (앱의 쇼츠 화면과 같은 빨강) ===== */
   .modeSwitch { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--surface2); border: 1px solid var(--line); }
   .modeSwitch[hidden] { display: none; }
@@ -1754,6 +1789,30 @@
   .shCommon { font-size: 11px; color: var(--ink3); margin: -2px 0 2px; }
   .shEmpty { padding: 22px 0; text-align: center; font-size: 12.5px; color: var(--ink3); }
 
+  .shPace { display: flex; flex-wrap: wrap; gap: 6px; }
+  .shPace span { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink3); padding: 4px 9px; border-radius: 99px;
+    background: var(--tileBg); border: 1px solid var(--line); }
+  .shPace span .ico { color: var(--sh1); stroke-width: 2; }
+  .shPace b { color: var(--ink); font-weight: 700; }
+  .shPace em { font-style: normal; color: var(--ink3); }
+  .shAllSum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+  .shAllSum div { display: flex; flex-direction: column; gap: 2px; padding: 9px 11px; border-radius: 13px; background: var(--surface2); }
+  .shAllSum b { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; }
+  .shAllSum b small { font-size: 11px; font-weight: 600; color: var(--ink3); }
+  .shAllSum span { font-size: 10px; font-weight: 600; color: var(--ink3); }
+  .shBars { display: flex; flex-direction: column; gap: 2px; }
+  .shBar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 28px; align-items: center; gap: 10px; width: 100%; padding: 7px 8px; border-radius: 10px;
+    border: 1px solid transparent; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .2s ease, border-color .2s ease; }
+  .shBar.on { border-color: rgba(255,59,92,.4); background: rgba(255,59,92,.07); }
+  @media (hover: hover) { .shBar:not(.on):hover { background: var(--surface2); } }
+  .shBarName { font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .shBarName em { font-style: normal; font-size: 10px; font-weight: 700; color: var(--sh1); }
+  .shBarLane { height: 7px; border-radius: 99px; background: var(--line2); overflow: hidden; }
+  .shBarLane i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ink3), var(--ink2)); transform-origin: left;
+    animation: pastBar .9s cubic-bezier(.2,.8,.3,1) backwards .15s; }
+  .shBar.on .shBarLane i { background: linear-gradient(90deg, var(--sh1), var(--sh2)); }
+  .shBar b { font: 700 12px/1 'JetBrains Mono', monospace; text-align: right; color: var(--ink2); }
+  .shBar.on b { color: var(--sh1); }
   .shProj { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 8px; border-radius: 12px;
     border: 1px solid transparent; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .2s ease, border-color .2s ease; }
   .shProj + .shProj { margin-top: 4px; }
@@ -1803,6 +1862,7 @@
     <div class="topbar">
       <div class="brand"><img class="brandIcon" src="favicon-192.png?v=2" alt="" width="26" height="26">태태고 편집실</div>
       <div class="topRight">
+        <button type="button" class="pastBtn" id="shareBtn" title="공유" aria-label="공유"><span data-ico="share" style="display:flex"></span></button>
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false"></button>
         <button type="button" class="pastBtn" id="heatBtn" title="편집 잔디 보기" aria-label="편집 잔디" hidden><span data-ico="grid" style="display:flex"></span><span class="pastBtnText">편집 잔디</span></button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드"><span data-ico="folder" style="display:flex"></span><span class="pastBtnText">지난 에피소드</span></button>
@@ -1953,6 +2013,16 @@
   </div>
 
   <!-- 지난 목록 — 에피소드 화면에선 지난 에피소드(projects/index.json — 이 창을 처음 열 때만 받아온다), 쇼츠 화면에선 지난 쇼츠 프로젝트. -->
+  <div class="modalBack" id="shareModal" hidden>
+    <div class="modal shareModal" role="dialog" aria-modal="true" aria-label="공유">
+      <div class="modalHead"><span class="modalTitle">공유</span><span class="modalMeta" id="shareMeta"></span><button type="button" class="modalClose" id="shareClose" aria-label="닫기">✕</button></div>
+      <div class="modalBody">
+        <div class="shareText" id="shareText"></div>
+        <div class="shareGrid" id="shareGrid"></div>
+        <div class="shareHint">폰에서는 공유 버튼을 누르면 카카오톡 · 인스타 DM 등 깔린 앱이 바로 뜹니다.</div>
+      </div>
+    </div>
+  </div>
   <div class="modalBack" id="pastModal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-label="지난 에피소드">
       <div class="modalHead">
@@ -2261,6 +2331,8 @@ async function main() {
   initPastProjects();
 
   initModeSwitch();
+  initShare();
+  initPowerSaver();
   // 쇼츠는 따로 받아 둔다 — 없거나 실패해도 에피소드 화면은 그대로.
   const shortsReq = fetchData('shorts.json').catch(() => null);
 
@@ -3406,6 +3478,10 @@ const UI_SVG = {
   moon: '<path d="M19.5 14.8A8 8 0 0 1 9.2 4.5a8 8 0 1 0 10.3 10.3z"/>',
   halfMoon: '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>',
   shorts: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.8"/><path d="M10.4 9.2v5.6l4.6-2.8z"/>',
+  share: '<circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4M8.2 13.2l7.6 4"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.5 7l8.5 6.5L20.5 7"/>',
   film: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M7.5 3.5v17M16.5 3.5v17M3.5 8h4M3.5 12h4M3.5 16h4M16.5 8h4M16.5 12h4M16.5 16h4"/>',
   mountain: '<path d="M2.5 19.5 9 8.5l3.5 5.5 2.5-3.5 6.5 9z"/><path d="M6.8 12.2l2.2 1.3 1.9-1.4"/>',
   diamond: '<path d="M6.5 4.5h11L21 9l-9 11L3 9z"/><path d="M3 9h18M9.5 4.5 8 9l4 11 4-11-1.5-4.5"/>',
@@ -3640,6 +3716,9 @@ function renderSummary(cardEl, data) {
   heroPct = pct;
   // 다른 탭에 있어도 진행률이 보이도록 탭 제목에도 넣는다.
   document.title = `태태고 편집실 · 진행률 ${pct}%`;
+  shareState = { title: '태태고 편집실', text: isCompleted
+    ? `태태고 편집실 · "${data.projectTopic ?? ''}" 편집 완료`
+    : `태태고 편집실 · "${data.projectTopic ?? ''}" 편집 ${pct}%${stageCat ? ` · 지금 ${stageCat.name}` : ''}` };
   heroCompleted = isCompleted;
 
   const entries = data.entries || [];
@@ -5373,9 +5452,12 @@ function initComet() {
     }
     ctx.globalAlpha = 1;
     if (trail.length > 1 && now - lastMove > 45) trail.shift();
+    // 꼬리가 다 사라지면 루프를 멈춘다 — 마우스가 움직이면 다시 돈다
+    if (trail.length <= 1) { running = false; trail.length = 0; return; }
     requestAnimationFrame(draw);
   };
-  requestAnimationFrame(draw);
+  let running = false;
+  window.addEventListener('pointermove', () => { if (!running) { running = true; requestAnimationFrame(draw); } }, { passive: true });
 }
 
 /** 화면 전체 위에 잠깐 얹는 레이어. */
@@ -5538,7 +5620,7 @@ function initGalaxy(data) {
     }
 
     // 낮에는 은하수를 접는다
-    if (!document.hidden && isNightNow()) {
+    if (!document.hidden && isNightNow() && !lowPower) {
       const idleHours = Math.max(0, (Date.now() - lastTs) / 3600000);
       const fill = Math.min(1, 0.12 + idleHours / 72);   // 3일 방치 = 가득
       const band = ctx.createLinearGradient(0, h * 0.1, w, h * 0.7);
@@ -5559,9 +5641,20 @@ function initGalaxy(data) {
       });
       ctx.globalAlpha = 1;
     }
+    // 낮이거나 탭이 안 보이거나 배터리가 얼마 없으면 — 매 프레임 돌 이유가 없다. 캔버스를 비우고 30초마다만 다시 본다.
+    if (document.hidden || !isNightNow() || lowPower) {
+      ctx.clearRect(0, 0, w, h); last = 0; sleeping = true;
+      napTimer = setTimeout(() => { sleeping = false; requestAnimationFrame(draw); }, 30000);
+      return;
+    }
     requestAnimationFrame(draw);
   };
+  let sleeping = false, napTimer = 0;
   requestAnimationFrame(draw);
+  // 탭이 다시 보이면 30초를 기다리지 않고 바로 깨운다
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && sleeping) { clearTimeout(napTimer); sleeping = false; last = 0; requestAnimationFrame(draw); }
+  });
 }
 
 /* ===== 13 완료 카드 러닝 라이트 ===== */
@@ -5745,11 +5838,12 @@ function initModeSwitch() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   document.getElementById('shortsView').addEventListener('click', (ev) => {
-    const b = ev.target.closest('.shProj[data-id]');
-    if (!b) return;
+    const b = ev.target.closest('.shProj[data-id], .shBar[data-id]');
+    if (!b || b.dataset.id === (currentShortsProject() || {}).id) return;
     sfx('tap');
     shortsPick = b.dataset.id;
     renderShorts();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
@@ -5770,6 +5864,7 @@ function renderShorts() {
   const el = document.getElementById('shortsView');
   const p = currentShortsProject();
   if (!p) { el.innerHTML = ''; return; }
+  shareShorts = { title: '태태고 편집실', text: `태태고 편집실 · 쇼츠 "${p.topic || ''}" ${(p.shorts || []).length}개${p.isCompleted ? ' 완료' : ' 뽑는 중'}` };
   const list = [...(p.shorts || [])].sort((a, b) => tsOf(a.timestamp) - tsOf(b.timestamp));
   const done = !!p.isCompleted;
   const last = list.length ? list[list.length - 1].timestamp : null;
@@ -5778,6 +5873,12 @@ function renderShorts() {
   const vid = p.youtubeId;
   const thumb = vid ? `https://img.youtube.com/vi/${encodeURIComponent(vid)}/hqdefault.jpg` : '';
   const span = ((done && p.completedAt ? tsOf(p.completedAt) : Date.now()) - tsOf(p.createdAt)) / 1000;
+  // 쇼츠 하나 뽑는 데 걸리는 시간 — 앞 쇼츠와 2시간 안에 이어진 것만 센다 (쉬고 온 간격은 작업 시간이 아니다)
+  const gaps = list.slice(1).map((x, i) => (tsOf(x.timestamp) - tsOf(list[i].timestamp)) / 1000).filter(g => g >= 60 && g < 7200);
+  const pace = gaps.length ? gaps.reduce((a, b) => a + b, 0) / gaps.length : null;
+  const perDay = new Map();
+  list.forEach(x => { const d = new Date(x.timestamp).toDateString(); perDay.set(d, (perDay.get(d) || 0) + 1); });
+  const bestDay = [...perDay.entries()].sort((a, b) => b[1] - a[1])[0];
   const stat = (v, k, c, sm) => `<div class="shStat"><b class="${sm ? 'sm' : ''}" style="${c ? `--c:${c}` : ''}">${escapeHtml(String(v))}</b><span>${k}</span></div>`;
 
   const source = vid
@@ -5793,11 +5894,39 @@ function renderShorts() {
       <div class="shTopic">${escapeHtml(p.topic || '쇼츠')}</div>
       <div class="shStats">
         ${stat(`${list.length}개`, '만든 쇼츠', 'var(--sh1)')}
-        ${stat(`${today}개`, '오늘', 'var(--gold)')}
+        ${done ? stat(pace ? formatSpan(pace) : '—', '쇼츠당 평균', 'var(--gold)', true) : stat(`${today}개`, '오늘', 'var(--gold)')}
         ${stat(formatSpan(span), done ? '작업 기간' : '시작 후', '', true)}
         ${stat(formatDayLabel(p.createdAt).replace(/ \(.\)$/, ''), '시작', '', true)}
       </div>
+      ${list.length >= 2 ? `<div class="shPace">
+        ${!done && pace ? `<span>${uiIcon('hourglass')}쇼츠당 평균 <b>${escapeHtml(formatSpan(pace))}</b></span>` : ''}
+        ${bestDay ? `<span>${uiIcon('flame')}하루 최다 <b>${bestDay[1]}개</b> <em>${escapeHtml(formatDayLabel(new Date(bestDay[0]).toISOString()).replace(/ \(.\)$/, ''))}</em></span>` : ''}
+        ${pace && list.length >= 3 ? `<span>${uiIcon('bolt')}가장 빨랐던 간격 <b>${escapeHtml(formatSpan(Math.min(...gaps)))}</b></span>` : ''}
+      </div>` : ''}
     </div>`;
+
+  // 쇼츠 전체 — 프로젝트마다 몇 개 뽑았는지 막대로 (지금 보는 편은 빨강). 누르면 그 편으로 간다.
+  const ps = shortsData.projects;
+  const total = ps.reduce((a, q) => a + (q.shorts || []).length, 0);
+  const maxN = Math.max(1, ...ps.map(q => (q.shorts || []).length));
+  const rankOf = [...ps].sort((a, b) => (b.shorts || []).length - (a.shorts || []).length).findIndex(q => q.id === p.id) + 1;
+  const allCard = ps.length >= 2 ? `
+    <div class="card shAll">
+      <div class="cardHead"><span class="cardTitle"><span class="cardIcon shIcon" aria-hidden="true">${uiIcon('folder')}</span>쇼츠 전체</span><span class="cardMeta mono">${ps.length}편 · ${total}개</span></div>
+      <div class="shAllSum">
+        <div><b>${total}개</b><span>쇼츠 합계</span></div>
+        <div><b>${(total / ps.length).toFixed(1)}개</b><span>영상당 평균</span></div>
+        <div><b>${rankOf}위<small>/${ps.length}</small></b><span>이 편 순위</span></div>
+      </div>
+      <div class="shBars">
+        ${[...ps].sort((a, b) => shortsLastActivity(b) - shortsLastActivity(a)).map(q => { const n = (q.shorts || []).length; return `
+          <button type="button" class="shBar${q.id === p.id ? ' on' : ''}" data-id="${escapeHtml(q.id)}" title="${escapeHtml(q.topic || '')}">
+            <span class="shBarName">${escapeHtml(q.topic || '쇼츠')}${q.isCompleted ? '' : ' <em>뽑는 중</em>'}</span>
+            <span class="shBarLane"><i style="width:${(n / maxN * 100).toFixed(1)}%"></i></span>
+            <b>${n}</b>
+          </button>`; }).join('')}
+      </div>
+    </div>` : '';
 
   // 만든 쇼츠 — 최근 것이 위로, 날짜마다 묶는다. 오른쪽엔 시각과 앞 기록(첫 개는 프로젝트 시작)으로부터 걸린 시간.
   // 제목 아래 줄(원본 · 태그 · 촬영일)이 전부 같으면 줄마다 되풀이하지 않고 머리에 한 번만 쓴다.
@@ -5831,7 +5960,78 @@ function renderShorts() {
     </div>`;
 
   // 다른 쇼츠 프로젝트 목록은 위쪽 '지난 프로젝트' 단추로 올렸다 (renderPastShorts)
-  el.innerHTML = `<div class="shCol">${hero}</div><div class="shCol">${listCard}</div>`;
+  el.innerHTML = `<div class="shCol">${hero}${allCard}</div><div class="shCol">${listCard}</div>`;
+}
+
+/* ===== 공유 — 폰은 기기 공유창(카카오톡 · 왓츠앱 · 인스타 DM …), 그 밖엔 직접 고르는 창 ===== */
+let shareState = { title: '태태고 편집실', text: '' };        // 에피소드 화면 문구
+let shareShorts = { title: '태태고 편집실', text: '' };       // 쇼츠 화면 문구
+function shareUrl() {
+  return `${location.origin}${location.pathname}${shortsMode ? '#shorts' : ''}`;
+}
+async function shareSite() {
+  sfx('tap');
+  const st = shortsMode ? shareShorts : shareState;
+  const data = { title: st.title, text: st.text, url: shareUrl() };
+  if (navigator.share) {
+    try { await navigator.share(data); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  openShareSheet(data);
+}
+function openShareSheet({ text, url }) {
+  const back = document.getElementById('shareModal');
+  const full = `${text}\n${url}`;
+  const enc = encodeURIComponent;
+  const brand = (path) => `<svg class="brand" viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"/></svg>`;
+  const links = [
+    ['copy', '링크 복사', 'var(--grp-2)', null, uiIcon('copy')],
+    ['wa', 'WhatsApp', '#25d366', `https://wa.me/?text=${enc(full)}`, brand('M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z')],
+    ['tg', 'Telegram', '#2aabee', `https://t.me/share/url?url=${enc(url)}&text=${enc(text)}`, brand('M21.9 4.3 18.8 19.4c-.2 1-.9 1.3-1.7.8l-4.8-3.6-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.7 13.1l-4.7-1.5c-1-.3-1-1 .2-1.5L20.5 3c.9-.3 1.6.2 1.4 1.3z')],
+    ['line', 'LINE', '#06c755', `https://social-plugins.line.me/lineit/share?url=${enc(url)}&text=${enc(text)}`, brand('M12 2.5C6.5 2.5 2 6.1 2 10.6c0 4 3.6 7.4 8.4 8 .3.1.8.2.9.5.1.3 0 .7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6a7.2 7.2 0 0 0 1.9-4.9c0-4.5-4.5-8.1-10-8.1zM8.2 13.2H6.1a.5.5 0 0 1-.5-.5V8.5a.5.5 0 1 1 1 0v3.7h1.6a.5.5 0 1 1 0 1zm1.9-.5a.5.5 0 1 1-1 0V8.5a.5.5 0 1 1 1 0zm5 0a.5.5 0 0 1-.9.3l-2.1-2.9v2.6a.5.5 0 1 1-1 0V8.5a.5.5 0 0 1 .9-.3l2.1 2.9V8.5a.5.5 0 1 1 1 0zm3.5-2.6a.5.5 0 1 1 0 1h-1.5v1h1.5a.5.5 0 1 1 0 1h-2a.5.5 0 0 1-.5-.5V8.5a.5.5 0 0 1 .5-.5h2a.5.5 0 1 1 0 1h-1.5v1z')],
+    ['x', 'X', '#111', `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}`, brand('M17.8 3h3l-6.7 7.7L22 21h-6.2l-4.8-6.3L5.4 21h-3l7.2-8.2L2 3h6.3l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z')],
+    ['fb', 'Facebook', '#1877f2', `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`, brand('M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.2-1.5 1.5-1.5h1.6V4.4a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21z')],
+    ['mail', '이메일', '#6b7f7a', `mailto:?subject=${enc(shortsMode ? shareShorts.title : shareState.title)}&body=${enc(full)}`, uiIcon('mail')],
+  ];
+  document.getElementById('shareText').textContent = full;
+  document.getElementById('shareMeta').textContent = shortsMode ? '쇼츠 화면' : '에피소드 화면';
+  document.getElementById('shareGrid').innerHTML = links.map(([k, label, c, href, icon]) => href
+    ? `<a class="shareBtn" style="--sc:${c}" href="${href}" target="_blank" rel="noopener noreferrer"><i>${icon}</i>${label}</a>`
+    : `<button type="button" class="shareBtn" style="--sc:${c}" data-share="${k}"><i>${icon}</i>${label}</button>`).join('');
+  back.hidden = false;
+  const copyBtn = back.querySelector('[data-share="copy"]');
+  copyBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(full); } catch (e) {
+      const ta = document.createElement('textarea'); ta.value = full; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e2) {} ta.remove();
+    }
+    sfx('pop');
+    copyBtn.classList.add('copied'); copyBtn.querySelector('i').innerHTML = uiIcon('check'); copyBtn.lastChild.textContent = '복사됨';
+  });
+}
+function initShare() {
+  const btn = document.getElementById('shareBtn'), back = document.getElementById('shareModal');
+  if (!btn || !back) return;
+  btn.addEventListener('click', shareSite);
+  const shut = () => { back.hidden = true; };
+  document.getElementById('shareClose').addEventListener('click', shut);
+  back.addEventListener('click', (ev) => { if (ev.target === back) shut(); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !back.hidden) shut(); });
+}
+
+/* ===== 배터리 — 보이지 않을 땐 장식(은하수 · 혜성)을 멈추고, 배터리가 얼마 안 남았으면 늘 도는 장식을 끈다 =====
+   (iOS 저전력 모드는 브라우저가 알려 주지 않는다 — 그땐 iOS가 알아서 화면 갱신을 절반으로 줄인다.) */
+let lowPower = false;
+function initPowerSaver() {
+  if (!navigator.getBattery) return;
+  navigator.getBattery().then((bat) => {
+    const apply = () => {
+      lowPower = !bat.charging && bat.level <= 0.2;
+      document.documentElement.classList.toggle('lowPower', lowPower);
+    };
+    apply();
+    bat.addEventListener('levelchange', apply);
+    bat.addEventListener('chargingchange', apply);
+  }).catch(() => {});
 }
 
 /* ===== 여행 명언 카드 =====
