@@ -121,12 +121,13 @@
     }
   ],
   "entryCount" : 3,
-  "lastUpdate" : "2026-10-20T15:30:37Z",
-  "originalLength" : "",
+  "lastUpdate" : "2026-10-20T15:35:02Z",
+  "originalLength" : "4:07",
   "progress" : {
     "currentIndex" : 2,
     "done" : 2,
     "pct" : 6,
+    "stageFraction" : 0,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
