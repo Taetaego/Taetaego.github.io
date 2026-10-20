@@ -92,7 +92,7 @@
       "weight" : 2
     }
   ],
-  "createdAt" : "2026-10-20T06:44:34Z",
+  "createdAt" : "2026-10-19T06:44:34Z",
   "currentStage" : "촬영본 정리",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
@@ -100,13 +100,13 @@
     {
       "category" : "촬영본 정리",
       "categorySymbol" : "folder",
-      "elapsed" : "0분",
+      "elapsed" : "1일",
       "timestamp" : "2026-10-20T06:44:34Z",
       "videoLength" : ""
     }
   ],
   "entryCount" : 1,
-  "lastUpdate" : "2026-10-20T06:44:37Z",
+  "lastUpdate" : "2026-10-20T06:44:55Z",
   "originalLength" : "",
   "progress" : {
     "currentIndex" : 0,
