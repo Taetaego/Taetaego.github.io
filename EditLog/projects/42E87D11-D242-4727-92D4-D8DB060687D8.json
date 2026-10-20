@@ -89,7 +89,7 @@
       "name" : "썸네일 · 업로드",
       "symbolName" : "text.below.photo",
       "tracksLength" : false,
-      "weight" : 2
+      "weight" : 3
     }
   ],
   "completedAt" : "2026-10-05T12:53:22Z",
@@ -386,7 +386,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 90.9090909090909,
   "finalRatioVsOriginal" : 12.82051282051282,
-  "lastUpdate" : "2026-10-20T17:08:00Z",
+  "lastUpdate" : "2026-10-20T17:08:32Z",
   "originalLength" : "2:36",
   "progress" : {
     "done" : 13,
