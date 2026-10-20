@@ -100,20 +100,20 @@
     {
       "category" : "촬영본 정리",
       "categorySymbol" : "folder",
-      "elapsed" : "1일",
-      "timestamp" : "2026-10-20T06:44:34Z",
+      "elapsed" : "0분",
+      "timestamp" : "2026-10-19T06:44:34Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 · 컷 계획",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "0분",
+      "elapsed" : "1일",
       "timestamp" : "2026-10-20T06:44:53Z",
       "videoLength" : ""
     }
   ],
   "entryCount" : 2,
-  "lastUpdate" : "2026-10-20T06:45:02Z",
+  "lastUpdate" : "2026-10-20T06:45:45Z",
   "originalLength" : "",
   "progress" : {
     "currentIndex" : 1,
