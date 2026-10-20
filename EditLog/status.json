@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "자막 · 컷 계획",
+  "currentStage" : "1차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -110,15 +110,23 @@
       "elapsed" : "12시간",
       "timestamp" : "2026-10-19T18:44:53Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "20시간 45분",
+      "memo" : "아 배고프",
+      "timestamp" : "2026-10-20T15:30:23Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 2,
-  "lastUpdate" : "2026-10-20T06:45:59Z",
+  "entryCount" : 3,
+  "lastUpdate" : "2026-10-20T15:30:37Z",
   "originalLength" : "",
   "progress" : {
-    "currentIndex" : 1,
-    "done" : 1,
-    "pct" : 3,
+    "currentIndex" : 2,
+    "done" : 2,
+    "pct" : 6,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
