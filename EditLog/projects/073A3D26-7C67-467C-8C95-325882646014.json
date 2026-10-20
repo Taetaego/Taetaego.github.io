@@ -118,17 +118,24 @@
       "memo" : "아 배고프",
       "timestamp" : "2026-10-20T15:30:23Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1시간 37분",
+      "timestamp" : "2026-10-20T17:07:54Z",
+      "videoLength" : "17"
     }
   ],
-  "entryCount" : 3,
-  "lastUpdate" : "2026-10-20T15:35:45Z",
+  "entryCount" : 4,
+  "lastUpdate" : "2026-10-20T17:08:00Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
     "currentIndex" : 2,
     "done" : 2,
-    "pct" : 6,
-    "stageFraction" : 0,
+    "pct" : 27,
+    "stageFraction" : 0.6882591093117408,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
