@@ -401,8 +401,13 @@
   "finalLength" : "34",
   "finalRatioVsDetailCut" : 97.14285714285714,
   "finalRatioVsOriginal" : 15.246636771300448,
-  "lastUpdate" : "2026-10-17T16:41:48Z",
+  "lastUpdate" : "2026-10-20T06:44:37Z",
   "originalLength" : "3:43",
+  "progress" : {
+    "done" : 13,
+    "pct" : 100,
+    "total" : 13
+  },
   "projectTopic" : "디즈니월드!! 에콧",
   "status" : "completed",
   "youtubeId" : "6qBVXDTJimk"

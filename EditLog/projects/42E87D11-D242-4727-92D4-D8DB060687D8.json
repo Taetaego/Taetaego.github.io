@@ -386,8 +386,13 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 90.9090909090909,
   "finalRatioVsOriginal" : 12.82051282051282,
-  "lastUpdate" : "2026-10-17T16:41:48Z",
+  "lastUpdate" : "2026-10-20T06:44:37Z",
   "originalLength" : "2:36",
+  "progress" : {
+    "done" : 13,
+    "pct" : 100,
+    "total" : 13
+  },
   "projectTopic" : "페루 -> 올란도 입국",
   "status" : "completed",
   "youtubeId" : "apTcrrg3npg"

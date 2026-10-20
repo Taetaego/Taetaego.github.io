@@ -1,0 +1,119 @@
+{
+  "allCategories" : [
+    {
+      "group" : "컷 편집",
+      "name" : "촬영본 정리",
+      "symbolName" : "folder",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
+      "name" : "자막 · 컷 계획",
+      "symbolName" : "captions.bubble",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "컷 편집",
+      "name" : "1차 컷편집",
+      "symbolName" : "scissors",
+      "tracksLength" : true,
+      "weight" : 11
+    },
+    {
+      "group" : "컷 편집",
+      "name" : "2차 컷편집",
+      "symbolName" : "scissors",
+      "tracksLength" : true,
+      "weight" : 3
+    },
+    {
+      "group" : "중간 작업",
+      "name" : "자막 입력",
+      "symbolName" : "captions.bubble",
+      "tracksLength" : true,
+      "weight" : 7
+    },
+    {
+      "group" : "중간 작업",
+      "name" : "자료 화면 넣기",
+      "symbolName" : "photo.on.rectangle",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "중간 작업",
+      "name" : "자막 다듬기",
+      "symbolName" : "text.badge.checkmark",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "중간 작업",
+      "name" : "자막 디자인",
+      "symbolName" : "paintpalette",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "후반 작업",
+      "name" : "오프닝",
+      "symbolName" : "star.bubble",
+      "tracksLength" : false,
+      "weight" : 1
+    },
+    {
+      "group" : "후반 작업",
+      "name" : "지도 · 위치 추가",
+      "symbolName" : "map",
+      "tracksLength" : false,
+      "weight" : 2
+    },
+    {
+      "group" : "후반 작업",
+      "name" : "배경음 · 수정",
+      "symbolName" : "music.note",
+      "tracksLength" : true,
+      "weight" : 3
+    },
+    {
+      "group" : "후반 작업",
+      "name" : "마지막 점검",
+      "symbolName" : "checkmark.seal",
+      "tracksLength" : true,
+      "weight" : 1
+    },
+    {
+      "group" : "마무리 작업",
+      "name" : "썸네일 · 업로드",
+      "symbolName" : "text.below.photo",
+      "tracksLength" : false,
+      "weight" : 2
+    }
+  ],
+  "createdAt" : "2026-10-20T06:44:34Z",
+  "currentStage" : "촬영본 정리",
+  "cutBaselineRatio" : 0.1,
+  "cuttingGroup" : "컷 편집",
+  "entries" : [
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "0분",
+      "timestamp" : "2026-10-20T06:44:34Z",
+      "videoLength" : ""
+    }
+  ],
+  "entryCount" : 1,
+  "lastUpdate" : "2026-10-20T06:44:37Z",
+  "originalLength" : "",
+  "progress" : {
+    "currentIndex" : 0,
+    "done" : 0,
+    "pct" : 0,
+    "total" : 13
+  },
+  "projectTopic" : "애니멀킹덤",
+  "status" : "in_progress"
+}
