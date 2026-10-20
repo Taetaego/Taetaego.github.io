@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "촬영본 정리",
+  "currentStage" : "자막 · 컷 계획",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -103,15 +103,22 @@
       "elapsed" : "1일",
       "timestamp" : "2026-10-20T06:44:34Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 · 컷 계획",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "0분",
+      "timestamp" : "2026-10-20T06:44:53Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-10-20T06:44:55Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-10-20T06:45:02Z",
   "originalLength" : "",
   "progress" : {
-    "currentIndex" : 0,
-    "done" : 0,
-    "pct" : 0,
+    "currentIndex" : 1,
+    "done" : 1,
+    "pct" : 3,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
