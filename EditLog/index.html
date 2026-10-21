@@ -459,6 +459,11 @@
   .raceStageHead strong { font-size: 13.5px; font-weight: 900; color: var(--ink); }
   .raceStageHead em { font-style: normal; font-weight: 800; color: var(--race-me); }
   .raceStageHead .r { margin-left: auto; font-weight: 800; }
+  .raceSeg { display: flex; gap: 2px; background: none !important; }
+  .raceSeg span { height: 100%; border-radius: 3px; }
+  .raceOver { position: absolute; top: 0; bottom: 0; border-radius: 0 4px 4px 0; text-decoration: none;
+              background: rgba(0,0,0,.3); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--race-red) 70%, transparent); }
+  .raceLegend { margin: 0 0 -2px; }
   .racePinSep { height: 1px; background: color-mix(in srgb, var(--ink) 12%, transparent); margin: 1px 0; }
 .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 78px; }
   @media (max-width: 440px) { .raceRow .d { display: none; } .raceRow { grid-template-columns: 16px minmax(0, 1.3fr) minmax(36px, 1fr) 70px; }
@@ -2884,18 +2889,35 @@ function raceSpan(ms) {
   return `${Math.max(1, Math.floor(ms / 60000))}분`;
 }
 
-// 속도 비교 줄들 (순위표 · 지금 단계 비교 같이) — 지금 이 에피소드는 하늘색으로 맨 위 + 구분선,
-// 나머지는 빠른 순 · 평균보다 오래 걸렸으면 빨강, 짧았으면 초록 (2026-10-21 사용자, 시안 A)
-function raceRowsHtml(rows, longest, avg) {
+// 속도 비교 줄들 (순위표 · 지금 단계 비교 같이) — 지금 이 에피소드는 하늘색으로 맨 위 + 구분선, 나머지는 빠른 순.
+// 막대: 구역(seg)이 있으면 단계 그룹 색으로 나누고(순위표), 없으면 평균보다 오래 빨강 · 짧게 초록(지금 단계 비교).
+// 평균 눈금을 넘친 만큼은 살짝 흐리게 + 연한 빨간 테 · 시간 글자는 평균보다 오래 빨강 · 짧게 초록 (2026-10-21 사용자, 시안 A2 연하게)
+function raceRowsHtml(rows, longest, avg, segColor) {
   const row = r => {
-    const color = r.me ? 'var(--race-me)' : r.t > avg ? 'var(--race-red)' : 'var(--race-green)';
+    const slow = r.t > avg, w = r.t / longest * 100, a = Math.min(avg, longest) / longest * 100;
+    const fill = r.seg && r.seg.length
+      ? `<i class="raceSeg" style="width:${w.toFixed(1)}%">${r.seg.map(([g, t]) => `<span style="flex:${t};background:${segColor(g)};opacity:${r.me ? 1 : .85}" title="${escapeHtml(g)} ${raceSpan(t)}"></span>`).join('')}</i>`
+      : `<i style="width:${w.toFixed(1)}%;background:${r.me ? 'var(--race-me)' : slow ? 'var(--race-red)' : 'var(--race-green)'};opacity:${r.me ? 1 : slow ? .8 : .75}"></i>`;
+    const over = slow ? `<u class="raceOver" style="left:${a.toFixed(1)}%;width:${(w - a).toFixed(1)}%"></u>` : '';
+    const tc = r.me ? 'var(--race-me)' : slow ? 'var(--race-red)' : 'var(--race-green)';
     return `<div class="raceRow raceStage${r.me ? ' me' : ''}">
       <span class="nm">${escapeHtml(r.name)}</span>
-      <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : r.t > avg ? .8 : .75}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
-      <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${r.label || raceSpan(r.t)}</span></div>`;
+      <span class="raceBar">${fill}${over}<b style="left:${a.toFixed(1)}%"></b></span>
+      <span class="t" style="color:${tc}">${r.label || raceSpan(r.t)}</span></div>`;
   };
   const mine = rows.filter(r => r.me), rest = rows.filter(r => !r.me).sort((a, b) => a.t - b.t);
   return `<div class="raceRows">${mine.map(row).join('')}${mine.length && rest.length ? '<div class="racePinSep"></div>' : ''}${rest.map(row).join('')}</div>`;
+}
+
+// 편집 시작부터 until까지 그룹마다 머문 시간 — [[그룹, ms], …] (그룹 순서대로)
+function raceSegments(visits, until, groupOf, order) {
+  const sum = new Map();
+  for (const v of visits) {
+    if (v.start >= until) continue;
+    const g = groupOf.get(v.name); if (!g) continue;
+    sum.set(g, (sum.get(g) || 0) + Math.max(0, Math.min(v.end ?? until, until) - v.start));
+  }
+  return order.filter(g => sum.get(g) > 0).map(g => [g, sum.get(g)]);
 }
 
 async function renderRace(data) {
@@ -2918,7 +2940,10 @@ async function renderRace(data) {
 
   // ── 순위표
   const myStart = mine[0].start;
-  const me = { name: '지금 이 에피소드', t: cur.start - myStart, me: true };
+  const order = [...new Set((data.allCategories || []).map(c => c.group))];
+  const segColor = g => `var(--grp-${(order.indexOf(g) % 4) + 1})`;
+  const groupsOf = j => new Map((j.allCategories || data.allCategories || []).map(c => [c.name, c.group]));
+  const me = { name: '지금 이 에피소드', t: cur.start - myStart, me: true, seg: raceSegments(mine, cur.start, groupsOf(data), order) };
   let list = [me];
   if (mine.length > 1) {   // 첫 단계면 다들 0이라 비교할 게 없다 — 순위표 없이 단계 비교만
     past.forEach(({ p, j }, i) => {
@@ -2926,7 +2951,7 @@ async function renderRace(data) {
       const hit = v.find(x => x.name === cur.name);
       if (!hit) return;
       const t = hit.start - v[0].start;
-      if (t >= RACE_MIN) list.push({ name: j.raceName || j.projectTopic || p.topic || '이름 없는 에피소드', t, me: false, recent: i < 5 });
+      if (t >= RACE_MIN) list.push({ name: j.raceName || j.projectTopic || p.topic || '이름 없는 에피소드', t, me: false, recent: i < 5, seg: raceSegments(v, hit.start, groupsOf(j), order) });
     });
     list.sort((a, b) => a.t - b.t);
   }
@@ -2953,8 +2978,10 @@ async function renderRace(data) {
         <span class="raceRank${rank === 1 ? ' first' : rank === list.length ? ' last' : ''}">${rank === 1 ? '역대 1등 페이스!' : `${list.length}편 중 ${rank}등`}</span></div>
       <div class="raceAvg">평균 ${raceSpan(avg)} · ${avgLine}</div>
       ${/* 아래 "지금 단계 비교"와 같은 모양. 지금 이 에피소드는 늘 맨 위 · 평균보다 오래 걸린 편 빨강, 짧게 걸린 편 초록 (2026-10-21 사용자, 시안 A) */''}
-      ${raceRowsHtml(shown.map(([, r]) => r), longest, avg)}
-      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 평균보다 오래 걸린 편 · 초록 = 평균보다 짧게 걸린 편 · 세로 눈금 = 평균 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
+      ${(() => { const gs = order.filter(g => shown.some(([, r]) => (r.seg || []).some(([x]) => x === g)));
+        return gs.length ? `<div class="dcLegend raceLegend">${gs.map(g => `<span><i style="background:${segColor(g)}"></i>${escapeHtml(g)}</span>`).join('')}</div>` : ''; })()}
+      ${raceRowsHtml(shown.map(([, r]) => r), longest, avg, segColor)}
+      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '흰 눈금 = 끝낸 에피소드 평균 · 빨간 테 = 평균을 넘친 만큼 · 시간 빨강/초록 = 평균보다 오래/짧게 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
   } else {
     race = '<div class="raceNote">견줄 끝낸 에피소드가 아직 없어요 — 기록을 한꺼번에 몰아 넣은 편은 빼고 비교해요</div>';
   }
