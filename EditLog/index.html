@@ -440,15 +440,16 @@
   .raceAvg { font-size: 12px; font-weight: 800; color: var(--ink2); margin-top: -4px; }
   .raceAvg .fast { color: var(--race-green); } .raceAvg .slow { color: var(--race-red); }
   .raceRows { display: flex; flex-direction: column; gap: 3px; }
-  .raceRow { display: grid; grid-template-columns: 16px minmax(0, 1.1fr) minmax(40px, 1.3fr) auto auto; align-items: center;
+  /* 시간 · 차이 칸은 폭을 고정 — 줄마다 글자 길이(1일 · 5일 22시간)에 따라 막대 길이 · 시작점이 달라져 견주기 어려웠다 (2026-10-21 사용자) */
+  .raceRow { display: grid; grid-template-columns: 16px minmax(0, 1.1fr) minmax(40px, 1.3fr) 78px 80px; align-items: center;
              gap: 8px; padding: 5px 8px; border-radius: 8px; font-size: 12.5px; }
   .raceRow.me { background: color-mix(in srgb, var(--race-me) 14%, transparent); }
   .raceRow .n { font-weight: 900; color: var(--ink3); text-align: center; }
   .raceRow .n.gold { color: var(--gold); }
   .raceRow .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
   .raceRow.me .nm { color: var(--race-me); font-weight: 900; }
-  .raceRow .t { font-weight: 800; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
-  .raceRow .d { font-size: 11px; font-weight: 800; white-space: nowrap; min-width: 74px; }
+  .raceRow .t { font-weight: 800; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; overflow: hidden; }
+  .raceRow .d { font-size: 11px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .raceBar { position: relative; height: 7px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
   .raceBar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; min-width: 6px; }
   .raceBar b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--ink); opacity: .75; }
@@ -458,9 +459,9 @@
   .raceStageHead strong { font-size: 13.5px; font-weight: 900; color: var(--ink); }
   .raceStageHead em { font-style: normal; font-weight: 800; color: var(--race-me); }
   .raceStageHead .r { margin-left: auto; font-weight: 800; }
-  .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) auto; }
-  @media (max-width: 440px) { .raceRow .d { display: none; } .raceRow { grid-template-columns: 16px minmax(0, 1.3fr) minmax(36px, 1fr) auto; }
-                              .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) auto; } }
+  .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 78px; }
+  @media (max-width: 440px) { .raceRow .d { display: none; } .raceRow { grid-template-columns: 16px minmax(0, 1.3fr) minmax(36px, 1fr) 70px; }
+                              .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 70px; } }
 
   /* 편집 잔디 창 — 카드 하나가 그대로 창이 된다 */
   .heatSheet { width: min(880px, 100%); max-height: 88vh; overflow: auto; border-radius: 24px;
