@@ -387,7 +387,7 @@
   "finalLength" : "18",
   "finalRatioVsDetailCut" : 100,
   "finalRatioVsOriginal" : 4.931506849315069,
-  "lastUpdate" : "2026-10-21T05:51:25Z",
+  "lastUpdate" : "2026-10-21T05:51:40Z",
   "originalLength" : "6:05",
   "progress" : {
     "done" : 13,
@@ -395,6 +395,7 @@
     "total" : 13
   },
   "projectTopic" : "페루 3500m 캠핑",
+  "raceName" : "페루 3500 캠핑",
   "status" : "completed",
   "youtubeId" : "7Git0OOPaEM"
 }
