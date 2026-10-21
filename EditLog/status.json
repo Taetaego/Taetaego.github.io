@@ -132,17 +132,24 @@
       "elapsed" : "12시간 45분",
       "timestamp" : "2026-10-21T05:53:54Z",
       "videoLength" : "23"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "10시간 31분",
+      "timestamp" : "2026-10-21T16:25:05Z",
+      "videoLength" : "28"
     }
   ],
-  "entryCount" : 5,
-  "lastUpdate" : "2026-10-21T05:54:00Z",
+  "entryCount" : 6,
+  "lastUpdate" : "2026-10-21T16:25:09Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
     "currentIndex" : 2,
     "done" : 2,
-    "pct" : 34,
-    "stageFraction" : 0.9311740890688258,
+    "pct" : 36,
+    "stageFraction" : 1,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
