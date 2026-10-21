@@ -2937,17 +2937,16 @@ async function renderRace(data) {
     race = `<div class="raceNow"><span class="big">지금 ${raceSpan(me.t)}째</span>
         <span class="raceRank${rank === 1 ? ' first' : rank === list.length ? ' last' : ''}">${rank === 1 ? '역대 1등 페이스!' : `${list.length}편 중 ${rank}등`}</span></div>
       <div class="raceAvg">평균 ${raceSpan(avg)} · ${avgLine}</div>
+      ${/* 아래 "지금 단계 비교"와 같은 모양 — 이름 | 막대 + 평균 흰 눈금 | 시간 (2026-10-21 사용자: 형식은 똑같이, 색은 위쪽 것). 순위는 위 "N편 중 N등"에 */''}
       <div class="raceRows">${shown.map(([i, r]) => {
         const diff = r.t - me.t;
         const color = r.me ? 'var(--race-me)' : diff < 0 ? 'var(--race-red)' : 'var(--race-green)';
-        const note = r.me ? '<span style="color:var(--race-me)">나</span>'
-          : diff < 0 ? `<span style="color:var(--race-red)">${raceSpan(-diff)} 빨랐음</span>` : `<span style="color:var(--race-green)">${raceSpan(diff)} 느렸음</span>`;
-        return `<div class="raceRow${r.me ? ' me' : ''}"><span class="n${i === 0 ? ' gold' : ''}">${i + 1}</span>
+        return `<div class="raceRow raceStage${r.me ? ' me' : ''}">
           <span class="nm">${escapeHtml(r.name)}</span>
-          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i></span>
-          <span class="t">${raceSpan(r.t)}</span><span class="d">${note}</span></div>`;
+          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
+          <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${raceSpan(r.t)}</span></div>`;
       }).join('')}</div>
-      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 나보다 빨리 온 편 · 초록 = 나보다 늦게 온 편 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
+      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 나보다 빨리 온 편 · 초록 = 나보다 늦게 온 편 · 세로 눈금 = 평균 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
   } else {
     race = '<div class="raceNote">견줄 끝낸 에피소드가 아직 없어요 — 기록을 한꺼번에 몰아 넣은 편은 빼고 비교해요</div>';
   }
