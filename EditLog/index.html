@@ -428,7 +428,7 @@
   .pastBtn[hidden] { display: none; }
   /* ===== 과거의 나와 속도 비교 (앱 GhostRaceCard) ===== */
   .raceCard { display: flex; flex-direction: column; gap: 10px;
-              --race-me: #4fa8ea; --race-red: #e46a6d; --race-green: #3fb45a; }
+              --race-me: #6fd3ff; --race-red: #ff6b7f; --race-green: #7ed67a; }   /* 앱과 같은 색 — skyLight · salmon · 7ED67A (2026-10-21 사용자) */
   .raceLead { font-size: 12.5px; color: var(--ink2); }
   .raceLead b { color: var(--ink); font-weight: 800; }
   .raceNow { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -2891,7 +2891,7 @@ function raceRowsHtml(rows, longest, avg) {
     const color = r.me ? 'var(--race-me)' : r.t > avg ? 'var(--race-red)' : 'var(--race-green)';
     return `<div class="raceRow raceStage${r.me ? ' me' : ''}">
       <span class="nm">${escapeHtml(r.name)}</span>
-      <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
+      <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : r.t > avg ? .8 : .75}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
       <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${r.label || raceSpan(r.t)}</span></div>`;
   };
   const mine = rows.filter(r => r.me), rest = rows.filter(r => !r.me).sort((a, b) => a.t - b.t);
