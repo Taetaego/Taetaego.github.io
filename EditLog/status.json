@@ -92,309 +92,324 @@
       "weight" : 3
     }
   ],
-  "completedAt" : "2026-10-05T12:53:22Z",
-  "createdAt" : "2026-09-29T16:57:18Z",
+  "completedAt" : "2026-10-17T16:41:45Z",
+  "createdAt" : "2026-10-05T13:57:41Z",
   "currentStage" : "완료",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
-  "detailCutLength" : "22",
-  "detailCutRatio" : 14.102564102564102,
+  "detailCutLength" : "35",
+  "detailCutRatio" : 15.695067264573993,
   "entries" : [
     {
-      "category" : "자막 추출",
-      "categorySymbol" : "flag",
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
       "elapsed" : "0분",
-      "timestamp" : "2026-09-29T16:57:18Z",
+      "timestamp" : "2026-10-05T13:57:41Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "17분",
+      "memo" : "찍은영상 한국까지 분류함, 분류하는와중 고프로 영상이 utc 기준으로 촬영되어있다는걸 꺠달음 이건 큰 꺠달음",
+      "timestamp" : "2026-10-05T14:15:09Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "1시간 13분",
+      "memo" : "영상정리 너무많네",
+      "timestamp" : "2026-10-05T15:28:38Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 · 컷 계획",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "5분",
-      "memo" : "지금 원래 macwhisper이란 프로그램을 사용하고있었는데, 갑자기 클로드로 자막추출 프로그램을 만들수있을것같다는 생각이 들어서 만드려고함",
-      "timestamp" : "2026-09-29T17:03:15Z",
+      "elapsed" : "28분",
+      "memo" : "일단 디즈니월드 16시간 유니버셜 6시간나옴 디즈니월드 한편 올란도 한편 해야하나 모르겠네 그리고 클로드 사용량 다써서 수요일 되어야 편집 시작할수있을",
+      "timestamp" : "2026-10-05T15:56:57Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 · 컷 계획",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "10시간 13분",
-      "memo" : "AI 자막추출 앱을 만듬",
-      "timestamp" : "2026-09-30T03:16:26Z",
+      "elapsed" : "5일 12시간 29분",
+      "timestamp" : "2026-10-11T04:26:45Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 · 컷 계획",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "1시간 16분",
-      "memo" : "자 이제 xml 뽑아볼까",
-      "timestamp" : "2026-09-30T04:33:18Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "자막 · 컷 계획",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "1시간 50분",
-      "memo" : "띠 만들기",
-      "timestamp" : "2026-09-30T06:23:37Z",
+      "elapsed" : "0분",
+      "timestamp" : "2026-10-11T04:27:44Z",
       "videoLength" : ""
     },
     {
       "category" : "1차 컷편집",
       "categorySymbol" : "scissors",
-      "elapsed" : "8시간 1분",
-      "timestamp" : "2026-09-30T14:25:28Z",
+      "elapsed" : "10시간 27분",
+      "memo" : "후........... 드디어 시작합니",
+      "timestamp" : "2026-10-11T14:55:15Z",
       "videoLength" : "0"
     },
     {
       "category" : "1차 컷편집",
       "categorySymbol" : "scissors",
-      "elapsed" : "1시간 11분",
-      "timestamp" : "2026-09-30T15:36:46Z",
+      "elapsed" : "3시간 9분",
+      "timestamp" : "2026-10-11T18:04:55Z",
+      "videoLength" : "18"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "14시간 19분",
+      "timestamp" : "2026-10-12T08:24:26Z",
+      "videoLength" : "27"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "54분",
+      "timestamp" : "2026-10-12T09:19:16Z",
+      "videoLength" : "40"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "24분",
+      "timestamp" : "2026-10-12T09:43:19Z",
+      "videoLength" : "48"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "13분",
+      "timestamp" : "2026-10-12T09:56:28Z",
+      "videoLength" : "0"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "38분",
+      "timestamp" : "2026-10-12T10:34:29Z",
       "videoLength" : "10"
     },
     {
-      "category" : "1차 컷편집",
+      "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
-      "elapsed" : "17분",
-      "memo" : "와 미쳤다... 한국어만 나만 말하니까 편집 개쉽다!!!!",
-      "timestamp" : "2026-09-30T15:54:34Z",
-      "videoLength" : "15"
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "31분",
-      "memo" : "와 한국말만 나오니까 개꿀이네, 이 영상보고 생각됩니다. 아 나는 혼자 여행한 영상은 편집 빠르게 하겠구나 😂",
-      "timestamp" : "2026-09-30T16:25:41Z",
-      "videoLength" : "24"
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "33분",
-      "timestamp" : "2026-09-30T16:58:59Z",
-      "videoLength" : "31"
+      "elapsed" : "34분",
+      "timestamp" : "2026-10-12T11:08:35Z",
+      "videoLength" : "22"
     },
     {
       "category" : "2차 컷편집",
       "categorySymbol" : "scissors",
-      "elapsed" : "19시간 6분",
-      "timestamp" : "2026-10-01T12:05:15Z",
+      "elapsed" : "30분",
+      "timestamp" : "2026-10-12T11:38:57Z",
+      "videoLength" : "35"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "4시간 16분",
+      "timestamp" : "2026-10-12T15:55:10Z",
       "videoLength" : "0"
     },
     {
-      "category" : "2차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "3시간 37분",
-      "timestamp" : "2026-10-01T15:42:29Z",
-      "videoLength" : "5"
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "21시간 24분",
+      "timestamp" : "2026-10-13T13:19:55Z",
+      "videoLength" : "1"
     },
     {
-      "category" : "2차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "31분",
-      "timestamp" : "2026-10-01T16:14:28Z",
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "43분",
+      "timestamp" : "2026-10-13T14:03:12Z",
+      "videoLength" : "7"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "47분",
+      "timestamp" : "2026-10-13T14:50:53Z",
+      "videoLength" : "12"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "33분",
+      "timestamp" : "2026-10-13T15:24:38Z",
       "videoLength" : "17"
     },
     {
-      "category" : "2차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "8분",
-      "timestamp" : "2026-10-01T16:23:13Z",
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "48분",
+      "timestamp" : "2026-10-13T16:13:06Z",
       "videoLength" : "22"
     },
     {
       "category" : "자막 입력",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "23시간 55분",
-      "memo" : "자막 추출",
-      "timestamp" : "2026-10-02T16:18:12Z",
-      "videoLength" : "0"
+      "elapsed" : "21시간 33분",
+      "timestamp" : "2026-10-14T13:46:30Z",
+      "videoLength" : "25"
     },
     {
       "category" : "자막 입력",
       "categorySymbol" : "captions.bubble",
-      "elapsed" : "1일 13시간 5분",
-      "timestamp" : "2026-10-04T05:23:43Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "1시간 23분",
-      "memo" : "클로드 사용량 90%.. 2일간 버틸수 있을까?",
-      "timestamp" : "2026-10-04T06:47:23Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "1시간 35분",
-      "timestamp" : "2026-10-04T08:22:44Z",
-      "videoLength" : "6"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "53분",
-      "timestamp" : "2026-10-04T09:16:24Z",
-      "videoLength" : "9"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "4시간 47분",
-      "timestamp" : "2026-10-04T14:04:06Z",
-      "videoLength" : "10"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "1시간 50분",
-      "timestamp" : "2026-10-04T15:54:49Z",
-      "videoLength" : "12"
+      "elapsed" : "1시간 36분",
+      "timestamp" : "2026-10-14T15:22:33Z",
+      "videoLength" : "32"
     },
     {
       "category" : "자료 화면 넣기",
       "categorySymbol" : "photo.on.rectangle",
-      "elapsed" : "48분",
-      "timestamp" : "2026-10-04T16:43:21Z",
+      "elapsed" : "18분",
+      "memo" : "후.. 이거 넘어가버렸다..",
+      "timestamp" : "2026-10-14T15:41:16Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 다듬기",
       "categorySymbol" : "text.badge.checkmark",
-      "elapsed" : "25분",
-      "timestamp" : "2026-10-04T17:08:24Z",
+      "elapsed" : "33분",
+      "memo" : "지금이 사실 자료화면을 넣는",
+      "timestamp" : "2026-10-14T16:14:54Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 디자인",
       "categorySymbol" : "paintpalette",
-      "elapsed" : "6분",
-      "timestamp" : "2026-10-04T17:14:25Z",
+      "elapsed" : "14분",
+      "timestamp" : "2026-10-14T16:29:14Z",
       "videoLength" : ""
     },
     {
       "category" : "자막 디자인",
       "categorySymbol" : "paintpalette",
-      "elapsed" : "12분",
-      "timestamp" : "2026-10-04T17:26:38Z",
+      "elapsed" : "21분",
+      "timestamp" : "2026-10-14T16:50:56Z",
       "videoLength" : ""
     },
     {
       "category" : "오프닝",
       "categorySymbol" : "star.bubble",
-      "elapsed" : "9시간 46분",
-      "timestamp" : "2026-10-05T03:13:31Z",
+      "elapsed" : "1일 19시간 34분",
+      "timestamp" : "2026-10-16T12:25:25Z",
       "videoLength" : ""
     },
     {
       "category" : "오프닝",
       "categorySymbol" : "star.bubble",
-      "elapsed" : "4시간 15분",
-      "timestamp" : "2026-10-05T07:29:12Z",
+      "elapsed" : "49분",
+      "memo" : "AI로 드립을 추가할수 있다는 엄청난 사실을 깨달아버렸",
+      "timestamp" : "2026-10-16T13:15:22Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "1시간 1분",
+      "memo" : "자막 디자인으로 역행해벌",
+      "timestamp" : "2026-10-16T14:16:30Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "1시간 5분",
+      "memo" : "자막 디자인작업 다시하는중....",
+      "timestamp" : "2026-10-16T15:21:53Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "자막 디자인",
+      "categorySymbol" : "paintpalette",
+      "elapsed" : "0분",
+      "memo" : "뭐지 기록테스",
+      "timestamp" : "2026-10-16T15:22:14Z",
+      "videoLength" : ""
+    },
+    {
+      "category" : "오프닝",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "7분",
+      "memo" : "와... 자막 작업 뭔갈 더 추가했는데 디자인 3번 반복작업하니까 머리 어질어질하",
+      "timestamp" : "2026-10-16T15:29:25Z",
       "videoLength" : ""
     },
     {
       "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
-      "elapsed" : "3분",
-      "timestamp" : "2026-10-05T07:33:04Z",
+      "elapsed" : "1시간 2분",
+      "memo" : "템플릿 하나 추가했는데.. 괜찮을까?",
+      "timestamp" : "2026-10-16T16:31:30Z",
       "videoLength" : ""
     },
     {
       "category" : "지도 · 위치 추가",
       "categorySymbol" : "map",
-      "elapsed" : "37분",
-      "timestamp" : "2026-10-05T08:10:53Z",
+      "elapsed" : "52분",
+      "memo" : "아 오늘 왤케 피곤하",
+      "timestamp" : "2026-10-16T17:23:48Z",
       "videoLength" : ""
     },
     {
       "category" : "배경음 · 수정",
       "categorySymbol" : "music.note",
-      "elapsed" : "1분",
-      "memo" : "이 작업이 심리적 장벽이 좀 큰듯",
-      "timestamp" : "2026-10-05T08:12:48Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "배경음 · 수정",
-      "categorySymbol" : "music.note",
-      "elapsed" : "48분",
-      "memo" : "자.... 시작해볼",
-      "timestamp" : "2026-10-05T09:01:46Z",
-      "videoLength" : "0"
+      "elapsed" : "14분",
+      "memo" : "자기전에 끝낼수 있을까?",
+      "timestamp" : "2026-10-16T17:38:04Z",
+      "videoLength" : "1"
     },
     {
       "category" : "마지막 점검",
       "categorySymbol" : "checkmark.seal",
-      "elapsed" : "54분",
-      "timestamp" : "2026-10-05T09:55:48Z",
+      "elapsed" : "1시간 30분",
+      "timestamp" : "2026-10-16T19:08:17Z",
       "videoLength" : "0"
     },
     {
       "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
-      "elapsed" : "47분",
-      "memo" : "고프로 12로 바꿔서 색보정도 조금 바",
-      "timestamp" : "2026-10-05T10:42:51Z",
+      "elapsed" : "42분",
+      "memo" : "후후후........",
+      "timestamp" : "2026-10-16T19:50:26Z",
       "videoLength" : ""
     },
     {
       "category" : "썸네일 · 업로드",
       "categorySymbol" : "text.below.photo",
-      "elapsed" : "46분",
-      "memo" : "썸네일이 항상 고민이",
-      "timestamp" : "2026-10-05T11:28:54Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "썸네일 · 업로드",
-      "categorySymbol" : "text.below.photo",
-      "elapsed" : "0분",
-      "memo" : "클로드 사용량 날아간",
-      "timestamp" : "2026-10-05T11:29:48Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "썸네일 · 업로드",
-      "categorySymbol" : "text.below.photo",
-      "elapsed" : "27분",
-      "memo" : "썸네일 작업은 항상 머리아프",
-      "timestamp" : "2026-10-05T11:57:36Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "썸네일 · 업로드",
-      "categorySymbol" : "text.below.photo",
-      "elapsed" : "24분",
-      "memo" : "이제 곧...!",
-      "timestamp" : "2026-10-05T12:22:19Z",
+      "elapsed" : "18시간 51분",
+      "memo" : "이제 끝까지 갑니",
+      "timestamp" : "2026-10-17T14:41:46Z",
       "videoLength" : ""
     },
     {
       "category" : "완료",
       "categorySymbol" : "flag",
-      "elapsed" : "31분",
-      "timestamp" : "2026-10-05T12:53:22Z",
-      "videoLength" : "20"
+      "elapsed" : "1시간 59분",
+      "timestamp" : "2026-10-17T16:41:45Z",
+      "videoLength" : "34"
     }
   ],
-  "entryCount" : 38,
-  "finalLength" : "20",
-  "finalRatioVsDetailCut" : 90.9090909090909,
-  "finalRatioVsOriginal" : 12.82051282051282,
-  "lastUpdate" : "2026-10-21T05:52:07Z",
-  "originalLength" : "2:36",
+  "entryCount" : 40,
+  "finalLength" : "34",
+  "finalRatioVsDetailCut" : 97.14285714285714,
+  "finalRatioVsOriginal" : 15.246636771300448,
+  "lastUpdate" : "2026-10-21T05:52:13Z",
+  "originalLength" : "3:43",
   "progress" : {
     "done" : 13,
     "pct" : 100,
     "total" : 13
   },
-  "projectTopic" : "페루 -> 올란도 입국",
-  "raceName" : "페루-올란도 입국",
+  "projectTopic" : "디즈니월드!! 에콧",
+  "raceName" : "엡콧",
   "status" : "completed",
-  "youtubeId" : "apTcrrg3npg"
+  "youtubeId" : "6qBVXDTJimk"
 }

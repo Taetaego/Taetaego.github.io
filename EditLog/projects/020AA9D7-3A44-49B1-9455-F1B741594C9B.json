@@ -401,7 +401,7 @@
   "finalLength" : "34",
   "finalRatioVsDetailCut" : 97.14285714285714,
   "finalRatioVsOriginal" : 15.246636771300448,
-  "lastUpdate" : "2026-10-21T05:52:07Z",
+  "lastUpdate" : "2026-10-21T05:52:13Z",
   "originalLength" : "3:43",
   "progress" : {
     "done" : 13,
@@ -409,6 +409,7 @@
     "total" : 13
   },
   "projectTopic" : "디즈니월드!! 에콧",
+  "raceName" : "엡콧",
   "status" : "completed",
   "youtubeId" : "6qBVXDTJimk"
 }
