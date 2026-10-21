@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "1차 컷편집",
+  "currentStage" : "2차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -153,17 +153,24 @@
       "elapsed" : "51분",
       "timestamp" : "2026-10-21T17:52:54Z",
       "videoLength" : "52"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "7분",
+      "timestamp" : "2026-10-21T18:00:27Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 8,
-  "lastUpdate" : "2026-10-21T17:52:58Z",
+  "entryCount" : 9,
+  "lastUpdate" : "2026-10-21T18:00:32Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 2,
-    "done" : 2,
+    "currentIndex" : 3,
+    "done" : 3,
     "pct" : 36,
-    "stageFraction" : 1,
+    "stageFraction" : 0,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
