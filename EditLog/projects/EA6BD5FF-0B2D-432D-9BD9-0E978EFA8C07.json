@@ -314,7 +314,7 @@
   "finalLength" : "20",
   "finalRatioVsDetailCut" : 83.33333333333334,
   "finalRatioVsOriginal" : 5.449591280653951,
-  "lastUpdate" : "2026-10-21T05:51:18Z",
+  "lastUpdate" : "2026-10-21T05:51:25Z",
   "originalLength" : "6:07",
   "progress" : {
     "done" : 13,
@@ -322,6 +322,7 @@
     "total" : 13
   },
   "projectTopic" : "와카치나",
+  "raceName" : "와카치나 사막",
   "status" : "completed",
   "youtubeId" : "pc3E3EFiSXA"
 }
