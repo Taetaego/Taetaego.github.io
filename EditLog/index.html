@@ -459,7 +459,8 @@
   .raceStageHead strong { font-size: 13.5px; font-weight: 900; color: var(--ink); }
   .raceStageHead em { font-style: normal; font-weight: 800; color: var(--race-me); }
   .raceStageHead .r { margin-left: auto; font-weight: 800; }
-  .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 78px; }
+  .racePinSep { height: 1px; background: color-mix(in srgb, var(--ink) 12%, transparent); margin: 1px 0; }
+.raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 78px; }
   @media (max-width: 440px) { .raceRow .d { display: none; } .raceRow { grid-template-columns: 16px minmax(0, 1.3fr) minmax(36px, 1fr) 70px; }
                               .raceStage { grid-template-columns: minmax(0, 1.2fr) minmax(36px, 1.6fr) 70px; } }
 
@@ -2883,6 +2884,20 @@ function raceSpan(ms) {
   return `${Math.max(1, Math.floor(ms / 60000))}분`;
 }
 
+// 속도 비교 줄들 (순위표 · 지금 단계 비교 같이) — 지금 이 에피소드는 하늘색으로 맨 위 + 구분선,
+// 나머지는 빠른 순 · 평균보다 오래 걸렸으면 빨강, 짧았으면 초록 (2026-10-21 사용자, 시안 A)
+function raceRowsHtml(rows, longest, avg) {
+  const row = r => {
+    const color = r.me ? 'var(--race-me)' : r.t > avg ? 'var(--race-red)' : 'var(--race-green)';
+    return `<div class="raceRow raceStage${r.me ? ' me' : ''}">
+      <span class="nm">${escapeHtml(r.name)}</span>
+      <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
+      <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${r.label || raceSpan(r.t)}</span></div>`;
+  };
+  const mine = rows.filter(r => r.me), rest = rows.filter(r => !r.me).sort((a, b) => a.t - b.t);
+  return `<div class="raceRows">${mine.map(row).join('')}${mine.length && rest.length ? '<div class="racePinSep"></div>' : ''}${rest.map(row).join('')}</div>`;
+}
+
 async function renderRace(data) {
   const card = document.getElementById('raceCard');
   if (!card) return;
@@ -2911,7 +2926,7 @@ async function renderRace(data) {
       const hit = v.find(x => x.name === cur.name);
       if (!hit) return;
       const t = hit.start - v[0].start;
-      if (t >= RACE_MIN) list.push({ name: j.projectTopic || p.topic || '이름 없는 에피소드', t, me: false, recent: i < 5 });
+      if (t >= RACE_MIN) list.push({ name: j.raceName || j.projectTopic || p.topic || '이름 없는 에피소드', t, me: false, recent: i < 5 });
     });
     list.sort((a, b) => a.t - b.t);
   }
@@ -2937,16 +2952,9 @@ async function renderRace(data) {
     race = `<div class="raceNow"><span class="big">지금 ${raceSpan(me.t)}째</span>
         <span class="raceRank${rank === 1 ? ' first' : rank === list.length ? ' last' : ''}">${rank === 1 ? '역대 1등 페이스!' : `${list.length}편 중 ${rank}등`}</span></div>
       <div class="raceAvg">평균 ${raceSpan(avg)} · ${avgLine}</div>
-      ${/* 아래 "지금 단계 비교"와 같은 모양 — 이름 | 막대 + 평균 흰 눈금 | 시간 (2026-10-21 사용자: 형식은 똑같이, 색은 위쪽 것). 순위는 위 "N편 중 N등"에 */''}
-      <div class="raceRows">${shown.map(([i, r]) => {
-        const diff = r.t - me.t;
-        const color = r.me ? 'var(--race-me)' : diff < 0 ? 'var(--race-red)' : 'var(--race-green)';
-        return `<div class="raceRow raceStage${r.me ? ' me' : ''}">
-          <span class="nm">${escapeHtml(r.name)}</span>
-          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${color};opacity:${r.me ? 1 : .8}"></i><b style="left:${(Math.min(avg, longest) / longest * 100).toFixed(1)}%"></b></span>
-          <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${raceSpan(r.t)}</span></div>`;
-      }).join('')}</div>
-      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 나보다 빨리 온 편 · 초록 = 나보다 늦게 온 편 · 세로 눈금 = 평균 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
+      ${/* 아래 "지금 단계 비교"와 같은 모양. 지금 이 에피소드는 늘 맨 위 · 평균보다 오래 걸린 편 빨강, 짧게 걸린 편 초록 (2026-10-21 사용자, 시안 A) */''}
+      ${raceRowsHtml(shown.map(([, r]) => r), longest, avg)}
+      <div class="raceNote">${rank === 1 ? '지금처럼만 가면 역대 가장 빠른 편이에요' : '빨강 = 평균보다 오래 걸린 편 · 초록 = 평균보다 짧게 걸린 편 · 세로 눈금 = 평균 — 다음 단계로 넘어가면 다시 비교해요'}</div>`;
   } else {
     race = '<div class="raceNote">견줄 끝낸 에피소드가 아직 없어요 — 기록을 한꺼번에 몰아 넣은 편은 빼고 비교해요</div>';
   }
@@ -2957,11 +2965,11 @@ async function renderRace(data) {
   const others = past.map(({ p, j }) => {
     const v = stageVisits(j).find(x => x.name === cur.name);
     const t = v && v.end ? v.end - v.start : 0;
-    return t > 0 ? { name: j.projectTopic || p.topic || '이름 없는 에피소드', t } : null;
+    return t > 0 ? { name: j.raceName || j.projectTopic || p.topic || '이름 없는 에피소드', t } : null;
   }).filter(Boolean);
   if (others.length) {
     const avg = others.reduce((a, r) => a + r.t, 0) / others.length;
-    const rows = [{ name: '지금 이 에피소드', t: myTime, me: true }, ...others].sort((a, b) => a.t - b.t);
+    const rows = [{ name: '지금 이 에피소드', t: myTime, me: true, label: myTime < RACE_START ? '시작' : null }, ...others];
     const longest = Math.max(1, ...rows.map(r => r.t));
     const diff = myTime - avg;
     const right = myTime < RACE_START ? `<span class="r">방금 시작 · 평균 ${raceSpan(avg)}</span>`
@@ -2969,11 +2977,8 @@ async function renderRace(data) {
       : `<span class="r" style="color:var(--race-red)">평균보다 ${raceSpan(diff)} 더</span>`;
     stage = `<div class="raceSep"></div>
       <div class="raceStageHead"><strong>지금 단계 비교</strong><em>${escapeHtml(cur.name)}</em><span>— 같은 단계에 머문 시간</span>${right}</div>
-      <div class="raceRows">${rows.map(r => `<div class="raceRow raceStage${r.me ? ' me' : ''}">
-          <span class="nm">${escapeHtml(r.name)}</span>
-          <span class="raceBar"><i style="width:${(r.t / longest * 100).toFixed(1)}%;background:${r.me ? 'var(--race-me)' : 'color-mix(in srgb, var(--ink) 35%, transparent)'}"></i><b style="left:${(avg / longest * 100).toFixed(1)}%"></b></span>
-          <span class="t"${r.me ? ' style="color:var(--race-me)"' : ''}>${r.me && r.t < RACE_START ? '시작' : raceSpan(r.t)}</span></div>`).join('')}</div>
-      <div class="raceNote">세로 눈금 = 끝낸 에피소드 평균 ${raceSpan(avg)} · 지금 이 에피소드는 아직 이 단계 진행 중</div>`;
+      ${raceRowsHtml(rows, longest, avg)}
+      <div class="raceNote">빨강 = 평균보다 오래 · 초록 = 평균보다 짧게 · 세로 눈금 = 끝낸 에피소드 평균 ${raceSpan(avg)} · 지금 이 에피소드는 아직 이 단계 진행 중</div>`;
   }
   if (list.length <= 1 && !stage) { card.style.display = 'none'; return; }
   card.innerHTML = head + race + stage;
@@ -3289,7 +3294,7 @@ async function renderDoneCompare(data) {
       .map(p => fetchData(`projects/${p.id}.json`).then(j => raceProjects.set(p.id, j)).catch(() => {})));
     if (my !== doneToken) return;
     const others = done.map(p => ({ p, j: raceProjects.get(p.id) })).filter(x => x.j && x.j.completedAt)
-      .map(({ p, j }) => ({ name: j.projectTopic || p.topic || '이름 없는 에피소드', me: false, ...run(j) }));
+      .map(({ p, j }) => ({ name: j.raceName || j.projectTopic || p.topic || '이름 없는 에피소드', me: false, ...run(j) }));
     draw(others);
   } catch (e) { /* 목록을 못 받으면 이번 편만 */ }
 }
