@@ -4610,26 +4610,17 @@ function renderDayBand(data) {
     cv.width = Math.round(W * r); cv.height = Math.round(H * r);
     const g = cv.getContext('2d');
     g.setTransform(r, 0, 0, r, 0, 0); g.clearRect(0, 0, W, H);
-    // 기록마다 그 분(分)에 둥근 언덕 하나(가우스, 폭 50분, 자정을 넘어 이어짐)를 쌓아 15분 간격으로 읽는다 —
-    // 한 시간 칸 수를 그대로 이으면 같은 높이 칸이 둘 붙은 곳이 평평하게 잘린 것처럼 보였다 (2026-10-21 사용자: 잘린다)
-    const N = 96, sig = 50;
-    const mins = entries.map(e => { const d = new Date(e.timestamp); return d.getHours() * 60 + d.getMinutes(); });
-    const dens = Array.from({ length: N + 1 }, (_, i) => {
-      const x = i * 15;
-      return mins.reduce((acc, m) => { const dd = Math.min(Math.abs(m - x), 1440 - Math.abs(m - x)); return acc + Math.exp(-dd * dd / (2 * sig * sig)); }, 0);
-    });
-    const peak = Math.max(1e-9, ...dens), fl = H - 28, cl = 8;
-    const y = (c) => c < peak * 0.02 ? fl : fl - (fl - cl) * c / peak;   // 아주 옅은 꼬리는 바닥으로 (기록 없는 시간은 비운다)
-    const P = dens.map((c, i) => [i / N * W, y(c)]);
-    P.unshift([-W / N, y(dens[N - 1])]); P.push([W + W / N, y(dens[1])]);
+    // 위쪽 여유(cl) — 높은 칸이 둘 붙으면 곡선이 꼭대기를 넘어 카드 위에서 잘렸다 (2026-10-21 사용자: 여유만 두면 된다)
+    const peak = Math.max(1, ...bins), fl = H - 28, cl = 16;
+    const y = (c) => fl - (fl - cl) * c / peak;
+    const P = bins.map((c, h) => [h / 23 * W, y(c)]);
+    P.unshift([-W / 23, y(bins[23])]); P.push([W + W / 23, y(bins[0])]);
     const path = () => {
       g.moveTo(P[1][0], P[1][1]);
       for (let i = 1; i < P.length - 2; i++) {
         const [a, p1, p2, d] = [P[i - 1], P[i], P[i + 1], P[i + 2]];
-        // 조절점을 바닥(fl) · 천장(cl) 사이에 가둔다 — 높은 칸이 둘 붙으면 곡선이 꼭대기를 넘어 카드 위에서 잘렸다 (2026-10-21 사용자)
-        const cy = (v) => Math.max(cl, Math.min(fl, v));
-        g.bezierCurveTo(p1[0] + (p2[0] - a[0]) / 6, cy(p1[1] + (p2[1] - a[1]) / 6),
-                        p2[0] - (d[0] - p1[0]) / 6, cy(p2[1] - (d[1] - p1[1]) / 6), p2[0], p2[1]);
+        g.bezierCurveTo(p1[0] + (p2[0] - a[0]) / 6, Math.min(fl, p1[1] + (p2[1] - a[1]) / 6),
+                        p2[0] - (d[0] - p1[0]) / 6, Math.min(fl, p2[1] - (d[1] - p1[1]) / 6), p2[0], p2[1]);
       }
     };
     const sky = g.createLinearGradient(0, 0, W, 0);
