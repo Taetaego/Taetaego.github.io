@@ -128,7 +128,7 @@
     }
   ],
   "entryCount" : 4,
-  "lastUpdate" : "2026-10-21T05:50:42Z",
+  "lastUpdate" : "2026-10-21T05:50:54Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
@@ -139,5 +139,6 @@
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
+  "raceName" : "애니멀킹덤",
   "status" : "in_progress"
 }
