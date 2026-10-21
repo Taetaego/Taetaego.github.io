@@ -190,7 +190,7 @@
   /* 막대 대신 하늘색 곡선 (2026-10-18 사용자가 시안으로 고름) — 카드 양옆 · 바닥 끝까지 꽉, 아래로 갈수록 사라지고,
      기록 없는 시간대는 선도 채움도 없이 비운다. 시간 글자는 곡선 위에 얹는다 */
   #dayCard { overflow: hidden; }
-  #dayCard .dayBand { height: 128px; margin: 2px -16px -18px; }
+  #dayCard .dayBand { height: 96px; margin: 2px -16px -18px; }   /* 128 → 96 (2026-10-21 사용자: 높이 약간 줄이기) */
   #dayCard .daySky { display: none; }
   .dayCanvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block;
                animation: dayCurveIn 1.1s cubic-bezier(.3,.8,.3,1) both; }
