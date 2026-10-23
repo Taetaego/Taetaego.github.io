@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "2차 컷편집",
+  "currentStage" : "자막 입력",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -174,17 +174,24 @@
       "elapsed" : "23분",
       "timestamp" : "2026-10-21T19:24:12Z",
       "videoLength" : "34"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "1일 20시간 49분",
+      "memo" : "아 배고파 언제 잠에들",
+      "timestamp" : "2026-10-23T16:14:03Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 11,
-  "lastUpdate" : "2026-10-21T19:24:18Z",
+  "entryCount" : 12,
+  "lastUpdate" : "2026-10-23T16:14:18Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 3,
-    "done" : 3,
+    "currentIndex" : 4,
+    "done" : 4,
     "pct" : 44,
-    "stageFraction" : 1,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
