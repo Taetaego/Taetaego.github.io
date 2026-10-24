@@ -190,10 +190,17 @@
       "memo" : "왜 계속 문제가 생기는거지..?",
       "timestamp" : "2026-10-23T16:36:07Z",
       "videoLength" : "1"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "21시간 6분",
+      "timestamp" : "2026-10-24T13:42:17Z",
+      "videoLength" : "5"
     }
   ],
-  "entryCount" : 13,
-  "lastUpdate" : "2026-10-23T16:41:02Z",
+  "entryCount" : 14,
+  "lastUpdate" : "2026-10-24T13:42:22Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
