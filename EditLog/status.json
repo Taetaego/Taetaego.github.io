@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "자막 입력",
+  "currentStage" : "자료 화면 넣기",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -218,16 +218,23 @@
       "elapsed" : "21분",
       "timestamp" : "2026-10-25T16:37:36Z",
       "videoLength" : "19"
+    },
+    {
+      "category" : "자료 화면 넣기",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "2시간 6분",
+      "timestamp" : "2026-10-25T18:44:15Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 17,
-  "lastUpdate" : "2026-10-25T16:37:39Z",
+  "entryCount" : 18,
+  "lastUpdate" : "2026-10-25T18:44:23Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 4,
-    "done" : 4,
-    "pct" : 44,
+    "currentIndex" : 5,
+    "done" : 5,
+    "pct" : 64,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
