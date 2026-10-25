@@ -204,10 +204,17 @@
       "elapsed" : "1일 1시간 35분",
       "timestamp" : "2026-10-25T15:17:48Z",
       "videoLength" : "9"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "58분",
+      "timestamp" : "2026-10-25T16:15:57Z",
+      "videoLength" : "17"
     }
   ],
-  "entryCount" : 15,
-  "lastUpdate" : "2026-10-25T15:17:53Z",
+  "entryCount" : 16,
+  "lastUpdate" : "2026-10-25T16:16:03Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
