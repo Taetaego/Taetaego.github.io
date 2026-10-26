@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "마지막 점검",
+  "currentStage" : "썸네일 · 업로드",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -296,16 +296,24 @@
       "elapsed" : "4분",
       "timestamp" : "2026-10-26T13:46:56Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "썸네일 · 업로드",
+      "categorySymbol" : "text.below.photo",
+      "elapsed" : "1시간 6분",
+      "memo" : "후.. 오늘안에 끝날듯",
+      "timestamp" : "2026-10-26T14:53:31Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 28,
-  "lastUpdate" : "2026-10-26T13:48:21Z",
+  "entryCount" : 29,
+  "lastUpdate" : "2026-10-26T14:53:42Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 11,
-    "done" : 11,
-    "pct" : 89,
+    "currentIndex" : 12,
+    "done" : 12,
+    "pct" : 92,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
