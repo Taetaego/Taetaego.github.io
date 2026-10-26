@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "자막 디자인",
+  "currentStage" : "오프닝",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -246,16 +246,23 @@
       "elapsed" : "5시간 55분",
       "timestamp" : "2026-10-26T07:32:44Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "오프닝",
+      "categorySymbol" : "star.bubble",
+      "elapsed" : "2시간 29분",
+      "timestamp" : "2026-10-26T10:02:12Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 21,
-  "lastUpdate" : "2026-10-26T07:32:50Z",
+  "entryCount" : 22,
+  "lastUpdate" : "2026-10-26T10:03:43Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 7,
-    "done" : 7,
-    "pct" : 69,
+    "currentIndex" : 8,
+    "done" : 8,
+    "pct" : 72,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
