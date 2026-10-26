@@ -232,10 +232,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-10-25T18:44:51Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 다듬기",
+      "categorySymbol" : "text.badge.checkmark",
+      "elapsed" : "6시간 52분",
+      "timestamp" : "2026-10-26T01:37:16Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 19,
-  "lastUpdate" : "2026-10-25T18:44:57Z",
+  "entryCount" : 20,
+  "lastUpdate" : "2026-10-26T01:37:26Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
