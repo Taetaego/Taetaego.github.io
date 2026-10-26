@@ -260,10 +260,18 @@
       "elapsed" : "54분",
       "timestamp" : "2026-10-26T10:56:22Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "지도 · 위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "20분",
+      "memo" : "후 지도 끝.. 오늘안에 업로드까지 가능할까?",
+      "timestamp" : "2026-10-26T11:16:37Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 23,
-  "lastUpdate" : "2026-10-26T10:56:27Z",
+  "entryCount" : 24,
+  "lastUpdate" : "2026-10-26T11:16:53Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
