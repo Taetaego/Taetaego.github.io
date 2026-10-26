@@ -275,10 +275,17 @@
       "elapsed" : "1시간 17분",
       "timestamp" : "2026-10-26T12:34:21Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "배경음 · 수정",
+      "categorySymbol" : "music.note",
+      "elapsed" : "33분",
+      "timestamp" : "2026-10-26T13:07:34Z",
+      "videoLength" : "15"
     }
   ],
-  "entryCount" : 25,
-  "lastUpdate" : "2026-10-26T12:34:29Z",
+  "entryCount" : 26,
+  "lastUpdate" : "2026-10-26T13:07:41Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
