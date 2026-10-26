@@ -426,6 +426,20 @@
   }
   .pastBtn:active { transform: scale(0.97); }
   .pastBtn[hidden] { display: none; }
+  /* 편집 잔디 — 잘 되는 시간 (앱 '잘 되는 시간' 카드와 같은 모양) */
+  .heatPrime { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .heatPrime:empty { display: none; }
+  .hpHead { display: flex; align-items: center; gap: 7px; font: 800 12px/1 'JetBrains Mono', monospace; letter-spacing: .12em; color: #f59b5c; }
+  .hpIcon { display: flex; font-size: 15px; }
+  .hpMeta { margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0; color: var(--ink3); }
+  .hpBars { display: flex; align-items: flex-end; gap: 3px; height: 90px; }
+  .hpBars span { flex: 1; border-radius: 3px 3px 1px 1px; background: linear-gradient(180deg, #5fe0c0, #5a6bf0);
+                 transform-origin: bottom; animation: dayBarIn .5s cubic-bezier(.34,1.56,.64,1) both; }
+  .hpBars span.best { background: #f59b5c; }
+  .hpSky { position: relative; height: 10px; border-radius: 99px; }
+  .hpSky i { position: absolute; top: -3px; bottom: -3px; width: 4px; margin-left: -2px; border-radius: 2px; background: #fff; }
+  .hpAxis { display: flex; justify-content: space-between; font: 500 11px/1 'JetBrains Mono', monospace; color: var(--ink3); }
+
   /* ===== 과거의 나와 속도 비교 (앱 GhostRaceCard) ===== */
   .raceCard { display: flex; flex-direction: column; gap: 10px;
               --race-me: #6fd3ff; --race-red: #ff6b7f; --race-green: #7ed67a; }   /* 앱과 같은 색 — skyLight · salmon · 7ED67A (2026-10-21 사용자) */
@@ -1871,7 +1885,7 @@
       <div class="topRight">
         <button type="button" class="pastBtn" id="shareBtn" title="공유" aria-label="공유"><span data-ico="share" style="display:flex"></span></button>
         <button type="button" class="pastBtn" id="sfxBtn" aria-label="효과음" aria-pressed="false"></button>
-        <button type="button" class="pastBtn" id="heatBtn" title="편집 잔디 보기" aria-label="편집 잔디" hidden><span data-ico="grid" style="display:flex"></span><span class="pastBtnText">편집 잔디</span></button>
+        <button type="button" class="pastBtn" id="heatBtn" title="편집 잔디 보기" aria-label="편집 잔디" hidden><span data-ico="leaf" style="display:flex"></span><span class="pastBtnText">편집 잔디</span></button>
         <button type="button" class="pastBtn" id="pastBtn" title="지난 에피소드 보기" aria-label="지난 에피소드"><span data-ico="folder" style="display:flex"></span><span class="pastBtnText">지난 에피소드</span></button>
         <div class="themeToggle" id="themeToggle">
           <button type="button" data-mode="light">LIGHT</button>
@@ -2009,6 +2023,7 @@
             <div class="heatTiles" id="heatTiles"></div>
             <div class="heatGrid" id="heatGrid" role="img" aria-label="날짜별 작업량"></div>
             <div class="heatFoot" id="heatFoot"></div>
+            <div class="heatPrime" id="heatPrime"></div>
           </div>
           <div class="heatPane" id="heatStages" hidden>
             <div class="barChart" id="barChart" role="img" aria-label="날짜별 단계별 작업 기록"></div>
@@ -2770,7 +2785,26 @@ function renderHeat({ animate = true } = {}) {
   document.getElementById('heatFoot').innerHTML =
     `지금까지 촬영 원본 <b>${h ? `${h}시간 ` : ''}${m}분</b>${dayish}${fin}`;
 
+  renderHeatPrime(hours);
   if (heatTab === 'stages') renderStageBars(recs, today, since, animate);
+}
+
+/** 잘 되는 시간 — 0~23시마다 기록 수 막대, 가장 많은 시간은 주황 · 아래에 낮밤 하늘 띠와 지금 시각 (앱 위쪽 바 '잘 되는 시간' 카드와 같은 모양, 2026-10-27 사용자).
+    위 기간(전체 · 30일 · 7일)을 따른다. */
+function renderHeatPrime(hours) {
+  const box = document.getElementById('heatPrime');
+  if (!box) return;
+  const peak = Math.max(...hours);
+  if (!peak) { box.innerHTML = ''; return; }
+  const best = hours.indexOf(peak);
+  const stops = [];
+  const day0 = new Date(); day0.setHours(0, 0, 0, 0);
+  for (let m = 0; m <= 1440; m += 30) stops.push(`${sunTint(new Date(day0.getTime() + m * 60000).toISOString(), SKY_TRUE).color} ${(m / 14.4).toFixed(2)}%`);
+  const now = new Date(), nowPct = (now.getHours() * 60 + now.getMinutes()) / 1440 * 100;
+  box.innerHTML = `<div class="hpHead"><span class="hpIcon">${uiIcon('clock')}</span>PRIME TIME · ${best}시<span class="hpMeta">${best}시에 ${peak}번 시작</span></div>
+    <div class="hpBars">${hours.map((c, h) => `<span class="${h === best ? 'best' : ''}" style="height:${c ? Math.max(4, c / peak * 100).toFixed(1) : 2}%;${c ? '' : '--k:.3;'}animation-delay:${h * 15}ms" title="${h}시 · ${c}번"></span>`).join('')}</div>
+    <div class="hpSky" style="background:linear-gradient(90deg, ${stops.join(',')})"><i style="left:${nowPct.toFixed(2)}%"></i></div>
+    <div class="hpAxis"><span>0시</span><span>12시</span><span>23시</span></div>`;
 }
 
 /** 단계 탭 — 날짜마다 막대 하나, 기록 수만큼 높이, 단계 그룹 색으로 쌓는다.
@@ -3290,13 +3324,13 @@ async function renderDoneCompare(data) {
   const me = { name: '이번 편', me: true, ...run(data) };
   // 먼저 이번 편만 그려 두고, 다른 편을 받으면 다시 그린다
   const draw = (others) => {
-    const all = [me, ...others].sort((a, b) => b.total - a.total);
+    const all = [me, ...others].sort((a, b) => a.total - b.total);   // 빨리 끝낸 편이 위 (2026-10-27 사용자)
     const max = Math.max(...all.map(r => r.total));
     const avg = others.length ? others.reduce((a, r) => a + r.total, 0) / others.length : null;
     const rank = all.indexOf(me) + 1;
     const mostRecords = others.length && others.every(r => r.entries < me.entries);
     const sub = !others.length ? `작업 기록 ${me.entries}개`
-      : `${all.length}편 중 ${rank === 1 ? '가장 오래' : rank === all.length ? '가장 빨리' : `${rank}번째로 오래`}`
+      : `${all.length}편 중 ${rank === 1 ? '가장 빨리' : rank === all.length ? '가장 오래' : `${rank}번째로 빨리`}`
         + (Math.abs(me.total - avg) < 3600000 ? ' · 평균과 거의 같아요' : ` · 평균보다 ${raceSpan(Math.abs(me.total - avg))} ${me.total > avg ? '더' : '빨리'}`);
     const rib = (r) => {
       const sum = [...r.seg.values()].reduce((a, b) => a + b, 0) || 1;
@@ -3485,6 +3519,7 @@ const UI_SVG = {
   folder: '<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M3.5 10.5h17"/>',
   clapper: '<rect x="3.5" y="9.5" width="17" height="10.5" rx="2"/><path d="M3.5 9.5 19 5.2l.9 3.1-16.4 1.2"/><path d="M8.2 8.2l2-2.6M13.2 6.8l2-2.6"/>',
   cloudSun: '<path d="M8 3.5v1.2M3.6 5.6l.9.9M2.5 10h1.2M12.4 5.6l-.9.9"/><path d="M5.3 12.6A3.6 3.6 0 1 1 11.6 9"/><path d="M8.8 20h8.7a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.4 1.2A2.9 2.9 0 0 0 8.8 20z"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
   leaf: '<path d="M5 19.5C5 11 10 5.3 20 4.5c.3 9.8-5.3 15-12.6 15"/><path d="M5 19.5c3-4.4 6-7.2 9.5-9.2"/>',
   wand: '<path d="M4 20 15 9"/><path d="M13 7l4 4"/><path d="M17 3.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8zM8 4l.5 1.3 1.3.5-1.3.5L8 7.6l-.5-1.3-1.3-.5 1.3-.5zM19.5 13l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z"/>',
   firework: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.9 2.9M15.5 15.5l2.9 2.9M18.4 5.6l-2.9 2.9M8.5 15.5l-2.9 2.9"/><circle cx="12" cy="12" r="1.3"/>',
@@ -5317,7 +5352,8 @@ function initCardTilt() {
   if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
   // 카드는 프로젝트를 바꿀 때마다 다시 그려진다(통계 타일 · 영상 길이 · 완료 카드) — 그래서 하나하나 붙이지 않고
   // 문서에서 한 번만 받아, 포인터 밑에 있는 카드를 그때그때 찾는다. 처음에 없던 카드도 기울어진다.
-  const SEL = '#summaryCard, #ytThumb, #doneCard, #pipelineCard, #dayCard, #raceCard, #heatCard, #logCard, .statTile';
+  // 편집 잔디는 기울이지 않는다 (2026-10-27 사용자)
+  const SEL = '#summaryCard, #ytThumb, #doneCard, #pipelineCard, #dayCard, #raceCard, #logCard, .statTile';
   let cur = null;
   const release = (el) => {
     el.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), box-shadow .18s ease';
