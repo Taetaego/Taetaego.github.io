@@ -96,6 +96,8 @@
   "currentStage" : "썸네일 · 업로드",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
+  "detailCutLength" : "34",
+  "detailCutRatio" : 13.765182186234817,
   "entries" : [
     {
       "category" : "촬영본 정리",
@@ -307,7 +309,7 @@
     }
   ],
   "entryCount" : 29,
-  "lastUpdate" : "2026-10-26T14:53:42Z",
+  "lastUpdate" : "2026-10-26T14:54:21Z",
   "originalLength" : "4:07",
   "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
