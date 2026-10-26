@@ -92,8 +92,9 @@
       "weight" : 3
     }
   ],
+  "completedAt" : "2026-10-26T16:51:12Z",
   "createdAt" : "2026-10-19T06:44:34Z",
-  "currentStage" : "썸네일 · 업로드",
+  "currentStage" : "완료",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "34",
@@ -314,22 +315,28 @@
       "memo" : "썸네일 제작",
       "timestamp" : "2026-10-26T16:10:18Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "40분",
+      "timestamp" : "2026-10-26T16:51:12Z",
+      "videoLength" : "29"
     }
   ],
-  "entryCount" : 30,
+  "entryCount" : 31,
   "finalLength" : "29",
   "finalRatioVsDetailCut" : 85.29411764705883,
   "finalRatioVsOriginal" : 11.740890688259109,
-  "lastUpdate" : "2026-10-26T16:10:25Z",
+  "lastUpdate" : "2026-10-26T16:51:15Z",
   "originalLength" : "4:07",
-  "previewImage" : "previews\/073A3D26-7C67-467C-8C95-325882646014.jpg",
   "progress" : {
-    "currentIndex" : 12,
-    "done" : 12,
-    "pct" : 92,
+    "done" : 13,
+    "pct" : 100,
     "total" : 13
   },
   "projectTopic" : "애니멀킹덤",
   "raceName" : "애니멀킹덤",
-  "status" : "in_progress"
+  "status" : "completed",
+  "youtubeId" : "Q16GqBcYRqg"
 }

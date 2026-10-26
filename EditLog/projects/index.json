@@ -1,16 +1,19 @@
 {
   "currentId" : "073A3D26-7C67-467C-8C95-325882646014",
-  "lastUpdate" : "2026-10-26T16:10:25Z",
+  "lastUpdate" : "2026-10-26T16:51:15Z",
   "projects" : [
     {
+      "completedAt" : "2026-10-26T16:51:12Z",
       "createdAt" : "2026-10-19T06:44:34Z",
-      "entryCount" : 30,
+      "daysSincePreviousCompletion" : 9,
+      "entryCount" : 31,
       "finalLength" : "29",
       "finalRatioVsOriginal" : 11.740890688259109,
       "id" : "073A3D26-7C67-467C-8C95-325882646014",
       "originalLength" : "4:07",
-      "status" : "in_progress",
-      "topic" : "애니멀킹덤"
+      "status" : "completed",
+      "topic" : "애니멀킹덤",
+      "totalDuration" : 641197.894149065
     },
     {
       "completedAt" : "2026-10-17T16:41:45Z",
