@@ -738,6 +738,8 @@
            border-left: 1.5px dashed color-mix(in srgb, var(--ink) 75%, transparent); }
   .dcAvgTag { position: absolute; bottom: calc(100% + 4px); transform: translateX(-50%); font-size: 10.5px; font-weight: 700; color: var(--ink); white-space: nowrap; }
   .dcRowsWrap { padding-top: 18px; }
+  /* 이번 편은 맨 위에 따로, 선 아래에 다른 편들 — 진행 중 속도 비교 순위표와 같은 모양 (2026-10-27 사용자) */
+  .dcSep { position: relative; height: 1px; background: color-mix(in srgb, var(--ink) 10%, transparent); }
 
   .doneTitle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--gold); }
   .doneTitle .doneIcon { width: 20px; height: 20px; border-radius: 50%; background: var(--gold-soft); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
@@ -3341,7 +3343,7 @@ async function renderDoneCompare(data) {
         ${mostRecords ? `<span class="dcChip">기록 ${me.entries}개 · 역대 최다</span>` : ''}</div>
       <div class="dcLegend">${order.map(g => `<span><i style="background:${color(g)}"></i>${escapeHtml(g)}</span>`).join('')}</div>
       <div class="dcRowsWrap"><div class="dcRows">
-        ${all.map((r, i) => `<span class="dcName${r.me ? ' me' : ''}">${escapeHtml(r.name)}</span>
+        ${[me, null, ...all.filter(r => !r.me)].map((r, i) => r === null ? (others.length ? `<span class="dcSep"></span><span class="dcSep">${avg ? `<i class="dcAvg" style="left:${(avg / max * 100).toFixed(1)}%"></i>` : ''}</span><span class="dcSep"></span>` : '') : `<span class="dcName${r.me ? ' me' : ''}">${escapeHtml(r.name)}</span>
           <span class="dcLane">${avg ? `<i class="dcAvg" style="left:${(avg / max * 100).toFixed(1)}%"></i>${i === 0 ? `<b class="dcAvgTag" style="left:${(avg / max * 100).toFixed(1)}%">평균 ${(avg / 86400000).toFixed(1)}일</b>` : ''}` : ''}<span class="dcRib${r.me ? ' me' : ''}" style="width:${(r.total / max * 100).toFixed(1)}%;animation-delay:${(i * 0.06).toFixed(2)}s">${rib(r)}</span></span>
           <span class="dcDays${r.me ? ' me' : ''}">${(r.total / 86400000).toFixed(1)}일</span>`).join('')}
       </div></div>`;
