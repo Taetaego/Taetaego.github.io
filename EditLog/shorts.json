@@ -1,6 +1,17 @@
 {
-  "lastUpdate" : "2026-11-04T18:40:46Z",
+  "lastUpdate" : "2026-11-04T18:41:06Z",
   "projects" : [
+    {
+      "createdAt" : "2026-11-04T18:41:02Z",
+      "id" : "E9D57418-C661-419A-8A00-70664ADD77FB",
+      "isCompleted" : false,
+      "shorts" : [
+
+      ],
+      "topic" : "세계에서 가장 높은 티티카카 호수, 원주민 마을에서의 하룻밤 [세계여행117]",
+      "youtubeId" : "Ri7NlrD9Vrk",
+      "youtubeURL" : "https://youtu.be/Ri7NlrD9Vrk"
+    },
     {
       "completedAt" : "2026-10-06T16:54:52Z",
       "createdAt" : "2026-10-06T11:09:09Z",
