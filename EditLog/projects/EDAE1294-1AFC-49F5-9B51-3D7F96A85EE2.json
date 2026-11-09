@@ -103,10 +103,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-11-09T12:01:14Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "촬영본 정리",
+      "categorySymbol" : "folder",
+      "elapsed" : "0분",
+      "timestamp" : "2026-11-09T12:01:48Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 1,
-  "lastUpdate" : "2026-11-09T12:01:17Z",
+  "entryCount" : 2,
+  "lastUpdate" : "2026-11-09T12:01:56Z",
   "originalLength" : "",
   "progress" : {
     "currentIndex" : 0,
