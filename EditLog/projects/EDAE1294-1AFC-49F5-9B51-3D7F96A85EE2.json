@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "촬영본 정리",
+  "currentStage" : "자막 · 컷 계획",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -110,15 +110,22 @@
       "elapsed" : "0분",
       "timestamp" : "2026-11-09T12:01:48Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "자막 · 컷 계획",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "0분",
+      "timestamp" : "2026-11-09T12:02:29Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 2,
-  "lastUpdate" : "2026-11-09T12:01:56Z",
+  "entryCount" : 3,
+  "lastUpdate" : "2026-11-09T12:02:38Z",
   "originalLength" : "",
   "progress" : {
-    "currentIndex" : 0,
-    "done" : 0,
-    "pct" : 0,
+    "currentIndex" : 1,
+    "done" : 1,
+    "pct" : 3,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
