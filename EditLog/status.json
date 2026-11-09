@@ -147,10 +147,17 @@
       "elapsed" : "8분",
       "timestamp" : "2026-11-09T14:29:21Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "42분",
+      "timestamp" : "2026-11-09T15:11:40Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 7,
-  "lastUpdate" : "2026-11-09T15:11:42Z",
+  "entryCount" : 8,
+  "lastUpdate" : "2026-11-09T15:11:54Z",
   "originalLength" : "2:34",
   "progress" : {
     "currentIndex" : 3,
