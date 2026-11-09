@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "1차 컷편집",
+  "currentStage" : "2차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -138,16 +138,23 @@
       "elapsed" : "47분",
       "timestamp" : "2026-11-09T14:20:36Z",
       "videoLength" : "29"
+    },
+    {
+      "category" : "2차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "8분",
+      "timestamp" : "2026-11-09T14:29:21Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 6,
-  "lastUpdate" : "2026-11-09T14:20:42Z",
+  "entryCount" : 7,
+  "lastUpdate" : "2026-11-09T14:29:26Z",
   "originalLength" : "2:34",
   "progress" : {
-    "currentIndex" : 2,
-    "done" : 2,
+    "currentIndex" : 3,
+    "done" : 3,
     "pct" : 36,
-    "stageFraction" : 1,
+    "stageFraction" : 0,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
