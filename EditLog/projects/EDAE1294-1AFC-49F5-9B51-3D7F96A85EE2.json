@@ -96,6 +96,8 @@
   "currentStage" : "2차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
+  "detailCutLength" : "22",
+  "detailCutRatio" : 14.285714285714285,
   "entries" : [
     {
       "category" : "촬영본 정리",
@@ -148,7 +150,7 @@
     }
   ],
   "entryCount" : 7,
-  "lastUpdate" : "2026-11-09T14:29:26Z",
+  "lastUpdate" : "2026-11-09T15:11:42Z",
   "originalLength" : "2:34",
   "progress" : {
     "currentIndex" : 3,
