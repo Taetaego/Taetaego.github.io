@@ -1,7 +1,15 @@
 {
-  "currentId" : "073A3D26-7C67-467C-8C95-325882646014",
-  "lastUpdate" : "2026-10-26T16:51:15Z",
+  "currentId" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
+  "lastUpdate" : "2026-11-09T12:01:17Z",
   "projects" : [
+    {
+      "createdAt" : "2026-11-09T12:01:14Z",
+      "entryCount" : 1,
+      "id" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
+      "originalLength" : "",
+      "status" : "in_progress",
+      "topic" : "할리우드 스튜디오"
+    },
     {
       "completedAt" : "2026-10-26T16:51:12Z",
       "createdAt" : "2026-10-19T06:44:34Z",
