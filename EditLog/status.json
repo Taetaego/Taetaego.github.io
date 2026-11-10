@@ -193,7 +193,7 @@
     }
   ],
   "entryCount" : 13,
-  "lastUpdate" : "2026-11-10T08:09:27Z",
+  "lastUpdate" : "2026-11-10T08:13:08Z",
   "originalLength" : "2:34",
   "previewImage" : "previews\/EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2.jpg",
   "progress" : {
@@ -203,5 +203,6 @@
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
+  "raceName" : "할리우드 스튜디오",
   "status" : "in_progress"
 }
