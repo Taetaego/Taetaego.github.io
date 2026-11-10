@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "오프닝",
+  "currentStage" : "지도 · 위치 추가",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "22",
@@ -211,16 +211,23 @@
       "elapsed" : "7분",
       "timestamp" : "2026-11-10T09:52:03Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "지도 · 위치 추가",
+      "categorySymbol" : "map",
+      "elapsed" : "0분",
+      "timestamp" : "2026-11-10T09:52:24Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 16,
-  "lastUpdate" : "2026-11-10T09:52:10Z",
+  "entryCount" : 17,
+  "lastUpdate" : "2026-11-10T09:52:31Z",
   "originalLength" : "2:34",
   "previewImage" : "previews\/EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2.jpg",
   "progress" : {
-    "currentIndex" : 8,
-    "done" : 8,
-    "pct" : 72,
+    "currentIndex" : 9,
+    "done" : 9,
+    "pct" : 75,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
