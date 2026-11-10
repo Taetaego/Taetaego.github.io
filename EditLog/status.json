@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "자막 입력",
+  "currentStage" : "자료 화면 넣기",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "22",
@@ -176,16 +176,22 @@
       "elapsed" : "24분",
       "timestamp" : "2026-11-10T07:37:57Z",
       "videoLength" : "17"
+    },
+    {
+      "category" : "자료 화면 넣기",
+      "categorySymbol" : "photo.on.rectangle",
+      "elapsed" : "15분",
+      "timestamp" : "2026-11-10T07:53:09Z",
+      "videoLength" : ""
     }
   ],
-  "entryCount" : 11,
-  "lastUpdate" : "2026-11-10T07:39:33Z",
+  "entryCount" : 12,
+  "lastUpdate" : "2026-11-10T07:53:15Z",
   "originalLength" : "2:34",
   "progress" : {
-    "currentIndex" : 4,
-    "done" : 4,
-    "pct" : 59,
-    "stageFraction" : 0.7727272727272727,
+    "currentIndex" : 5,
+    "done" : 5,
+    "pct" : 64,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
