@@ -1,16 +1,19 @@
 {
   "currentId" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
-  "lastUpdate" : "2026-11-10T11:40:11Z",
+  "lastUpdate" : "2026-11-10T14:56:44Z",
   "projects" : [
     {
+      "completedAt" : "2026-11-10T14:56:40Z",
       "createdAt" : "2026-11-09T12:01:14Z",
-      "entryCount" : 20,
+      "daysSincePreviousCompletion" : 14,
+      "entryCount" : 21,
       "finalLength" : "21",
       "finalRatioVsOriginal" : 13.636363636363635,
       "id" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
       "originalLength" : "2:34",
-      "status" : "in_progress",
-      "topic" : "할리우드 스튜디오"
+      "status" : "completed",
+      "topic" : "할리우드 스튜디오",
+      "totalDuration" : 96926.58924400806
     },
     {
       "completedAt" : "2026-10-26T16:51:12Z",

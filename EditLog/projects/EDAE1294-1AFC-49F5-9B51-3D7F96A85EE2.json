@@ -92,8 +92,9 @@
       "weight" : 3
     }
   ],
+  "completedAt" : "2026-11-10T14:56:40Z",
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "썸네일 · 업로드",
+  "currentStage" : "완료",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "22",
@@ -239,22 +240,28 @@
       "elapsed" : "38분",
       "timestamp" : "2026-11-10T11:38:13Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "완료",
+      "categorySymbol" : "flag",
+      "elapsed" : "3시간 18분",
+      "timestamp" : "2026-11-10T14:56:40Z",
+      "videoLength" : "21"
     }
   ],
-  "entryCount" : 20,
+  "entryCount" : 21,
   "finalLength" : "21",
   "finalRatioVsDetailCut" : 95.45454545454545,
   "finalRatioVsOriginal" : 13.636363636363635,
-  "lastUpdate" : "2026-11-10T11:40:11Z",
+  "lastUpdate" : "2026-11-10T14:56:44Z",
   "originalLength" : "2:34",
-  "previewImage" : "previews\/EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2.jpg",
   "progress" : {
-    "currentIndex" : 12,
-    "done" : 12,
-    "pct" : 92,
+    "done" : 13,
+    "pct" : 100,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
   "raceName" : "할리우드 스튜디오",
-  "status" : "in_progress"
+  "status" : "completed",
+  "youtubeId" : "pdg_RhkG5H0"
 }
