@@ -1,12 +1,12 @@
 {
   "currentId" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
-  "lastUpdate" : "2026-11-10T11:40:07Z",
+  "lastUpdate" : "2026-11-10T11:40:11Z",
   "projects" : [
     {
       "createdAt" : "2026-11-09T12:01:14Z",
       "entryCount" : 20,
-      "finalLength" : "1",
-      "finalRatioVsOriginal" : 0.6493506493506493,
+      "finalLength" : "21",
+      "finalRatioVsOriginal" : 13.636363636363635,
       "id" : "EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2",
       "originalLength" : "2:34",
       "status" : "in_progress",
