@@ -162,16 +162,23 @@
       "memo" : "와 오늘 편집 빨리빨리되네요",
       "timestamp" : "2026-11-09T16:07:06Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "15시간 5분",
+      "timestamp" : "2026-11-10T07:13:04Z",
+      "videoLength" : "10"
     }
   ],
-  "entryCount" : 9,
-  "lastUpdate" : "2026-11-09T16:07:19Z",
+  "entryCount" : 10,
+  "lastUpdate" : "2026-11-10T07:13:11Z",
   "originalLength" : "2:34",
   "progress" : {
     "currentIndex" : 4,
     "done" : 4,
-    "pct" : 44,
-    "stageFraction" : 0,
+    "pct" : 53,
+    "stageFraction" : 0.45454545454545453,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
