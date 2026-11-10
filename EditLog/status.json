@@ -169,16 +169,23 @@
       "elapsed" : "15시간 5분",
       "timestamp" : "2026-11-10T07:13:04Z",
       "videoLength" : "10"
+    },
+    {
+      "category" : "자막 입력",
+      "categorySymbol" : "captions.bubble",
+      "elapsed" : "24분",
+      "timestamp" : "2026-11-10T07:37:57Z",
+      "videoLength" : "17"
     }
   ],
-  "entryCount" : 10,
-  "lastUpdate" : "2026-11-10T07:13:11Z",
+  "entryCount" : 11,
+  "lastUpdate" : "2026-11-10T07:39:33Z",
   "originalLength" : "2:34",
   "progress" : {
     "currentIndex" : 4,
     "done" : 4,
-    "pct" : 53,
-    "stageFraction" : 0.45454545454545453,
+    "pct" : 59,
+    "stageFraction" : 0.7727272727272727,
     "total" : 13
   },
   "projectTopic" : "할리우드 스튜디오",
