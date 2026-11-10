@@ -242,7 +242,10 @@
     }
   ],
   "entryCount" : 20,
-  "lastUpdate" : "2026-11-10T11:38:18Z",
+  "finalLength" : "1",
+  "finalRatioVsDetailCut" : 4.545454545454546,
+  "finalRatioVsOriginal" : 0.6493506493506493,
+  "lastUpdate" : "2026-11-10T11:40:07Z",
   "originalLength" : "2:34",
   "previewImage" : "previews\/EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2.jpg",
   "progress" : {
