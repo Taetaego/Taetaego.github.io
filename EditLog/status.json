@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "배경음 · 수정",
+  "currentStage" : "마지막 점검",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "detailCutLength" : "22",
@@ -225,16 +225,23 @@
       "elapsed" : "14분",
       "timestamp" : "2026-11-10T10:06:44Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "마지막 점검",
+      "categorySymbol" : "checkmark.seal",
+      "elapsed" : "53분",
+      "timestamp" : "2026-11-10T11:00:07Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 18,
-  "lastUpdate" : "2026-11-10T10:06:49Z",
+  "entryCount" : 19,
+  "lastUpdate" : "2026-11-10T11:00:13Z",
   "originalLength" : "2:34",
   "previewImage" : "previews\/EDAE1294-1AFC-49F5-9B51-3D7F96A85EE2.jpg",
   "progress" : {
-    "currentIndex" : 10,
-    "done" : 10,
-    "pct" : 81,
+    "currentIndex" : 11,
+    "done" : 11,
+    "pct" : 89,
     "stageFraction" : 0,
     "total" : 13
   },
