@@ -92,176 +92,28 @@
       "weight" : 3
     }
   ],
-  "completedAt" : "2026-11-10T14:56:40Z",
-  "createdAt" : "2026-11-09T12:01:14Z",
-  "currentStage" : "완료",
+  "createdAt" : "2026-11-21T14:55:45Z",
+  "currentStage" : "촬영본 정리",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
-  "detailCutLength" : "22",
-  "detailCutRatio" : 14.285714285714285,
   "entries" : [
     {
       "category" : "촬영본 정리",
       "categorySymbol" : "folder",
       "elapsed" : "0분",
-      "timestamp" : "2026-11-09T12:01:14Z",
+      "timestamp" : "2026-11-21T14:55:45Z",
       "videoLength" : ""
-    },
-    {
-      "category" : "촬영본 정리",
-      "categorySymbol" : "folder",
-      "elapsed" : "0분",
-      "timestamp" : "2026-11-09T12:01:48Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "자막 · 컷 계획",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "0분",
-      "timestamp" : "2026-11-09T12:02:29Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "1시간 2분",
-      "timestamp" : "2026-11-09T13:04:44Z",
-      "videoLength" : "19"
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "28분",
-      "timestamp" : "2026-11-09T13:33:36Z",
-      "videoLength" : "20"
-    },
-    {
-      "category" : "1차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "47분",
-      "timestamp" : "2026-11-09T14:20:36Z",
-      "videoLength" : "29"
-    },
-    {
-      "category" : "2차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "8분",
-      "timestamp" : "2026-11-09T14:29:21Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "2차 컷편집",
-      "categorySymbol" : "scissors",
-      "elapsed" : "42분",
-      "timestamp" : "2026-11-09T15:11:40Z",
-      "videoLength" : "22"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "55분",
-      "memo" : "와 오늘 편집 빨리빨리되네요",
-      "timestamp" : "2026-11-09T16:07:06Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "15시간 5분",
-      "timestamp" : "2026-11-10T07:13:04Z",
-      "videoLength" : "10"
-    },
-    {
-      "category" : "자막 입력",
-      "categorySymbol" : "captions.bubble",
-      "elapsed" : "24분",
-      "timestamp" : "2026-11-10T07:37:57Z",
-      "videoLength" : "17"
-    },
-    {
-      "category" : "자료 화면 넣기",
-      "categorySymbol" : "photo.on.rectangle",
-      "elapsed" : "15분",
-      "timestamp" : "2026-11-10T07:53:09Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "자막 다듬기",
-      "categorySymbol" : "text.badge.checkmark",
-      "elapsed" : "14분",
-      "timestamp" : "2026-11-10T08:07:52Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "자막 다듬기",
-      "categorySymbol" : "text.badge.checkmark",
-      "elapsed" : "1시간 14분",
-      "timestamp" : "2026-11-10T09:22:11Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "자막 디자인",
-      "categorySymbol" : "paintpalette",
-      "elapsed" : "21분",
-      "timestamp" : "2026-11-10T09:44:08Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "오프닝",
-      "categorySymbol" : "star.bubble",
-      "elapsed" : "7분",
-      "timestamp" : "2026-11-10T09:52:03Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "지도 · 위치 추가",
-      "categorySymbol" : "map",
-      "elapsed" : "0분",
-      "timestamp" : "2026-11-10T09:52:24Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "배경음 · 수정",
-      "categorySymbol" : "music.note",
-      "elapsed" : "14분",
-      "timestamp" : "2026-11-10T10:06:44Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "마지막 점검",
-      "categorySymbol" : "checkmark.seal",
-      "elapsed" : "53분",
-      "timestamp" : "2026-11-10T11:00:07Z",
-      "videoLength" : "0"
-    },
-    {
-      "category" : "썸네일 · 업로드",
-      "categorySymbol" : "text.below.photo",
-      "elapsed" : "38분",
-      "timestamp" : "2026-11-10T11:38:13Z",
-      "videoLength" : ""
-    },
-    {
-      "category" : "완료",
-      "categorySymbol" : "flag",
-      "elapsed" : "3시간 18분",
-      "timestamp" : "2026-11-10T14:56:40Z",
-      "videoLength" : "21"
     }
   ],
-  "entryCount" : 21,
-  "finalLength" : "21",
-  "finalRatioVsDetailCut" : 95.45454545454545,
-  "finalRatioVsOriginal" : 13.636363636363635,
-  "lastUpdate" : "2026-11-10T14:56:44Z",
-  "originalLength" : "2:34",
+  "entryCount" : 1,
+  "lastUpdate" : "2026-11-21T14:55:48Z",
+  "originalLength" : "",
   "progress" : {
-    "done" : 13,
-    "pct" : 100,
+    "currentIndex" : 0,
+    "done" : 0,
+    "pct" : 0,
     "total" : 13
   },
-  "projectTopic" : "할리우드 스튜디오",
-  "raceName" : "할리우드 스튜디오",
-  "status" : "completed",
-  "youtubeId" : "pdg_RhkG5H0"
+  "projectTopic" : "매직킹덤",
+  "status" : "in_progress"
 }
