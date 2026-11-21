@@ -106,7 +106,7 @@
     }
   ],
   "entryCount" : 1,
-  "lastUpdate" : "2026-11-21T14:56:05Z",
+  "lastUpdate" : "2026-11-21T14:56:12Z",
   "originalLength" : "",
   "progress" : {
     "currentIndex" : 0,
@@ -115,5 +115,6 @@
     "total" : 13
   },
   "projectTopic" : "매직킹덤",
+  "raceName" : "매직킹덤",
   "status" : "in_progress"
 }
