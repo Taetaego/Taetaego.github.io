@@ -93,7 +93,7 @@
     }
   ],
   "createdAt" : "2026-11-21T14:55:45Z",
-  "currentStage" : "자막 · 컷 계획",
+  "currentStage" : "1차 컷편집",
   "cutBaselineRatio" : 0.1,
   "cuttingGroup" : "컷 편집",
   "entries" : [
@@ -111,15 +111,22 @@
       "memo" : "이건 시간날떄 끝냈",
       "timestamp" : "2026-11-21T14:56:13Z",
       "videoLength" : ""
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "0분",
+      "timestamp" : "2026-11-21T14:56:29Z",
+      "videoLength" : "0"
     }
   ],
-  "entryCount" : 2,
-  "lastUpdate" : "2026-11-21T14:56:24Z",
+  "entryCount" : 3,
+  "lastUpdate" : "2026-11-21T14:56:40Z",
   "originalLength" : "",
   "progress" : {
-    "currentIndex" : 1,
-    "done" : 1,
-    "pct" : 3,
+    "currentIndex" : 2,
+    "done" : 2,
+    "pct" : 6,
     "total" : 13
   },
   "projectTopic" : "매직킹덤",
