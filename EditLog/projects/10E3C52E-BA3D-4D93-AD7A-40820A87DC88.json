@@ -118,10 +118,17 @@
       "elapsed" : "0분",
       "timestamp" : "2026-11-21T14:56:29Z",
       "videoLength" : "0"
+    },
+    {
+      "category" : "1차 컷편집",
+      "categorySymbol" : "scissors",
+      "elapsed" : "1일 20시간 37분",
+      "timestamp" : "2026-11-23T11:34:08Z",
+      "videoLength" : "2"
     }
   ],
-  "entryCount" : 3,
-  "lastUpdate" : "2026-11-21T14:56:40Z",
+  "entryCount" : 4,
+  "lastUpdate" : "2026-11-23T11:34:21Z",
   "originalLength" : "",
   "progress" : {
     "currentIndex" : 2,
