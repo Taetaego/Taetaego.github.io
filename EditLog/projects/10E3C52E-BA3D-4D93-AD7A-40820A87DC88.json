@@ -128,12 +128,13 @@
     }
   ],
   "entryCount" : 4,
-  "lastUpdate" : "2026-11-23T11:34:21Z",
-  "originalLength" : "",
+  "lastUpdate" : "2026-11-23T11:42:47Z",
+  "originalLength" : "3:40",
   "progress" : {
     "currentIndex" : 2,
     "done" : 2,
-    "pct" : 6,
+    "pct" : 8,
+    "stageFraction" : 0.09090909090909091,
     "total" : 13
   },
   "projectTopic" : "매직킹덤",

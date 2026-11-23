@@ -1,12 +1,12 @@
 {
   "currentId" : "10E3C52E-BA3D-4D93-AD7A-40820A87DC88",
-  "lastUpdate" : "2026-11-23T11:34:21Z",
+  "lastUpdate" : "2026-11-23T11:42:47Z",
   "projects" : [
     {
       "createdAt" : "2026-11-21T14:55:45Z",
       "entryCount" : 4,
       "id" : "10E3C52E-BA3D-4D93-AD7A-40820A87DC88",
-      "originalLength" : "",
+      "originalLength" : "3:40",
       "status" : "in_progress",
       "topic" : "매직킹덤"
     },
